@@ -1,0 +1,265 @@
+{
+  "common": {
+    "home": "Home",
+    "products": "Products",
+    "solutions": "Applications",
+    "about": "About Us",
+    "service": "Service & Support",
+    "contact": "Contact",
+    "divisions": "Business Units",
+    "search": "Search products, solutions...",
+    "readMore": "Read More",
+    "viewDetails": "View Details",
+    "contactUs": "Contact Us",
+    "consultSolution": "Consult Solution"
+  },
+  "header": {
+    "hotline": "Hotline",
+    "email": "Email",
+    "language": "EN / 中文",
+    "companyName": "Mingsheng",
+    "slogan": "Professional Industrial Tools Supplier"
+  },
+  "footer": {
+    "companyInfo": "Company Info",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact",
+    "followUs": "Follow Us",
+    "address": "Address",
+    "addressDetail": "Tianhe District, Guangzhou, China",
+    "phone": "Phone",
+    "copyright": "© 2024 Guangzhou Mingsheng Weiye Electromechanical Co., Ltd. All Rights Reserved",
+    "products": "Products",
+    "solutions": "Solutions",
+    "about": "About",
+    "aboutUs": "About Us",
+    "history": "History",
+    "team": "Team",
+    "contact": "Contact",
+    "automotive": "Automotive Manufacturing",
+    "manufacturing": "Smart Manufacturing",
+    "aerospace": "Aerospace",
+    "energy": "Energy Equipment",
+    "serviceNetwork": "Service Network"
+  },
+  "productsServices": {
+    "title": "Products & Services",
+    "desc": "Professional industrial automation equipment and intelligent manufacturing solutions"
+  },
+  "divisions": {
+    "desc": "Professional division teams providing comprehensive industrial solutions"
+  },
+  "home": {
+    "banner": {
+      "company": {
+        "title": "Guangzhou Mingsheng Weiye Electromechanical Co., Ltd.",
+        "subtitle": "Established in 1996, headquartered in Guangzhou, Pearl River Delta",
+        "description": "A modern technology enterprise integrating R&D, manufacturing, and sales services, specializing in European and American high-end industrial tools supply and application solutions"
+      }
+    },
+    "productsServices": {
+      "title": "Products & Services",
+      "desc": "Professional industrial automation equipment and intelligent manufacturing solutions"
+    },
+    "applicationCases": {
+      "title": "Application Cases",
+      "desc": "Customized intelligent manufacturing and industrial automation solutions for different industries"
+    },
+    "about": {
+      "title": "About Mingsheng",
+      "intro": "Guangzhou Mingsheng Weiye Electromechanical Co., Ltd. was established in 1996, headquartered in Guangzhou. It is a modern technology enterprise integrating R&D, manufacturing, and sales services."
+    },
+    "advantages": {
+      "title": "Our Advantages",
+      "desc": "Trusted Industrial Partner",
+      "experience": "28 Years Experience",
+      "certification": "Authority Certification",
+      "brands": "European & American Brands",
+      "network": "National Service Network"
+    },
+    "serviceNetwork": {
+      "title": "Service Network",
+      "desc": "Offices in multiple locations across the country, providing quality customer service"
+    }
+  },
+  "products": {
+    "title": "Products Center",
+    "allProducts": "All Products",
+    "found": "Found",
+    "items": "products",
+    "priceRange": "Price Range",
+    "brand": "Brand",
+    "applyFilter": "Apply Filter",
+    "sortBy": "Sort By",
+    "defaultSort": "Default",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low",
+    "newest": "Newest",
+    "divisions": {
+      "assembly": "Industrial Intelligent Assembly",
+      "production": "Industrial Intelligent Production",
+      "oem": "Industry OEM Division",
+      "power": "Power Assembly Division",
+      "auto": "Automobile Parts Division",
+      "tech": "Mingsheng Technology",
+      "tools": "Oils and Cutting Tools",
+      "marketing": "Network Marketing"
+    }
+  },
+  "solutions": {
+    "title": "Application Cases",
+    "desc": "Customized intelligent manufacturing and industrial automation solutions for different industries",
+    "features": "Features",
+    "applications": "Applications"
+  },
+  "aiChat": {
+    "title": "AI Assistant",
+    "subtitle": "Hello! I'm Mingsheng AI Assistant. How can I help you?",
+    "placeholder": "Please enter your question...",
+    "send": "Send",
+    "clearHistory": "Clear History",
+    "minimize": "Minimize",
+    "quickQuestions": "Quick Questions",
+    "typing": "Typing...",
+    "welcome": "Hello! I'm Mingsheng AI Assistant. I can answer questions about products, applications, business cooperation, etc. How can I help you?",
+    "questions": {
+      "q1": "What are your main products?",
+      "q2": "How to contact sales team?",
+      "q3": "What application cases do you have?",
+      "q4": "Do you support customization?",
+      "q5": "What about after-sales service?",
+      "q6": "How to become a partner?"
+    }
+  },
+  "cms": {
+    "title": "CMS Management System",
+    "subtitle": "Manage website Logo, divisions, product categories (3 levels) and all content",
+    "tabs": {
+      "navigation": "Navigation Management",
+      "logo": "Logo & Basic Settings",
+      "divisions": "Divisions Management",
+      "categories": "Product Categories",
+      "products": "Products Management",
+      "home": "Home Content",
+      "about": "About Us",
+      "service": "Service & Support",
+      "contact": "Contact Us",
+      "solutions": "Application Cases"
+    },
+    "homeContent": {
+      "bannerTitle": "Home Banner Configuration",
+      "blocksTitle": "Home Exclusive Blocks"
+    },
+    "contactContent": {
+      "bannerTitle": "Page Banner Configuration",
+      "infoTitle": "Contact Information & Offices"
+    },
+    "navigation": {
+      "title": "Top Navigation Management",
+      "add": "Add Navigation Item",
+      "edit": "Edit Navigation Item",
+      "alertTitle": "Tips",
+      "alertText": "Drag to reorder navigation items; Toggle visibility to control whether items are visible on the frontend",
+      "order": "Order",
+      "navName": "Nav Name",
+      "path": "Path",
+      "visible": "Visible",
+      "operation": "Operation",
+      "editBtn": "Edit",
+      "deleteBtn": "Delete",
+      "chineseName": "Chinese Name",
+      "englishName": "English Name",
+      "pathPlaceholder": "e.g.: /about",
+      "pathHint": "Enter route path, e.g.: /about, /products, /contact, etc.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirmDelete": "Are you sure you want to delete '{name}'?"
+    },
+    "logo": {
+      "websiteLogo": "Website Logo",
+      "saveLogo": "Save Logo",
+      "companyInfo": "Company Name and Slogan",
+      "chineseName": "Chinese Name",
+      "englishName": "English Name",
+      "chineseSlogan": "Chinese Slogan",
+      "englishSlogan": "English Slogan",
+      "saveConfig": "Save Configuration"
+    },
+    "division": {
+      "list": "Divisions List",
+      "add": "Add Division",
+      "edit": "Edit Division",
+      "delete": "Delete",
+      "chineseName": "Chinese Name",
+      "englishName": "English Name",
+      "relatedProducts": "Related Products",
+      "manageProducts": "Manage Products",
+      "key": "Key",
+      "icon": "Icon",
+      "selectIcon": "Select Icon",
+      "chineseDesc": "Chinese Description",
+      "englishDesc": "English Description",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirmDelete": "Are you sure you want to delete this division?",
+      "deleteTitle": "Confirm Delete",
+      "manageTitle": "Manage Division Products",
+      "availableCategories": "Available Product Categories:"
+    },
+    "category": {
+      "title": "Product Categories (3-Level Structure)",
+      "addLevel1": "Add Level 1 Category",
+      "addLevel2": "Add Level 2 Category",
+      "addLevel3": "Add Level 3 Category",
+      "addSub": "Add Subcategory",
+      "edit": "Edit",
+      "delete": "Delete",
+      "level": "Level",
+      "parentCategory": "Parent Category",
+      "selectParent": "Select Parent Category",
+      "chineseName": "Chinese Name",
+      "englishName": "English Name",
+      "chineseDesc": "Chinese Description",
+      "englishDesc": "English Description",
+      "categoryImage": "Category Image",
+      "confirmDelete": "Are you sure you want to delete '{name}' and all its subcategories and products?",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "product": {
+      "list": "Products List",
+      "add": "Add Product",
+      "edit": "Edit Product",
+      "delete": "Delete",
+      "image": "Product Image",
+      "chineseName": "Chinese Name",
+      "category": "Category",
+      "selectCategory": "Please select product category",
+      "englishName": "English Name",
+      "chineseDesc": "Chinese Description",
+      "englishDesc": "English Description",
+      "images": "Product Images",
+      "addImage": "Add Image",
+      "removeImage": "Remove",
+      "specs": "Technical Specifications",
+      "addSpec": "Add Specification",
+      "specNameCN": "Spec Name (Chinese)",
+      "specNameEN": "Spec Name (English)",
+      "specValueCN": "Spec Value (Chinese)",
+      "specValueEN": "Spec Value (English)",
+      "operation": "Operation",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirmDelete": "Are you sure you want to delete this product?"
+    },
+    "message": {
+      "logoSaved": "Logo Saved",
+      "configSaved": "Configuration Saved",
+      "saveSuccess": "Save Successfully",
+      "deleteSuccess": "Delete Successfully",
+      "fillComplete": "Please fill in complete information",
+      "fillName": "Please fill in complete name",
+      "selectCategory": "Please select category"
+    }
+  }
+}

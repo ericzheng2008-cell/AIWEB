@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品分类数据检查工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 900px;
+      width: 100%;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .stat-card.empty {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge.success {
+      background: #10b981;
+      color: white;
+    }
+    
+    .badge.warning {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .badge.danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .tree {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .tree-item {
+      margin-left: 20px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .tree-item.level-1 {
+      margin-left: 0;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .tree-item.level-2 {
+      margin-left: 20px;
+    }
+    
+    .tree-item.level-3 {
+      margin-left: 40px;
+    }
+    
+    .tree-item.level-4 {
+      margin-left: 60px;
+      color: #667eea;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+    
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .alert.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .alert.warning {
+      background: #fef3c7;
+      color: #92400e;
+      border-left: 4px solid #f59e0b;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #9ca3af;
+    }
+    
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 产品分类数据检查工具</h1>
+    <p class="subtitle">检查浏览器localStorage中的4级分类数据</p>
+    
+    <div class="stats">
+      <div class="stat-card" id="stat-1">
+        <div class="stat-number" id="count-1">0</div>
+        <div class="stat-label">1级分类（大类）</div>
+      </div>
+      <div class="stat-card" id="stat-2">
+        <div class="stat-number" id="count-2">0</div>
+        <div class="stat-label">2级分类（中类）</div>
+      </div>
+      <div class="stat-card" id="stat-3">
+        <div class="stat-number" id="count-3">0</div>
+        <div class="stat-label">3级分类（小类）</div>
+      </div>
+      <div class="stat-card" id="stat-4">
+        <div class="stat-number" id="count-4">0</div>
+        <div class="stat-label">4级分类（系列）</div>
+      </div>
+    </div>
+    
+    <div id="alert-container"></div>
+    
+    <div class="section">
+      <div class="section-title">
+        <span>分类树结构</span>
+        <span class="badge" id="status-badge">检查中...</span>
+      </div>
+      <div class="tree" id="tree-container">
+        <div class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p>正在加载数据...</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn-secondary" onclick="window.location.href='/'">返回首页</button>
+      <button class="btn-secondary" onclick="window.location.href='/admin/cms'">进入CMS管理</button>
+      <button class="btn-primary" onclick="initDemoData()">初始化4级分类示例数据</button>
+    </div>
+  </div>
+
+  <script>
+    // 检查分类数据
+    function checkCategoryData() {
+      const categories = JSON.parse(localStorage.getItem('productCategories') || '[]')
+      const subCategories = JSON.parse(localStorage.getItem('productSubCategories') || '[]')
+      const thirdCategories = JSON.parse(localStorage.getItem('productThirdCategories') || '[]')
+      const fourthCategories = JSON.parse(localStorage.getItem('productFourthCategories') || '[]')
+      
+      // 更新统计卡片
+      document.getElementById('count-1').textContent = categories.length
+      document.getElementById('count-2').textContent = subCategories.length
+      document.getElementById('count-3').textContent = thirdCategories.length
+      document.getElementById('count-4').textContent = fourthCategories.length
+      
+      // 标记空数据
+      if (categories.length === 0) document.getElementById('stat-1').classList.add('empty')
+      if (subCategories.length === 0) document.getElementById('stat-2').classList.add('empty')
+      if (thirdCategories.length === 0) document.getElementById('stat-3').classList.add('empty')
+      if (fourthCategories.length === 0) document.getElementById('stat-4').classList.add('empty')
+      
+      // 显示警告或成功消息
+      const alertContainer = document.getElementById('alert-container')
+      if (fourthCategories.length === 0) {
+        alertContainer.innerHTML = `
+          <div class="alert warning">
+            <strong>⚠️ 未发现4级分类数据！</strong><br>
+            系统支持4级分类，但您的localStorage中没有4级分类数据。<br>
+            • 原因1：您还没有在CMS后台创建4级分类<br>
+            • 原因2：浏览器缓存中的数据不完整<br>
+            • 建议：点击下方"初始化4级分类示例数据"按钮创建测试数据，或进入CMS后台手动创建。
+          </div>
+        `
+        document.getElementById('status-badge').className = 'badge warning'
+        document.getElementById('status-badge').textContent = '需要配置'
+      } else {
+        alertContainer.innerHTML = `
+          <div class="alert info">
+            <strong>✅ 4级分类系统正常！</strong><br>
+            系统已检测到完整的4级分类数据。如果前台首页仍显示旧数据，请清除浏览器缓存并刷新页面。
+          </div>
+        `
+        document.getElementById('status-badge').className = 'badge success'
+        document.getElementById('status-badge').textContent = '数据正常'
+      }
+      
+      // 构建分类树
+      buildCategoryTree(categories, subCategories, thirdCategories, fourthCategories)
+    }
+    
+    // 构建分类树
+    function buildCategoryTree(cats, subs, thirds, fourths) {
+      const container = document.getElementById('tree-container')
+      
+      if (cats.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p>暂无分类数据</p>
+          </div>
+        `
+        return
+      }
+      
+      let html = ''
+      cats.forEach(cat => {
+        html += `<div class="tree-item level-1">📦 ${cat.name['zh-CN']} (ID: ${cat.id})</div>`
+        
+        const catSubs = subs.filter(s => s.parentId === cat.id)
+        catSubs.forEach(sub => {
+          html += `<div class="tree-item level-2">├─ 📁 ${sub.name['zh-CN']} (ID: ${sub.id})</div>`
+          
+          const subThirds = thirds.filter(t => t.parentId === sub.id)
+          subThirds.forEach(third => {
+            html += `<div class="tree-item level-3">│  ├─ 📄 ${third.name['zh-CN']} (ID: ${third.id})</div>`
+            
+            const thirdFourths = fourths.filter(f => f.parentId === third.id)
+            thirdFourths.forEach(fourth => {
+              html += `<div class="tree-item level-4">│  │  └─ ✨ ${fourth.name['zh-CN']} (ID: ${fourth.id})</div>`
+            })
+          })
+        })
+      })
+      
+      container.innerHTML = html
+    }
+    
+    // 初始化示例数据
+    function initDemoData() {
+      if (!confirm('确定要初始化4级分类示例数据吗？\n这将创建一个完整的4级分类树供测试使用。')) {
+        return
+      }
+      
+      // 获取现有数据
+      let categories = JSON.parse(localStorage.getItem('productCategories') || '[]')
+      let subCategories = JSON.parse(localStorage.getItem('productSubCategories') || '[]')
+      let thirdCategories = JSON.parse(localStorage.getItem('productThirdCategories') || '[]')
+      let fourthCategories = JSON.parse(localStorage.getItem('productFourthCategories') || '[]')
+      
+      // 获取最大ID
+      const getMaxId = (arr) => arr.length > 0 ? Math.max(...arr.map(item => item.id)) : 0
+      
+      let maxCatId = getMaxId(categories)
+      let maxSubId = getMaxId(subCategories)
+      let maxThirdId = getMaxId(thirdCategories)
+      let maxFourthId = getMaxId(fourthCategories)
+      
+      // 创建1级分类
+      const cat1 = {
+        id: ++maxCatId,
+        name: { 'zh-CN': '工业智能装配系统', 'en-US': 'Industrial Assembly System' },
+        description: { 'zh-CN': '完整的工业智能装配解决方案', 'en-US': 'Complete industrial assembly solutions' },
+        image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600'
+      }
+      categories.push(cat1)
+      
+      // 创建2级分类
+      const sub1 = {
+        id: ++maxSubId,
+        parentId: cat1.id,
+        name: { 'zh-CN': '电动装配工具', 'en-US': 'Electric Assembly Tools' },
+        description: { 'zh-CN': '高精度电动装配工具系列', 'en-US': 'High-precision electric assembly tools' }
+      }
+      subCategories.push(sub1)
+      
+      // 创建3级分类
+      const third1 = {
+        id: ++maxThirdId,
+        parentId: sub1.id,
+        name: { 'zh-CN': '电动螺丝刀系列', 'en-US': 'Electric Screwdriver Series' },
+        description: { 'zh-CN': '专业电动螺丝刀产品', 'en-US': 'Professional electric screwdrivers' }
+      }
+      thirdCategories.push(third1)
+      
+      // 创建4级分类
+      const fourth1 = {
+        id: ++maxFourthId,
+        parentId: third1.id,
+        name: { 'zh-CN': '直柄型电动螺丝刀', 'en-US': 'Straight Handle Electric Screwdriver' },
+        description: { 'zh-CN': '适用于狭窄空间的直柄型电动螺丝刀', 'en-US': 'Straight handle for narrow spaces' }
+      }
+      fourthCategories.push(fourth1)
+      
+      const fourth2 = {
+        id: ++maxFourthId,
+        parentId: third1.id,
+        name: { 'zh-CN': '手枪型电动螺丝刀', 'en-US': 'Pistol Grip Electric Screwdriver' },
+        description: { 'zh-CN': '人体工学手枪型设计', 'en-US': 'Ergonomic pistol grip design' }
+      }
+      fourthCategories.push(fourth2)
+      
+      // 保存数据
+      localStorage.setItem('productCategories', JSON.stringify(categories))
+      localStorage.setItem('productSubCategories', JSON.stringify(subCategories))
+      localStorage.setItem('productThirdCategories', JSON.stringify(thirdCategories))
+      localStorage.setItem('productFourthCategories', JSON.stringify(fourthCategories))
+      
+      alert('✅ 示例数据初始化成功！\n\n已创建：\n• 1级：工业智能装配系统\n  • 2级：电动装配工具\n    • 3级：电动螺丝刀系列\n      • 4级：直柄型电动螺丝刀\n      • 4级：手枪型电动螺丝刀\n\n页面将刷新以显示新数据。')
+      location.reload()
+    }
+    
+    // 页面加载时执行检查
+    window.addEventListener('DOMContentLoaded', checkCategoryData)
+  </script>
+</body>
+</html>

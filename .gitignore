@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.env.local
+uploads/
+package-lock.json
+
+# Python virtual environment
+.locust_env/
+.venv/
+venv/
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+.tours/

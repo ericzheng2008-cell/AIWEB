@@ -1,0 +1,265 @@
+{
+  "common": {
+    "home": "首页",
+    "products": "产品中心",
+    "solutions": "应用案例",
+    "about": "关于我们",
+    "service": "服务与支持",
+    "contact": "联系我们",
+    "divisions": "事业部",
+    "search": "搜索产品、解决方案...",
+    "readMore": "了解更多",
+    "viewDetails": "查看详情",
+    "contactUs": "联系我们",
+    "consultSolution": "咨询方案"
+  },
+  "header": {
+    "hotline": "服务热线",
+    "email": "邮箱",
+    "language": "中文 / EN",
+    "companyName": "明升伟业",
+    "slogan": "专业工业工具供应商"
+  },
+  "footer": {
+    "companyInfo": "公司信息",
+    "quickLinks": "快速链接",
+    "contactInfo": "联系方式",
+    "followUs": "关注我们",
+    "address": "地址",
+    "addressDetail": "广州市天河区珠江新城",
+    "phone": "电话",
+    "copyright": "© 2024 广州市明升伟业机电有限公司 版权所有",
+    "products": "产品系列",
+    "solutions": "解决方案",
+    "about": "关于我们",
+    "aboutUs": "公司介绍",
+    "history": "发展历程",
+    "team": "团队介绍",
+    "contact": "联系我们",
+    "automotive": "汽车制造",
+    "manufacturing": "智能制造",
+    "aerospace": "航空航天",
+    "energy": "能源设备",
+    "serviceNetwork": "服务网络"
+  },
+  "productsServices": {
+    "title": "产品和服务",
+    "desc": "专业的工业自动化设备与智能制造解决方案"
+  },
+  "divisions": {
+    "desc": "专业的事业部团队，为您提供全方位的工业解决方案"
+  },
+  "home": {
+    "banner": {
+      "company": {
+        "title": "广州市明升伟业机电有限公司",
+        "subtitle": "成立于1996年，总部位于珠江三角洲美丽的花城——广州",
+        "description": "是一家集科研开发、生产制造、销售服务为一体的现代化科技企业，专业从事欧美高端工业工具供应与应用解决方案"
+      }
+    },
+    "productsServices": {
+      "title": "我们的产品和服务 / Products & Services",
+      "desc": "专业的工业自动化设备与智能制造解决方案"
+    },
+    "applicationCases": {
+      "title": "应用案例 / Application Cases",
+      "desc": "为不同行业提供智能制造与工业自动化应用方案"
+    },
+    "about": {
+      "title": "关于明升伟业",
+      "intro": "广州市明升伟业机电有限公司成立于1996年，总部位于珠江三角洲美丽的花城——广州。是一家集科研开发、生产制造、销售服务为一体的现代化科技企业。"
+    },
+    "advantages": {
+      "title": "我们的优势",
+      "desc": "值得信赖的工业合作伙伴",
+      "experience": "28年行业经验",
+      "certification": "权威体系认证",
+      "brands": "欧美高端品牌",
+      "network": "全国服务网络"
+    },
+    "serviceNetwork": {
+      "title": "服务网络",
+      "desc": "全国多地设有办事处，提供优质的客户服务"
+    }
+  },
+  "products": {
+    "title": "产品中心",
+    "allProducts": "全部产品",
+    "found": "共找到",
+    "items": "款产品",
+    "priceRange": "价格范围",
+    "brand": "品牌",
+    "applyFilter": "应用筛选",
+    "sortBy": "排序方式",
+    "defaultSort": "默认排序",
+    "priceAsc": "价格从低到高",
+    "priceDesc": "价格从高到低",
+    "newest": "最新上架",
+    "divisions": {
+      "assembly": "工业智能装配事业部",
+      "production": "工业智能智造事业部",
+      "oem": "工业配套事业部",
+      "power": "动力装配事业部",
+      "auto": "汽车部件事业部",
+      "tech": "明升科技事业部",
+      "tools": "刀具油品事业部",
+      "marketing": "网营事业部"
+    }
+  },
+  "solutions": {
+    "title": "应用案例 / Application Cases",
+    "desc": "为不同行业提供定制化智能制造与工业自动化解决方案",
+    "features": "方案特点",
+    "applications": "应用场景"
+  },
+  "aiChat": {
+    "title": "AI智能客服",
+    "subtitle": "我是明升伟业智能助手，有什么可以帮您？",
+    "placeholder": "请输入您的问题...",
+    "send": "发送",
+    "clearHistory": "清空对话",
+    "minimize": "最小化",
+    "quickQuestions": "常见问题",
+    "typing": "正在输入...",
+    "welcome": "您好！我是明升伟业AI智能助手，可以回答关于产品、应用、商务合作等问题。请问有什么可以帮助您的？",
+    "questions": {
+      "q1": "你们主要的产品有哪些？",
+      "q2": "如何联系销售团队？",
+      "q3": "有哪些应用案例？",
+      "q4": "支持定制化服务吗？",
+      "q5": "售后服务如何？",
+      "q6": "如何成为合作伙伴？"
+    }
+  },
+  "cms": {
+    "title": "CMS内容管理系统",
+    "subtitle": "管理网站Logo、事业部、产品分类（3级）等所有内容",
+    "tabs": {
+      "navigation": "导航栏管理",
+      "logo": "Logo和基本设置",
+      "divisions": "事业部管理",
+      "categories": "产品分类管理",
+      "products": "产品管理",
+      "home": "首页内容",
+      "about": "关于我们",
+      "service": "服务与支持",
+      "contact": "联系我们",
+      "solutions": "应用案例分类"
+    },
+    "homeContent": {
+      "bannerTitle": "首页Banner配置",
+      "blocksTitle": "首页专属板块"
+    },
+    "contactContent": {
+      "bannerTitle": "页面Banner配置",
+      "infoTitle": "联系方式与办事处"
+    },
+    "navigation": {
+      "title": "顶部导航栏管理",
+      "add": "添加导航项",
+      "edit": "编辑导航项",
+      "alertTitle": "提示",
+      "alertText": "拖动排序可调整导航项顺序；切换显示/隐藏可控制导航项在前台的可见性",
+      "order": "排序",
+      "navName": "导航名称",
+      "path": "路径",
+      "visible": "显示",
+      "operation": "操作",
+      "editBtn": "编辑",
+      "deleteBtn": "删除",
+      "chineseName": "中文名称",
+      "englishName": "英文名称",
+      "pathPlaceholder": "如：/about",
+      "pathHint": "填写路由路径，如：/about、/products、/contact 等",
+      "cancel": "取消",
+      "save": "保存",
+      "confirmDelete": "确定要删除 '{name}' 吗？"
+    },
+    "logo": {
+      "websiteLogo": "网站Logo",
+      "saveLogo": "保存Logo",
+      "companyInfo": "公司名称和标语",
+      "chineseName": "中文名称",
+      "englishName": "英文名称",
+      "chineseSlogan": "中文标语",
+      "englishSlogan": "英文标语",
+      "saveConfig": "保存配置"
+    },
+    "division": {
+      "list": "事业部列表",
+      "add": "添加事业部",
+      "edit": "编辑事业部",
+      "delete": "删除",
+      "chineseName": "中文名称",
+      "englishName": "英文名称",
+      "relatedProducts": "关联产品",
+      "manageProducts": "管理产品",
+      "key": "Key",
+      "icon": "图标",
+      "selectIcon": "选择图标",
+      "chineseDesc": "中文描述",
+      "englishDesc": "英文描述",
+      "cancel": "取消",
+      "save": "保存",
+      "confirmDelete": "确定要删除这个事业部吗？",
+      "deleteTitle": "确认删除",
+      "manageTitle": "管理事业部产品",
+      "availableCategories": "可选产品大类："
+    },
+    "category": {
+      "title": "产品分类（3级结构）",
+      "addLevel1": "添加1级分类",
+      "addLevel2": "添加2级分类",
+      "addLevel3": "添加3级分类",
+      "addSub": "添加子分类",
+      "edit": "编辑",
+      "delete": "删除",
+      "level": "级",
+      "parentCategory": "上级分类",
+      "selectParent": "选择上级分类",
+      "chineseName": "中文名称",
+      "englishName": "英文名称",
+      "chineseDesc": "中文描述",
+      "englishDesc": "英文描述",
+      "categoryImage": "分类图片",
+      "confirmDelete": "确定要删除 '{name}' 及其所有子分类和产品吗？",
+      "cancel": "取消",
+      "save": "保存"
+    },
+    "product": {
+      "list": "产品列表",
+      "add": "添加产品",
+      "edit": "编辑产品",
+      "delete": "删除",
+      "image": "产品图片",
+      "chineseName": "中文名称",
+      "category": "所属分类",
+      "selectCategory": "请选择产品分类",
+      "englishName": "英文名称",
+      "chineseDesc": "中文描述",
+      "englishDesc": "英文描述",
+      "images": "产品图片",
+      "addImage": "添加图片",
+      "removeImage": "删除",
+      "specs": "技术参数",
+      "addSpec": "添加参数",
+      "specNameCN": "参数名（中文）",
+      "specNameEN": "参数名（英文）",
+      "specValueCN": "参数值（中文）",
+      "specValueEN": "参数值（英文）",
+      "operation": "操作",
+      "cancel": "取消",
+      "save": "保存",
+      "confirmDelete": "确定要删除这个产品吗？"
+    },
+    "message": {
+      "logoSaved": "Logo已保存",
+      "configSaved": "配置已保存",
+      "saveSuccess": "保存成功",
+      "deleteSuccess": "删除成功",
+      "fillComplete": "请填写完整信息",
+      "fillName": "请填写完整的名称",
+      "selectCategory": "请选择分类"
+    }
+  }
+}

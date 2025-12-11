@@ -1,0 +1,39 @@
+{
+  "name": "marketing-platform",
+  "version": "1.0.0",
+  "description": "企业级营销获客闭环系统",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "nodemon server/index.js"
+  },
+  "keywords": [
+    "marketing",
+    "vue",
+    "enterprise"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.6.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "element-plus": "^2.5.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.0",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "nodemon": "^3.0.0",
+    "vite": "^5.0.0"
+  }
+}

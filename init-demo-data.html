@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>初始化演示数据</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #409eff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #66b1ff;
+    }
+    button.danger {
+      background: #f56c6c;
+    }
+    button.danger:hover {
+      background: #f78989;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      background: #f0f9ff;
+      color: #409eff;
+    }
+    .success {
+      background: #f0f9ff;
+      color: #67c23a;
+    }
+    .error {
+      background: #fef0f0;
+      color: #f56c6c;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 初始化4级分类演示数据</h1>
+    <p>点击下方按钮初始化产品4级分类系统的演示数据，包括：</p>
+    <ul>
+      <li>1级分类：协作机器人</li>
+      <li>2级分类：JAKA Zu系列</li>
+      <li>3级分类：Zu 3、Zu 7、Zu 12</li>
+      <li>4级分类（产品系列）：标准版、Pro版、加强版</li>
+      <li>具体产品型号</li>
+    </ul>
+    
+    <div style="margin: 20px 0;">
+      <button onclick="initDemoData()">初始化演示数据</button>
+      <button onclick="clearAllData()" class="danger">清空所有数据</button>
+      <button onclick="viewData()">查看当前数据</button>
+    </div>
+    
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function initDemoData() {
+      try {
+        // 1级分类：协作机器人
+        const categories = [
+          {
+            id: 1,
+            name: { 'zh-CN': '协作机器人', 'en-US': 'Collaborative Robots' },
+            description: { 
+              'zh-CN': '新一代智能协作机器人，安全、灵活、易用', 
+              'en-US': 'Next-generation intelligent collaborative robots, safe, flexible and easy to use' 
+            },
+            image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600',
+            subCategories: []
+          }
+        ];
+
+        // 2级分类：产品系列
+        const subCategories = [
+          {
+            id: 1,
+            parentId: 1,
+            name: { 'zh-CN': 'JAKA Zu系列', 'en-US': 'JAKA Zu Series' },
+            description: { 
+              'zh-CN': '高性能协作机器人系列，适用于多种工业场景', 
+              'en-US': 'High-performance collaborative robot series for various industrial scenarios' 
+            },
+            image: 'https://images.unsplash.com/photo-1563207153-f403bf289096?w=600'
+          },
+          {
+            id: 2,
+            parentId: 1,
+            name: { 'zh-CN': 'JAKA Pro系列', 'en-US': 'JAKA Pro Series' },
+            description: { 
+              'zh-CN': '专业级协作机器人，更高精度和负载能力', 
+              'en-US': 'Professional collaborative robots with higher precision and payload capacity' 
+            },
+            image: 'https://images.unsplash.com/photo-1567789884554-0b844b597180?w=600'
+          }
+        ];
+
+        // 3级分类：负载型号
+        const thirdCategories = [
+          {
+            id: 1,
+            parentId: 1,
+            name: { 'zh-CN': 'Zu 3', 'en-US': 'Zu 3' },
+            description: { 
+              'zh-CN': '3kg负载，适合轻量级装配和搬运', 
+              'en-US': '3kg payload, suitable for lightweight assembly and handling' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600'
+          },
+          {
+            id: 2,
+            parentId: 1,
+            name: { 'zh-CN': 'Zu 7', 'en-US': 'Zu 7' },
+            description: { 
+              'zh-CN': '7kg负载，通用型协作机器人', 
+              'en-US': '7kg payload, general-purpose collaborative robot' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092918484-8313e1f6e450?w=600'
+          },
+          {
+            id: 3,
+            parentId: 1,
+            name: { 'zh-CN': 'Zu 12', 'en-US': 'Zu 12' },
+            description: { 
+              'zh-CN': '12kg负载，适合重载作业', 
+              'en-US': '12kg payload, suitable for heavy-duty operations' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600'
+          }
+        ];
+
+        // 4级分类：产品版本（系列）
+        const fourthCategories = [
+          // Zu 3 系列
+          {
+            id: 1,
+            parentId: 1,
+            name: { 'zh-CN': 'Zu 3 标准版', 'en-US': 'Zu 3 Standard' },
+            description: { 
+              'zh-CN': '标准配置，性价比之选', 
+              'en-US': 'Standard configuration, cost-effective choice' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=600'
+          },
+          {
+            id: 2,
+            parentId: 1,
+            name: { 'zh-CN': 'Zu 3 Pro版', 'en-US': 'Zu 3 Pro' },
+            description: { 
+              'zh-CN': '增强配置，更高精度', 
+              'en-US': 'Enhanced configuration with higher precision' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092160607-ee67e40c2c47?w=600'
+          },
+          // Zu 7 系列
+          {
+            id: 3,
+            parentId: 2,
+            name: { 'zh-CN': 'Zu 7 标准版', 'en-US': 'Zu 7 Standard' },
+            description: { 
+              'zh-CN': '通用标准配置', 
+              'en-US': 'General standard configuration' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092162384-8987c1d64718?w=600'
+          },
+          {
+            id: 4,
+            parentId: 2,
+            name: { 'zh-CN': 'Zu 7 Pro版', 'en-US': 'Zu 7 Pro' },
+            description: { 
+              'zh-CN': '专业增强版', 
+              'en-US': 'Professional enhanced version' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600'
+          },
+          {
+            id: 5,
+            parentId: 2,
+            name: { 'zh-CN': 'Zu 7 加强版', 'en-US': 'Zu 7 Plus' },
+            description: { 
+              'zh-CN': '高配置，适合复杂应用', 
+              'en-US': 'High configuration for complex applications' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=600'
+          },
+          // Zu 12 系列
+          {
+            id: 6,
+            parentId: 3,
+            name: { 'zh-CN': 'Zu 12 标准版', 'en-US': 'Zu 12 Standard' },
+            description: { 
+              'zh-CN': '重载标准配置', 
+              'en-US': 'Heavy-duty standard configuration' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092918484-8313e1f6e450?w=600'
+          },
+          {
+            id: 7,
+            parentId: 3,
+            name: { 'zh-CN': 'Zu 12 加强版', 'en-US': 'Zu 12 Plus' },
+            description: { 
+              'zh-CN': '重载加强配置', 
+              'en-US': 'Heavy-duty enhanced configuration' 
+            },
+            image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600'
+          }
+        ];
+
+        // 具体产品型号
+        const products = [
+          // Zu 3 标准版产品
+          {
+            id: 1,
+            categoryId: 1,
+            subCategoryId: 1,
+            thirdCategoryId: 1,
+            fourthCategoryId: 1,
+            name: { 'zh-CN': 'Zu 3-600', 'en-US': 'Zu 3-600' },
+            description: { 
+              'zh-CN': '工作半径600mm，重复定位精度±0.02mm', 
+              'en-US': 'Working radius 600mm, repeatability ±0.02mm' 
+            },
+            images: ['https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=600'],
+            specs: [
+              { key: '负载', value: '3kg' },
+              { key: '工作半径', value: '600mm' },
+              { key: '重复定位精度', value: '±0.02mm' },
+              { key: '重量', value: '14.5kg' }
+            ]
+          },
+          {
+            id: 2,
+            categoryId: 1,
+            subCategoryId: 1,
+            thirdCategoryId: 1,
+            fourthCategoryId: 1,
+            name: { 'zh-CN': 'Zu 3-800', 'en-US': 'Zu 3-800' },
+            description: { 
+              'zh-CN': '工作半径800mm，适合更大工作空间', 
+              'en-US': 'Working radius 800mm, suitable for larger workspace' 
+            },
+            images: ['https://images.unsplash.com/photo-1581092160607-ee67e40c2c47?w=600'],
+            specs: [
+              { key: '负载', value: '3kg' },
+              { key: '工作半径', value: '800mm' },
+              { key: '重复定位精度', value: '±0.02mm' },
+              { key: '重量', value: '16.5kg' }
+            ]
+          },
+          // Zu 7 Pro版产品
+          {
+            id: 3,
+            categoryId: 1,
+            subCategoryId: 1,
+            thirdCategoryId: 2,
+            fourthCategoryId: 4,
+            name: { 'zh-CN': 'Zu 7 Pro-820', 'en-US': 'Zu 7 Pro-820' },
+            description: { 
+              'zh-CN': '7kg负载专业版，工作半径820mm，高精度', 
+              'en-US': '7kg payload professional version, working radius 820mm, high precision' 
+            },
+            images: ['https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600'],
+            specs: [
+              { key: '负载', value: '7kg' },
+              { key: '工作半径', value: '820mm' },
+              { key: '重复定位精度', value: '±0.01mm' },
+              { key: '重量', value: '22kg' }
+            ]
+          },
+          // Zu 12 加强版产品
+          {
+            id: 4,
+            categoryId: 1,
+            subCategoryId: 1,
+            thirdCategoryId: 3,
+            fourthCategoryId: 7,
+            name: { 'zh-CN': 'Zu 12 Plus-1300', 'en-US': 'Zu 12 Plus-1300' },
+            description: { 
+              'zh-CN': '12kg负载加强版，工作半径1300mm，适合重载作业', 
+              'en-US': '12kg payload enhanced version, working radius 1300mm, suitable for heavy-duty operations' 
+            },
+            images: ['https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600'],
+            specs: [
+              { key: '负载', value: '12kg' },
+              { key: '工作半径', value: '1300mm' },
+              { key: '重复定位精度', value: '±0.03mm' },
+              { key: '重量', value: '32kg' }
+            ]
+          }
+        ];
+
+        // 保存到localStorage
+        localStorage.setItem('productCategories', JSON.stringify(categories));
+        localStorage.setItem('productSubCategories', JSON.stringify(subCategories));
+        localStorage.setItem('productThirdCategories', JSON.stringify(thirdCategories));
+        localStorage.setItem('productFourthCategories', JSON.stringify(fourthCategories));
+        localStorage.setItem('productsAdvanced', JSON.stringify(products));
+
+        showResult('success', '✅ 演示数据初始化成功！<br><br>已创建：<br>- 1个1级分类<br>- 2个2级分类<br>- 3个3级分类<br>- 7个4级分类（产品系列）<br>- 4个具体产品型号<br><br>请刷新页面查看效果！');
+      } catch (error) {
+        showResult('error', '❌ 初始化失败：' + error.message);
+      }
+    }
+
+    function clearAllData() {
+      if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+        localStorage.removeItem('productCategories');
+        localStorage.removeItem('productSubCategories');
+        localStorage.removeItem('productThirdCategories');
+        localStorage.removeItem('productFourthCategories');
+        localStorage.removeItem('productsAdvanced');
+        showResult('success', '✅ 所有数据已清空！');
+      }
+    }
+
+    function viewData() {
+      const data = {
+        categories: JSON.parse(localStorage.getItem('productCategories') || '[]'),
+        subCategories: JSON.parse(localStorage.getItem('productSubCategories') || '[]'),
+        thirdCategories: JSON.parse(localStorage.getItem('productThirdCategories') || '[]'),
+        fourthCategories: JSON.parse(localStorage.getItem('productFourthCategories') || '[]'),
+        products: JSON.parse(localStorage.getItem('productsAdvanced') || '[]')
+      };
+
+      const html = `
+        <h4>当前数据：</h4>
+        <pre>${JSON.stringify(data, null, 2)}</pre>
+      `;
+      
+      showResult('', html);
+    }
+
+    function showResult(type, message) {
+      const result = document.getElementById('result');
+      result.className = 'result ' + type;
+      result.innerHTML = message;
+    }
+  </script>
+</body>
+</html>
