@@ -481,10 +481,21 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToolDatabaseStore } from '../store/toolDatabase'
 import { ElMessage } from 'element-plus'
+import { 
+  Tools, 
+  Search, 
+  RefreshLeft, 
+  Document, 
+  CircleCheck, 
+  Star, 
+  InfoFilled, 
+  Phone, 
+  View 
+} from '@element-plus/icons-vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 
