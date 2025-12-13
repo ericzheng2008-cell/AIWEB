@@ -15,19 +15,21 @@ echo  [1] 快速启动开发服务器（推荐）
 echo  [2] 紧急修复并启动
 echo  [3] 完整诊断和修复
 echo  [4] 查看错误日志
-echo  [5] 部署到 Vercel（在线访问）
-echo  [6] 部署后端到 Railway
-echo  [7] 退出
+echo  [5] 部署到 Netlify（推荐 - 国内快）
+echo  [6] 选择其他部署平台
+echo  [7] 部署后端到 Railway
+echo  [8] 退出
 echo.
-set /p choice="请输入选项（1-7）: "
+set /p choice="请输入选项（1-8）: "
 
 if "%choice%"=="1" goto quick_start
 if "%choice%"=="2" goto emergency
 if "%choice%"=="3" goto full_fix
 if "%choice%"=="4" goto check_error
-if "%choice%"=="5" goto deploy_vercel
-if "%choice%"=="6" goto deploy_backend
-if "%choice%"=="7" goto end
+if "%choice%"=="5" goto deploy_netlify
+if "%choice%"=="6" goto choose_platform
+if "%choice%"=="7" goto deploy_backend
+if "%choice%"=="8" goto end
 goto invalid
 
 :quick_start
@@ -54,10 +56,16 @@ echo [错误检查] 正在检查错误...
 call check-error.bat
 goto end
 
-:deploy_vercel
+:deploy_netlify
 cls
-echo [部署Vercel] 正在部署前端到 Vercel...
-call fix-and-deploy.bat
+echo [部署Netlify] 正在部署前端到 Netlify...
+call deploy-to-netlify.bat
+goto end
+
+:choose_platform
+cls
+echo [选择平台] 正在打开平台选择菜单...
+call 快速切换部署平台.bat
 goto end
 
 :deploy_backend
@@ -68,7 +76,7 @@ goto end
 
 :invalid
 echo.
-echo 无效选项！请输入 1-7
+echo 无效选项！请输入 1-8
 timeout /t 2 /nobreak >nul
 cls
 goto start
