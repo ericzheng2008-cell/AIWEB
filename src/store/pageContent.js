@@ -8,9 +8,23 @@ export const usePageContentStore = defineStore('pageContent', {
       { id: 'products', name: { 'zh-CN': '产品和服务', 'en-US': 'Products & Services' }, path: '/products-services', order: 2, visible: true },
       { id: 'divisions', name: { 'zh-CN': '事业部', 'en-US': 'Divisions' }, path: '/divisions', order: 3, visible: true },
       { id: 'solutions', name: { 'zh-CN': '应用案例', 'en-US': 'Solutions' }, path: '/solutions', order: 4, visible: true },
-      { id: 'about', name: { 'zh-CN': '关于我们', 'en-US': 'About Us' }, path: '/about', order: 5, visible: true },
-      { id: 'service', name: { 'zh-CN': '服务与支持', 'en-US': 'Service & Support' }, path: '/service', order: 6, visible: true },
-      { id: 'contact', name: { 'zh-CN': '联系我们', 'en-US': 'Contact Us' }, path: '/contact', order: 7, visible: true }
+      { 
+        id: 'aiagents', 
+        name: { 'zh-CN': 'AI智能体', 'en-US': 'AI Agents' }, 
+        path: '/ai-agents', 
+        order: 5, 
+        visible: true,
+        children: [
+          { id: 'tool-selector', name: { 'zh-CN': '工具选型', 'en-US': 'Tool Selector' }, path: '/tool-selector', order: 1, visible: true },
+          { id: 'device-status', name: { 'zh-CN': '设备状态', 'en-US': 'Device Status' }, path: '/device-status', order: 2, visible: true },
+          { id: 'equipment-lifecycle', name: { 'zh-CN': '设备生命周期', 'en-US': 'Equipment Lifecycle' }, path: '/equipment-lifecycle', order: 3, visible: true },
+          { id: 'fault-tracking', name: { 'zh-CN': '工单管理', 'en-US': 'Work Orders' }, path: '/fault-tracking', order: 4, visible: true },
+          { id: 'curve-analysis', name: { 'zh-CN': '曲线分析', 'en-US': 'Curve Analysis' }, path: '/curve-analysis', order: 5, visible: true }
+        ]
+      },
+      { id: 'about', name: { 'zh-CN': '关于我们', 'en-US': 'About Us' }, path: '/about', order: 6, visible: true },
+      { id: 'service', name: { 'zh-CN': '服务与支持', 'en-US': 'Service & Support' }, path: '/service', order: 7, visible: true },
+      { id: 'contact', name: { 'zh-CN': '联系我们', 'en-US': 'Contact Us' }, path: '/contact', order: 8, visible: true }
     ])),
     
     // 页面内容配置

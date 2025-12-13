@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+// 导入其他store模块
+export { useFaultTrackingStore } from './faultTracking'
+export { useEquipmentLifecycleStore } from './equipmentLifecycle'
+export { useCostOptimizationStore } from './costOptimization'
+export { useDeviceStatusStore } from './deviceStatus'
+
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
   const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'))

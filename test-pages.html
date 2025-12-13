@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面测试工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 30px; }
+        .test-item { margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 4px; }
+        .test-item h3 { color: #1890ff; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #1890ff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        button:hover { background: #40a9ff; }
+        .status { margin-top: 10px; padding: 10px; border-radius: 4px; }
+        .status.success { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+        .status.error { background: #fff2e8; color: #fa8c16; border: 1px solid #ffbb96; }
+        .status.loading { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
+        code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 页面测试工具</h1>
+        
+        <div class="test-item">
+            <h3>1. 测试设备状态页面</h3>
+            <p>路径: <code>/device-status</code></p>
+            <button onclick="testPage('device-status')">测试访问</button>
+            <button onclick="openPage('device-status')">直接打开</button>
+            <div id="status-device" class="status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>2. 测试设备生命周期页面</h3>
+            <p>路径: <code>/equipment-lifecycle</code></p>
+            <button onclick="testPage('equipment-lifecycle')">测试访问</button>
+            <button onclick="openPage('equipment-lifecycle')">直接打开</button>
+            <div id="status-lifecycle" class="status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>3. 测试工单管理页面（备用）</h3>
+            <p>路径: <code>/fault-tracking</code></p>
+            <button onclick="openPage('fault-tracking')">直接打开</button>
+        </div>
+
+        <div class="test-item">
+            <h3>4. 测试AI智能体汇总页</h3>
+            <p>路径: <code>/ai-agents</code></p>
+            <button onclick="openPage('ai-agents')">直接打开</button>
+        </div>
+
+        <div class="test-item">
+            <h3>📋 操作步骤</h3>
+            <ol style="margin-left: 20px; line-height: 1.8;">
+                <li>点击"测试访问"按钮检查页面是否可访问</li>
+                <li>如果测试成功，点击"直接打开"在新标签页中打开</li>
+                <li>如果测试失败，请按F12打开浏览器控制台查看错误信息</li>
+                <li>将控制台的错误信息截图或复制给我</li>
+            </ol>
+        </div>
+
+        <div class="test-item">
+            <h3>🚨 常见问题</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>页面白屏</strong>: 检查浏览器控制台是否有JavaScript错误</li>
+                <li><strong>404错误</strong>: 确认开发服务器正在运行</li>
+                <li><strong>加载卡住</strong>: 清除浏览器缓存后重试</li>
+                <li><strong>显示乱码</strong>: 检查编码设置</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3008';
+
+        function testPage(path) {
+            const statusId = path === 'device-status' ? 'status-device' : 'status-lifecycle';
+            const statusEl = document.getElementById(statusId);
+            statusEl.style.display = 'block';
+            statusEl.className = 'status loading';
+            statusEl.textContent = '正在测试...';
+
+            fetch(`${BASE_URL}/${path}`)
+                .then(response => {
+                    if (response.ok) {
+                        statusEl.className = 'status success';
+                        statusEl.innerHTML = `✓ 页面可以访问！状态码: ${response.status}<br>点击"直接打开"按钮在新标签页中查看`;
+                    } else {
+                        statusEl.className = 'status error';
+                        statusEl.textContent = `✗ 访问失败！状态码: ${response.status}`;
+                    }
+                })
+                .catch(error => {
+                    statusEl.className = 'status error';
+                    statusEl.innerHTML = `✗ 连接失败！<br>错误: ${error.message}<br>请确认开发服务器正在运行 (npm run dev)`;
+                });
+        }
+
+        function openPage(path) {
+            window.open(`${BASE_URL}/${path}`, '_blank');
+        }
+
+        // 页面加载时自动检测服务器
+        window.onload = function() {
+            fetch(BASE_URL)
+                .then(response => {
+                    if (response.ok) {
+                        console.log('✓ 开发服务器正在运行');
+                    }
+                })
+                .catch(error => {
+                    alert('⚠️ 无法连接到开发服务器！\n请确保已运行: npm run dev');
+                });
+        };
+    </script>
+</body>
+</html>

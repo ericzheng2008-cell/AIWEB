@@ -54,6 +54,30 @@
       </div>
     </section>
 
+    <!-- 智能体板块 -->
+    <section class="section ai-agents-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">AI智能体 / AI Agents</h2>
+          <p class="section-desc">基于人工智能的专业工业解决方案</p>
+        </div>
+        <div class="agents-grid">
+          <div v-for="agent in aiAgents" :key="agent.id" 
+               class="agent-card"
+               @click="goToAgent(agent)">
+            <div class="agent-icon">
+              <el-icon :size="48"><component :is="agent.icon" /></el-icon>
+            </div>
+            <h3>{{ agent.name }}</h3>
+            <p>{{ agent.description }}</p>
+            <div class="agent-tags">
+              <el-tag v-for="tag in agent.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 应用解决方案 -->
     <section class="section solutions-section">
       <div class="container">
@@ -224,6 +248,31 @@ const solutions = ref([
   { id: 4, name: '能源设备', description: '能源设备制造与维护工具解决方案', icon: 'HotWater' }
 ])
 
+// AI智能体数据
+const aiAgents = ref([
+  { 
+    id: 1, 
+    name: '拧紧工具选型与工艺改进', 
+    description: '智能分析工艺需求，推荐最优拧紧工具方案', 
+    icon: 'Tools',
+    tags: ['工具选型', '工艺优化', 'AI推荐']
+  },
+  { 
+    id: 2, 
+    name: '服务状态查询', 
+    description: '实时查询设备服务状态与维护记录', 
+    icon: 'Search',
+    tags: ['状态监控', '服务追踪', '实时查询']
+  },
+  { 
+    id: 3, 
+    name: '智能质检助手', 
+    description: 'AI辅助质量检测，提升产品合格率', 
+    icon: 'View',
+    tags: ['质量检测', 'AI识别', '自动化']
+  }
+])
+
 // 关于明升伟业板块
 const aboutCompanyData = computed(() => {
   return homeContent.value.aboutCompany || {
@@ -312,6 +361,10 @@ const handleBannerClick = (banner) => {
   } else {
     router.push('/products')
   }
+}
+
+const goToAgent = (agent) => {
+  router.push(`/ai-agent/${agent.id}`)
 }
 </script>
 
@@ -568,6 +621,67 @@ const handleBannerClick = (banner) => {
   color: #666;
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* AI智能体板块 */
+.ai-agents-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 80px 0;
+}
+
+.ai-agents-section .section-title,
+.ai-agents-section .section-desc {
+  color: #fff;
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.agent-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px 28px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  backdrop-filter: blur(10px);
+}
+
+.agent-card:hover {
+  background: #fff;
+  border-color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px);
+}
+
+.agent-icon {
+  margin-bottom: 20px;
+  color: #667eea;
+}
+
+.agent-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1a1a1a;
+}
+
+.agent-card p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.agent-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* 关于明升伟业 */

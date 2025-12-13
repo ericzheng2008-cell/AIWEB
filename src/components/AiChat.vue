@@ -1,5 +1,14 @@
 <template>
   <div class="ai-chat-container">
+    <!-- 遮罩层 - 点击关闭 -->
+    <transition name="fade">
+      <div 
+        v-if="(chatStore.chatVisible && !isMinimized) || isMinimized" 
+        class="chat-overlay"
+        @click="closeChat"
+      ></div>
+    </transition>
+
     <!-- 聊天按钮 -->
     <div class="chat-button" @click="toggleChat" v-if="!chatStore.chatVisible">
       <el-icon :size="28"><ChatDotRound /></el-icon>
@@ -8,7 +17,7 @@
 
     <!-- 最小化聊天窗口 -->
     <transition name="slide-up">
-      <div class="chat-mini" v-if="isMinimized">
+      <div class="chat-mini" v-if="isMinimized" @click.stop>
         <div class="mini-header" @click="restoreChat">
           <el-icon :size="20"><Service /></el-icon>
           <span>{{ t('aiChat.title') }}</span>
@@ -21,7 +30,7 @@
 
     <!-- 聊天窗口 -->
     <transition name="slide-up">
-      <div class="chat-window" v-if="chatStore.chatVisible && !isMinimized">
+      <div class="chat-window" v-if="chatStore.chatVisible && !isMinimized" @click.stop>
         <!-- 头部 -->
         <div class="chat-header">
           <div class="header-left">
@@ -32,15 +41,21 @@
             </div>
           </div>
           <div class="header-actions">
-            <el-icon :size="20" @click="clearHistory" class="action-icon" title="清空对话">
-              <Delete />
-            </el-icon>
-            <el-icon :size="20" @click="minimizeChat" class="action-icon" title="最小化">
-              <Minus />
-            </el-icon>
-            <el-icon :size="20" @click="closeChat" class="action-icon" title="关闭">
-              <Close />
-            </el-icon>
+            <el-tooltip content="清空对话" placement="bottom">
+              <el-icon :size="20" @click="clearHistory" class="action-icon">
+                <Delete />
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip content="最小化" placement="bottom">
+              <el-icon :size="20" @click="minimizeChat" class="action-icon">
+                <Minus />
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip content="关闭" placement="bottom">
+              <el-icon :size="22" @click="closeChat" class="action-icon close-btn">
+                <Close />
+              </el-icon>
+            </el-tooltip>
           </div>
         </div>
 
@@ -67,6 +82,12 @@
             </div>
             <div class="message-content">
               <div class="message-bubble">{{ msg.content }}</div>
+              <!-- 如果消息包含功能推荐，显示快捷按钮 -->
+              <div v-if="msg.type === 'ai' && msg.content.includes('💡')" class="quick-action">
+                <el-button type="primary" size="small" @click="openFunction">
+                  立即打开
+                </el-button>
+              </div>
               <div class="message-time">
                 {{ formatTime(msg.timestamp) }}
               </div>
@@ -132,6 +153,7 @@
 import { ref, computed, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAiChatStore } from '../store/aiChat'
+import { ElMessage } from 'element-plus'
 
 const { t, locale } = useI18n()
 const chatStore = useAiChatStore()
@@ -213,6 +235,13 @@ const scrollToBottom = () => {
   }
 }
 
+const openFunction = () => {
+  const success = chatStore.navigateToFunction()
+  if (success) {
+    ElMessage.success('正在为您打开功能页面...')
+  }
+}
+
 watch(() => chatStore.messages.length, () => {
   nextTick(() => {
     scrollToBottom()
@@ -226,6 +255,28 @@ watch(() => chatStore.messages.length, () => {
   bottom: 30px;
   right: 30px;
   z-index: 9999;
+}
+
+/* 遮罩层 */
+.chat-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 9998;
+}
+
+/* 遮罩层淡入淡出动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .chat-button {
@@ -274,6 +325,8 @@ watch(() => chatStore.messages.length, () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 10000;
 }
 
 .chat-header {
@@ -310,11 +363,24 @@ watch(() => chatStore.messages.length, () => {
 .action-icon {
   cursor: pointer;
   opacity: 0.9;
-  transition: opacity 0.3s;
+  transition: all 0.3s;
 }
 
 .action-icon:hover {
   opacity: 1;
+  transform: scale(1.15);
+}
+
+.action-icon.close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 4px;
+  opacity: 1;
+}
+
+.action-icon.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.2);
 }
 
 .chat-messages {
@@ -397,6 +463,26 @@ watch(() => chatStore.messages.length, () => {
   font-size: 11px;
   color: #999;
   padding: 0 8px;
+}
+
+.quick-action {
+  margin-top: 8px;
+  padding: 0 8px;
+}
+
+.quick-action .el-button {
+  border-radius: 16px;
+  padding: 6px 16px;
+  font-size: 13px;
+  background: linear-gradient(135deg, #1890ff 0%, #0066cc 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s;
+}
+
+.quick-action .el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.5);
 }
 
 .typing-indicator {
@@ -529,6 +615,8 @@ watch(() => chatStore.messages.length, () => {
   padding: 0 20px;
   color: #fff;
   box-shadow: 0 4px 16px rgba(24, 144, 255, 0.4);
+  position: relative;
+  z-index: 10000;
 }
 
 .mini-header {

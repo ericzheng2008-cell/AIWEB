@@ -18,12 +18,31 @@
           <el-icon><Setting /></el-icon>
           <span>CMS内容管理</span>
         </el-menu-item>
-        
-        <el-menu-item index="/admin/page-content">
-          <el-icon><Document /></el-icon>
-          <span>页面内容管理</span>
+
+        <el-menu-item index="/admin/tool-database">
+          <el-icon><Tools /></el-icon>
+          <span>工具数据库</span>
         </el-menu-item>
-        
+
+        <el-menu-item index="/admin/tool-brand-database">
+          <el-icon><Collection /></el-icon>
+          <span>品牌型号数据库</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/socket-database">
+          <el-icon><Box /></el-icon>
+          <span>套筒数据库</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/equipment">
+          <el-icon><Box /></el-icon>
+          <span>设备生命周期</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/workorder">
+          <el-icon><Document /></el-icon>
+          <span>工单管理</span>
+        </el-menu-item>
 
         <el-menu-item index="/admin/users">
           <el-icon><User /></el-icon>
@@ -87,8 +106,11 @@ const currentPageTitle = computed(() => {
   const titles = {
     '/admin/dashboard': '仪表盘',
     '/admin/cms': 'CMS内容管理',
-    '/admin/page-content': '页面内容管理',
-
+    '/admin/tool-database': '工具数据库',
+    '/admin/tool-brand-database': '品牌型号数据库',
+    '/admin/socket-database': '套筒数据库',
+    '/admin/equipment': '设备生命周期',
+    '/admin/workorder': '工单管理',
     '/admin/users': '用户管理'
   }
   return titles[route.path] || '管理后台'

@@ -1,10 +1,91 @@
 import { defineStore } from 'pinia'
+import router from '../router'
 
 export const useAiChatStore = defineStore('aiChat', {
   state: () => ({
     messages: [],
     isTyping: false,
     chatVisible: false,
+    // 智能体功能映射表
+    agentFunctions: {
+      toolSelection: {
+        keywords: ['扭矩', '工具选型', '选工具', '推荐工具', '扭矩工具', '电动工具', '气动工具', '拧紧工具', 'torque', 'tool selection', 'recommend tool'],
+        route: '/tool-selector',
+        name: '扭矩工具选型',
+        description: '根据您的装配需求，智能推荐最适合的扭矩工具',
+        answer: '我可以帮您进行扭矩工具选型！\n\n通过智能分析，我会根据：\n✓ 扭矩需求范围\n✓ 工作环境（空间限制、噪音要求）\n✓ 使用频率\n✓ 预算范围\n\n为您推荐最适合的电动或气动拧紧工具。'
+      },
+      socketSelection: {
+        keywords: ['套筒', '套筒选型', '配件', '接杆', '四方', '六角', 'socket', 'socket selection', 'hex'],
+        route: '/socket-selector',
+        name: '套筒配件选型',
+        description: '根据工具和螺栓规格，智能匹配最适合的套筒配件',
+        answer: '我可以帮您选择合适的套筒配件！\n\n我会根据：\n✓ 工具品牌和型号\n✓ 四方尺寸（1/4、3/8、1/2等）\n✓ 螺栓类型和尺寸\n✓ 特殊要求（抗振、密封圈、磁性等）\n\n为您匹配最合适的套筒配件。'
+      },
+      brandMatch: {
+        keywords: ['品牌', '型号', '品牌匹配', '工具型号', '博世', '阿特拉斯', 'EQTCF', 'brand', 'model', 'bosch'],
+        route: '/tool-brand-match',
+        name: '品牌型号匹配',
+        description: '智能匹配符合要求的工具品牌和具体型号',
+        answer: '我可以帮您匹配品牌和型号！\n\n基于您的需求：\n✓ 工具类型（锂电池、有线电动）\n✓ 控制方式（离合器、油压脉冲、电脉冲、直驱）\n✓ 扭矩范围\n✓ 特殊要求（便携性、数字化）\n\n推荐最匹配的品牌和型号。'
+      },
+      tighteningStrategy: {
+        keywords: ['拧紧策略', '拧紧顺序', '装配顺序', '拧紧方法', '对称拧紧', '交叉拧紧', '工艺优化', 'tightening strategy', 'tightening sequence', 'assembly'],
+        route: '/tightening-strategy',
+        name: '拧紧策略优化',
+        description: '优化拧紧顺序和方式，提升装配质量',
+        answer: '我可以帮您优化拧紧策略！\n\n专业分析：\n✓ 拧紧顺序优化（对称、交叉、螺旋）\n✓ 拧紧参数设置\n✓ 多螺栓装配方案\n✓ 防止过拧/欠拧\n\n提供可视化的拧紧路径和详细策略建议。'
+      },
+      curveAnalysis: {
+        keywords: ['拧紧曲线', '曲线分析', '曲线对比', '滑牙', '过扭矩', '粘滑', '扭矩衰减', '螺纹失效', 'curve analysis', 'torque curve', 'slip'],
+        route: '/curve-analysis',
+        name: '拧紧曲线分析',
+        description: '智能分析拧紧曲线，识别滑牙、粘滑等装配问题',
+        answer: '我可以帮您分析拧紧曲线！\n\n专业诊断：\n✓ 对比分析标准曲线vs采集曲线\n✓ 识别滑牙、粘滑、压溃等异常\n✓ 分析扭矩衰减原因\n✓ 考虑材质、转速等多种因素\n✓ 支持同时对比100条曲线\n\n导入CSV格式曲线文件即可开始分析。'
+      },
+      costOptimization: {
+        keywords: ['成本', '成本优化', '节省', '省钱', '投资回报', 'ROI', '降本', '预算', 'cost', 'save money', 'optimization', 'budget'],
+        route: '/cost-optimization',
+        name: '成本优化分析',
+        description: '平衡质量与成本，提供最优采购和使用方案',
+        answer: '我可以帮您进行成本优化分析！\n\n全面评估：\n✓ 采购成本分析\n✓ 运营成本（能耗、维护）\n✓ TCO总拥有成本\n✓ ROI投资回报率\n✓ 性价比对比\n\n提供数据化的决策支持和优化建议。'
+      },
+      deviceStatus: {
+        keywords: ['设备', '设备状态', '在线', '离线', '故障', '监控', '设备查询', '运行状态', 'device', 'equipment', 'status', 'online', 'offline', 'fault'],
+        route: '/device-status',
+        name: '在线设备查询',
+        description: '实时查看设备运行状态和健康度',
+        answer: '我可以帮您查询设备状态！\n\n实时监控：\n✓ 设备在线/离线状态\n✓ 健康度评分\n✓ 运行时长统计\n✓ 故障预警\n✓ 维护记录\n\n让您随时掌握设备运行情况。'
+      },
+      faultTracking: {
+        keywords: ['工单', '维修工单', '故障工单', '维修追踪', '维修记录', '维修进度', '工单查询', '报修', 'work order', 'repair', 'maintenance', 'tracking', 'fault ticket'],
+        route: '/fault-tracking',
+        name: '故障工单管理',
+        description: '创建、查询和管理维修工单，追踪维修进度',
+        answer: '我可以帮您管理故障工单！\n\n功能包括：\n✓ 创建维修工单\n✓ 工单状态跟踪\n✓ 维修进度查询\n✓ 工单历史记录\n✓ 维修人员分配\n\n让您全程掌握维修流程。'
+      },
+      maintenanceHistory: {
+        keywords: ['维修历史', '历史记录', '维修记录查询', '历史工单', '过往维修', 'history', 'maintenance history', 'repair history', 'past records'],
+        route: '/maintenance-history',
+        name: '维修历史记录',
+        description: '查询历史维修记录，分析维修趋势',
+        answer: '我可以帮您查询维修历史！\n\n数据分析：\n✓ 历史工单查询\n✓ 维修趋势分析\n✓ 设备维修频率\n✓ 维修成本统计\n✓ 可视化图表展示\n\n帮您发现潜在问题和优化空间。'
+      },
+      faultStatistics: {
+        keywords: ['故障统计', '故障率', '故障分析', '数据分析', '统计报告', 'statistics', 'fault rate', 'fault analysis', 'data analysis', 'report'],
+        route: '/fault-statistics',
+        name: '故障率统计分析',
+        description: '全面的故障数据统计和分析',
+        answer: '我可以帮您进行故障统计分析！\n\n深度分析：\n✓ 故障率统计\n✓ 设备健康评分\n✓ 维修效率分析\n✓ 成本结构分析\n✓ 故障预警提示\n\n提供数据化的决策支持。'
+      },
+      equipmentLifecycle: {
+        keywords: ['设备生命周期', '设备档案', '设备管理', 'ROI', '投资回报', '保养预测', '成本分析', '全生命周期', 'equipment lifecycle', 'asset management', 'ROI analysis', 'maintenance prediction'],
+        route: '/equipment-lifecycle',
+        name: '设备全生命周期管理',
+        description: '关键设备资产管理、ROI分析、保养预测、成本优化',
+        answer: '我可以帮您进行设备全生命周期管理！\n\n核心功能：\n✓ 设备档案管理（6大类关键设备）\n✓ ROI投资回报率计算\n✓ AI保养预测（基于运行数据）\n✓ 服务成本动态采集\n✓ 全生命周期追踪\n✓ 降本增效分析\n\n实现设备资产的精细化管理。'
+      }
+    },
     knowledgeBase: {
       products: {
         keywords: ['产品', '工具', '设备', 'product', 'tool', 'equipment'],
@@ -95,7 +176,24 @@ export const useAiChatStore = defineStore('aiChat', {
     matchAnswer(question, locale) {
       const lowerQuestion = question.toLowerCase()
       
-      // 遍历知识库匹配关键词
+      // 优先匹配智能体功能
+      for (const [key, func] of Object.entries(this.agentFunctions)) {
+        const matched = func.keywords.some(keyword => 
+          lowerQuestion.includes(keyword.toLowerCase())
+        )
+        
+        if (matched) {
+          const answer = locale === 'en-US' ? 
+            `I can help you with ${func.name}!\n\n${func.description}\n\nWould you like me to open this feature for you?` :
+            `${func.answer}\n\n💡 是否需要我为您打开【${func.name}】功能？`
+          
+          // 存储匹配到的功能，用于后续跳转
+          this.lastMatchedRoute = func.route
+          return answer
+        }
+      }
+      
+      // 然后匹配知识库
       for (const [category, data] of Object.entries(this.knowledgeBase)) {
         const matched = data.keywords.some(keyword => 
           lowerQuestion.includes(keyword.toLowerCase())
@@ -106,13 +204,73 @@ export const useAiChatStore = defineStore('aiChat', {
         }
       }
 
+      // 智能模糊匹配
+      const fuzzyMatch = this.fuzzyMatch(lowerQuestion, locale)
+      if (fuzzyMatch) {
+        return fuzzyMatch
+      }
+
       // 默认回复
       const defaultAnswers = {
-        'zh-CN': '感谢您的咨询！您的问题我会记录下来。\n\n为了更好地帮助您，建议您：\n1. 查看我们的产品中心了解详细信息\n2. 浏览应用案例了解实际应用\n3. 直接拨打服务热线 400-123-4567\n4. 发送邮件至 sales@mingsheng.com\n\n我们的专业团队会为您提供详细解答！',
-        'en-US': 'Thank you for your inquiry! I will record your question.\n\nTo better assist you, we recommend:\n1. Check our Products Center for details\n2. Browse Application Cases for practical applications\n3. Call our service hotline 400-123-4567\n4. Email us at sales@mingsheng.com\n\nOur professional team will provide detailed answers!'
+        'zh-CN': '感谢您的咨询！😊\n\n我可以帮您：\n\n🔧 工具选型相关：\n• 扭矩工具选型\n• 套筒配件选型\n• 品牌型号匹配\n\n⚙️ 工艺优化相关：\n• 拧紧策略优化\n• 成本优化分析\n\n📊 服务支持相关：\n• 在线设备查询\n• 故障追踪\n• 保养计划\n\n您可以直接问我，比如：\n"我需要选择合适的扭矩工具"\n"帮我优化拧紧策略"\n"查看设备运行状态"\n\n或者拨打服务热线：400-123-4567',
+        'en-US': 'Thank you for your inquiry! 😊\n\nI can help you with:\n\n🔧 Tool Selection:\n• Torque Tool Selection\n• Socket Selection\n• Brand Model Matching\n\n⚙️ Process Optimization:\n• Tightening Strategy\n• Cost Optimization\n\n📊 Service Support:\n• Device Status Query\n• Fault Tracking\n• Maintenance Planning\n\nYou can ask me directly, for example:\n"I need to select a suitable torque tool"\n"Help me optimize tightening strategy"\n"Check device running status"\n\nOr call our hotline: 400-123-4567'
       }
 
       return defaultAnswers[locale] || defaultAnswers['zh-CN']
+    },
+
+    // 模糊匹配功能
+    fuzzyMatch(question, locale) {
+      const patterns = {
+        tool: ['选', '推荐', '需要', '想要', '找', '什么工具', 'select', 'recommend', 'need', 'want'],
+        strategy: ['怎么拧', '如何装配', '拧紧方法', '安装顺序', 'how to tighten', 'assembly method'],
+        cost: ['便宜', '价格', '多少钱', '节约', 'cheap', 'price', 'how much', 'save'],
+        device: ['查看', '检查', '状态', '运行', 'check', 'view', 'status', 'running']
+      }
+
+      for (const [category, keywords] of Object.entries(patterns)) {
+        const matched = keywords.some(kw => question.includes(kw.toLowerCase()))
+        if (matched) {
+          if (category === 'tool') {
+            this.lastMatchedRoute = '/tool-selector'
+            return locale === 'zh-CN' ?
+              '我理解您需要工具选型服务！\n\n我们有三种选型工具：\n1️⃣ 扭矩工具选型 - 推荐合适的拧紧工具\n2️⃣ 套筒配件选型 - 匹配套筒和配件\n3️⃣ 品牌型号匹配 - 推荐具体品牌型号\n\n💡 是否需要我为您打开【扭矩工具选型】功能？' :
+              'I understand you need tool selection service!\n\nWe have three selection tools:\n1️⃣ Torque Tool Selection\n2️⃣ Socket Selection\n3️⃣ Brand Model Matching\n\nWould you like me to open the Tool Selection feature?'
+          } else if (category === 'strategy') {
+            this.lastMatchedRoute = '/tightening-strategy'
+            return locale === 'zh-CN' ?
+              '我可以帮您优化拧紧策略！\n\n包括：\n• 拧紧顺序规划\n• 拧紧参数设置\n• 装配工艺优化\n\n💡 是否需要我为您打开【拧紧策略优化】功能？' :
+              'I can help optimize your tightening strategy!\n\nIncluding:\n• Tightening sequence planning\n• Parameter settings\n• Assembly process optimization\n\nWould you like me to open the Tightening Strategy feature?'
+          } else if (category === 'cost') {
+            this.lastMatchedRoute = '/cost-optimization'
+            return locale === 'zh-CN' ?
+              '我可以帮您进行成本优化分析！\n\n分析内容：\n• 采购成本\n• 运营成本\n• TCO总拥有成本\n• ROI投资回报率\n\n💡 是否需要我为您打开【成本优化分析】功能？' :
+              'I can help with cost optimization analysis!\n\nAnalysis includes:\n• Procurement cost\n• Operating cost\n• TCO (Total Cost of Ownership)\n• ROI (Return on Investment)\n\nWould you like me to open the Cost Optimization feature?'
+          } else if (category === 'device') {
+            this.lastMatchedRoute = '/device-status'
+            return locale === 'zh-CN' ?
+              '我可以帮您查询设备状态！\n\n包括：\n• 在线/离线状态\n• 健康度评分\n• 运行时长\n• 故障预警\n\n💡 是否需要我为您打开【在线设备查询】功能？' :
+              'I can help check device status!\n\nIncluding:\n• Online/Offline status\n• Health score\n• Running time\n• Fault alerts\n\nWould you like me to open the Device Status feature?'
+          }
+        }
+      }
+
+      return null
+    },
+
+    // 跳转到智能体功能
+    navigateToFunction(route) {
+      if (route) {
+        router.push(route)
+        this.chatVisible = false
+        return true
+      } else if (this.lastMatchedRoute) {
+        router.push(this.lastMatchedRoute)
+        this.chatVisible = false
+        this.lastMatchedRoute = null
+        return true
+      }
+      return false
     },
 
     clearMessages() {

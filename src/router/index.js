@@ -86,6 +86,76 @@ const routes = [
     name: 'AiKnowledge',
     component: () => import('../views/AiKnowledgeManager.vue')
   },
+  {
+    path: '/ai-agents',
+    name: 'AiAgents',
+    component: () => import('../views/AiAgents.vue')
+  },
+  {
+    path: '/ai-agent/:id',
+    name: 'AiAgent',
+    component: () => import('../views/AiAgent.vue')
+  },
+  {
+    path: '/tool-selector',
+    name: 'ToolSelector',
+    component: () => import('../views/ToolSelector.vue')
+  },
+  {
+    path: '/socket-selector',
+    name: 'SocketSelector',
+    component: () => import('../views/SocketSelector.vue')
+  },
+  {
+    path: '/tool-brand-match',
+    name: 'ToolBrandMatch',
+    component: () => import('../views/ToolBrandMatch.vue')
+  },
+  {
+    path: '/tightening-strategy',
+    name: 'TighteningStrategy',
+    component: () => import('../views/TighteningStrategy.vue')
+  },
+  {
+    path: '/cost-optimization',
+    name: 'CostOptimization',
+    component: () => import('../views/CostOptimization.vue')
+  },
+  {
+    path: '/device-status',
+    name: 'DeviceStatus',
+    component: () => import('../views/DeviceStatus.vue')
+  },
+  {
+    path: '/curve-analysis',
+    name: 'CurveAnalysis',
+    component: () => import('../views/CurveAnalysis.vue')
+  },
+  {
+    path: '/fault-tracking',
+    name: 'FaultTracking',
+    component: () => import('../views/FaultTracking.vue')
+  },
+  {
+    path: '/equipment-lifecycle',
+    name: 'EquipmentLifecycle',
+    component: () => import('../views/EquipmentLifecycle.vue')
+  },
+  {
+    path: '/maintenance-history',
+    name: 'MaintenanceHistory',
+    component: () => import('../views/MaintenanceHistory.vue')
+  },
+  {
+    path: '/fault-statistics',
+    name: 'FaultStatistics',
+    component: () => import('../views/FaultStatistics.vue')
+  },
+  {
+    path: '/cost-optimization',
+    name: 'CostOptimization',
+    component: () => import('../views/CostOptimization.vue')
+  },
   // 管理后台路由
   {
     path: '/admin/login',
@@ -110,14 +180,34 @@ const routes = [
         component: () => import('../views/admin/CmsManage.vue')
       },
       {
-        path: 'page-content',
-        name: 'AdminPageContent',
-        component: () => import('../views/admin/PageContentManage.vue')
-      },
-      {
         path: 'users',
         name: 'AdminUsers',
         component: () => import('../views/admin/UserManagement.vue')
+      },
+      {
+        path: 'tool-database',
+        name: 'AdminToolDatabase',
+        component: () => import('../views/admin/ToolDatabase.vue')
+      },
+      {
+        path: 'tool-brand-database',
+        name: 'AdminToolBrandDatabase',
+        component: () => import('../views/admin/ToolBrandDatabase.vue')
+      },
+      {
+        path: 'socket-database',
+        name: 'AdminSocketDatabase',
+        component: () => import('../views/admin/SocketDatabase.vue')
+      },
+      {
+        path: 'equipment',
+        name: 'AdminEquipment',
+        component: () => import('../views/admin/EquipmentManage.vue')
+      },
+      {
+        path: 'workorder',
+        name: 'AdminWorkOrder',
+        component: () => import('../views/admin/WorkOrderManage.vue')
       },
       {
         path: 'ai-knowledge',

@@ -23,12 +23,30 @@
         </div>
         
         <nav class="main-nav">
-          <router-link 
-            v-for="navItem in visibleNavItems" 
-            :key="navItem.id"
-            :to="navItem.path">
-            {{ navItem.name[locale] || navItem.name['zh-CN'] }}
-          </router-link>
+          <template v-for="navItem in visibleNavItems" :key="navItem.id">
+            <!-- 有子菜单的导航项 -->
+            <div v-if="navItem.children && navItem.children.length > 0" class="nav-item-dropdown">
+              <span class="nav-link">
+                {{ navItem.name[locale] || navItem.name['zh-CN'] }}
+                <el-icon class="arrow-icon"><ArrowDown /></el-icon>
+              </span>
+              <div class="dropdown-menu">
+                <router-link 
+                  v-for="child in navItem.children.filter(c => c.visible)"
+                  :key="child.id"
+                  :to="child.path"
+                  class="dropdown-item">
+                  {{ child.name[locale] || child.name['zh-CN'] }}
+                </router-link>
+              </div>
+            </div>
+            <!-- 普通导航项 -->
+            <router-link 
+              v-else
+              :to="navItem.path">
+              {{ navItem.name[locale] || navItem.name['zh-CN'] }}
+            </router-link>
+          </template>
         </nav>
 
         <div class="header-actions">
@@ -203,7 +221,8 @@ const toggleLanguage = () => {
 }
 
 .main-nav a,
-.nav-dropdown {
+.nav-dropdown,
+.nav-item-dropdown {
   color: #333;
   font-size: 15px;
   font-weight: 500;
@@ -215,13 +234,77 @@ const toggleLanguage = () => {
   align-items: center;
 }
 
-.main-nav a:hover,
-.main-nav a.router-link-active,
-.nav-dropdown:hover {
+.nav-item-dropdown {
+  position: relative;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.arrow-icon {
+  font-size: 12px;
+  transition: transform 0.3s;
+}
+
+.nav-item-dropdown:hover .arrow-icon {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  padding: 8px 0;
+  min-width: 160px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 100;
+  margin-top: 8px;
+}
+
+.nav-item-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  margin-top: 0;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 10px 20px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.dropdown-item:hover {
+  background: #f5f7fa;
   color: #1890ff;
 }
 
-.main-nav a.router-link-active::after {
+.dropdown-item.router-link-active {
+  color: #1890ff;
+  background: #e6f7ff;
+}
+
+.main-nav > a:hover,
+.main-nav > a.router-link-active,
+.nav-item-dropdown:hover .nav-link {
+  color: #1890ff;
+}
+
+.main-nav > a.router-link-active::after {
   content: '';
   position: absolute;
   bottom: 0;
