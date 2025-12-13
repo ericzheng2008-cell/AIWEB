@@ -52,13 +52,15 @@
             </el-button>
           </div>
 
-          <!-- 设备状态查询 -->
-          <div class="agent-card" @click="goToAgent('/device-status')">
+
+          <!-- 数字监控驾驶舱 -->
+          <div class="agent-card highlight" @click="goToAgent('/equipment-dashboard')">
+            <div class="badge">新功能</div>
             <div class="agent-icon">
-              <el-icon :size="64"><Monitor /></el-icon>
+              <el-icon :size="64"><DataAnalysis /></el-icon>
             </div>
-            <h2>设备在线状态查询</h2>
-            <p class="agent-desc">实时监控设备运行状态，提供设备健康度评估和预警服务</p>
+            <h2>数字监控驾驶舱</h2>
+            <p class="agent-desc">可视化数字监控中心，实时监控设备状态、维护流程、零配件订货状态的一站式管理平台</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
@@ -66,7 +68,7 @@
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>健康评估</span>
+                <span>可视化数据</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
@@ -75,23 +77,22 @@
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">24/7</div>
-                <div class="stat-label">全天候监控</div>
+                <div class="stat-value">3个</div>
+                <div class="stat-label">用户视角</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">99.9%</div>
-                <div class="stat-label">在线率</div>
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">实时监控</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              立即使用
+              进入驾驶舱
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
           <!-- 设备生命周期管理 -->
-          <div class="agent-card highlight" @click="goToAgent('/equipment-lifecycle')">
-            <div class="badge">新功能</div>
+          <div class="agent-card" @click="goToAgent('/equipment-lifecycle')">
             <div class="agent-icon">
               <el-icon :size="64"><Box /></el-icon>
             </div>
@@ -232,6 +233,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { DataAnalysis } from '@element-plus/icons-vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 

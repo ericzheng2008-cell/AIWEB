@@ -114,6 +114,30 @@
           <el-descriptions-item label="创建时间">{{ currentWorkOrder.createdAt }}</el-descriptions-item>
           <el-descriptions-item label="预估时间">{{ currentWorkOrder.estimatedTime }}</el-descriptions-item>
           <el-descriptions-item label="实际时间">{{ currentWorkOrder.actualTime || '进行中' }}</el-descriptions-item>
+          
+          <!-- 人员信息 -->
+          <el-descriptions-item label="设备负责部门" :span="2">
+            <el-tag type="success">{{ currentWorkOrder.deviceDepartment || '-' }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="设备管理人员">
+            {{ currentWorkOrder.deviceManagerName || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="管理人员电话">
+            {{ currentWorkOrder.deviceManagerPhone || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="维修人员">
+            {{ currentWorkOrder.repairPersonName || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="维修人员电话">
+            {{ currentWorkOrder.repairPersonPhone || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="供应商服务人员">
+            {{ currentWorkOrder.supplierPersonName || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="供应商人员电话">
+            {{ currentWorkOrder.supplierPersonPhone || '-' }}
+          </el-descriptions-item>
+          
           <el-descriptions-item label="故障描述" :span="2">
             {{ currentWorkOrder.faultDescription }}
           </el-descriptions-item>

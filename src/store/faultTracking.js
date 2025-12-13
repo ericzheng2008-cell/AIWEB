@@ -32,6 +32,14 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 0,
         notes: '',
         attachments: [],
+        // 新增人员信息字段
+        deviceDepartment: '生产一部',
+        deviceManagerName: '王经理',
+        deviceManagerPhone: '138-8888-1001',
+        repairPersonName: null,
+        repairPersonPhone: null,
+        supplierPersonName: null,
+        supplierPersonPhone: null,
         createdAt: '2025-12-12 18:35:00',
         updatedAt: '2025-12-12 18:35:00'
       },
@@ -69,6 +77,14 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 0,
         notes: '',
         attachments: [],
+        // 新增人员信息字段
+        deviceDepartment: '生产三部',
+        deviceManagerName: '刘主管',
+        deviceManagerPhone: '138-8888-3005',
+        repairPersonName: '李工',
+        repairPersonPhone: '139-7777-2001',
+        supplierPersonName: null,
+        supplierPersonPhone: null,
         createdAt: '2025-12-13 10:25:00',
         updatedAt: '2025-12-13 10:30:00'
       },
@@ -126,6 +142,14 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 180,
         notes: '预计12月15日完成',
         attachments: [],
+        // 新增人员信息字段
+        deviceDepartment: '生产一部',
+        deviceManagerName: '王经理',
+        deviceManagerPhone: '138-8888-1008',
+        repairPersonName: '张工',
+        repairPersonPhone: '139-7777-2002',
+        supplierPersonName: '博世服务-赵工',
+        supplierPersonPhone: '400-820-2345',
         createdAt: '2025-12-11 08:00:00',
         updatedAt: '2025-12-11 11:45:00'
       },
@@ -181,6 +205,14 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 0,
         notes: '建议每月检查气压系统',
         attachments: [],
+        // 新增人员信息字段
+        deviceDepartment: '生产二部',
+        deviceManagerName: '陈主任',
+        deviceManagerPhone: '138-8888-2012',
+        repairPersonName: '王工',
+        repairPersonPhone: '139-7777-2003',
+        supplierPersonName: null,
+        supplierPersonPhone: null,
         createdAt: '2025-12-10 15:35:00',
         updatedAt: '2025-12-10 17:20:00'
       },
@@ -244,6 +276,14 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 15,
         notes: '已关闭',
         attachments: [],
+        // 新增人员信息字段
+        deviceDepartment: '生产一部',
+        deviceManagerName: '王经理',
+        deviceManagerPhone: '138-8888-1001',
+        repairPersonName: '赵工',
+        repairPersonPhone: '139-7777-2004',
+        supplierPersonName: 'Atlas服务-孙工',
+        supplierPersonPhone: '400-820-6789',
         createdAt: '2025-12-09 09:20:00',
         updatedAt: '2025-12-09 14:00:00'
       }

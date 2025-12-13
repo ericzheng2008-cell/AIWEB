@@ -5,7 +5,7 @@ import { ref, computed } from 'vue'
 export { useFaultTrackingStore } from './faultTracking'
 export { useEquipmentLifecycleStore } from './equipmentLifecycle'
 export { useCostOptimizationStore } from './costOptimization'
-export { useDeviceStatusStore } from './deviceStatus'
+
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')

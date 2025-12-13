@@ -121,11 +121,7 @@ const routes = [
     name: 'CostOptimization',
     component: () => import('../views/CostOptimization.vue')
   },
-  {
-    path: '/device-status',
-    name: 'DeviceStatus',
-    component: () => import('../views/DeviceStatus.vue')
-  },
+
   {
     path: '/curve-analysis',
     name: 'CurveAnalysis',
@@ -140,6 +136,11 @@ const routes = [
     path: '/equipment-lifecycle',
     name: 'EquipmentLifecycle',
     component: () => import('../views/EquipmentLifecycle.vue')
+  },
+  {
+    path: '/equipment-dashboard',
+    name: 'EquipmentDashboard',
+    component: () => import('../views/EquipmentDashboard.vue')
   },
   {
     path: '/maintenance-history',

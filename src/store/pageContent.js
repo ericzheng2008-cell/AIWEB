@@ -15,8 +15,8 @@ export const usePageContentStore = defineStore('pageContent', {
         order: 5, 
         visible: true,
         children: [
-          { id: 'tool-selector', name: { 'zh-CN': '工具选型', 'en-US': 'Tool Selector' }, path: '/tool-selector', order: 1, visible: true },
-          { id: 'device-status', name: { 'zh-CN': '设备状态', 'en-US': 'Device Status' }, path: '/device-status', order: 2, visible: true },
+          { id: 'equipment-dashboard', name: { 'zh-CN': '数字监控驾驶舱', 'en-US': 'Equipment Dashboard' }, path: '/equipment-dashboard', order: 1, visible: true },
+          { id: 'tool-selector', name: { 'zh-CN': '工具选型', 'en-US': 'Tool Selector' }, path: '/tool-selector', order: 2, visible: true },
           { id: 'equipment-lifecycle', name: { 'zh-CN': '设备生命周期', 'en-US': 'Equipment Lifecycle' }, path: '/equipment-lifecycle', order: 3, visible: true },
           { id: 'fault-tracking', name: { 'zh-CN': '工单管理', 'en-US': 'Work Orders' }, path: '/fault-tracking', order: 4, visible: true },
           { id: 'curve-analysis', name: { 'zh-CN': '曲线分析', 'en-US': 'Curve Analysis' }, path: '/curve-analysis', order: 5, visible: true }

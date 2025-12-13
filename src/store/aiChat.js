@@ -50,13 +50,6 @@ export const useAiChatStore = defineStore('aiChat', {
         description: '平衡质量与成本，提供最优采购和使用方案',
         answer: '我可以帮您进行成本优化分析！\n\n全面评估：\n✓ 采购成本分析\n✓ 运营成本（能耗、维护）\n✓ TCO总拥有成本\n✓ ROI投资回报率\n✓ 性价比对比\n\n提供数据化的决策支持和优化建议。'
       },
-      deviceStatus: {
-        keywords: ['设备', '设备状态', '在线', '离线', '故障', '监控', '设备查询', '运行状态', 'device', 'equipment', 'status', 'online', 'offline', 'fault'],
-        route: '/device-status',
-        name: '在线设备查询',
-        description: '实时查看设备运行状态和健康度',
-        answer: '我可以帮您查询设备状态！\n\n实时监控：\n✓ 设备在线/离线状态\n✓ 健康度评分\n✓ 运行时长统计\n✓ 故障预警\n✓ 维护记录\n\n让您随时掌握设备运行情况。'
-      },
       faultTracking: {
         keywords: ['工单', '维修工单', '故障工单', '维修追踪', '维修记录', '维修进度', '工单查询', '报修', 'work order', 'repair', 'maintenance', 'tracking', 'fault ticket'],
         route: '/fault-tracking',
@@ -84,6 +77,13 @@ export const useAiChatStore = defineStore('aiChat', {
         name: '设备全生命周期管理',
         description: '关键设备资产管理、ROI分析、保养预测、成本优化',
         answer: '我可以帮您进行设备全生命周期管理！\n\n核心功能：\n✓ 设备档案管理（6大类关键设备）\n✓ ROI投资回报率计算\n✓ AI保养预测（基于运行数据）\n✓ 服务成本动态采集\n✓ 全生命周期追踪\n✓ 降本增效分析\n\n实现设备资产的精细化管理。'
+      },
+      equipmentDashboard: {
+        keywords: ['驾驶舱', '监控中心', '数字监控', '可视化', '实时监控', '设备监控', '大屏', '仪表板', 'dashboard', 'monitor center', 'visualization', 'real-time monitoring', 'control center'],
+        route: '/equipment-dashboard',
+        name: '数字监控驾驶舱',
+        description: '可视化数字监控中心，实时掌控设备状态、维护流程、零配件订货',
+        answer: '我可以为您打开数字监控驾驶舱！\n\n一站式监控平台：\n✓ 设备状态实时监控\n✓ 维护流程可视化\n✓ 零配件订货追踪\n✓ 多角色视图切换\n✓ 智能预警提醒\n✓ 快速联系通讯\n\n支持设备管理人员、设备使用人员、供应商服务人员三种视角。'
       }
     },
     knowledgeBase: {
