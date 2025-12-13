@@ -5,8 +5,16 @@
     <div class="page-container">
       <!-- 页面标题 -->
       <div class="page-header">
-        <h1><el-icon><Box /></el-icon> 设备全生命周期管理</h1>
-        <p class="subtitle">关键设备资产管理 · ROI分析 · 保养预测 · 成本优化</p>
+        <div class="header-left">
+          <h1><el-icon><Box /></el-icon> 设备全生命周期管理</h1>
+          <p class="subtitle">关键设备资产管理 · ROI分析 · 保养预测 · 成本优化</p>
+        </div>
+        <div class="header-right">
+          <el-button type="primary" size="large" @click="goToDashboard" class="dashboard-btn">
+            <el-icon><Monitor /></el-icon>
+            进入数字监控驾驶舱
+          </el-button>
+        </div>
       </div>
 
       <!-- 核心指标卡片 -->
@@ -423,12 +431,18 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Monitor } from '@element-plus/icons-vue'
 import { useEquipmentLifecycleStore } from '../store/equipmentLifecycle'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 
 const router = useRouter()
 const equipmentStore = useEquipmentLifecycleStore()
+
+// 跳转到数字监控驾驶舱
+const goToDashboard = () => {
+  router.push('/equipment-dashboard')
+}
 
 // 当前激活的选项卡
 const activeTab = ref('assets')
@@ -681,8 +695,14 @@ const createMaintenanceWorkOrder = (prediction) => {
 }
 
 .page-header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 40px;
+}
+
+.header-left {
+  flex: 1;
 }
 
 .page-header h1 {
@@ -692,13 +712,32 @@ const createMaintenanceWorkOrder = (prediction) => {
   margin-bottom: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
 }
 
 .subtitle {
   font-size: 16px;
   color: #666;
+}
+
+.header-right {
+  flex-shrink: 0;
+}
+
+.dashboard-btn {
+  font-size: 16px;
+  padding: 12px 24px;
+  height: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+}
+
+.dashboard-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 /* KPI卡片 */
