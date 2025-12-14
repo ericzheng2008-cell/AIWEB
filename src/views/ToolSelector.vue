@@ -2,32 +2,129 @@
   <div class="tool-selector">
     <Header />
     
-    <!-- 页面标题 -->
+    <!-- 页面标题 - 增强版 -->
     <section class="selector-header">
+      <div class="header-background"></div>
       <div class="container">
-        <h1><el-icon><Tools /></el-icon> 拧紧工具智能选型系统</h1>
-        <p>填写您的工艺需求，AI将为您推荐最合适的工具方案</p>
+        <div class="header-content" data-aos="fade-up">
+          <div class="header-badge">
+            <el-icon><MagicStick /></el-icon>
+            <span>AI智能推荐</span>
+          </div>
+          <h1><el-icon><Tools /></el-icon> 拧紧工具智能选型系统</h1>
+          <p>填写您的工艺需求，AI将为您推荐最合适的工具方案</p>
+          <div class="header-features">
+            <div class="feature-badge">
+              <el-icon><Checked /></el-icon>
+              <span>98%匹配准确率</span>
+            </div>
+            <div class="feature-badge">
+              <el-icon><Checked /></el-icon>
+              <span>3分钟快速推荐</span>
+            </div>
+            <div class="feature-badge">
+              <el-icon><Checked /></el-icon>
+              <span>专业工艺建议</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- 选型表单 -->
+    <!-- 选型表单 - 增强版 -->
     <section class="selector-form">
       <div class="container">
-        <el-card class="form-card">
+        <!-- 进度指示器 -->
+        <div class="progress-indicator" data-aos="fade-up">
+          <div class="progress-step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
+            <div class="step-number">1</div>
+            <div class="step-label">基本信息</div>
+          </div>
+          <div class="progress-line" :class="{ active: currentStep > 1 }"></div>
+          <div class="progress-step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
+            <div class="step-number">2</div>
+            <div class="step-label">功能需求</div>
+          </div>
+          <div class="progress-line" :class="{ active: currentStep > 2 }"></div>
+          <div class="progress-step" :class="{ active: currentStep >= 3, completed: currentStep > 3 }">
+            <div class="step-number">3</div>
+            <div class="step-label">高级配置</div>
+          </div>
+          <div class="progress-line" :class="{ active: currentStep > 3 }"></div>
+          <div class="progress-step" :class="{ active: currentStep >= 4 }">
+            <div class="step-number">4</div>
+            <div class="step-label">智能推荐</div>
+          </div>
+        </div>
+
+        <el-card class="form-card" data-aos="fade-up" data-aos-delay="100">
           <template #header>
             <div class="card-header">
-              <span>工艺需求信息</span>
-              <el-button type="primary" size="small" @click="autoFillExample">示例：门盖工位</el-button>
+              <div class="header-left">
+                <el-icon :size="20"><Setting /></el-icon>
+                <span>工艺需求信息</span>
+                <el-tag v-if="formCompleteness < 100" type="warning" size="small" style="margin-left: 12px;">
+                  完成度: {{ formCompleteness }}%
+                </el-tag>
+                <el-tag v-else type="success" size="small" style="margin-left: 12px;">
+                  <el-icon><Checked /></el-icon> 信息完整
+                </el-tag>
+              </div>
+              <div class="header-right">
+                <el-button type="primary" size="small" @click="autoFillExample">
+                  <el-icon><MagicStick /></el-icon>
+                  快速填充示例
+                </el-button>
+                <el-tooltip content="查看填写指南" placement="bottom">
+                  <el-button circle size="small" @click="showGuide = true">
+                    <el-icon><QuestionFilled /></el-icon>
+                  </el-button>
+                </el-tooltip>
+              </div>
             </div>
           </template>
 
-          <el-form :model="requirements" label-width="140px" label-position="left">
+          <el-form :model="requirements" label-width="140px" label-position="left" @change="calculateCompleteness">
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="工位名称" required>
-                  <el-input v-model="requirements.workstation" placeholder="如：门盖工位" clearable />
+                <el-form-item label="线体名称" required>
+                  <el-select 
+                    v-model="requirements.productionLine" 
+                    placeholder="请选择线体名称"
+                    filterable
+                    clearable
+                    style="width: 100%">
+                    <el-option 
+                      v-for="line in productionLines" 
+                      :key="line.id" 
+                      :label="line.name" 
+                      :value="line.name">
+                      <span style="float: left">{{ line.name }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">{{ line.category }}</span>
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :span="12">
+                <el-form-item label="工位名称" required>
+                  <el-select 
+                    v-model="requirements.workstation" 
+                    placeholder="请选择工位名称"
+                    filterable
+                    allow-create
+                    clearable
+                    style="width: 100%">
+                    <el-option 
+                      v-for="ws in workstations" 
+                      :key="ws.id" 
+                      :label="ws.name" 
+                      :value="ws.name" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="动力形式" required>
                   <el-select v-model="requirements.powerType" placeholder="请选择动力形式">
@@ -37,9 +134,6 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-            </el-row>
-
-            <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="扭矩要求" required>
                   <el-input-number 
@@ -52,6 +146,9 @@
                   <span style="margin-left: 8px;">Nm</span>
                 </el-form-item>
               </el-col>
+            </el-row>
+
+            <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="精度要求" required>
                   <el-select v-model="requirements.accuracy" placeholder="选择精度要求">
@@ -193,7 +290,7 @@
               </el-col>
               <el-col :span="8">
                 <el-form-item label="特殊要求">
-                  <el-checkbox-group v-model="requirements.socket.specialRequirements">
+                  <el-checkbox-group v-model="requirements.socket.specialRequirements" @change="handleSpecialRequirementsChange">
                     <el-checkbox label="抗振" />
                     <el-checkbox label="密封圈" />
                     <el-checkbox label="销子" />
@@ -477,33 +574,108 @@
     </section>
 
     <Footer />
+    
+    <!-- 抗振品牌选择对话框 -->
+    <el-dialog
+      v-model="antiVibrationDialogVisible"
+      title="抗振工具品牌确认"
+      width="500px"
+      :close-on-click-modal="false">
+      <div style="padding: 20px 0;">
+        <p style="margin-bottom: 20px; font-size: 15px; color: #666;">
+          <el-icon style="color: #409eff;"><InfoFilled /></el-icon>
+          您选择了抗振套筒，请确认您使用的工具品牌：
+        </p>
+        <el-radio-group v-model="antiVibrationBrand" size="large" style="width: 100%;">
+          <el-radio label="阿特拉斯工具" border style="width: 100%; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 600;">阿特拉斯（Atlas Copco）工具</span>
+              <el-tag size="small" type="primary">推荐</el-tag>
+            </div>
+            <p style="margin: 4px 0 0 0; font-size: 12px; color: #999;">
+              适用于阿特拉斯品牌拧紧工具，专用抗振套筒
+            </p>
+          </el-radio>
+          <el-radio label="其他品牌工具" border style="width: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 600;">其他品牌工具</span>
+            </div>
+            <p style="margin: 4px 0 0 0; font-size: 12px; color: #999;">
+              适用于其他品牌拧紧工具的通用抗振套筒
+            </p>
+          </el-radio>
+        </el-radio-group>
+      </div>
+      <template #footer>
+        <el-button @click="cancelAntiVibration">取消</el-button>
+        <el-button type="primary" @click="confirmAntiVibrationBrand">
+          <el-icon><Check /></el-icon>
+          确认
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToolDatabaseStore } from '../store/toolDatabase'
-import { ElMessage } from 'element-plus'
+import { useProductionLineStore } from '../store/productionLine'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
-  Tools, 
-  Search, 
-  RefreshLeft, 
-  Document, 
-  CircleCheck, 
-  Star, 
-  InfoFilled, 
-  Phone, 
-  View 
+  Tools, Search, RefreshLeft, Document, CircleCheck, 
+  Star, InfoFilled, Phone, View, MagicStick, Checked,
+  Setting, QuestionFilled
 } from '@element-plus/icons-vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
+import AOS from 'aos'
+import 'aos/dist/aos.css'
 
 const router = useRouter()
 const toolStore = useToolDatabaseStore()
+const productionLineStore = useProductionLineStore()
+
+// 初始化动画
+onMounted(() => {
+  AOS.init({
+    duration: 600,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 50
+  })
+  
+  // 加载线体和工位数据
+  productionLineStore.loadProductionLines()
+  loadWorkstations()
+})
+
+// 表单步骤
+const currentStep = ref(1)
+const showGuide = ref(false)
+
+// 抗振品牌选择
+const antiVibrationDialogVisible = ref(false)
+const antiVibrationBrand = ref('')
+
+// 线体和工位数据
+const productionLines = computed(() => productionLineStore.productionLines)
+const workstations = ref([])
+
+// 加载工位数据
+const loadWorkstations = () => {
+  const saved = localStorage.getItem('workstations')
+  if (saved) {
+    workstations.value = JSON.parse(saved)
+  } else {
+    workstations.value = []
+  }
+}
 
 // 需求表单
 const requirements = reactive({
+  productionLine: '',
   workstation: '',
   powerType: '',
   torque: null,
@@ -513,6 +685,9 @@ const requirements = reactive({
   needOkFeedback: false,
   needHighSpeed: false,
   needLowReaction: false,
+  // 通讯配置
+  wirelessComm: [],
+  commProtocol: [],
   // 套筒选型
   socket: {
     shape: '',
@@ -520,7 +695,8 @@ const requirements = reactive({
     size: '',
     magnetic: '',
     length: '',
-    specialRequirements: []
+    specialRequirements: [],
+    antiVibrationBrand: '' // 抗振品牌
   },
   // 防错要求
   errorProofing: [],
@@ -537,6 +713,38 @@ const searching = ref(false)
 const hasSearched = ref(false)
 const matchedTools = ref([])
 
+// 表单完整度计算
+const formCompleteness = computed(() => {
+  let completed = 0
+  let total = 5 // 基础必填项（增加了线体名称）
+  
+  if (requirements.productionLine) completed++
+  if (requirements.workstation) completed++
+  if (requirements.powerType) completed++
+  if (requirements.torque) completed++
+  if (requirements.accuracy) completed++
+  
+  return Math.round((completed / total) * 100)
+})
+
+// 计算当前步骤
+const calculateStep = () => {
+  if (!requirements.productionLine || !requirements.workstation || !requirements.powerType || !requirements.torque || !requirements.accuracy) {
+    currentStep.value = 1
+  } else if (!requirements.needDataCollection && !requirements.needProcessControl && !requirements.needOkFeedback) {
+    currentStep.value = 2
+  } else if (requirements.socket.inputType || requirements.errorProofing.length > 0) {
+    currentStep.value = 3
+  } else if (matchedTools.value.length > 0) {
+    currentStep.value = 4
+  }
+}
+
+// 计算完整度(兼容旧方法)
+const calculateCompleteness = () => {
+  calculateStep()
+}
+
 // 是否有高级需求
 const hasAdvancedRequirements = computed(() => {
   return requirements.socket.inputType || 
@@ -545,9 +753,57 @@ const hasAdvancedRequirements = computed(() => {
          requirements.software.length > 0
 })
 
+// 处理特殊要求变化（监听抗振勾选）
+const handleSpecialRequirementsChange = (value) => {
+  // 检查是否新增了"抗振"选项
+  const hasAntiVibration = value.includes('抗振')
+  const hadAntiVibration = requirements.socket.antiVibrationBrand !== ''
+  
+  if (hasAntiVibration && !hadAntiVibration) {
+    // 用户刚勾选了抗振，弹出品牌选择对话框
+    antiVibrationDialogVisible.value = true
+    antiVibrationBrand.value = '' // 重置选择
+  } else if (!hasAntiVibration) {
+    // 用户取消了抗振，清除品牌选择
+    requirements.socket.antiVibrationBrand = ''
+    antiVibrationBrand.value = ''
+  }
+}
+
+// 确认抗振品牌
+const confirmAntiVibrationBrand = () => {
+  if (!antiVibrationBrand.value) {
+    ElMessage.warning('请选择工具品牌')
+    return
+  }
+  
+  requirements.socket.antiVibrationBrand = antiVibrationBrand.value
+  antiVibrationDialogVisible.value = false
+  
+  ElMessage.success({
+    message: `已选择：${antiVibrationBrand.value}`,
+    duration: 2000
+  })
+}
+
+// 取消抗振选择
+const cancelAntiVibration = () => {
+  // 取消时移除"抗振"选项
+  const index = requirements.socket.specialRequirements.indexOf('抗振')
+  if (index > -1) {
+    requirements.socket.specialRequirements.splice(index, 1)
+  }
+  requirements.socket.antiVibrationBrand = ''
+  antiVibrationBrand.value = ''
+  antiVibrationDialogVisible.value = false
+  
+  ElMessage.info('已取消抗振套筒选择')
+}
+
 // 自动填充示例
 const autoFillExample = () => {
   Object.assign(requirements, {
+    productionLine: '汽车总装线',
     workstation: '门盖工位',
     powerType: '锂电池',
     torque: 35,
@@ -565,7 +821,8 @@ const autoFillExample = () => {
       size: '13mm',
       magnetic: '固定磁',
       length: '标准',
-      specialRequirements: ['抗振']
+      specialRequirements: ['抗振'],
+      antiVibrationBrand: '' // 将触发对话框
     },
     errorProofing: ['防低扭矩', '防过扭矩', '防漏拧'],
     accessories: ['三色灯', '工具小车', '机械抗扭臂'],
@@ -573,34 +830,47 @@ const autoFillExample = () => {
     software: ['数据采集', '工位作业指导'],
     additionalNotes: '需要手持操作，轻量化设计'
   })
-  ElMessage.success('已填充示例数据：门盖工位完整配置')
+  ElMessage.success('已填充示例数据：汽车总装线 - 门盖工位完整配置')
 }
 
 // 搜索匹配工具
 const searchTools = () => {
-  if (!requirements.workstation || !requirements.powerType || !requirements.torque || !requirements.accuracy) {
-    ElMessage.warning('请填写必填项：工位名称、动力形式、扭矩要求和精度要求')
+  if (!requirements.productionLine || !requirements.workstation || !requirements.powerType || !requirements.torque || !requirements.accuracy) {
+    ElMessage.warning('请填写必填项：线体名称、工位名称、动力形式、扭矩要求和精度要求')
     return
   }
 
   searching.value = true
+  currentStep.value = 4
+  
+  // 模拟AI分析过程
+  const loadingInstance = ElMessage({
+    message: 'AI正在分析您的需求...',
+    type: 'info',
+    duration: 0,
+    icon: MagicStick
+  })
   
   // 模拟搜索延迟
   setTimeout(() => {
     matchedTools.value = toolStore.matchTools(requirements)
     hasSearched.value = true
     searching.value = false
+    loadingInstance.close()
 
     if (matchedTools.value.length > 0) {
-      ElMessage.success(`找到 ${matchedTools.value.length} 个匹配工具`)
+      ElMessage.success({
+        message: `智能匹配完成！找到 ${matchedTools.value.length} 个推荐工具`,
+        duration: 3000
+      })
       // 滚动到结果区域
       setTimeout(() => {
-        document.querySelector('.results-section')?.scrollIntoView({ behavior: 'smooth' })
+        document.querySelector('.results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
     } else {
       ElMessage.info('未找到完全匹配的工具，请调整需求或联系技术团队')
     }
-  }, 800)
+  }, 1500)
 }
 
 // 判断是否强烈推荐
@@ -629,6 +899,7 @@ const isHighlyRecommended = (tool) => {
 // 重置表单
 const resetForm = () => {
   Object.assign(requirements, {
+    productionLine: '',
     workstation: '',
     powerType: '',
     torque: null,
@@ -646,7 +917,8 @@ const resetForm = () => {
       size: '',
       magnetic: '',
       length: '',
-      specialRequirements: []
+      specialRequirements: [],
+      antiVibrationBrand: ''
     },
     errorProofing: [],
     accessories: [],
@@ -661,7 +933,7 @@ const resetForm = () => {
 // 咨询销售
 const contactSales = (tool) => {
   // 构建详细的咨询信息
-  let message = `您好，我对工具 ${tool.model}（${tool.name}）感兴趣。\n\n【工位信息】\n工位名称：${requirements.workstation}\n扭矩需求：${requirements.torque}Nm\n精度要求：${requirements.accuracy}\n`
+  let message = `您好，我对工具 ${tool.model}（${tool.name}）感兴趣。\n\n【工位信息】\n线体名称：${requirements.productionLine}\n工位名称：${requirements.workstation}\n扭矩需求：${requirements.torque}Nm\n精度要求：${requirements.accuracy}\n`
   
   if (requirements.socket.inputType) {
     message += `\n【套筒配置】\n`
@@ -725,13 +997,14 @@ const contactCustomService = () => {
 
 // 生成需求报告
 const generateReport = () => {
-  if (!requirements.workstation || !requirements.powerType || !requirements.torque) {
-    ElMessage.warning('请至少填写工位名称、动力形式和扭矩要求')
+  if (!requirements.productionLine || !requirements.workstation || !requirements.powerType || !requirements.torque) {
+    ElMessage.warning('请至少填写线体名称、工位名称、动力形式和扭矩要求')
     return
   }
 
   const report = {
     基本信息: {
+      线体名称: requirements.productionLine,
       工位名称: requirements.workstation,
       动力形式: requirements.powerType,
       扭矩要求: `${requirements.torque}Nm`,
@@ -760,7 +1033,8 @@ const generateReport = () => {
       长度类型: requirements.socket.length || '未指定',
       特殊要求: requirements.socket.specialRequirements.length > 0 
         ? requirements.socket.specialRequirements.join('、') 
-        : '无'
+        : '无',
+      抗振品牌: requirements.socket.antiVibrationBrand || '未选择'
     },
     防错要求: requirements.errorProofing.length > 0 
       ? requirements.errorProofing.join('、') 
@@ -797,7 +1071,7 @@ const generateReport = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `工具选型需求报告_${requirements.workstation}_${new Date().getTime()}.txt`
+  link.download = `工具选型需求报告_${requirements.productionLine}_${requirements.workstation}_${new Date().getTime()}.txt`
   link.click()
   URL.revokeObjectURL(url)
   
@@ -817,12 +1091,53 @@ const generateReport = () => {
   padding: 0 20px;
 }
 
-/* 页面标题 */
+/* 页面标题 - 增强版 */
 .selector-header {
+  position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 60px 0;
+  padding: 80px 0 60px;
   color: #fff;
   text-align: center;
+  overflow: hidden;
+}
+
+.header-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: headerMove 20s linear infinite;
+}
+
+@keyframes headerMove {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 40px 40px;
+  }
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
 }
 
 .selector-header h1 {
@@ -830,16 +1145,128 @@ const generateReport = () => {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-size: 36px;
+  font-size: 40px;
   margin-bottom: 16px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .selector-header p {
   font-size: 18px;
   opacity: 0.95;
+  margin-bottom: 24px;
 }
 
-/* 选型表单 */
+.header-features {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.feature-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  font-size: 14px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 进度指示器 */
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+  padding: 32px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  animation: stepPulse 2s infinite;
+}
+
+.progress-step.completed .step-number {
+  background: #52c41a;
+  color: #fff;
+}
+
+@keyframes stepPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+  }
+}
+
+.step-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.progress-step.active .step-label {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.progress-line {
+  width: 80px;
+  height: 2px;
+  background: #e8e8e8;
+  margin: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.progress-line.active {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  animation: lineGrow 0.5s ease;
+}
+
+@keyframes lineGrow {
+  from {
+    width: 0;
+  }
+  to {
+    width: 80px;
+  }
+}
+
+/* 表单卡片 */
 .selector-form {
   padding: 40px 0;
 }
@@ -847,6 +1274,8 @@ const generateReport = () => {
 .form-card {
   max-width: 1000px;
   margin: 0 auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
 }
 
 .card-header {
@@ -855,6 +1284,36 @@ const generateReport = () => {
   align-items: center;
   font-size: 18px;
   font-weight: 600;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 表单项增强 */
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  color: #333;
+}
+
+:deep(.el-input__inner),
+:deep(.el-select),
+:deep(.el-input-number) {
+  transition: all 0.3s ease;
+}
+
+:deep(.el-input__inner:focus),
+:deep(.el-select:hover),
+:deep(.el-input-number:hover) {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
 
 /* 结果区域 */

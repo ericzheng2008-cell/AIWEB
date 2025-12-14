@@ -19,6 +19,36 @@
           <span>CMS内容管理</span>
         </el-menu-item>
 
+        <el-menu-item index="/admin/products-services">
+          <el-icon><Box /></el-icon>
+          <span>产品与服务管理</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/tightening-data">
+          <el-icon><DataAnalysis /></el-icon>
+          <span>拧紧数据采集</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/classroom">
+          <el-icon><Reading /></el-icon>
+          <span>产品技术销售小课堂</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/production-line">
+          <el-icon><Position /></el-icon>
+          <span>线体管理</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/workstation">
+          <el-icon><Operation /></el-icon>
+          <span>工位管理</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/ai-agents">
+          <el-icon><Star /></el-icon>
+          <span>AI智能体管理</span>
+        </el-menu-item>
+
         <el-menu-item index="/admin/tool-database">
           <el-icon><Tools /></el-icon>
           <span>工具数据库</span>
@@ -95,6 +125,10 @@ import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '../../store'
 import { ElMessage } from 'element-plus'
+import { 
+  Odometer, Setting, Tools, Collection, Box, Document, User, 
+  Expand, House, Position, Operation, DataAnalysis, Reading
+} from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -106,6 +140,11 @@ const currentPageTitle = computed(() => {
   const titles = {
     '/admin/dashboard': '仪表盘',
     '/admin/cms': 'CMS内容管理',
+    '/admin/products-services': '产品与服务管理',
+    '/admin/tightening-data': '拧紧数据采集分析',
+    '/admin/classroom': '产品技术销售小课堂',
+    '/admin/production-line': '线体管理',
+    '/admin/workstation': '工位管理',
     '/admin/tool-database': '工具数据库',
     '/admin/tool-brand-database': '品牌型号数据库',
     '/admin/socket-database': '套筒数据库',

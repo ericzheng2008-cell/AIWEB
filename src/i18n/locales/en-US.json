@@ -2,23 +2,23 @@
   "common": {
     "home": "Home",
     "products": "Products",
-    "solutions": "Applications",
+    "solutions": "Case Studies",
     "about": "About Us",
     "service": "Service & Support",
     "contact": "Contact",
-    "divisions": "Business Units",
+    "divisions": "Business Divisions",
     "search": "Search products, solutions...",
     "readMore": "Read More",
     "viewDetails": "View Details",
     "contactUs": "Contact Us",
-    "consultSolution": "Consult Solution"
+    "consultSolution": "Request Consultation"
   },
   "header": {
     "hotline": "Hotline",
     "email": "Email",
     "language": "EN / 中文",
     "companyName": "Mingsheng",
-    "slogan": "Professional Industrial Tools Supplier"
+    "slogan": "Professional Industrial Tools Provider"
   },
   "footer": {
     "companyInfo": "Company Info",
@@ -30,15 +30,15 @@
     "phone": "Phone",
     "copyright": "© 2024 Guangzhou Mingsheng Weiye Electromechanical Co., Ltd. All Rights Reserved",
     "products": "Products",
-    "solutions": "Solutions",
+    "solutions": "Case Studies",
     "about": "About",
     "aboutUs": "About Us",
-    "history": "History",
-    "team": "Team",
+    "history": "Company History",
+    "team": "Our Team",
     "contact": "Contact",
     "automotive": "Automotive Manufacturing",
-    "manufacturing": "Smart Manufacturing",
-    "aerospace": "Aerospace",
+    "manufacturing": "Intelligent Manufacturing",
+    "aerospace": "Aerospace Industry",
     "energy": "Energy Equipment",
     "serviceNetwork": "Service Network"
   },
@@ -47,14 +47,14 @@
     "desc": "Professional industrial automation equipment and intelligent manufacturing solutions"
   },
   "divisions": {
-    "desc": "Professional division teams providing comprehensive industrial solutions"
+    "desc": "Specialized division teams providing comprehensive industrial solutions"
   },
   "home": {
     "banner": {
       "company": {
         "title": "Guangzhou Mingsheng Weiye Electromechanical Co., Ltd.",
         "subtitle": "Established in 1996, headquartered in Guangzhou, Pearl River Delta",
-        "description": "A modern technology enterprise integrating R&D, manufacturing, and sales services, specializing in European and American high-end industrial tools supply and application solutions"
+        "description": "A modern technology enterprise integrating R&D, manufacturing, and sales services, specializing in European and American premium industrial tools supply and application solutions"
       }
     },
     "productsServices": {
@@ -62,8 +62,8 @@
       "desc": "Professional industrial automation equipment and intelligent manufacturing solutions"
     },
     "applicationCases": {
-      "title": "Application Cases",
-      "desc": "Customized intelligent manufacturing and industrial automation solutions for different industries"
+      "title": "Case Studies",
+      "desc": "Customized intelligent manufacturing and industrial automation solutions for various industries"
     },
     "about": {
       "title": "About Mingsheng",
@@ -71,19 +71,19 @@
     },
     "advantages": {
       "title": "Our Advantages",
-      "desc": "Trusted Industrial Partner",
-      "experience": "28 Years Experience",
-      "certification": "Authority Certification",
-      "brands": "European & American Brands",
-      "network": "National Service Network"
+      "desc": "Your Trusted Industrial Partner",
+      "experience": "28 Years of Experience",
+      "certification": "Certified Quality Systems",
+      "brands": "European & American Premium Brands",
+      "network": "Nationwide Service Network"
     },
     "serviceNetwork": {
       "title": "Service Network",
-      "desc": "Offices in multiple locations across the country, providing quality customer service"
+      "desc": "Multiple offices nationwide providing excellent customer service"
     }
   },
   "products": {
-    "title": "Products Center",
+    "title": "Product Center",
     "allProducts": "All Products",
     "found": "Found",
     "items": "products",
@@ -96,20 +96,20 @@
     "priceDesc": "Price: High to Low",
     "newest": "Newest",
     "divisions": {
-      "assembly": "Industrial Intelligent Assembly",
-      "production": "Industrial Intelligent Production",
-      "oem": "Industry OEM Division",
+      "assembly": "Intelligent Assembly Division",
+      "production": "Intelligent Manufacturing Division",
+      "oem": "Industrial OEM Division",
       "power": "Power Assembly Division",
-      "auto": "Automobile Parts Division",
-      "tech": "Mingsheng Technology",
-      "tools": "Oils and Cutting Tools",
-      "marketing": "Network Marketing"
+      "auto": "Automotive Parts Division",
+      "tech": "Mingsheng Technology Division",
+      "tools": "Tools & Lubricants Division",
+      "marketing": "E-Commerce Division"
     }
   },
   "solutions": {
-    "title": "Application Cases",
-    "desc": "Customized intelligent manufacturing and industrial automation solutions for different industries",
-    "features": "Features",
+    "title": "Case Studies",
+    "desc": "Customized intelligent manufacturing and industrial automation solutions for various industries",
+    "features": "Key Features",
     "applications": "Applications"
   },
   "aiChat": {
@@ -121,11 +121,11 @@
     "minimize": "Minimize",
     "quickQuestions": "Quick Questions",
     "typing": "Typing...",
-    "welcome": "Hello! I'm Mingsheng AI Assistant. I can answer questions about products, applications, business cooperation, etc. How can I help you?",
+    "welcome": "Hello! I'm Mingsheng AI Assistant. I can answer questions about products, applications, business cooperation, and more. How can I help you?",
     "questions": {
       "q1": "What are your main products?",
-      "q2": "How to contact sales team?",
-      "q3": "What application cases do you have?",
+      "q2": "How to contact the sales team?",
+      "q3": "What case studies do you have?",
       "q4": "Do you support customization?",
       "q5": "What about after-sales service?",
       "q6": "How to become a partner?"
@@ -133,7 +133,7 @@
   },
   "cms": {
     "title": "CMS Management System",
-    "subtitle": "Manage website Logo, divisions, product categories (3 levels) and all content",
+    "subtitle": "Manage website logo, divisions, product categories (3-level), and all content",
     "tabs": {
       "navigation": "Navigation Management",
       "logo": "Logo & Basic Settings",
@@ -144,7 +144,7 @@
       "about": "About Us",
       "service": "Service & Support",
       "contact": "Contact Us",
-      "solutions": "Application Cases"
+      "solutions": "Case Studies"
     },
     "homeContent": {
       "bannerTitle": "Home Banner Configuration",
@@ -159,7 +159,7 @@
       "add": "Add Navigation Item",
       "edit": "Edit Navigation Item",
       "alertTitle": "Tips",
-      "alertText": "Drag to reorder navigation items; Toggle visibility to control whether items are visible on the frontend",
+      "alertText": "Drag to reorder navigation items; Toggle visibility to control whether items appear on the frontend",
       "order": "Order",
       "navName": "Nav Name",
       "path": "Path",
@@ -253,13 +253,13 @@
       "confirmDelete": "Are you sure you want to delete this product?"
     },
     "message": {
-      "logoSaved": "Logo Saved",
-      "configSaved": "Configuration Saved",
-      "saveSuccess": "Save Successfully",
-      "deleteSuccess": "Delete Successfully",
-      "fillComplete": "Please fill in complete information",
+      "logoSaved": "Logo Saved Successfully",
+      "configSaved": "Configuration Saved Successfully",
+      "saveSuccess": "Saved Successfully",
+      "deleteSuccess": "Deleted Successfully",
+      "fillComplete": "Please fill in all required information",
       "fillName": "Please fill in complete name",
-      "selectCategory": "Please select category"
+      "selectCategory": "Please select a category"
     }
   }
 }

@@ -32,6 +32,10 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 0,
         notes: '',
         attachments: [],
+        // 新增客户信息字段
+        customerName: '张三',
+        customerPhone: '138-1234-5678',
+        customerCompany: '某汽车制造厂',
         // 新增人员信息字段
         deviceDepartment: '生产一部',
         deviceManagerName: '王经理',
@@ -40,6 +44,23 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         repairPersonPhone: null,
         supplierPersonName: null,
         supplierPersonPhone: null,
+        // 新增服务状态跟踪
+        serviceStatus: 'pending', // pending待服务, diagnosing诊断中, repairing维修中, testing测试中, completed已完成
+        // 新增配件订购状态
+        partsOrderStatus: 'not_required', // not_required无需配件, pending待订购, ordered已订购, in_transit运输中, received已到货
+        partsOrderDetails: null,
+        // 新增检测结果
+        inspectionResult: null,
+        inspectionTime: null,
+        inspectionBy: null,
+        // 新增交付验收信息
+        deliveryStatus: 'not_delivered', // not_delivered未交付, delivered已交付, accepted已验收
+        deliveryTime: null,
+        deliveryBy: null,
+        acceptanceStatus: 'not_accepted', // not_accepted未验收, accepted已验收, rejected已拒绝
+        acceptanceTime: null,
+        acceptanceBy: null,
+        acceptanceNotes: null,
         createdAt: '2025-12-12 18:35:00',
         updatedAt: '2025-12-12 18:35:00'
       },
@@ -77,6 +98,10 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 0,
         notes: '',
         attachments: [],
+        // 新增客户信息字段
+        customerName: '王五',
+        customerPhone: '139-8888-2002',
+        customerCompany: '某汽车制造厂',
         // 新增人员信息字段
         deviceDepartment: '生产三部',
         deviceManagerName: '刘主管',
@@ -85,6 +110,23 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         repairPersonPhone: '139-7777-2001',
         supplierPersonName: null,
         supplierPersonPhone: null,
+        // 新增服务状态跟踪
+        serviceStatus: 'diagnosing',
+        // 新增配件订购状态
+        partsOrderStatus: 'not_required',
+        partsOrderDetails: null,
+        // 新增检测结果
+        inspectionResult: null,
+        inspectionTime: null,
+        inspectionBy: null,
+        // 新增交付验收信息
+        deliveryStatus: 'not_delivered',
+        deliveryTime: null,
+        deliveryBy: null,
+        acceptanceStatus: 'not_accepted',
+        acceptanceTime: null,
+        acceptanceBy: null,
+        acceptanceNotes: null,
         createdAt: '2025-12-13 10:25:00',
         updatedAt: '2025-12-13 10:30:00'
       },
@@ -142,6 +184,10 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 180,
         notes: '预计12月15日完成',
         attachments: [],
+        // 新增客户信息字段
+        customerName: '赵六',
+        customerPhone: '137-9999-3003',
+        customerCompany: '某汽车制造厂',
         // 新增人员信息字段
         deviceDepartment: '生产一部',
         deviceManagerName: '王经理',
@@ -150,6 +196,23 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         repairPersonPhone: '139-7777-2002',
         supplierPersonName: '博世服务-赵工',
         supplierPersonPhone: '400-820-2345',
+        // 新增服务状态跟踪
+        serviceStatus: 'repairing',
+        // 新增配件订购状态
+        partsOrderStatus: 'received',
+        partsOrderDetails: '润滑油已到货，型号MobilGear 600 XP 220',
+        // 新增检测结果
+        inspectionResult: '设备运行正常，各部件磨损在合理范围内',
+        inspectionTime: '2025-12-11 11:45:00',
+        inspectionBy: '张工',
+        // 新增交付验收信息
+        deliveryStatus: 'not_delivered',
+        deliveryTime: null,
+        deliveryBy: null,
+        acceptanceStatus: 'not_accepted',
+        acceptanceTime: null,
+        acceptanceBy: null,
+        acceptanceNotes: null,
         createdAt: '2025-12-11 08:00:00',
         updatedAt: '2025-12-11 11:45:00'
       },
@@ -205,6 +268,10 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 0,
         notes: '建议每月检查气压系统',
         attachments: [],
+        // 新增客户信息字段
+        customerName: '李四',
+        customerPhone: '136-7777-4004',
+        customerCompany: '某汽车制造厂',
         // 新增人员信息字段
         deviceDepartment: '生产二部',
         deviceManagerName: '陈主任',
@@ -213,6 +280,23 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         repairPersonPhone: '139-7777-2003',
         supplierPersonName: null,
         supplierPersonPhone: null,
+        // 新增服务状态跟踪
+        serviceStatus: 'completed',
+        // 新增配件订购状态
+        partsOrderStatus: 'not_required',
+        partsOrderDetails: null,
+        // 新增检测结果
+        inspectionResult: '扭矩精度恢复至98%，气压系统稳定，测试通过',
+        inspectionTime: '2025-12-10 17:20:00',
+        inspectionBy: '王工',
+        // 新增交付验收信息
+        deliveryStatus: 'delivered',
+        deliveryTime: '2025-12-10 17:30:00',
+        deliveryBy: '王工',
+        acceptanceStatus: 'not_accepted',
+        acceptanceTime: null,
+        acceptanceBy: null,
+        acceptanceNotes: null,
         createdAt: '2025-12-10 15:35:00',
         updatedAt: '2025-12-10 17:20:00'
       },
@@ -276,6 +360,10 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         totalCost: 15,
         notes: '已关闭',
         attachments: [],
+        // 新增客户信息字段
+        customerName: '张三',
+        customerPhone: '138-1234-5678',
+        customerCompany: '某汽车制造厂',
         // 新增人员信息字段
         deviceDepartment: '生产一部',
         deviceManagerName: '王经理',
@@ -284,6 +372,23 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         repairPersonPhone: '139-7777-2004',
         supplierPersonName: 'Atlas服务-孙工',
         supplierPersonPhone: '400-820-6789',
+        // 新增服务状态跟踪
+        serviceStatus: 'completed',
+        // 新增配件订购状态
+        partsOrderStatus: 'received',
+        partsOrderDetails: '六类网线已使用',
+        // 新增检测结果
+        inspectionResult: '通讯恢复正常，连续测试3小时无中断',
+        inspectionTime: '2025-12-09 10:45:00',
+        inspectionBy: '赵工',
+        // 新增交付验收信息
+        deliveryStatus: 'delivered',
+        deliveryTime: '2025-12-09 11:00:00',
+        deliveryBy: '赵工',
+        acceptanceStatus: 'accepted',
+        acceptanceTime: '2025-12-09 14:00:00',
+        acceptanceBy: '张三',
+        acceptanceNotes: '设备运行正常，验收通过',
         createdAt: '2025-12-09 09:20:00',
         updatedAt: '2025-12-09 14:00:00'
       }
@@ -674,7 +779,7 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
       return true
     },
 
-    // 搜索工单
+    // 搜索工单（增强版：支持工单号、客户姓名、客户手机号查询）
     searchWorkOrders(keyword) {
       if (!keyword) return this.workOrders
       
@@ -684,7 +789,32 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
         order.deviceName.toLowerCase().includes(lowerKeyword) ||
         order.faultType.toLowerCase().includes(lowerKeyword) ||
         order.faultDescription.toLowerCase().includes(lowerKeyword) ||
-        order.location.toLowerCase().includes(lowerKeyword)
+        order.location.toLowerCase().includes(lowerKeyword) ||
+        (order.customerName && order.customerName.toLowerCase().includes(lowerKeyword)) ||
+        (order.customerPhone && order.customerPhone.includes(keyword)) ||
+        (order.customerCompany && order.customerCompany.toLowerCase().includes(lowerKeyword))
+      )
+    },
+
+    // 根据服务工单号查询
+    searchByOrderId(orderId) {
+      return this.workOrders.find(order => order.id === orderId)
+    },
+
+    // 根据客户手机号查询
+    searchByCustomerPhone(phone) {
+      if (!phone) return []
+      return this.workOrders.filter(order => 
+        order.customerPhone && order.customerPhone.includes(phone)
+      )
+    },
+
+    // 根据客户姓名查询
+    searchByCustomerName(name) {
+      if (!name) return []
+      const lowerName = name.toLowerCase()
+      return this.workOrders.filter(order => 
+        order.customerName && order.customerName.toLowerCase().includes(lowerName)
       )
     },
 
@@ -760,6 +890,141 @@ export const useFaultTrackingStore = defineStore('faultTracking', {
       }
       
       return report
+    },
+
+    // 更新工单信息（用于编辑）
+    updateWorkOrder(orderId, updateData) {
+      const order = this.workOrders.find(o => o.id === orderId)
+      if (!order) return false
+      
+      Object.assign(order, updateData, {
+        updatedAt: new Date().toLocaleString('zh-CN', { hour12: false })
+      })
+      
+      return true
+    },
+
+    // 更新服务状态
+    updateServiceStatus(orderId, status, operator, notes) {
+      const order = this.workOrders.find(o => o.id === orderId)
+      if (!order) return false
+      
+      order.serviceStatus = status
+      order.updatedAt = new Date().toLocaleString('zh-CN', { hour12: false })
+      
+      order.maintenanceLog.push({
+        time: order.updatedAt,
+        operator: operator,
+        action: '更新服务状态',
+        details: `服务状态更新为: ${status}${notes ? ` - ${notes}` : ''}`
+      })
+      
+      return true
+    },
+
+    // 更新配件订购状态
+    updatePartsOrderStatus(orderId, status, operator, details) {
+      const order = this.workOrders.find(o => o.id === orderId)
+      if (!order) return false
+      
+      order.partsOrderStatus = status
+      order.partsOrderDetails = details
+      order.updatedAt = new Date().toLocaleString('zh-CN', { hour12: false })
+      
+      order.maintenanceLog.push({
+        time: order.updatedAt,
+        operator: operator,
+        action: '更新配件订购状态',
+        details: `配件状态: ${status}${details ? ` - ${details}` : ''}`
+      })
+      
+      return true
+    },
+
+    // 记录检测结果
+    recordInspection(orderId, result, operator, notes) {
+      const order = this.workOrders.find(o => o.id === orderId)
+      if (!order) return false
+      
+      order.inspectionResult = result
+      order.inspectionTime = new Date().toLocaleString('zh-CN', { hour12: false })
+      order.inspectionBy = operator
+      order.updatedAt = order.inspectionTime
+      
+      order.maintenanceLog.push({
+        time: order.inspectionTime,
+        operator: operator,
+        action: '记录检测结果',
+        details: `检测结果: ${result}${notes ? ` - ${notes}` : ''}`
+      })
+      
+      return true
+    },
+
+    // 更新交付状态
+    updateDeliveryStatus(orderId, operator, notes) {
+      const order = this.workOrders.find(o => o.id === orderId)
+      if (!order) return false
+      
+      order.deliveryStatus = 'delivered'
+      order.deliveryTime = new Date().toLocaleString('zh-CN', { hour12: false })
+      order.deliveryBy = operator
+      order.updatedAt = order.deliveryTime
+      
+      order.maintenanceLog.push({
+        time: order.deliveryTime,
+        operator: operator,
+        action: '交付设备',
+        details: notes || '设备已交付给客户'
+      })
+      
+      return true
+    },
+
+    // 记录验收结果
+    recordAcceptance(orderId, status, operator, notes) {
+      const order = this.workOrders.find(o => o.id === orderId)
+      if (!order) return false
+      
+      order.acceptanceStatus = status
+      order.acceptanceTime = new Date().toLocaleString('zh-CN', { hour12: false })
+      order.acceptanceBy = operator
+      order.acceptanceNotes = notes
+      order.updatedAt = order.acceptanceTime
+      
+      const statusText = {
+        'accepted': '验收通过',
+        'rejected': '验收拒绝',
+        'not_accepted': '未验收'
+      }
+      
+      order.maintenanceLog.push({
+        time: order.acceptanceTime,
+        operator: operator,
+        action: '记录验收结果',
+        details: `${statusText[status]}${notes ? ` - ${notes}` : ''}`
+      })
+      
+      return true
+    },
+
+    // 删除工单
+    deleteWorkOrder(orderId) {
+      const index = this.workOrders.findIndex(o => o.id === orderId)
+      if (index === -1) return false
+      
+      const order = this.workOrders[index]
+      
+      // 更新统计
+      if (this.statusStats[order.status]) {
+        this.statusStats[order.status]--
+      }
+      if (this.faultTypeStats[order.faultType]) {
+        this.faultTypeStats[order.faultType]--
+      }
+      
+      this.workOrders.splice(index, 1)
+      return true
     }
   }
 })

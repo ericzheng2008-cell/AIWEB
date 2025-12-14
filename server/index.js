@@ -54,6 +54,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/content', contentRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/tightening', tighteningRoutes)
 
 // 文件上传路由
 app.post('/api/upload', upload.single('file'), (req, res) => {

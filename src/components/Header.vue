@@ -25,7 +25,10 @@
         <nav class="main-nav">
           <template v-for="navItem in visibleNavItems" :key="navItem.id">
             <!-- 有子菜单的导航项 -->
-            <div v-if="navItem.children && navItem.children.length > 0" class="nav-item-dropdown">
+            <div 
+              v-if="navItem.children && navItem.children.length > 0" 
+              class="nav-item-dropdown"
+              :data-has-many-children="navItem.children.length > 4">
               <span class="nav-link">
                 {{ navItem.name[locale] || navItem.name['zh-CN'] }}
                 <el-icon class="arrow-icon"><ArrowDown /></el-icon>
@@ -262,14 +265,25 @@ const toggleLanguage = () => {
   transform: translateX(-50%);
   background: #fff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border-radius: 4px;
-  padding: 8px 0;
-  min-width: 160px;
+  border-radius: 8px;
+  padding: 12px 0;
+  min-width: 200px;
+  max-width: 400px;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
   z-index: 100;
   margin-top: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+/* 针对子菜单较多的导航项，使用多列布局 */
+.nav-item-dropdown[data-has-many-children="true"] .dropdown-menu {
+  min-width: 360px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 16px 8px;
 }
 
 .nav-item-dropdown:hover .dropdown-menu {
@@ -280,22 +294,26 @@ const toggleLanguage = () => {
 
 .dropdown-item {
   display: block;
-  padding: 10px 20px;
+  padding: 12px 20px;
   color: #333;
   font-size: 14px;
   font-weight: 400;
   transition: all 0.3s;
   white-space: nowrap;
+  border-radius: 4px;
+  margin: 0 4px;
 }
 
 .dropdown-item:hover {
-  background: #f5f7fa;
+  background: #f0f5ff;
   color: #1890ff;
+  transform: translateX(4px);
 }
 
 .dropdown-item.router-link-active {
   color: #1890ff;
   background: #e6f7ff;
+  font-weight: 500;
 }
 
 .main-nav > a:hover,

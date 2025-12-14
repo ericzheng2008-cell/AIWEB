@@ -211,6 +211,11 @@ const routes = [
         component: () => import('../views/admin/ClassroomManage.vue')
       },
       {
+        path: 'ai-agents',
+        name: 'AdminAiAgents',
+        component: () => import('../views/admin/AiAgentManage.vue')
+      },
+      {
         path: 'users',
         name: 'AdminUsers',
         component: () => import('../views/admin/UserManagement.vue')

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试 - Vue应用诊断</title>
+</head>
+<body>
+  <div id="app">
+    <h1>加载中...</h1>
+  </div>
+
+  <script type="module">
+    console.log('🔍 开始诊断...');
+    
+    // 测试1: 检查Vue是否可以导入
+    try {
+      const { createApp } = await import('vue');
+      console.log('✅ Vue导入成功');
+      
+      // 测试2: 创建最简单的应用
+      const app = createApp({
+        template: `
+          <div style="padding: 50px; text-align: center; font-family: Arial;">
+            <h1 style="color: #52c41a;">✅ Vue应用运行正常！</h1>
+            <p>这说明Vue没有问题</p>
+            <p style="color: #fa8c16; font-weight: bold;">主应用空白的原因是其他代码问题</p>
+            <hr>
+            <h3>请在Console查看详细错误信息</h3>
+          </div>
+        `
+      });
+      
+      app.mount('#app');
+      console.log('✅ Vue应用挂载成功');
+      
+    } catch (error) {
+      console.error('❌ Vue导入或挂载失败:', error);
+      document.getElementById('app').innerHTML = `
+        <div style="padding: 50px; color: red;">
+          <h1>❌ Vue应用启动失败</h1>
+          <p>错误: ${error.message}</p>
+          <pre>${error.stack}</pre>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

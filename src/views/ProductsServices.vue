@@ -2,29 +2,45 @@
   <div class="products-services-page">
     <Header />
     
-    <!-- 页面标题 -->
-    <section class="page-hero">
+    <!-- 页面横幅 (PANTONE 2736C主色调) -->
+    <section 
+      class="page-hero"
+      :style="{
+        backgroundImage: bannerSettings.backgroundImage ? `url(${bannerSettings.backgroundImage})` : 'none',
+        background: bannerSettings.backgroundImage 
+          ? `linear-gradient(135deg, ${bannerSettings.backgroundColor}99 0%, ${bannerSettings.backgroundColor} 100%), url(${bannerSettings.backgroundImage})`
+          : `linear-gradient(135deg, ${bannerSettings.backgroundColor} 0%, #0066dd 100%)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        color: bannerSettings.textColor
+      }">
+      <div class="hero-overlay"></div>
       <div class="container">
-        <h1>{{ t('productsServices.title') }}</h1>
-        <p>{{ t('productsServices.desc') }}</p>
+        <h1>{{ bannerSettings.title[locale] || bannerSettings.title['zh-CN'] }}</h1>
+        <p>{{ bannerSettings.subtitle[locale] || bannerSettings.subtitle['zh-CN'] }}</p>
       </div>
     </section>
 
-    <!-- 产品系列展示 -->
+    <!-- 产品系列展示 (6个子系统) -->
     <section class="section">
       <div class="container">
         <div class="series-grid">
-          <div v-for="series in productSeries" :key="series.id" 
-               class="series-card" 
-               @click="goToProducts(series)">
+          <div 
+            v-for="category in level1Categories" 
+            :key="category.id" 
+            class="series-card"
+            @click="goToLevel2(category)">
             <div class="series-image">
-              <img :src="series.image" :alt="series.name" />
+              <img :src="category.image" :alt="category.name" />
+              <div class="series-overlay">
+                <component :is="getIcon(category.icon)" class="series-icon" />
+              </div>
             </div>
             <div class="series-info">
-              <h3>{{ series.name }}</h3>
-              <p>{{ series.description }}</p>
+              <h3>{{ category.name }}</h3>
+              <p>{{ category.description }}</p>
               <div class="series-link">
-                {{ t('common.viewDetails') }} <el-icon><ArrowRight /></el-icon>
+                {{ t('common.viewDetails') || '查看详情' }} <el-icon><ArrowRight /></el-icon>
               </div>
             </div>
           </div>
@@ -32,36 +48,208 @@
       </div>
     </section>
 
+    <!-- 二级分类详情对话框 -->
+    <el-dialog 
+      v-model="level2DialogVisible" 
+      :title="currentLevel1Name"
+      width="900px"
+      class="level2-dialog">
+      <div class="level2-grid">
+        <div 
+          v-for="level2 in currentLevel2Categories" 
+          :key="level2.id"
+          class="level2-card"
+          @click="goToLevel3(level2)">
+          <h4>{{ level2.name }}</h4>
+          <p>{{ level2.description }}</p>
+          <div class="level2-arrow">
+            <el-icon><ArrowRight /></el-icon>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 三级分类详情对话框 -->
+    <el-dialog 
+      v-model="level3DialogVisible" 
+      :title="currentLevel2Name"
+      width="800px"
+      class="level3-dialog">
+      <div class="level3-list">
+        <div 
+          v-for="level3 in currentLevel3Categories" 
+          :key="level3.id"
+          class="level3-item"
+          @click="goToProducts(level3)">
+          <div class="level3-content">
+            <h5>{{ level3.name }}</h5>
+            <p>{{ level3.description }}</p>
+          </div>
+          <el-icon class="level3-arrow"><ArrowRight /></el-icon>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 产品列表对话框 -->
+    <el-dialog 
+      v-model="productsDialogVisible" 
+      :title="currentLevel3Name"
+      width="1000px"
+      class="products-dialog">
+      <div class="products-grid">
+        <div 
+          v-for="product in currentProducts" 
+          :key="product.id"
+          class="product-card">
+          <div class="product-image">
+            <img :src="product.images[0]" :alt="product.name" />
+          </div>
+          <div class="product-info">
+            <h5>{{ product.name }}</h5>
+            <p>{{ product.description }}</p>
+            <el-button type="primary" size="small" @click.stop="viewProductDetail(product)">
+              查看详情
+            </el-button>
+          </div>
+        </div>
+      </div>
+      <el-empty v-if="currentProducts.length === 0" description="暂无产品" />
+    </el-dialog>
+
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useCmsAdvancedStore } from '../store/cmsAdvanced'
+import { useProductsServicesStore } from '../store/productsServices'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
-const cmsStore = useCmsAdvancedStore()
+const productsStore = useProductsServicesStore()
 
-// 从CMS获取产品大类
-const productSeries = computed(() => {
-  return cmsStore.productCategories.map(category => ({
-    id: category.id,
-    name: category.name[locale.value] || category.name['zh-CN'],
-    description: category.description[locale.value] || category.description['zh-CN'],
-    image: category.image || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600'
+const bannerSettings = ref({
+  title: {
+    'zh-CN': '产品与服务',
+    'en-US': 'Products & Services'
+  },
+  subtitle: {
+    'zh-CN': '专业的工业自动化设备与智能制造解决方案',
+    'en-US': 'Professional Industrial Automation Equipment and Intelligent Manufacturing Solutions'
+  },
+  backgroundImage: '',
+  backgroundColor: '#0047BB', // PANTONE 2736C
+  textColor: '#ffffff'
+})
+
+// 对话框控制
+const level2DialogVisible = ref(false)
+const level3DialogVisible = ref(false)
+const productsDialogVisible = ref(false)
+
+// 当前选中的分类
+const currentLevel1 = ref(null)
+const currentLevel2 = ref(null)
+const currentLevel3 = ref(null)
+
+// 从localStorage加载页面设置
+const loadPageSettings = () => {
+  const savedSettings = localStorage.getItem('productsServicesPageSettings')
+  if (savedSettings) {
+    try {
+      const settings = JSON.parse(savedSettings)
+      if (settings.banner) {
+        Object.assign(bannerSettings.value, settings.banner)
+      }
+    } catch (e) {
+      console.error('加载页面设置失败:', e)
+    }
+  }
+}
+
+// 获取一级分类（6个子系统）
+const level1Categories = computed(() => {
+  return productsStore.visibleLevel1Categories.map(cat => ({
+    id: cat.id,
+    name: cat.name[locale.value] || cat.name['zh-CN'],
+    description: cat.description[locale.value] || cat.description['zh-CN'],
+    image: cat.image,
+    icon: cat.icon
   }))
 })
 
-const goToProducts = (series) => {
-  // 跳转到产品分类页面（层级展示）
-  router.push(`/product-category/${series.id}`)
+// 获取当前二级分类
+const currentLevel2Categories = computed(() => {
+  if (!currentLevel1.value) return []
+  return productsStore.getLevel2Categories(currentLevel1.value.id).map(cat => ({
+    id: cat.id,
+    name: cat.name[locale.value] || cat.name['zh-CN'],
+    description: cat.description[locale.value] || cat.description['zh-CN']
+  }))
+})
+
+// 获取当前三级分类
+const currentLevel3Categories = computed(() => {
+  if (!currentLevel2.value) return []
+  return productsStore.getLevel3Categories(currentLevel2.value.id).map(cat => ({
+    id: cat.id,
+    name: cat.name[locale.value] || cat.name['zh-CN'],
+    description: cat.description[locale.value] || cat.description['zh-CN']
+  }))
+})
+
+// 获取当前产品列表
+const currentProducts = computed(() => {
+  if (!currentLevel3.value) return []
+  return productsStore.getProductsByCategory(currentLevel3.value.id, 3).map(prod => ({
+    id: prod.id,
+    name: prod.name[locale.value] || prod.name['zh-CN'],
+    description: prod.description[locale.value] || prod.description['zh-CN'],
+    images: prod.images || []
+  }))
+})
+
+// 名称计算
+const currentLevel1Name = computed(() => currentLevel1.value ? currentLevel1.value.name : '')
+const currentLevel2Name = computed(() => currentLevel2.value ? currentLevel2.value.name : '')
+const currentLevel3Name = computed(() => currentLevel3.value ? currentLevel3.value.name : '')
+
+// 获取图标组件
+const getIcon = (iconName) => {
+  return ElementPlusIconsVue[iconName] || ElementPlusIconsVue.Box
 }
+
+// 导航方法
+const goToLevel2 = (category) => {
+  currentLevel1.value = category
+  level2DialogVisible.value = true
+}
+
+const goToLevel3 = (level2) => {
+  currentLevel2.value = level2
+  level2DialogVisible.value = false
+  level3DialogVisible.value = true
+}
+
+const goToProducts = (level3) => {
+  currentLevel3.value = level3
+  level3DialogVisible.value = false
+  productsDialogVisible.value = true
+}
+
+const viewProductDetail = (product) => {
+  // 可以跳转到产品详情页面
+  console.log('查看产品详情:', product)
+}
+
+onMounted(() => {
+  loadPageSettings()
+})
 </script>
 
 <style scoped>
@@ -70,22 +258,43 @@ const goToProducts = (series) => {
   background: #f5f7fa;
 }
 
+/* 页面横幅 - PANTONE 2736C主色调 */
 .page-hero {
-  background: linear-gradient(135deg, #003366 0%, #0066cc 100%);
+  background-size: cover;
+  background-position: center;
   color: #fff;
-  padding: 80px 0;
+  padding: 100px 0;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 71, 187, 0.2); /* PANTONE 2736C 透明遮罩 */
+  z-index: 1;
+}
+
+.page-hero .container {
+  position: relative;
+  z-index: 2;
 }
 
 .page-hero h1 {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .page-hero p {
-  font-size: 20px;
-  opacity: 0.9;
+  font-size: 22px;
+  opacity: 0.95;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .section {
@@ -98,74 +307,306 @@ const goToProducts = (series) => {
   padding: 0 20px;
 }
 
+/* 产品系列卡片 - 3列网格 */
 .series-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 32px;
 }
 
 .series-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  border: 1px solid #e8e8e8;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid #e8e8e8;
+  box-shadow: 0 4px 12px rgba(0, 71, 187, 0.08); /* PANTONE 2736C 阴影 */
+  position: relative;
 }
 
 .series-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  transform: translateY(-12px);
+  box-shadow: 0 16px 32px rgba(0, 71, 187, 0.2); /* PANTONE 2736C 悬停阴影 */
+  border-color: #0047BB; /* PANTONE 2736C */
 }
 
 .series-image {
   width: 100%;
-  height: 240px;
+  height: 260px;
   overflow: hidden;
+  position: relative;
 }
 
 .series-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.series-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 71, 187, 0.85) 0%, rgba(0, 102, 221, 0.75) 100%); /* PANTONE 2736C 渐变 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.series-card:hover .series-overlay {
+  opacity: 1;
+}
+
+.series-icon {
+  font-size: 64px;
+  color: #fff;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .series-card:hover .series-image img {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 .series-info {
-  padding: 28px;
+  padding: 32px;
 }
 
 .series-info h3 {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .series-info p {
   color: #666;
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  min-height: 50px;
 }
 
 .series-link {
-  color: #1890ff;
-  font-size: 14px;
-  font-weight: 500;
+  color: #0047BB; /* PANTONE 2736C */
+  font-size: 15px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+.series-card:hover .series-link {
+  color: #0066dd;
+  gap: 10px;
+}
+
+/* 对话框样式 - PANTONE 2736C主题 */
+:deep(.level2-dialog .el-dialog__header),
+:deep(.level3-dialog .el-dialog__header),
+:deep(.products-dialog .el-dialog__header) {
+  background: linear-gradient(135deg, #0047BB 0%, #0066dd 100%); /* PANTONE 2736C */
+  color: #fff;
+  padding: 24px;
+  border-radius: 8px 8px 0 0;
+}
+
+:deep(.el-dialog__title) {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+:deep(.el-dialog__headerbtn .el-dialog__close) {
+  color: #fff;
+  font-size: 24px;
+}
+
+.level2-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 10px;
+}
+
+.level2-card {
+  padding: 24px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.level2-card:hover {
+  border-color: #0047BB; /* PANTONE 2736C */
+  background: linear-gradient(135deg, rgba(0, 71, 187, 0.03) 0%, rgba(0, 102, 221, 0.05) 100%);
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(0, 71, 187, 0.15);
+}
+
+.level2-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.level2-card p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.level2-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0047BB; /* PANTONE 2736C */
+  font-size: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.level2-card:hover .level2-arrow {
+  opacity: 1;
+}
+
+.level3-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.level3-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.level3-item:hover {
+  border-color: #0047BB; /* PANTONE 2736C */
+  background: linear-gradient(90deg, rgba(0, 71, 187, 0.03) 0%, rgba(0, 102, 221, 0.05) 100%);
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(0, 71, 187, 0.12);
+}
+
+.level3-content h5 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.level3-content p {
+  font-size: 13px;
+  color: #666;
+}
+
+.level3-arrow {
+  font-size: 20px;
+  color: #0047BB; /* PANTONE 2736C */
+  transition: transform 0.3s ease;
+}
+
+.level3-item:hover .level3-arrow {
+  transform: translateX(8px);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 10px;
+}
+
+.product-card {
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  border-color: #0047BB; /* PANTONE 2736C */
+  box-shadow: 0 8px 20px rgba(0, 71, 187, 0.15);
+  transform: translateY(-6px);
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.08);
+}
+
+.product-info {
+  padding: 20px;
+}
+
+.product-info h5 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.product-info p {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  min-height: 40px;
+}
+
+:deep(.product-info .el-button--primary) {
+  background: #0047BB; /* PANTONE 2736C */
+  border-color: #0047BB;
+}
+
+:deep(.product-info .el-button--primary:hover) {
+  background: #0066dd;
+  border-color: #0066dd;
 }
 
 @media (max-width: 768px) {
-  .series-grid {
-    grid-template-columns: 1fr;
+  .series-grid,
+  .products-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .level2-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .page-hero h1 {
+    font-size: 32px;
+  }
+  
+  .page-hero p {
+    font-size: 16px;
   }
 }
 </style>

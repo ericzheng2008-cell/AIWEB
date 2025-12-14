@@ -116,14 +116,61 @@ export const useCmsAdvancedStore = defineStore('cmsAdvanced', {
       }
     ])),
     
-    // 产品大类（1级分类）
+    // 产品大类（1级分类）- 与导航栏产品与服务菜单对应
     productCategories: JSON.parse(localStorage.getItem('productCategories') || JSON.stringify([
       {
         id: 1,
-        name: { 'zh-CN': '自动化设备', 'en-US': 'Automation Equipment' },
-        description: { 'zh-CN': 'SCA自动涂胶机、SPR FDS整机、Gudel七轴机器人等', 'en-US': 'SCA automatic gluing machine, SPR FDS complete machine, Gudel seven-axis robot' },
-        image: '',
+        key: 'electric',
+        name: { 'zh-CN': '电动工具', 'en-US': 'Electric Tools' },
+        description: { 'zh-CN': '专业电动拧紧工具、电动扳手、电动螺丝刀等', 'en-US': 'Professional electric tightening tools, electric wrenches, electric screwdrivers, etc.' },
+        image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600',
+        icon: 'Lightning',
         subCategories: [] // 2级分类
+      },
+      {
+        id: 2,
+        key: 'pneumatic',
+        name: { 'zh-CN': '气动工具', 'en-US': 'Pneumatic Tools' },
+        description: { 'zh-CN': '气动拧紧工具、气动扳手、气动打磨机等', 'en-US': 'Pneumatic tightening tools, pneumatic wrenches, pneumatic grinders, etc.' },
+        image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',
+        icon: 'Wind',
+        subCategories: []
+      },
+      {
+        id: 3,
+        key: 'manual',
+        name: { 'zh-CN': '手动工具', 'en-US': 'Manual Tools' },
+        description: { 'zh-CN': '扭力扳手、套筒扳手、专业手动工具套装等', 'en-US': 'Torque wrenches, socket wrenches, professional manual tool sets, etc.' },
+        image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=600',
+        icon: 'Tools',
+        subCategories: []
+      },
+      {
+        id: 4,
+        key: 'measurement',
+        name: { 'zh-CN': '测量工具', 'en-US': 'Measurement Tools' },
+        description: { 'zh-CN': '扭矩测试仪、角度仪、精密测量设备等', 'en-US': 'Torque testers, angle gauges, precision measurement equipment, etc.' },
+        image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600',
+        icon: 'Odometer',
+        subCategories: []
+      },
+      {
+        id: 5,
+        key: 'automation',
+        name: { 'zh-CN': '自动化系统', 'en-US': 'Automation Systems' },
+        description: { 'zh-CN': 'SCA自动涂胶机、SPR FDS整机、Gudel七轴机器人等', 'en-US': 'SCA automatic gluing machine, SPR FDS complete machine, Gudel seven-axis robot, etc.' },
+        image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',
+        icon: 'Setting',
+        subCategories: []
+      },
+      {
+        id: 6,
+        key: 'smart',
+        name: { 'zh-CN': '智能解决方案', 'en-US': 'Smart Solutions' },
+        description: { 'zh-CN': '智能拧紧系统、工业物联网、数据采集与分析等', 'en-US': 'Intelligent tightening systems, Industrial IoT, data acquisition and analysis, etc.' },
+        image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600',
+        icon: 'Cpu',
+        subCategories: []
       }
     ])),
     

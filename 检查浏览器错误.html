@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>浏览器错误检测工具</title>
+  <style>
+    body {
+      font-family: 'Microsoft YaHei', sans-serif;
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 { color: #1890ff; }
+    .step {
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .warning {
+      background: #fff7e6;
+      border-left: 4px solid #fa8c16;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #c7254e;
+    }
+    .btn {
+      display: inline-block;
+      background: #1890ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 10px 5px;
+    }
+    .btn:hover { background: #096dd9; }
+    img {
+      max-width: 100%;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 浏览器空白页错误检测指南</h1>
+    
+    <div class="warning">
+      <h3>⚠️ 你遇到的问题：</h3>
+      <p>服务器正常运行在 <code>http://localhost:3002/</code>，但浏览器显示<strong>空白页</strong></p>
+    </div>
+
+    <h2>📋 请按以下步骤操作：</h2>
+
+    <div class="step">
+      <h3>步骤1：打开浏览器开发者工具</h3>
+      <p>在空白页面按 <code>F12</code> 键，或右键点击 → 选择"检查"</p>
+    </div>
+
+    <div class="step">
+      <h3>步骤2：查看 Console（控制台）标签</h3>
+      <p>点击顶部的 <code>Console</code> 标签</p>
+      <p><strong>请截图或复制所有红色的错误信息</strong></p>
+      <p>常见错误示例：</p>
+      <ul>
+        <li>❌ Failed to load module</li>
+        <li>❌ Uncaught SyntaxError</li>
+        <li>❌ Cannot find module</li>
+        <li>❌ 404 Not Found</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>步骤3：查看 Network（网络）标签</h3>
+      <p>点击顶部的 <code>Network</code> 标签</p>
+      <p>按 <code>Ctrl+R</code> 刷新页面</p>
+      <p><strong>查找红色的失败请求</strong>（状态码 404 或其他错误）</p>
+      <p>特别注意以下文件是否成功加载：</p>
+      <ul>
+        <li>✅ <code>/src/main.js</code></li>
+        <li>✅ <code>/index.html</code></li>
+        <li>✅ <code>/@vite/client</code></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>步骤4：查看 Elements（元素）标签</h3>
+      <p>点击顶部的 <code>Elements</code> 标签</p>
+      <p>查看页面结构，检查 <code>&lt;div id="app"&gt;</code> 是否存在</p>
+      <p>如果只有空的 <code>&lt;div id="app"&gt;&lt;/div&gt;</code>，说明 Vue 没有成功挂载</p>
+    </div>
+
+    <h2>🎯 快速操作指引</h2>
+    
+    <div class="step">
+      <p><strong>1. 访问应用：</strong></p>
+      <a href="http://localhost:3002/" class="btn" target="_blank">打开 http://localhost:3002/</a>
+    </div>
+
+    <div class="step">
+      <p><strong>2. 按 F12 打开开发者工具</strong></p>
+    </div>
+
+    <div class="step">
+      <p><strong>3. 查看 Console 标签的错误信息</strong></p>
+      <p>把错误信息告诉我，我会立即修复！</p>
+    </div>
+
+    <h2>💡 可能的原因和解决方案</h2>
+
+    <div class="warning">
+      <h4>情况1：Console 显示 "Failed to load module" 或 404 错误</h4>
+      <p><strong>原因：</strong>文件路径错误或文件不存在</p>
+      <p><strong>解决：</strong>需要检查文件结构</p>
+    </div>
+
+    <div class="warning">
+      <h4>情况2：Console 显示 JavaScript 语法错误</h4>
+      <p><strong>原因：</strong>代码中有语法错误</p>
+      <p><strong>解决：</strong>需要修复代码错误</p>
+    </div>
+
+    <div class="warning">
+      <h4>情况3：Console 没有任何错误，但页面空白</h4>
+      <p><strong>原因：</strong>Vue 挂载失败或路由配置问题</p>
+      <p><strong>解决：</strong>需要检查 main.js 和路由配置</p>
+    </div>
+
+    <div class="warning">
+      <h4>情况4：浏览器缓存问题</h4>
+      <p><strong>解决：</strong>按 <code>Ctrl+Shift+Delete</code> 清除缓存，或按 <code>Ctrl+Shift+R</code> 强制刷新</p>
+    </div>
+
+    <h2>📞 下一步</h2>
+    <p style="font-size: 18px; color: #fa8c16; font-weight: bold;">
+      请打开 http://localhost:3002/，按F12查看Console标签，然后把错误信息告诉我！
+    </p>
+  </div>
+
+  <script>
+    // 自动打开应用
+    setTimeout(() => {
+      if (confirm('是否立即打开 http://localhost:3002/ ？')) {
+        window.open('http://localhost:3002/', '_blank');
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

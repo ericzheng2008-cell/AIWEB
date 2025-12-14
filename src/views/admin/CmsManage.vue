@@ -148,6 +148,11 @@
         <HeaderFooterEditor />
       </el-tab-pane>
 
+      <!-- 智能体内容管理 -->
+      <el-tab-pane label="🤖 智能体内容" name="ai-agents">
+        <AiAgentEditor />
+      </el-tab-pane>
+
       <!-- 事业部管理 -->
       <el-tab-pane :label="t('cms.tabs.divisions')" name="divisions">
         <el-card>
@@ -353,6 +358,7 @@ import AboutPageEditor from '../../components/AboutPageEditor.vue'
 import ServicePageEditor from '../../components/ServicePageEditor.vue'
 import SolutionsPageEditor from '../../components/SolutionsPageEditor.vue'
 import HeaderFooterEditor from '../../components/HeaderFooterEditor.vue'
+import AiAgentEditor from '../../components/AiAgentEditor.vue'
 
 const { t } = useI18n()
 const cmsStore = useCmsAdvancedStore()

@@ -829,8 +829,8 @@ const goToAgent = (path) => {
 
 .agents-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
   margin-bottom: 80px;
 }
 
@@ -838,7 +838,7 @@ const goToAgent = (path) => {
   position: relative;
   background: #fff;
   border-radius: 16px;
-  padding: 40px;
+  padding: 24px 20px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
@@ -911,14 +911,14 @@ const goToAgent = (path) => {
 }
 
 .agent-icon {
-  width: 80px;
-  height: 80px;
+  width: 56px;
+  height: 56px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  margin: 0 auto 16px;
   color: #fff;
   transition: all 0.3s ease;
   position: relative;
@@ -967,11 +967,12 @@ const goToAgent = (path) => {
 }
 
 .agent-card h2 {
-  font-size: 26px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   color: #1a1a1a;
   transition: color 0.3s ease;
+  line-height: 1.3;
 }
 
 .agent-card:hover h2 {
@@ -979,28 +980,34 @@ const goToAgent = (path) => {
 }
 
 .agent-desc {
-  font-size: 15px;
+  font-size: 13px;
   color: #666;
-  line-height: 1.6;
-  margin-bottom: 24px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  min-height: 60px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .agent-features {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  gap: 4px;
+  font-size: 12px;
   color: #333;
   background: #f5f7fa;
-  padding: 6px 12px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
@@ -1016,11 +1023,11 @@ const goToAgent = (path) => {
 .agent-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-  padding: 20px 0;
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 10px;
 }
 
 .stat-item {
@@ -1028,21 +1035,21 @@ const goToAgent = (path) => {
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   color: #1890ff;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 11px;
   color: #999;
 }
 
 .action-btn {
   width: 100%;
-  height: 48px;
-  font-size: 16px;
+  height: 38px;
+  font-size: 14px;
   font-weight: 600;
   transition: all 0.3s ease;
 }

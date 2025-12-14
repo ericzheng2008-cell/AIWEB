@@ -32,12 +32,57 @@
         <el-card class="curve-list-card">
           <template #header>
             <div class="card-header">
-              <span>曲线列表 ({{ curves.length }}/100)</span>
+              <span>曲线列表 ({{ filteredCurves.length }}/100)</span>
               <el-tag :type="curves.length >= 100 ? 'danger' : 'success'">
                 {{ curves.length >= 100 ? '已满' : '可用' }}
               </el-tag>
             </div>
           </template>
+
+          <!-- 筛选器 -->
+          <div class="curve-filters">
+            <el-form :inline="false" size="small" label-width="80px">
+              <el-form-item label="车间">
+                <el-select v-model="curveFilters.workshop" placeholder="全部" @change="applyFilters" clearable>
+                  <el-option label="全部" value="" />
+                  <el-option label="一部总装" value="一部总装" />
+                  <el-option label="一部焊装" value="一部焊装" />
+                  <el-option label="二部总装" value="二部总装" />
+                  <el-option label="二部焊装" value="二部焊装" />
+                  <el-option label="三部总装" value="三部总装" />
+                  <el-option label="三部焊装" value="三部焊装" />
+                  <el-option label="发动机工厂" value="发动机工厂" />
+                  <el-option label="变速箱工厂" value="变速箱工厂" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="线体">
+                <el-select v-model="curveFilters.productionLine" placeholder="全部" @change="applyFilters" clearable>
+                  <el-option label="全部" value="" />
+                  <el-option label="总装1线" value="总装1线" />
+                  <el-option label="总装2线" value="总装2线" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="工具型号">
+                <el-select v-model="curveFilters.toolModel" placeholder="全部" @change="applyFilters" clearable>
+                  <el-option label="全部" value="" />
+                  <el-option label="ST31-30" value="ST31-30" />
+                  <el-option label="ST61-60" value="ST61-60" />
+                  <el-option label="ST101-80" value="ST101-80" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="SN编号">
+                <el-input v-model="curveFilters.snNumber" placeholder="输入SN" @change="applyFilters" clearable />
+              </el-form-item>
+              <el-form-item label="班次">
+                <el-select v-model="curveFilters.shift" placeholder="全部" @change="applyFilters" clearable>
+                  <el-option label="全部" value="" />
+                  <el-option label="白班" value="白班" />
+                  <el-option label="夜班" value="夜班" />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
+          <el-divider style="margin: 12px 0;" />
 
           <!-- 标准曲线 -->
           <div class="curve-section" v-if="standardCurve">
@@ -68,11 +113,11 @@
           <div class="curve-section">
             <div class="section-title">
               <el-icon color="#3498db"><DataLine /></el-icon>
-              采集曲线 ({{ curves.length }})
+              采集曲线 ({{ filteredCurves.length }})
             </div>
             <el-scrollbar height="500px">
               <div
-                v-for="(curve, index) in curves"
+                v-for="(curve, index) in filteredCurves"
                 :key="curve.id"
                 :class="['curve-item', { active: selectedCurves.includes(curve.id) }]"
                 @click="toggleCurveSelection(curve.id)"
@@ -114,6 +159,32 @@
             <div class="card-header">
               <span>拧紧曲线对比图</span>
               <div class="chart-controls">
+                <el-select 
+                  v-model="curveType" 
+                  placeholder="选择曲线类型" 
+                  style="width: 200px; margin-right: 12px;"
+                  @change="updateCurveType">
+                  <el-option label="扭矩-角度" value="torque-angle">
+                    <span style="float: left">扭矩-角度</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">默认</span>
+                  </el-option>
+                  <el-option label="扭矩-时间" value="torque-time">
+                    <span style="float: left">扭矩-时间</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">时序</span>
+                  </el-option>
+                  <el-option label="扭矩-转速" value="torque-speed">
+                    <span style="float: left">扭矩-转速</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">动力学</span>
+                  </el-option>
+                  <el-option label="角度-时间" value="angle-time">
+                    <span style="float: left">角度-时间</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">进程</span>
+                  </el-option>
+                  <el-option label="扭矩转角-时间" value="torque-angle-time">
+                    <span style="float: left">扭矩转角-时间</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">综合</span>
+                  </el-option>
+                </el-select>
                 <el-button-group>
                   <el-button size="small" @click="resetZoom">重置缩放</el-button>
                   <el-button size="small" @click="toggleGrid">切换网格</el-button>
@@ -480,7 +551,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import * as echarts from 'echarts'
 
@@ -495,6 +566,54 @@ const showDetailDialog = ref(false)
 const uploadTab = ref('standard')
 const uploadFileList = ref([])
 const currentCurve = ref(null)
+const curveType = ref('torque-angle') // 曲线类型选择
+
+// 筛选条件
+const curveFilters = ref({
+  workshop: '',
+  productionLine: '',
+  toolModel: '',
+  snNumber: '',
+  shift: ''
+})
+
+// 过滤后的曲线列表
+const filteredCurves = computed(() => {
+  let result = [...curves.value]
+  
+  // 按车间过滤
+  if (curveFilters.value.workshop) {
+    result = result.filter(c => c.workshop === curveFilters.value.workshop)
+  }
+  
+  // 按线体过滤
+  if (curveFilters.value.productionLine) {
+    result = result.filter(c => c.productionLine === curveFilters.value.productionLine)
+  }
+  
+  // 按工具型号过滤
+  if (curveFilters.value.toolModel) {
+    result = result.filter(c => c.toolModel === curveFilters.value.toolModel)
+  }
+  
+  // 按SN编号过滤
+  if (curveFilters.value.snNumber) {
+    result = result.filter(c => c.snNumber && c.snNumber.includes(curveFilters.value.snNumber))
+  }
+  
+  // 按班次过滤
+  if (curveFilters.value.shift) {
+    result = result.filter(c => c.shift === curveFilters.value.shift)
+  }
+  
+  return result
+})
+
+// 应用筛选
+const applyFilters = () => {
+  ElMessage.success('筛选已应用')
+  updateChart()
+}
 
 let chartInstance = null
 let detailChartInstance = null
@@ -514,57 +633,150 @@ onMounted(() => {
   loadDemoData()
 })
 
-// 初始化ECharts
+// 初始化ECharts（增强版：显示扭矩、速度、角度、时间关键参数）
 const initChart = () => {
   const chartDom = document.getElementById('curveChart')
   chartInstance = echarts.init(chartDom)
   
   const option = {
     title: {
-      text: '拧紧曲线对比',
-      left: 'center'
+      text: '拧紧曲线智能对比分析',
+      subtext: '扭矩-角度关系 | 三阶段拧紧过程可视化',
+      left: 'center',
+      textStyle: {
+        fontSize: 18,
+        fontWeight: 'bold'
+      },
+      subtextStyle: {
+        fontSize: 12,
+        color: '#666'
+      }
     },
     tooltip: {
       trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        animation: true,
+        label: {
+          backgroundColor: '#505765'
+        }
+      },
       formatter: (params) => {
-        let result = `角度: ${params[0].axisValue}°<br/>`
+        const angle = params[0].axisValue
+        let result = `<div style="font-weight:bold;margin-bottom:5px;">旋入角度: ${angle}°</div>`
+        
+        // 判断当前阶段
+        let phase = ''
+        let phaseColor = ''
+        if (angle <= 90) {
+          phase = '低速认牙阶段'
+          phaseColor = '#67c23a'
+        } else if (angle <= 360) {
+          phase = '快速旋入阶段'
+          phaseColor = '#409eff'
+        } else {
+          phase = '拧紧阶段（弹性段）'
+          phaseColor = '#e6a23c'
+        }
+        result += `<div style="color:${phaseColor};margin-bottom:8px;">📍 ${phase}</div>`
+        
         params.forEach(param => {
-          result += `${param.seriesName}: ${param.value} N·m<br/>`
+          const marker = param.marker
+          const value = param.value
+          const name = param.seriesName
+          result += `${marker} ${name}: <strong>${value} N·m</strong><br/>`
         })
+        
+        // 估算拧紧时间
+        let estimatedTime = 0
+        if (angle <= 90) {
+          estimatedTime = (angle / 180).toFixed(2)
+        } else if (angle <= 360) {
+          estimatedTime = (0.5 + (angle - 90) / 135).toFixed(2)
+        } else {
+          estimatedTime = (2.5 + (angle - 360) / 90).toFixed(2)
+        }
+        result += `<div style="margin-top:8px;color:#909399;">⏱️ 预计时间: ${estimatedTime}s</div>`
+        
         return result
       }
     },
     legend: {
       data: [],
       bottom: 10,
-      type: 'scroll'
+      type: 'scroll',
+      textStyle: {
+        fontSize: 12
+      }
     },
     grid: {
-      left: '3%',
-      right: '4%',
+      left: '8%',
+      right: '8%',
       bottom: '15%',
+      top: '18%',
       containLabel: true
     },
     toolbox: {
       feature: {
         dataZoom: {
-          yAxisIndex: 'none'
+          yAxisIndex: 'none',
+          title: {
+            zoom: '区域缩放',
+            back: '还原'
+          }
         },
-        restore: {},
-        saveAsImage: {}
-      }
+        restore: {
+          title: '还原'
+        },
+        saveAsImage: {
+          title: '保存为图片',
+          name: '拧紧曲线分析'
+        },
+        magicType: {
+          type: ['line', 'bar'],
+          title: {
+            line: '切换为折线图',
+            bar: '切换为柱状图'
+          }
+        }
+      },
+      right: '5%',
+      top: '8%'
     },
     xAxis: {
       type: 'value',
-      name: '角度 (度)',
+      name: '旋入角度 (°)',
       nameLocation: 'middle',
-      nameGap: 30
+      nameGap: 35,
+      nameTextStyle: {
+        fontSize: 13,
+        fontWeight: 'bold'
+      },
+      min: 0,
+      max: 600,
+      splitLine: {
+        lineStyle: {
+          type: 'dashed',
+          color: '#e0e0e0'
+        }
+      }
     },
     yAxis: {
       type: 'value',
       name: '扭矩 (N·m)',
       nameLocation: 'middle',
-      nameGap: 50
+      nameGap: 55,
+      nameTextStyle: {
+        fontSize: 13,
+        fontWeight: 'bold'
+      },
+      min: 0,
+      splitLine: {
+        lineStyle: {
+          type: 'dashed',
+          color: '#e0e0e0'
+        }
+      }
     },
     series: []
   }
@@ -574,6 +786,12 @@ const initChart = () => {
 
 // 加载演示数据
 const loadDemoData = () => {
+  // 车间、线体、工具型号、班次选项
+  const workshops = ['一部总装', '一部焊装', '二部总装', '二部焊装', '三部总装', '三部焊装', '发动机工厂', '变速箱工厂']
+  const productionLines = ['总装1线', '总装2线']
+  const toolModels = ['ST31-30', 'ST61-60', 'ST101-80']
+  const shifts = ['白班', '夜班']
+  
   // 生成标准曲线
   standardCurve.value = {
     id: 'standard',
@@ -582,6 +800,11 @@ const loadDemoData = () => {
     maxTorque: 28.5,
     maxAngle: 540,
     uploadTime: '2025-12-13 10:00:00',
+    workshop: '一部总装',
+    productionLine: '总装1线',
+    toolModel: 'ST61-60',
+    snNumber: 'ST61-60-SN0001',
+    shift: '白班',
     data: generatePerfectCurve()
   }
 
@@ -595,6 +818,11 @@ const loadDemoData = () => {
       maxTorque: 28.2,
       maxAngle: 535,
       uploadTime: '2025-12-13 10:15:00',
+      workshop: workshops[Math.floor(Math.random() * workshops.length)],
+      productionLine: productionLines[Math.floor(Math.random() * productionLines.length)],
+      toolModel: toolModels[Math.floor(Math.random() * toolModels.length)],
+      snNumber: `${toolModels[0]}-SN${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+      shift: shifts[Math.floor(Math.random() * shifts.length)],
       data: generatePerfectCurve(0.95)
     },
     {
@@ -605,6 +833,11 @@ const loadDemoData = () => {
       maxTorque: 22.5,
       maxAngle: 520,
       uploadTime: '2025-12-13 10:16:00',
+      workshop: workshops[Math.floor(Math.random() * workshops.length)],
+      productionLine: productionLines[Math.floor(Math.random() * productionLines.length)],
+      toolModel: toolModels[Math.floor(Math.random() * toolModels.length)],
+      snNumber: `${toolModels[1]}-SN${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+      shift: shifts[Math.floor(Math.random() * shifts.length)],
       data: generateSlipCurve()
     },
     {
@@ -615,6 +848,11 @@ const loadDemoData = () => {
       maxTorque: 27.8,
       maxAngle: 545,
       uploadTime: '2025-12-13 10:17:00',
+      workshop: workshops[Math.floor(Math.random() * workshops.length)],
+      productionLine: productionLines[Math.floor(Math.random() * productionLines.length)],
+      toolModel: toolModels[Math.floor(Math.random() * toolModels.length)],
+      snNumber: `${toolModels[2]}-SN${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+      shift: shifts[Math.floor(Math.random() * shifts.length)],
       data: generateStickSlipCurve()
     },
     {
@@ -625,6 +863,11 @@ const loadDemoData = () => {
       maxTorque: 18.4,
       maxAngle: 540,
       uploadTime: '2025-12-13 10:18:00',
+      workshop: workshops[Math.floor(Math.random() * workshops.length)],
+      productionLine: productionLines[Math.floor(Math.random() * productionLines.length)],
+      toolModel: toolModels[Math.floor(Math.random() * toolModels.length)],
+      snNumber: `${toolModels[0]}-SN${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+      shift: shifts[Math.floor(Math.random() * shifts.length)],
       data: generateSlowRiseCurve()
     },
     {
@@ -635,11 +878,16 @@ const loadDemoData = () => {
       maxTorque: 25.0,
       maxAngle: 530,
       uploadTime: '2025-12-13 10:19:00',
+      workshop: workshops[Math.floor(Math.random() * workshops.length)],
+      productionLine: productionLines[Math.floor(Math.random() * productionLines.length)],
+      toolModel: toolModels[Math.floor(Math.random() * toolModels.length)],
+      snNumber: `${toolModels[1]}-SN${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+      shift: shifts[Math.floor(Math.random() * shifts.length)],
       data: generateCrushCurve()
     }
   ]
 
-  selectedCurves.value = curves.value.map(c => c.id)
+  selectedCurves.value = filteredCurves.value.map(c => c.id)
   updateChart()
   performAnalysis()
 }
@@ -794,6 +1042,30 @@ const generateFloatingCurve = () => {
   return data
 }
 
+// 将角度-扭矩数据转换为时间序列数据
+const convertToTimeData = (angleData) => {
+  const timeData = []
+  const angleTimeData = []
+  
+  angleData.forEach(([angle, torque]) => {
+    let time = 0
+    
+    // 根据角度计算对应的时间
+    if (angle <= 90) {
+      time = angle / 180 // 低速认牙
+    } else if (angle <= 360) {
+      time = 0.5 + (angle - 90) / 135 // 快速旋入
+    } else {
+      time = 2.5 + (angle - 360) / 90 // 拧紧阶段
+    }
+    
+    timeData.push([parseFloat(time.toFixed(3)), torque])
+    angleTimeData.push([parseFloat(time.toFixed(3)), angle])
+  })
+  
+  return { timeData, angleTimeData }
+}
+
 // 生成断裂曲线
 const generateBreakCurve = () => {
   const data = []
@@ -815,46 +1087,372 @@ const generateBreakCurve = () => {
   return data
 }
 
-// 更新图表
+// 更新图表（增强版：显示阶段标记和关键参数）
 const updateChart = () => {
   if (!chartInstance) return
 
   const series = []
   const legendData = []
 
+  // 根据曲线类型处理数据
+  const isTimeMode = curveType.value === 'torque-time' || curveType.value === 'angle-time'
+  const isDoubleYMode = curveType.value === 'torque-angle-time'
+
   // 添加标准曲线
-  if (standardCurve.value) {
+  if (standardCurve.value && !isDoubleYMode) {
+    let chartData = standardCurve.value.data
+    
+    // 如果是时间模式，转换数据
+    if (isTimeMode) {
+      const converted = convertToTimeData(standardCurve.value.data)
+      chartData = curveType.value === 'torque-time' ? converted.timeData : converted.angleTimeData
+    }
+    
     series.push({
       name: standardCurve.value.name,
       type: 'line',
-      data: standardCurve.value.data,
-      lineStyle: { width: 3, color: '#f39c12' },
+      data: chartData,
+      lineStyle: { width: 4, color: '#f39c12' },
       itemStyle: { color: '#f39c12' },
       symbol: 'none',
-      emphasis: { disabled: true }
+      emphasis: { disabled: false },
+      markPoint: {
+        data: [
+          { 
+            type: 'max', 
+            name: '最大扭矩',
+            itemStyle: { color: '#f56c6c' },
+            label: {
+              formatter: function(param) {
+                return `峰值\n${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}`
+              }
+            }
+          }
+        ]
+      },
+      markLine: curveType.value === 'torque-angle' ? {
+        silent: false,
+        symbol: ['none', 'none'],
+        lineStyle: {
+          type: 'dashed',
+          width: 2,
+          color: '#909399'
+        },
+        label: {
+          position: 'end',
+          formatter: '{b}',
+          fontSize: 11
+        },
+        data: [
+          { xAxis: 90, name: '认牙→旋入', label: { formatter: '认牙结束' } },
+          { xAxis: 360, name: '旋入→拧紧', label: { formatter: '开始拧紧' } }
+        ]
+      } : undefined,
+      markArea: curveType.value === 'torque-angle' ? {
+        silent: true,
+        itemStyle: {
+          color: 'rgba(243, 156, 18, 0.08)'
+        },
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 11,
+          color: '#666',
+          fontWeight: 'bold'
+        },
+        data: [
+          [
+            { name: '① 低速认牙', xAxis: 0 },
+            { xAxis: 90 }
+          ],
+          [
+            { name: '② 快速旋入', xAxis: 90 },
+            { xAxis: 360 }
+          ],
+          [
+            { name: '③ 拧紧阶段', xAxis: 360 },
+            { xAxis: 540 }
+          ]
+        ]
+      } : undefined
     })
     legendData.push(standardCurve.value.name)
   }
 
   // 添加选中的曲线
-  const selectedCurveData = curves.value.filter(c => selectedCurves.value.includes(c.id))
+  const selectedCurveData = filteredCurves.value.filter(c => selectedCurves.value.includes(c.id))
   const colors = ['#3498db', '#e74c3c', '#2ecc71', '#9b59b6', '#1abc9c']
-  selectedCurveData.forEach((curve, index) => {
-    series.push({
-      name: curve.name,
-      type: 'line',
-      data: curve.data,
-      lineStyle: { width: 2, color: colors[index % colors.length] },
-      itemStyle: { color: colors[index % colors.length] },
-      symbol: 'none'
+  
+  if (isDoubleYMode) {
+    // 扭矩转角-时间模式：为每条曲线生成两条series（扭矩和角度）
+    selectedCurveData.forEach((curve, index) => {
+      const converted = convertToTimeData(curve.data)
+      const color = colors[index % colors.length]
+      
+      // 扭矩曲线
+      series.push({
+        name: `${curve.name}-扭矩`,
+        type: 'line',
+        yAxisIndex: 0,
+        data: converted.timeData,
+        smooth: true,
+        lineStyle: { 
+          width: 2.5, 
+          color: color
+        },
+        itemStyle: { color: color },
+        symbol: 'none',
+        emphasis: {
+          lineStyle: { width: 3 }
+        }
+      })
+      legendData.push(`${curve.name}-扭矩`)
+      
+      // 角度曲线
+      series.push({
+        name: `${curve.name}-转角`,
+        type: 'line',
+        yAxisIndex: 1,
+        data: converted.angleTimeData,
+        smooth: true,
+        lineStyle: { 
+          width: 2, 
+          color: color,
+          type: 'dashed'
+        },
+        itemStyle: { color: color },
+        symbol: 'none',
+        emphasis: {
+          lineStyle: { width: 3 }
+        }
+      })
+      legendData.push(`${curve.name}-转角`)
     })
-    legendData.push(curve.name)
-  })
+  } else {
+    // 其他模式：单Y轴
+    selectedCurveData.forEach((curve, index) => {
+      const isAbnormal = curve.status.includes('异常')
+      let chartData = curve.data
+      
+      // 如果是时间模式，转换数据
+      if (isTimeMode) {
+        const converted = convertToTimeData(curve.data)
+        chartData = curveType.value === 'torque-time' ? converted.timeData : converted.angleTimeData
+      }
+      
+      series.push({
+        name: curve.name,
+        type: 'line',
+        data: chartData,
+        lineStyle: { 
+          width: isAbnormal ? 2.5 : 2, 
+          color: colors[index % colors.length],
+          type: isAbnormal ? 'solid' : 'solid'
+        },
+        itemStyle: { color: colors[index % colors.length] },
+        symbol: 'none',
+        emphasis: {
+          lineStyle: { width: 3 }
+        },
+        // 为异常曲线添加标记
+        markPoint: isAbnormal ? {
+          data: [
+            { 
+              type: 'max', 
+              name: '异常峰值',
+              itemStyle: { color: '#f56c6c' },
+              label: {
+                formatter: function(param) {
+                  return `⚠️ ${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}`
+                }
+              }
+            }
+          ]
+        } : undefined
+      })
+      legendData.push(curve.name)
+    })
+  }
 
   chartInstance.setOption({
-    legend: { data: legendData },
+    legend: { 
+      data: legendData,
+      selected: legendData.reduce((acc, name) => {
+        acc[name] = true
+        return acc
+      }, {})
+    },
     series: series
   })
+}
+
+// 更新曲线类型
+const updateCurveType = () => {
+  if (!chartInstance) return
+  
+  // 曲线类型名称映射
+  const typeNames = {
+    'torque-angle': '扭矩-角度',
+    'torque-time': '扭矩-时间',
+    'torque-speed': '扭矩-转速',
+    'angle-time': '角度-时间',
+    'torque-angle-time': '扭矩转角-时间'
+  }
+  
+  // 重新初始化图表配置
+  const colors = ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#c71585', '#40e0d0']
+  
+  // 根据曲线类型配置坐标轴
+  let xAxisConfig, yAxisConfig, subtitle, yAxisArray
+  
+  switch (curveType.value) {
+    case 'torque-angle': // 扭矩-角度
+      xAxisConfig = {
+        type: 'value',
+        name: '旋入角度 (°)',
+        nameLocation: 'middle',
+        nameGap: 30,
+        min: 0,
+        max: 600
+      }
+      yAxisConfig = {
+        type: 'value',
+        name: '扭矩 (Nm)',
+        nameLocation: 'middle',
+        nameGap: 50,
+        min: 0
+      }
+      subtitle = '扭矩-角度关系 | 三阶段拧紧过程可视化'
+      break
+      
+    case 'torque-time': // 扭矩-时间
+      xAxisConfig = {
+        type: 'value',
+        name: '时间 (s)',
+        nameLocation: 'middle',
+        nameGap: 30,
+        min: 0
+      }
+      yAxisConfig = {
+        type: 'value',
+        name: '扭矩 (Nm)',
+        nameLocation: 'middle',
+        nameGap: 50,
+        min: 0
+      }
+      subtitle = '扭矩-时间关系 | 拧紧过程时序分析'
+      break
+      
+    case 'torque-speed': // 扭矩-转速
+      xAxisConfig = {
+        type: 'value',
+        name: '转速 (rpm)',
+        nameLocation: 'middle',
+        nameGap: 30,
+        min: 0
+      }
+      yAxisConfig = {
+        type: 'value',
+        name: '扭矩 (Nm)',
+        nameLocation: 'middle',
+        nameGap: 50,
+        min: 0
+      }
+      subtitle = '扭矩-转速关系 | 动力学特性分析'
+      break
+      
+    case 'angle-time': // 角度-时间
+      xAxisConfig = {
+        type: 'value',
+        name: '时间 (s)',
+        nameLocation: 'middle',
+        nameGap: 30,
+        min: 0
+      }
+      yAxisConfig = {
+        type: 'value',
+        name: '旋入角度 (°)',
+        nameLocation: 'middle',
+        nameGap: 50,
+        min: 0
+      }
+      subtitle = '角度-时间关系 | 拧紧进程分析'
+      break
+      
+    case 'torque-angle-time': // 扭矩转角-时间（双Y轴）
+      xAxisConfig = {
+        type: 'value',
+        name: '时间 (s)',
+        nameLocation: 'middle',
+        nameGap: 30,
+        min: 0,
+        max: 5,
+        axisLabel: {
+          formatter: '{value}s'
+        }
+      }
+      yAxisArray = [
+        {
+          type: 'value',
+          name: '扭矩 (Nm)',
+          nameLocation: 'middle',
+          nameGap: 50,
+          min: 0,
+          max: 40,
+          position: 'left',
+          axisLabel: {
+            formatter: '{value} Nm'
+          },
+          splitLine: {
+            lineStyle: {
+              type: 'dashed',
+              color: '#e0e0e0'
+            }
+          }
+        },
+        {
+          type: 'value',
+          name: '旋入角度 (°)',
+          nameLocation: 'middle',
+          nameGap: 50,
+          min: 0,
+          max: 600,
+          position: 'right',
+          axisLabel: {
+            formatter: '{value}°'
+          },
+          splitLine: {
+            show: false
+          }
+        }
+      ]
+      subtitle = '扭矩和转角随时间同步变化 | 拧紧全过程综合分析'
+      break
+  }
+  
+  // 重建图表配置
+  const option = {
+    title: {
+      text: '拧紧曲线智能对比分析',
+      subtext: subtitle,
+      left: 'center'
+    },
+    xAxis: xAxisConfig
+  }
+  
+  // 如果是双Y轴模式
+  if (curveType.value === 'torque-angle-time') {
+    option.yAxis = yAxisArray
+  } else {
+    option.yAxis = yAxisConfig
+  }
+  
+  chartInstance.setOption(option, false)
+  
+  // 重新生成series数据
+  updateChart()
+  
+  ElMessage.success(`已切换到${typeNames[curveType.value]}曲线`)
 }
 
 // 执行智能分析
@@ -1221,7 +1819,7 @@ const viewCurveDetail = (curve) => {
   })
 }
 
-// 渲染详情图表
+// 渲染详情图表（增强版：显示关键参数和阶段分析）
 const renderDetailChart = (curve) => {
   const chartDom = document.getElementById('detailChart')
   if (detailChartInstance) {
@@ -1229,31 +1827,194 @@ const renderDetailChart = (curve) => {
   }
   detailChartInstance = echarts.init(chartDom)
   
+  // 计算关键参数
+  const maxTorque = Math.max(...curve.data.map(d => d[1]))
+  const maxTorqueAngle = curve.data.find(d => d[1] === maxTorque)?.[0] || 0
+  const avgTorque = (curve.data.reduce((sum, d) => sum + d[1], 0) / curve.data.length).toFixed(2)
+  
+  // 计算拧紧时间（基于角度估算）
+  let tighteningTime = 0
+  const finalAngle = curve.data[curve.data.length - 1]?.[0] || 0
+  if (finalAngle <= 90) {
+    tighteningTime = (finalAngle / 180).toFixed(2)
+  } else if (finalAngle <= 360) {
+    tighteningTime = (0.5 + (finalAngle - 90) / 135).toFixed(2)
+  } else {
+    tighteningTime = (2.5 + (finalAngle - 360) / 90).toFixed(2)
+  }
+  
+  // 计算平均斜率（弹性段）
+  const elasticData = curve.data.filter(d => d[0] >= 360 && d[0] <= 480)
+  let avgSlope = 0
+  if (elasticData.length > 1) {
+    const deltaY = elasticData[elasticData.length - 1][1] - elasticData[0][1]
+    const deltaX = elasticData[elasticData.length - 1][0] - elasticData[0][0]
+    avgSlope = (deltaY / deltaX).toFixed(4)
+  }
+  
   const option = {
     title: {
       text: curve.name,
-      left: 'center'
+      subtext: `最大扭矩: ${maxTorque}Nm @ ${maxTorqueAngle}° | 平均扭矩: ${avgTorque}Nm | 拧紧时间: ${tighteningTime}s | 弹性段斜率: ${avgSlope}`,
+      left: 'center',
+      textStyle: { fontSize: 16, fontWeight: 'bold' },
+      subtextStyle: { fontSize: 11, color: '#666' }
     },
     tooltip: {
       trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        label: {
+          backgroundColor: '#505765'
+        }
+      },
       formatter: (params) => {
-        return `角度: ${params[0].axisValue}°<br/>扭矩: ${params[0].value} N·m`
+        const angle = params[0].axisValue
+        const torque = params[0].value
+        
+        // 判断阶段
+        let phase = ''
+        let speed = 0
+        if (angle <= 90) {
+          phase = '低速认牙阶段'
+          speed = 180
+        } else if (angle <= 360) {
+          phase = '快速旋入阶段'
+          speed = 800
+        } else {
+          phase = '拧紧阶段（弹性段）'
+          speed = 300
+        }
+        
+        // 估算时间
+        let time = 0
+        if (angle <= 90) {
+          time = (angle / 180).toFixed(2)
+        } else if (angle <= 360) {
+          time = (0.5 + (angle - 90) / 135).toFixed(2)
+        } else {
+          time = (2.5 + (angle - 360) / 90).toFixed(2)
+        }
+        
+        return `
+          <div style="padding: 5px;">
+            <div style="font-weight:bold;margin-bottom:5px;">角度: ${angle}°</div>
+            <div style="margin-bottom:3px;">扭矩: <strong>${torque} N·m</strong></div>
+            <div style="margin-bottom:3px;">阶段: <span style="color:#409eff;">${phase}</span></div>
+            <div style="margin-bottom:3px;">速度: ${speed} rpm</div>
+            <div style="color:#909399;">时间: ~${time}s</div>
+          </div>
+        `
       }
+    },
+    grid: {
+      left: '10%',
+      right: '8%',
+      top: '22%',
+      bottom: '12%'
     },
     xAxis: {
       type: 'value',
-      name: '角度 (度)'
+      name: '旋入角度 (°)',
+      nameLocation: 'middle',
+      nameGap: 30,
+      splitLine: {
+        lineStyle: {
+          type: 'dashed',
+          color: '#e0e0e0'
+        }
+      }
     },
     yAxis: {
       type: 'value',
-      name: '扭矩 (N·m)'
+      name: '扭矩 (N·m)',
+      nameLocation: 'middle',
+      nameGap: 50,
+      splitLine: {
+        lineStyle: {
+          type: 'dashed',
+          color: '#e0e0e0'
+        }
+      }
     },
     series: [{
       type: 'line',
       data: curve.data,
-      smooth: true,
-      lineStyle: { width: 3 },
-      areaStyle: { opacity: 0.3 }
+      smooth: false,
+      lineStyle: { 
+        width: 3,
+        color: curve.status.includes('异常') ? '#f56c6c' : '#409eff'
+      },
+      areaStyle: { 
+        opacity: 0.2,
+        color: {
+          type: 'linear',
+          x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: curve.status.includes('异常') ? 'rgba(245, 108, 108, 0.4)' : 'rgba(64, 158, 255, 0.4)' },
+            { offset: 1, color: 'rgba(255, 255, 255, 0.05)' }
+          ]
+        }
+      },
+      markPoint: {
+        data: [
+          { 
+            type: 'max', 
+            name: '最大扭矩',
+            itemStyle: { color: '#f39c12' },
+            label: {
+              formatter: function(param) {
+                return `峰值\n${param.value}Nm\n@ ${param.coord[0]}°`
+              },
+              fontSize: 11
+            }
+          }
+        ]
+      },
+      markLine: {
+        silent: false,
+        symbol: ['none', 'none'],
+        lineStyle: {
+          type: 'dashed',
+          width: 1.5,
+          color: '#909399'
+        },
+        label: {
+          position: 'end',
+          formatter: '{b}',
+          fontSize: 10
+        },
+        data: [
+          { xAxis: 90, name: '认牙结束', label: { formatter: '认牙' } },
+          { xAxis: 360, name: '旋入结束', label: { formatter: '拧紧' } }
+        ]
+      },
+      markArea: {
+        silent: true,
+        itemStyle: {
+          color: 'rgba(64, 158, 255, 0.05)'
+        },
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 10,
+          color: '#666'
+        },
+        data: [
+          [
+            { name: '低速认牙', xAxis: 0 },
+            { xAxis: 90 }
+          ],
+          [
+            { name: '快速旋入', xAxis: 90 },
+            { xAxis: 360 }
+          ],
+          [
+            { name: '拧紧阶段', xAxis: 360 },
+            { xAxis: curve.data[curve.data.length - 1]?.[0] || 540 }
+          ]
+        ]
+      }
     }]
   }
   
@@ -1511,6 +2272,22 @@ const toggleLegend = () => {
 
 .curve-list-card {
   height: calc(100vh - 200px);
+}
+
+.curve-filters {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.curve-filters .el-form-item {
+  margin-bottom: 12px;
+}
+
+.curve-filters .el-select,
+.curve-filters .el-input {
+  width: 100%;
 }
 
 .curve-section {

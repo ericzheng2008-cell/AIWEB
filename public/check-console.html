@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>控制台错误捕获器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Microsoft YaHei', sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h1 {
+      color: #1890ff;
+      margin-bottom: 20px;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .success {
+      background: #f6ffed;
+      border: 1px solid #b7eb8f;
+      color: #52c41a;
+    }
+    .error {
+      background: #fff2f0;
+      border: 1px solid #ffccc7;
+      color: #ff4d4f;
+    }
+    .warning {
+      background: #fffbe6;
+      border: 1px solid #ffe58f;
+      color: #faad14;
+    }
+    #errorLog {
+      background: #2d2d2d;
+      color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+      margin: 20px 0;
+    }
+    .error-item {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(255, 77, 79, 0.1);
+      border-left: 3px solid #ff4d4f;
+    }
+    .btn {
+      display: inline-block;
+      background: #1890ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 10px 5px;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background: #096dd9;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 JavaScript 错误捕获器</h1>
+    
+    <div class="status success" id="statusMessage">
+      ✅ 页面已加载，正在监听错误...
+    </div>
+
+    <div class="test-section">
+      <h3>测试主应用</h3>
+      <p>点击下面的按钮在新窗口中打开主应用，并自动捕获错误：</p>
+      <button class="btn" onclick="openMainApp()">🚀 打开主应用并捕获错误</button>
+    </div>
+
+    <h3>捕获到的错误：</h3>
+    <div id="errorLog">
+      <div style="color: #52c41a;">等待错误信息...</div>
+    </div>
+
+    <div class="test-section">
+      <h3>测试步骤：</h3>
+      <ol>
+        <li>点击上方"打开主应用并捕获错误"按钮</li>
+        <li>等待5秒</li>
+        <li>返回本页面查看错误日志</li>
+        <li>把错误信息复制给开发者</li>
+      </ol>
+    </div>
+
+    <button class="btn" onclick="copyErrors()">📋 复制所有错误</button>
+    <button class="btn" onclick="clearErrors()">🗑️ 清空日志</button>
+  </div>
+
+  <script>
+    let errors = [];
+    const errorLog = document.getElementById('errorLog');
+
+    // 捕获全局错误
+    window.addEventListener('error', function(event) {
+      const error = {
+        type: 'Error',
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        stack: event.error?.stack,
+        time: new Date().toLocaleTimeString()
+      };
+      errors.push(error);
+      displayError(error);
+    });
+
+    // 捕获Promise错误
+    window.addEventListener('unhandledrejection', function(event) {
+      const error = {
+        type: 'Promise Rejection',
+        message: event.reason?.message || event.reason,
+        stack: event.reason?.stack,
+        time: new Date().toLocaleTimeString()
+      };
+      errors.push(error);
+      displayError(error);
+    });
+
+    function displayError(error) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-item';
+      errorDiv.innerHTML = `
+        <strong>[${error.time}] ${error.type}:</strong><br>
+        ${error.message}<br>
+        ${error.filename ? `文件: ${error.filename}:${error.lineno}:${error.colno}<br>` : ''}
+        ${error.stack ? `<pre style="font-size: 12px; margin-top: 5px;">${error.stack}</pre>` : ''}
+      `;
+      
+      if (errorLog.firstChild.textContent === '等待错误信息...') {
+        errorLog.innerHTML = '';
+      }
+      errorLog.appendChild(errorDiv);
+      
+      document.getElementById('statusMessage').className = 'status error';
+      document.getElementById('statusMessage').innerHTML = `❌ 检测到 ${errors.length} 个错误`;
+    }
+
+    function openMainApp() {
+      const win = window.open('http://localhost:3002/', '_blank');
+      
+      if (win) {
+        setTimeout(() => {
+          alert('请查看本页面的错误日志部分！\n\n如果有错误，会显示在下方的黑色区域中。');
+        }, 5000);
+      } else {
+        alert('弹窗被阻止！请允许弹窗或手动打开：http://localhost:3002/');
+      }
+    }
+
+    function copyErrors() {
+      if (errors.length === 0) {
+        alert('没有错误可复制');
+        return;
+      }
+      
+      const text = errors.map(e => 
+        `[${e.time}] ${e.type}: ${e.message}\n${e.filename ? `文件: ${e.filename}:${e.lineno}` : ''}\n${e.stack || ''}`
+      ).join('\n\n---\n\n');
+      
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ 错误信息已复制到剪贴板！');
+      }).catch(() => {
+        prompt('请手动复制以下内容:', text);
+      });
+    }
+
+    function clearErrors() {
+      errors = [];
+      errorLog.innerHTML = '<div style="color: #52c41a;">等待错误信息...</div>';
+      document.getElementById('statusMessage').className = 'status success';
+      document.getElementById('statusMessage').innerHTML = '✅ 页面已加载，正在监听错误...';
+    }
+
+    // 测试是否能访问主应用
+    fetch('http://localhost:3002/')
+      .then(response => {
+        if (response.ok) {
+          console.log('✅ 主应用服务器可访问');
+        } else {
+          displayError({
+            type: 'Network Error',
+            message: `服务器返回状态码: ${response.status}`,
+            time: new Date().toLocaleTimeString()
+          });
+        }
+      })
+      .catch(error => {
+        displayError({
+          type: 'Network Error',
+          message: `无法连接到主应用: ${error.message}`,
+          time: new Date().toLocaleTimeString()
+        });
+      });
+  </script>
+</body>
+</html>

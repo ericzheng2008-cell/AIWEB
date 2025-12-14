@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>测试页面</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    h1 { color: #667eea; }
+    .success { color: #52c41a; font-size: 48px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="success">✅</div>
+    <h1>服务器正常！</h1>
+    <p>如果你能看到这个页面，说明服务器工作正常</p>
+    <p><strong>主应用空白的原因是前端代码问题</strong></p>
+    <hr>
+    <p style="color: red; font-weight: bold;">请按 F12 打开开发者工具</p>
+    <p>查看 Console 标签的错误信息</p>
+  </div>
+  <script>
+    console.log('✅ 测试页面加载成功');
+  </script>
+</body>
+</html>

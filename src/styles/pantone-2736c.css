@@ -1,0 +1,98 @@
+/**
+ * PANTONE 2736C 配色方案
+ * 主色：#0047BB (PANTONE 2736C)
+ * 辅助色：#0066dd, #003d99, #e6f0ff
+ * 用于除首页外的所有页面
+ */
+
+/* 主色定义 */
+:root {
+  --pantone-2736c: #0047BB;
+  --pantone-2736c-light: #0066dd;
+  --pantone-2736c-dark: #003d99;
+  --pantone-2736c-lightest: #e6f0ff;
+  --pantone-2736c-alpha-10: rgba(0, 71, 187, 0.1);
+  --pantone-2736c-alpha-20: rgba(0, 71, 187, 0.2);
+  --pantone-2736c-alpha-30: rgba(0, 71, 187, 0.3);
+}
+
+/* 按钮 */
+.btn-pantone-2736c {
+  background: var(--pantone-2736c);
+  border-color: var(--pantone-2736c);
+  color: #fff;
+}
+
+.btn-pantone-2736c:hover {
+  background: var(--pantone-2736c-light);
+  border-color: var(--pantone-2736c-light);
+}
+
+/* 渐变背景 */
+.bg-gradient-pantone-2736c {
+  background: linear-gradient(135deg, var(--pantone-2736c) 0%, var(--pantone-2736c-light) 100%);
+}
+
+/* 文字颜色 */
+.text-pantone-2736c {
+  color: var(--pantone-2736c);
+}
+
+/* 边框颜色 */
+.border-pantone-2736c {
+  border-color: var(--pantone-2736c);
+}
+
+/* 背景颜色 */
+.bg-pantone-2736c {
+  background-color: var(--pantone-2736c);
+}
+
+.bg-pantone-2736c-light {
+  background-color: var(--pantone-2736c-lightest);
+}
+
+/* 阴影效果 */
+.shadow-pantone-2736c {
+  box-shadow: 0 4px 12px rgba(0, 71, 187, 0.15);
+}
+
+.shadow-pantone-2736c-lg {
+  box-shadow: 0 8px 24px rgba(0, 71, 187, 0.2);
+}
+
+/* 卡片悬停效果 */
+.card-hover-pantone-2736c {
+  transition: all 0.3s ease;
+}
+
+.card-hover-pantone-2736c:hover {
+  border-color: var(--pantone-2736c);
+  box-shadow: 0 8px 20px rgba(0, 71, 187, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Element Plus 覆盖样式 */
+.el-button--primary {
+  background: var(--pantone-2736c) !important;
+  border-color: var(--pantone-2736c) !important;
+}
+
+.el-button--primary:hover {
+  background: var(--pantone-2736c-light) !important;
+  border-color: var(--pantone-2736c-light) !important;
+}
+
+.el-link--primary {
+  color: var(--pantone-2736c) !important;
+}
+
+.el-link--primary:hover {
+  color: var(--pantone-2736c-light) !important;
+}
+
+.el-tag--primary {
+  background: var(--pantone-2736c-lightest) !important;
+  color: var(--pantone-2736c) !important;
+  border-color: var(--pantone-2736c) !important;
+}

@@ -39,11 +39,11 @@ echo.
 echo ========================================
 echo   预期输出:
 echo   VITE v5.x.x  ready in xxx ms
-echo   ➜  Local:   http://localhost:3000/
+echo   ➜  Local:   http://localhost:3002/
 echo ========================================
 echo.
 echo 如果看到上述信息，请在浏览器打开:
-echo http://localhost:3000
+echo http://localhost:3002
 echo.
 echo 如果报错，请截图完整错误信息
 echo.

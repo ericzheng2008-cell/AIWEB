@@ -2,30 +2,97 @@ import { defineStore } from 'pinia'
 
 export const usePageContentStore = defineStore('pageContent', {
   state: () => ({
+    // 导航栏配置版本号（更新配置时递增此版本号）
+    navConfigVersion: '2.2.0', // v2.2.0 - 补充AI智能体第7个子菜单：产品技术销售小课堂
+    
     // 导航栏配置
-    navItems: JSON.parse(localStorage.getItem('navItems') || JSON.stringify([
+    navItems: (() => {
+      const currentVersion = '2.3.0'
+      const savedVersion = localStorage.getItem('navConfigVersion')
+      
+      // 如果版本号不匹配，忽略缓存，使用新配置
+      if (savedVersion !== currentVersion) {
+        console.log('🔄 检测到导航配置更新，加载新配置...')
+        localStorage.setItem('navConfigVersion', currentVersion)
+        const newNavItems = [
       { id: 'home', name: { 'zh-CN': '首页', 'en-US': 'Home' }, path: '/', order: 1, visible: true },
-      { id: 'products', name: { 'zh-CN': '产品和服务', 'en-US': 'Products & Services' }, path: '/products-services', order: 2, visible: true },
-      { id: 'divisions', name: { 'zh-CN': '事业部', 'en-US': 'Divisions' }, path: '/divisions', order: 3, visible: true },
-      { id: 'solutions', name: { 'zh-CN': '应用案例', 'en-US': 'Solutions' }, path: '/solutions', order: 4, visible: true },
+      { 
+        id: 'products', 
+        name: { 'zh-CN': '产品与服务', 'en-US': 'Products & Services' }, 
+        path: '/products-services', 
+        order: 2, 
+        visible: true,
+        children: [
+          { id: 'electric-tools', name: { 'zh-CN': '电动工具', 'en-US': 'Electric Tools' }, path: '/products-services?category=electric', order: 1, visible: true },
+          { id: 'pneumatic-tools', name: { 'zh-CN': '气动工具', 'en-US': 'Pneumatic Tools' }, path: '/products-services?category=pneumatic', order: 2, visible: true },
+          { id: 'manual-tools', name: { 'zh-CN': '手动工具', 'en-US': 'Manual Tools' }, path: '/products-services?category=manual', order: 3, visible: true },
+          { id: 'measurement-tools', name: { 'zh-CN': '测量工具', 'en-US': 'Measurement Tools' }, path: '/products-services?category=measurement', order: 4, visible: true },
+          { id: 'automated-systems', name: { 'zh-CN': '自动化系统', 'en-US': 'Automation Systems' }, path: '/products-services?category=automation', order: 5, visible: true },
+          { id: 'smart-solutions', name: { 'zh-CN': '智能解决方案', 'en-US': 'Smart Solutions' }, path: '/products-services?category=smart', order: 6, visible: true }
+        ]
+      },
+      { 
+        id: 'divisions', 
+        name: { 'zh-CN': '事业部', 'en-US': 'Business Divisions' }, 
+        path: '/divisions', 
+        order: 3, 
+        visible: true,
+        children: [
+          { id: 'division-assembly', name: { 'zh-CN': '工业智能装配事业部', 'en-US': 'Intelligent Assembly Division' }, path: '/divisions?id=1', order: 1, visible: true },
+          { id: 'division-manufacturing', name: { 'zh-CN': '工业智能智造事业部', 'en-US': 'Intelligent Manufacturing Division' }, path: '/divisions?id=2', order: 2, visible: true },
+          { id: 'division-oem', name: { 'zh-CN': '工业配套事业部', 'en-US': 'Industrial OEM Division' }, path: '/divisions?id=3', order: 3, visible: true },
+          { id: 'division-power', name: { 'zh-CN': '动力装配事业部', 'en-US': 'Power Assembly Division' }, path: '/divisions?id=4', order: 4, visible: true },
+          { id: 'division-auto', name: { 'zh-CN': '汽车部件事业部', 'en-US': 'Automotive Parts Division' }, path: '/divisions?id=5', order: 5, visible: true },
+          { id: 'division-mingsheng', name: { 'zh-CN': '明升科技事业部', 'en-US': 'Mingsheng Technology Division' }, path: '/divisions?id=6', order: 6, visible: true },
+          { id: 'division-tools', name: { 'zh-CN': '刀具油品事业部', 'en-US': 'Tools & Lubricants Division' }, path: '/divisions?id=7', order: 7, visible: true },
+          { id: 'division-marketing', name: { 'zh-CN': '网营事业部', 'en-US': 'E-Commerce Division' }, path: '/divisions?id=8', order: 8, visible: true }
+        ]
+      },
+      { 
+        id: 'solutions', 
+        name: { 'zh-CN': '应用案例', 'en-US': 'Case Studies' }, 
+        path: '/solutions', 
+        order: 4, 
+        visible: true,
+        children: [
+          { id: 'automotive', name: { 'zh-CN': '汽车制造', 'en-US': 'Automotive Manufacturing' }, path: '/solutions?category=automotive', order: 1, visible: true },
+          { id: 'aerospace', name: { 'zh-CN': '航空航天', 'en-US': 'Aerospace Industry' }, path: '/solutions?category=aerospace', order: 2, visible: true },
+          { id: 'electronics', name: { 'zh-CN': '电子电器', 'en-US': 'Electronics & Appliances' }, path: '/solutions?category=electronics', order: 3, visible: true },
+          { id: 'machinery', name: { 'zh-CN': '机械制造', 'en-US': 'Machinery Manufacturing' }, path: '/solutions?category=machinery', order: 4, visible: true },
+          { id: 'energy', name: { 'zh-CN': '新能源', 'en-US': 'Renewable Energy' }, path: '/solutions?category=energy', order: 5, visible: true },
+          { id: 'rail', name: { 'zh-CN': '轨道交通', 'en-US': 'Rail Transportation' }, path: '/solutions?category=rail', order: 6, visible: true }
+        ]
+      },
       { 
         id: 'aiagents', 
-        name: { 'zh-CN': 'AI智能体', 'en-US': 'AI Agents' }, 
+        name: { 'zh-CN': 'AI智能体', 'en-US': 'AI Solutions' }, 
         path: '/ai-agents', 
         order: 5, 
         visible: true,
         children: [
-          { id: 'equipment-dashboard', name: { 'zh-CN': '数字监控驾驶舱', 'en-US': 'Equipment Dashboard' }, path: '/equipment-dashboard', order: 1, visible: true },
-          { id: 'tool-selector', name: { 'zh-CN': '工具选型', 'en-US': 'Tool Selector' }, path: '/tool-selector', order: 2, visible: true },
-          { id: 'equipment-lifecycle', name: { 'zh-CN': '设备生命周期', 'en-US': 'Equipment Lifecycle' }, path: '/equipment-lifecycle', order: 3, visible: true },
-          { id: 'fault-tracking', name: { 'zh-CN': '工单管理', 'en-US': 'Work Orders' }, path: '/fault-tracking', order: 4, visible: true },
-          { id: 'curve-analysis', name: { 'zh-CN': '曲线分析', 'en-US': 'Curve Analysis' }, path: '/curve-analysis', order: 5, visible: true }
+          { id: 'equipment-dashboard', name: { 'zh-CN': '数字监控驾驶舱', 'en-US': 'Digital Monitoring Dashboard' }, path: '/equipment-dashboard', order: 1, visible: true },
+          { id: 'tool-selector', name: { 'zh-CN': '工具选型', 'en-US': 'Tool Selection Advisor' }, path: '/tool-selector', order: 2, visible: true },
+          { id: 'tightening-data', name: { 'zh-CN': '拧紧数据采集分析', 'en-US': 'Torque Data Analytics' }, path: '/tightening-data', order: 3, visible: true },
+          { id: 'equipment-lifecycle', name: { 'zh-CN': '设备生命周期', 'en-US': 'Equipment Lifecycle Management' }, path: '/equipment-lifecycle', order: 4, visible: true },
+          { id: 'fault-tracking', name: { 'zh-CN': '工单管理', 'en-US': 'Work Order Management' }, path: '/fault-tracking', order: 5, visible: true },
+          { id: 'curve-analysis', name: { 'zh-CN': '曲线分析', 'en-US': 'Curve Analysis' }, path: '/curve-analysis', order: 6, visible: true },
+          { id: 'tech-classroom', name: { 'zh-CN': '产品技术销售小课堂', 'en-US': 'Product Tech Training' }, path: '/tech-classroom', order: 7, visible: true },
+          { id: 'process-verification', name: { 'zh-CN': '拧紧工艺改进与验证', 'en-US': 'Process Optimization & Verification' }, path: '/process-verification', order: 8, visible: true }
         ]
       },
       { id: 'about', name: { 'zh-CN': '关于我们', 'en-US': 'About Us' }, path: '/about', order: 6, visible: true },
       { id: 'service', name: { 'zh-CN': '服务与支持', 'en-US': 'Service & Support' }, path: '/service', order: 7, visible: true },
       { id: 'contact', name: { 'zh-CN': '联系我们', 'en-US': 'Contact Us' }, path: '/contact', order: 8, visible: true }
-    ])),
+        ]
+        localStorage.setItem('navItems', JSON.stringify(newNavItems))
+        return newNavItems
+      }
+      
+      // 使用缓存的配置
+      return JSON.parse(localStorage.getItem('navItems') || JSON.stringify([
+        { id: 'home', name: { 'zh-CN': '首页', 'en-US': 'Home' }, path: '/', order: 1, visible: true }
+      ]))
+    })(),
     
     // 页面内容配置
     pages: JSON.parse(localStorage.getItem('pageContents') || JSON.stringify({

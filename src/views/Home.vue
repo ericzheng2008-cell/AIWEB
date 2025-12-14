@@ -58,13 +58,15 @@
     <section class="section ai-agents-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">AI智能体 / AI Agents</h2>
-          <p class="section-desc">基于人工智能的专业工业解决方案</p>
+          <h2 class="section-title">安彤智能体 / ANTOM AI Agents</h2>
+          <p class="section-desc">基于人工智能的专业工业解决方案 | 自主学习·主动思考·持续进化</p>
         </div>
         <div class="agents-grid">
           <div v-for="agent in aiAgents" :key="agent.id" 
                class="agent-card"
+               :class="{ 'agent-card-new': agent.badge }"
                @click="goToAgent(agent)">
+            <el-tag v-if="agent.badge" type="danger" size="small" class="agent-badge">{{ agent.badge }}</el-tag>
             <div class="agent-icon">
               <el-icon :size="48"><component :is="agent.icon" /></el-icon>
             </div>
@@ -255,21 +257,57 @@ const aiAgents = ref([
     name: '拧紧工具选型与工艺改进', 
     description: '智能分析工艺需求，推荐最优拧紧工具方案', 
     icon: 'Tools',
-    tags: ['工具选型', '工艺优化', 'AI推荐']
+    tags: ['工具选型', '工艺优化', 'AI推荐'],
+    path: '/tool-selector'
   },
   { 
     id: 2, 
-    name: '服务状态查询', 
-    description: '实时查询设备服务状态与维护记录', 
-    icon: 'Search',
-    tags: ['状态监控', '服务追踪', '实时查询']
+    name: '数字监控驾驶舱', 
+    description: '可视化数字监控中心，实时监控设备状态、维护流程、零配件订货状态', 
+    icon: 'DataAnalysis',
+    tags: ['实时监控', '可视化数据', '智能预警'],
+    path: '/equipment-dashboard',
+    badge: '新功能'
   },
   { 
     id: 3, 
-    name: '智能质检助手', 
-    description: 'AI辅助质量检测，提升产品合格率', 
-    icon: 'View',
-    tags: ['质量检测', 'AI识别', '自动化']
+    name: '设备全生命周期管理', 
+    description: '关键设备资产管理、ROI分析、保养预测、成本优化', 
+    icon: 'Box',
+    tags: ['设备档案', 'ROI分析', 'AI保养预测'],
+    path: '/equipment-lifecycle'
+  },
+  { 
+    id: 4, 
+    name: '故障工单管理', 
+    description: '全流程工单管理系统，从创建到追踪到完成', 
+    icon: 'List',
+    tags: ['工单创建', '进度追踪', '历史记录'],
+    path: '/fault-tracking'
+  },
+  { 
+    id: 5, 
+    name: '拧紧曲线对比分析', 
+    description: '专业的拧紧曲线分析工具，支持多曲线对比、智能诊断', 
+    icon: 'TrendCharts',
+    tags: ['曲线对比', 'AI诊断', '工艺建议'],
+    path: '/curve-analysis'
+  },
+  { 
+    id: 6, 
+    name: '拧紧数据采集分析', 
+    description: '基于Open Protocol实时采集PF4000/PF8000控制器数据，Cpk分析+智能报警', 
+    icon: 'DataAnalysis',
+    tags: ['数据采集', 'Cpk分析', '异常报警'],
+    path: '/tightening-data'
+  },
+  { 
+    id: 7, 
+    name: '产品技术销售小课堂', 
+    description: '拧紧工具产品技术知识库，涵盖产品介绍、技术规格、应用案例', 
+    icon: 'Reading',
+    tags: ['产品知识', '技术规格', '应用案例'],
+    path: '/tech-classroom'
   }
 ])
 
@@ -364,7 +402,11 @@ const handleBannerClick = (banner) => {
 }
 
 const goToAgent = (agent) => {
-  router.push(`/ai-agent/${agent.id}`)
+  if (agent.path) {
+    router.push(agent.path)
+  } else {
+    router.push(`/ai-agent/${agent.id}`)
+  }
 }
 </script>
 
@@ -623,7 +665,7 @@ const goToAgent = (agent) => {
   line-height: 1.6;
 }
 
-/* AI智能体板块 */
+/* 安彤智能体板块 */
 .ai-agents-section {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 80px 0;
@@ -649,6 +691,7 @@ const goToAgent = (agent) => {
   transition: all 0.3s ease;
   border: 2px solid transparent;
   backdrop-filter: blur(10px);
+  position: relative;
 }
 
 .agent-card:hover {
@@ -656,6 +699,47 @@ const goToAgent = (agent) => {
   border-color: #fff;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
   transform: translateY(-8px);
+}
+
+/* 新功能卡片样式 */
+.agent-card-new {
+  background: rgba(255, 245, 245, 0.98);
+  border: 2px solid rgba(255, 107, 107, 0.3);
+  animation: cardPulse 2s infinite;
+}
+
+.agent-card-new:hover {
+  background: #fff5f5;
+  border-color: #ff6b6b;
+  box-shadow: 0 12px 32px rgba(255, 107, 107, 0.3);
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 8px rgba(255, 107, 107, 0.2);
+  }
+}
+
+/* 新功能徽章 */
+.agent-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-weight: 600;
+  animation: badgeBounce 1s infinite;
+  z-index: 1;
+}
+
+@keyframes badgeBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .agent-icon {
