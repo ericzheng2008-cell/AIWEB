@@ -3,11 +3,11 @@ import { defineStore } from 'pinia'
 export const usePageContentStore = defineStore('pageContent', {
   state: () => ({
     // 导航栏配置版本号（更新配置时递增此版本号）
-    navConfigVersion: '2.2.0', // v2.2.0 - 补充AI智能体第7个子菜单：产品技术销售小课堂
+    navConfigVersion: '2.4.0', // v2.4.0 - 统一第1个智能体名称为"拧紧工具选型"
     
     // 导航栏配置
     navItems: (() => {
-      const currentVersion = '2.3.0'
+      const currentVersion = '2.4.0'
       const savedVersion = localStorage.getItem('navConfigVersion')
       
       // 如果版本号不匹配，忽略缓存，使用新配置
