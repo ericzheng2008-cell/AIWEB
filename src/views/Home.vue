@@ -68,7 +68,7 @@
                @click="goToAgent(agent)">
             <el-tag v-if="agent.badge" type="danger" size="small" class="agent-badge">{{ agent.badge }}</el-tag>
             <div class="agent-icon">
-              <el-icon :size="48"><component :is="agent.icon" /></el-icon>
+              <el-icon><component :is="agent.icon" /></el-icon>
             </div>
             <h3>{{ agent.name }}</h3>
             <p>{{ agent.description }}</p>
@@ -183,6 +183,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useCmsAdvancedStore } from '../store/cmsAdvanced'
 import { usePageContentStore } from '../store/pageContent'
+import { useProductsServicesStore } from '../store/productsServices'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 
@@ -190,6 +191,7 @@ const router = useRouter()
 const { t, locale } = useI18n()
 const cmsStore = useCmsAdvancedStore()
 const pageContentStore = usePageContentStore()
+const productsStore = useProductsServicesStore()
 
 // 从store获取首页板块数据
 const homeContent = computed(() => pageContentStore.pages.home || {})
@@ -235,7 +237,7 @@ const banners = ref([
 
 // 从store获取产品大类（1级分类）
 const productSeries = computed(() => {
-  return cmsStore.productCategories.map(category => ({
+  return productsStore.visibleLevel1Categories.map(category => ({
     id: category.id,
     name: category.name[locale.value] || category.name['zh-CN'],
     description: category.description[locale.value] || category.description['zh-CN'],
@@ -308,6 +310,15 @@ const aiAgents = ref([
     icon: 'Reading',
     tags: ['产品知识', '技术规格', '应用案例'],
     path: '/tech-classroom'
+  },
+  { 
+    id: 8, 
+    name: '拧紧工艺改进与验证', 
+    description: 'PSE拧紧程序参数推荐，多维度工艺条件筛选，三种控制策略分析', 
+    icon: 'Setting',
+    tags: ['PSE参数', '工艺验证', '策略分析'],
+    path: '/process-verification',
+    badge: '新功能'
   }
 ])
 
@@ -377,8 +388,8 @@ const offices = computed(() => {
 })
 
 const goToProducts = (series) => {
-  // 跳转到产品分类页面（层级展示）
-  router.push(`/product-category/${series.id}`)
+  // 跳转到产品与服务页面
+  router.push('/products-services')
 }
 
 const goToSolution = (solution) => {
@@ -561,6 +572,18 @@ const goToAgent = (agent) => {
   gap: 30px;
 }
 
+@media (max-width: 1600px) {
+  .series-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .series-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .series-card {
   background: #fff;
   border-radius: 8px;
@@ -618,6 +641,24 @@ const goToAgent = (agent) => {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+@media (max-width: 1600px) {
+  .agents-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .agents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .agents-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* 解决方案 */
@@ -678,13 +719,13 @@ const goToAgent = (agent) => {
 
 .agents-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }
 
 .agent-card {
   background: rgba(255, 255, 255, 0.95);
-  padding: 40px 28px;
+  padding: 24px 20px;
   border-radius: 12px;
   text-align: center;
   cursor: pointer;
@@ -743,22 +784,26 @@ const goToAgent = (agent) => {
 }
 
 .agent-icon {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   color: #667eea;
 }
 
+.agent-icon .el-icon {
+  font-size: 40px;
+}
+
 .agent-card h3 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: #1a1a1a;
 }
 
 .agent-card p {
   color: #666;
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
 
 .agent-tags {
