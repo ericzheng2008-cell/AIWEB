@@ -220,6 +220,11 @@ const routes = [
         component: () => import('../views/admin/ClassroomManage.vue')
       },
       {
+        path: 'classroom-resources',
+        name: 'AdminClassroomResources',
+        component: () => import('../views/admin/ClassroomResourcesManage.vue')
+      },
+      {
         path: 'ai-agents',
         name: 'AdminAiAgents',
         component: () => import('../views/admin/AiAgentManage.vue')

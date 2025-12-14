@@ -156,6 +156,90 @@
           </el-table>
         </el-card>
       </el-tab-pane>
+
+      <!-- 视频管理 -->
+      <el-tab-pane label="视频管理" name="videos">
+        <el-card>
+          <div class="section-header">
+            <h3>视频列表</h3>
+            <el-button type="primary" @click="showVideoDialog()">
+              <el-icon><Plus /></el-icon> 上传视频
+            </el-button>
+          </div>
+
+          <el-form :inline="true" class="filter-form">
+            <el-form-item label="一级分类">
+              <el-select v-model="videoFilterCategory" placeholder="选择分类" clearable @change="onVideoFilterChange">
+                <el-option
+                  v-for="cat in store.getAllCategories"
+                  :key="cat.id"
+                  :label="cat.name"
+                  :value="cat.id" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="二级分类">
+              <el-select v-model="videoFilterSubcategory" placeholder="选择子分类" clearable :disabled="!videoFilterCategory">
+                <el-option
+                  v-for="sub in store.getSubcategoriesByCategory(videoFilterCategory)"
+                  :key="sub.id"
+                  :label="sub.name"
+                  :value="sub.id" />
+              </el-select>
+            </el-form-item>
+          </el-form>
+
+          <!-- 按二级分类显示视频 -->
+          <div v-for="category in store.getAllCategories" :key="category.id" class="video-category-group">
+            <div v-for="subcategory in store.getSubcategoriesByCategory(category.id)" :key="subcategory.id">
+              <div v-if="getSubcategoryVideos(subcategory.id).length > 0" class="subcategory-video-section">
+                <div class="category-group-header">
+                  <span class="category-icon">{{ category.icon }}</span>
+                  <h4>{{ category.name }} / {{ subcategory.name }}</h4>
+                  <el-tag type="success">{{ getSubcategoryVideos(subcategory.id).length }} 个视频</el-tag>
+                  <el-button 
+                    size="small" 
+                    type="primary" 
+                    @click="showVideoDialog(null, subcategory.id)">
+                    <el-icon><Plus /></el-icon> 添加视频
+                  </el-button>
+                </div>
+                
+                <div class="videos-list">
+                  <div
+                    v-for="video in getSubcategoryVideos(subcategory.id)"
+                    :key="video.id"
+                    class="video-item">
+                    <div class="video-thumbnail">
+                      <img v-if="video.thumbnail" :src="video.thumbnail" alt="缩略图" />
+                      <div v-else class="no-thumbnail">
+                        <el-icon :size="40"><VideoPlay /></el-icon>
+                      </div>
+                      <div class="video-duration-badge">{{ video.duration }}</div>
+                    </div>
+                    <div class="video-item-info">
+                      <h5>{{ video.title }}</h5>
+                      <p>{{ video.description }}</p>
+                      <div class="video-stats-admin">
+                        <span><el-icon><View /></el-icon> {{ video.views || 0 }}</span>
+                        <span><el-icon><StarFilled /></el-icon> {{ video.likes || 0 }}</span>
+                        <span v-if="video.uploadTime">
+                          {{ new Date(video.uploadTime).toLocaleDateString() }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="video-actions">
+                      <el-button size="small" @click="showVideoDialog(video, subcategory.id)">编辑</el-button>
+                      <el-button size="small" type="danger" @click="deleteVideo(subcategory.id, video.id)">删除</el-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <el-empty v-if="getAllVideosCount() === 0" description="暂无视频，请先上传" />
+        </el-card>
+      </el-tab-pane>
     </el-tabs>
 
     <!-- 一级分类编辑对话框 -->
@@ -337,13 +421,114 @@
         <el-button type="primary" @click="saveLesson">保存</el-button>
       </template>
     </el-dialog>
+
+    <!-- 视频上传/编辑对话框 -->
+    <el-dialog
+      v-model="videoDialogVisible"
+      :title="videoForm.id ? '编辑视频' : '上传视频'"
+      width="800px"
+      :close-on-click-modal="false">
+      <el-form :model="videoForm" label-width="120px">
+        <el-form-item label="选择分类" required>
+          <el-cascader
+            v-model="videoForm.categoryPath"
+            :options="categoryOptions"
+            :props="{ expandTrigger: 'hover', value: 'id', label: 'name', children: 'children' }"
+            placeholder="选择一级分类和二级分类"
+            @change="handleVideoCategoryChange"
+            style="width: 100%">
+          </el-cascader>
+        </el-form-item>
+
+        <el-form-item label="视频标题" required>
+          <el-input v-model="videoForm.title" placeholder="请输入视频标题" />
+        </el-form-item>
+
+        <el-form-item label="视频描述">
+          <el-input v-model="videoForm.description" type="textarea" :rows="3" placeholder="简要描述视频内容" />
+        </el-form-item>
+
+        <el-form-item label="视频文件" required>
+          <div class="file-upload-section">
+            <el-upload
+              class="video-uploader"
+              action="#"
+              :show-file-list="false"
+              :auto-upload="false"
+              :on-change="handleVideoFileChange"
+              accept="video/*">
+              <div v-if="videoForm.url" class="video-preview">
+                <video :src="videoForm.url" controls style="width: 100%; max-height: 300px;"></video>
+                <el-button 
+                  type="danger" 
+                  size="small"
+                  @click.stop="videoForm.url = ''"
+                  style="margin-top: 10px;">
+                  更换视频
+                </el-button>
+              </div>
+              <div v-else class="upload-placeholder">
+                <el-icon :size="60"><VideoPlay /></el-icon>
+                <p>点击上传视频文件</p>
+                <p class="tips">支持 MP4, WebM, MOV 格式</p>
+              </div>
+            </el-upload>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="视频URL">
+          <el-input v-model="videoForm.url" placeholder="或直接输入视频URL地址" clearable />
+          <div class="form-tips">支持本地上传或填入在线视频地址</div>
+        </el-form-item>
+
+        <el-form-item label="视频时长">
+          <el-input v-model="videoForm.duration" placeholder="如：05:30" />
+          <div class="form-tips">格式：分钟:秒，如 05:30 表示5分30秒</div>
+        </el-form-item>
+
+        <el-form-item label="缩略图">
+          <div class="image-upload-section">
+            <el-upload
+              class="thumbnail-uploader"
+              action="#"
+              :show-file-list="false"
+              :auto-upload="false"
+              :on-change="handleThumbnailChange"
+              accept="image/*">
+              <img v-if="videoForm.thumbnail" :src="videoForm.thumbnail" class="thumbnail-preview" />
+              <el-icon v-else class="upload-icon"><Plus /></el-icon>
+            </el-upload>
+            <div class="upload-tips">
+              <p>建议尺寸: 1280x720px</p>
+              <p>支持格式: JPG, PNG</p>
+              <el-button 
+                v-if="videoForm.thumbnail" 
+                type="danger" 
+                size="small"
+                @click="videoForm.thumbnail = ''"
+                style="margin-top: 10px;">
+                删除缩略图
+              </el-button>
+            </div>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="缩略图URL">
+          <el-input v-model="videoForm.thumbnail" placeholder="或直接输入缩略图URL" clearable />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="videoDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveVideo">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Reading, Plus, View, StarFilled } from '@element-plus/icons-vue'
+import { Reading, Plus, View, StarFilled, VideoPlay } from '@element-plus/icons-vue'
 import { useClassroomStore } from '../../store/classroom'
 
 const store = useClassroomStore()
@@ -353,10 +538,13 @@ const activeTab = ref('categories')
 const categoryDialogVisible = ref(false)
 const subcategoryDialogVisible = ref(false)
 const lessonDialogVisible = ref(false)
+const videoDialogVisible = ref(false)
 
 // 筛选
 const filterCategory = ref(null)
 const filterSubcategory = ref(null)
+const videoFilterCategory = ref(null)
+const videoFilterSubcategory = ref(null)
 
 // 表单数据
 const categoryForm = ref({
@@ -389,6 +577,17 @@ const lessonForm = ref({
   status: 'published'
 })
 
+const videoForm = ref({
+  id: null,
+  subcategoryId: null,
+  categoryPath: [],
+  title: '',
+  description: '',
+  url: '',
+  thumbnail: '',
+  duration: ''
+})
+
 // 计算属性
 const filteredLessons = computed(() => {
   let lessons = store.lessons
@@ -399,6 +598,18 @@ const filteredLessons = computed(() => {
     lessons = lessons.filter(l => l.subcategoryId === filterSubcategory.value)
   }
   return lessons
+})
+
+// 视频管理的级联选择器数据
+const categoryOptions = computed(() => {
+  return store.getAllCategories.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    children: store.getSubcategoriesByCategory(cat.id).map(sub => ({
+      id: sub.id,
+      name: sub.name
+    }))
+  }))
 })
 
 // 方法
@@ -570,6 +781,122 @@ const deleteLesson = (id) => {
   }).catch(() => {})
 }
 
+// 视频管理操作
+const onVideoFilterChange = () => {
+  videoFilterSubcategory.value = null
+}
+
+const getSubcategoryVideos = (subcategoryId) => {
+  return store.getVideosBySubcategory(subcategoryId)
+}
+
+const getAllVideosCount = () => {
+  let count = 0
+  store.subcategories.forEach(sub => {
+    if (sub.videos && sub.videos.length > 0) {
+      count += sub.videos.length
+    }
+  })
+  return count
+}
+
+const showVideoDialog = (video = null, subcategoryId = null) => {
+  if (video) {
+    // 编辑视频
+    videoForm.value = {
+      ...video,
+      subcategoryId: subcategoryId,
+      categoryPath: []
+    }
+    // 设置级联选择器的值
+    const subcategory = store.subcategories.find(s => s.id === subcategoryId)
+    if (subcategory) {
+      videoForm.value.categoryPath = [subcategory.categoryId, subcategory.id]
+    }
+  } else {
+    // 新增视频
+    videoForm.value = {
+      id: null,
+      subcategoryId: subcategoryId || null,
+      categoryPath: subcategoryId ? getCategoryPath(subcategoryId) : [],
+      title: '',
+      description: '',
+      url: '',
+      thumbnail: '',
+      duration: ''
+    }
+  }
+  videoDialogVisible.value = true
+}
+
+const getCategoryPath = (subcategoryId) => {
+  const subcategory = store.subcategories.find(s => s.id === subcategoryId)
+  return subcategory ? [subcategory.categoryId, subcategory.id] : []
+}
+
+const handleVideoCategoryChange = (value) => {
+  if (value && value.length === 2) {
+    videoForm.value.subcategoryId = value[1]
+  }
+}
+
+const handleVideoFileChange = (file) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    videoForm.value.url = e.target.result
+  }
+  reader.readAsDataURL(file.raw)
+}
+
+const handleThumbnailChange = (file) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    videoForm.value.thumbnail = e.target.result
+  }
+  reader.readAsDataURL(file.raw)
+}
+
+const saveVideo = () => {
+  if (!videoForm.value.subcategoryId || !videoForm.value.title || !videoForm.value.url) {
+    ElMessage.warning('请填写必填项（分类、标题、视频文件）')
+    return
+  }
+  
+  const videoData = {
+    title: videoForm.value.title,
+    description: videoForm.value.description,
+    url: videoForm.value.url,
+    thumbnail: videoForm.value.thumbnail,
+    duration: videoForm.value.duration
+  }
+  
+  if (videoForm.value.id) {
+    // 更新视频
+    store.updateVideo(videoForm.value.subcategoryId, videoForm.value.id, videoData)
+    ElMessage.success('视频更新成功')
+  } else {
+    // 添加视频
+    const videoId = store.addVideo(videoForm.value.subcategoryId, videoData)
+    if (videoId) {
+      ElMessage.success('视频上传成功')
+    } else {
+      ElMessage.error('上传失败')
+      return
+    }
+  }
+  
+  videoDialogVisible.value = false
+}
+
+const deleteVideo = (subcategoryId, videoId) => {
+  ElMessageBox.confirm('确定要删除这个视频吗？', '警告', {
+    type: 'warning'
+  }).then(() => {
+    store.deleteVideo(subcategoryId, videoId)
+    ElMessage.success('删除成功')
+  }).catch(() => {})
+}
+
 // 初始化
 onMounted(() => {
   store.loadFromLocalStorage()
@@ -729,5 +1056,170 @@ onMounted(() => {
 
 .upload-tips p {
   margin: 5px 0;
+}
+
+/* 视频管理样式 */
+.video-category-group {
+  margin-bottom: 20px;
+}
+
+.subcategory-video-section {
+  margin-bottom: 30px;
+}
+
+.videos-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.video-item {
+  display: flex;
+  gap: 16px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+}
+
+.video-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 180px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-thumbnail {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.video-duration-badge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.video-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.video-item-info h5 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-item-info p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-stats-admin {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #999;
+}
+
+.video-stats-admin span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.video-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* 视频上传对话框 */
+.file-upload-section {
+  margin-bottom: 16px;
+}
+
+.video-uploader,
+.thumbnail-uploader {
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.video-uploader:hover,
+.thumbnail-uploader:hover {
+  border-color: #409eff;
+}
+
+.video-preview {
+  padding: 16px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.upload-placeholder {
+  padding: 40px;
+  text-align: center;
+  color: #8c939d;
+}
+
+.upload-placeholder p {
+  margin: 8px 0 0 0;
+}
+
+.upload-placeholder .tips {
+  font-size: 12px;
+  color: #b0b0b0;
+}
+
+.thumbnail-preview {
+  width: 240px;
+  height: 135px;
+  object-fit: cover;
+  display: block;
+}
+
+.form-tips {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #909399;
 }
 </style>

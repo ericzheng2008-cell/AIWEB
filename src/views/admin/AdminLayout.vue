@@ -29,10 +29,20 @@
           <span>拧紧数据采集</span>
         </el-menu-item>
 
-        <el-menu-item index="/admin/classroom">
-          <el-icon><Reading /></el-icon>
-          <span>产品技术销售小课堂</span>
-        </el-menu-item>
+        <el-sub-menu index="classroom-menu">
+          <template #title>
+            <el-icon><Reading /></el-icon>
+            <span>产品技术销售小课堂</span>
+          </template>
+          <el-menu-item index="/admin/classroom">
+            <el-icon><Document /></el-icon>
+            <span>分类与课程管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/classroom-resources">
+            <el-icon><FolderOpened /></el-icon>
+            <span>多媒体资源管理</span>
+          </el-menu-item>
+        </el-sub-menu>
 
         <el-menu-item index="/admin/production-line">
           <el-icon><Position /></el-icon>
@@ -127,7 +137,7 @@ import { useUserStore } from '../../store'
 import { ElMessage } from 'element-plus'
 import { 
   Odometer, Setting, Tools, Collection, Box, Document, User, 
-  Expand, House, Position, Operation, DataAnalysis, Reading
+  Expand, House, Position, Operation, DataAnalysis, Reading, FolderOpened, Star
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -142,7 +152,8 @@ const currentPageTitle = computed(() => {
     '/admin/cms': 'CMS内容管理',
     '/admin/products-services': '产品与服务管理',
     '/admin/tightening-data': '拧紧数据采集分析',
-    '/admin/classroom': '产品技术销售小课堂',
+    '/admin/classroom': '产品技术销售小课堂 - 分类与课程管理',
+    '/admin/classroom-resources': '产品技术销售小课堂 - 多媒体资源管理',
     '/admin/production-line': '线体管理',
     '/admin/workstation': '工位管理',
     '/admin/tool-database': '工具数据库',

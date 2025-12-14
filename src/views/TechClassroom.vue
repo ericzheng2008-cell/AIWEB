@@ -98,40 +98,81 @@
           </el-breadcrumb>
         </div>
 
-        <div class="lessons-grid">
-          <div
-            v-for="lesson in currentLessons"
-            :key="lesson.id"
-            class="lesson-card"
-            @click="viewLesson(lesson)">
-            <div class="lesson-cover">
-              <img v-if="lesson.coverImage" :src="lesson.coverImage" :alt="lesson.title" />
-              <div v-else class="no-cover">
-                <el-icon :size="48"><Document /></el-icon>
+        <!-- 视频区域 -->
+        <div v-if="currentVideos.length > 0" class="videos-section">
+          <h4 class="section-title">
+            <el-icon><VideoPlay /></el-icon>
+            视频教程 ({{ currentVideos.length }})
+          </h4>
+          <div class="videos-grid">
+            <div
+              v-for="video in currentVideos"
+              :key="video.id"
+              class="video-card"
+              @click="playVideo(video)">
+              <div class="video-thumbnail">
+                <img v-if="video.thumbnail" :src="video.thumbnail" :alt="video.title" />
+                <div v-else class="no-thumbnail">
+                  <el-icon :size="48"><VideoPlay /></el-icon>
+                </div>
+                <div class="play-overlay">
+                  <el-icon :size="60"><VideoPlay /></el-icon>
+                </div>
+                <div class="video-duration">{{ video.duration }}</div>
               </div>
-              <div class="lesson-badge">
-                <el-tag :type="getLevelType(lesson.level)" size="small">{{ lesson.level }}</el-tag>
-              </div>
-            </div>
-            <div class="lesson-info">
-              <h4>{{ lesson.title }}</h4>
-              <p class="lesson-desc">{{ lesson.description }}</p>
-              <div class="lesson-meta">
-                <span><el-icon><User /></el-icon> {{ lesson.author }}</span>
-                <span><el-icon><Clock /></el-icon> {{ lesson.duration }}</span>
-              </div>
-              <div class="lesson-stats">
-                <span><el-icon><View /></el-icon> {{ lesson.views }}</span>
-                <span><el-icon><StarFilled /></el-icon> {{ lesson.likes }}</span>
-              </div>
-              <div class="lesson-tags">
-                <el-tag v-for="tag in lesson.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
+              <div class="video-info">
+                <h5>{{ video.title }}</h5>
+                <p class="video-desc">{{ video.description }}</p>
+                <div class="video-stats">
+                  <span><el-icon><View /></el-icon> {{ video.views || 0 }}</span>
+                  <span><el-icon><StarFilled /></el-icon> {{ video.likes || 0 }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <el-empty v-if="currentLessons.length === 0" description="暂无课程" />
+        <!-- 课程区域 -->
+        <div class="courses-section">
+          <h4 class="section-title">
+            <el-icon><Document /></el-icon>
+            图文课程 ({{ currentLessons.length }})
+          </h4>
+          <div class="lessons-grid">
+            <div
+              v-for="lesson in currentLessons"
+              :key="lesson.id"
+              class="lesson-card"
+              @click="viewLesson(lesson)">
+              <div class="lesson-cover">
+                <img v-if="lesson.coverImage" :src="lesson.coverImage" :alt="lesson.title" />
+                <div v-else class="no-cover">
+                  <el-icon :size="48"><Document /></el-icon>
+                </div>
+                <div class="lesson-badge">
+                  <el-tag :type="getLevelType(lesson.level)" size="small">{{ lesson.level }}</el-tag>
+                </div>
+              </div>
+              <div class="lesson-info">
+                <h4>{{ lesson.title }}</h4>
+                <p class="lesson-desc">{{ lesson.description }}</p>
+                <div class="lesson-meta">
+                  <span><el-icon><User /></el-icon> {{ lesson.author }}</span>
+                  <span><el-icon><Clock /></el-icon> {{ lesson.duration }}</span>
+                </div>
+                <div class="lesson-stats">
+                  <span><el-icon><View /></el-icon> {{ lesson.views }}</span>
+                  <span><el-icon><StarFilled /></el-icon> {{ lesson.likes }}</span>
+                </div>
+                <div class="lesson-tags">
+                  <el-tag v-for="tag in lesson.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <el-empty v-if="currentLessons.length === 0 && currentVideos.length === 0" description="暂无内容" />
       </div>
     </el-dialog>
 
@@ -185,13 +226,61 @@
       </div>
     </el-dialog>
 
+    <!-- 视频播放器对话框 -->
+    <el-dialog
+      v-model="videoPlayerVisible"
+      :title="currentVideo?.title"
+      width="1200px"
+      :close-on-click-modal="false"
+      class="video-player-dialog">
+      <div v-if="currentVideo" class="video-player">
+        <div class="player-container">
+          <video 
+            :src="currentVideo.url" 
+            controls 
+            autoplay 
+            controlsList="nodownload"
+            style="width: 100%; max-height: 600px; background: #000;">
+            您的浏览器不支持视频播放
+          </video>
+        </div>
+        
+        <div class="video-details">
+          <div class="video-header">
+            <h3>{{ currentVideo.title }}</h3>
+            <div class="video-actions">
+              <el-button type="primary" @click="likeVideo">
+                <el-icon><StarFilled /></el-icon> 点赞 ({{ currentVideo.likes || 0 }})
+              </el-button>
+            </div>
+          </div>
+          
+          <div class="video-meta">
+            <span><el-icon><View /></el-icon> {{ currentVideo.views || 0 }} 次观看</span>
+            <span><el-icon><Clock /></el-icon> 时长：{{ currentVideo.duration }}</span>
+            <span v-if="currentVideo.uploadTime">
+              <el-icon><Calendar /></el-icon> 
+              {{ new Date(currentVideo.uploadTime).toLocaleDateString() }}
+            </span>
+          </div>
+          
+          <el-divider />
+          
+          <div class="video-description">
+            <h4>视频介绍</h4>
+            <p>{{ currentVideo.description }}</p>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
     <Footer />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Reading, Document, ArrowRight, User, Clock, View, StarFilled } from '@element-plus/icons-vue'
+import { Reading, Document, ArrowRight, User, Clock, View, StarFilled, VideoPlay, Calendar } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
@@ -208,11 +297,18 @@ const currentLesson = ref(null)
 const subcategoryDialogVisible = ref(false)
 const lessonsDialogVisible = ref(false)
 const lessonDetailVisible = ref(false)
+const currentVideo = ref(null)
+const videoPlayerVisible = ref(false)
 
 // 计算属性
 const currentLessons = computed(() => {
   if (!selectedSubcategory.value) return []
   return store.getLessonsBySubcategory(selectedSubcategory.value.id)
+})
+
+const currentVideos = computed(() => {
+  if (!selectedSubcategory.value) return []
+  return store.getVideosBySubcategory(selectedSubcategory.value.id)
 })
 
 // 方法
@@ -237,6 +333,19 @@ const likeLesson = () => {
   if (currentLesson.value) {
     store.incrementLikes(currentLesson.value.id)
     ElMessage.success('点赞成功！')
+  }
+}
+
+const playVideo = (video) => {
+  currentVideo.value = video
+  store.incrementVideoViews(selectedSubcategory.value.id, video.id)
+  videoPlayerVisible.value = true
+}
+
+const likeVideo = () => {
+  if (currentVideo.value && selectedSubcategory.value) {
+    store.incrementVideoLikes(selectedSubcategory.value.id, currentVideo.value.id)
+    ElMessage.success('视频点赞成功！')
   }
 }
 
@@ -698,13 +807,202 @@ onMounted(() => {
   flex-wrap: wrap;
 }
 
+/* 视频区域 */
+.videos-section,
+.courses-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.video-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e8e8e8;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-thumbnail {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-card:hover .play-overlay {
+  opacity: 1;
+}
+
+.video-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.video-info {
+  padding: 16px;
+}
+
+.video-info h5 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #999;
+}
+
+.video-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 视频播放器对话框 */
+.video-player-dialog .player-container {
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.video-details {
+  padding: 0 20px;
+}
+
+.video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.video-header h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.video-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.video-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.video-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.video-description h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #1a1a1a;
+}
+
+.video-description p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.8;
+}
+
 /* 响应式 */
 @media (max-width: 1200px) {
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .lessons-grid {
+  .lessons-grid,
+  .videos-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -712,7 +1010,8 @@ onMounted(() => {
 @media (max-width: 768px) {
   .categories-grid,
   .subcategories-grid,
-  .lessons-grid {
+  .lessons-grid,
+  .videos-grid {
     grid-template-columns: 1fr;
   }
   

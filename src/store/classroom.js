@@ -150,7 +150,15 @@ export const useClassroomStore = defineStore('classroom', {
         views: 0,
         likes: 0,
         createTime: new Date().toISOString(),
-        status: 'published'
+        status: 'published',
+        // 多媒体资源
+        resources: {
+          videos: [],      // 视频文件列表
+          pdfs: [],        // PDF文件列表
+          ppts: [],        // PPT文件列表
+          excels: [],      // Excel文件列表
+          words: []        // Word文件列表
+        }
       }
     ]
   }),
@@ -246,7 +254,14 @@ export const useClassroomStore = defineStore('classroom', {
         views: 0,
         likes: 0,
         createTime: new Date().toISOString(),
-        status: 'published'
+        status: 'published',
+        resources: {
+          videos: [],
+          pdfs: [],
+          ppts: [],
+          excels: [],
+          words: []
+        }
       })
       this.saveToLocalStorage()
     },
@@ -279,6 +294,188 @@ export const useClassroomStore = defineStore('classroom', {
       if (lesson) {
         lesson.likes++
         this.saveToLocalStorage()
+      }
+    },
+    
+    // ===== 多媒体资源管理 =====
+    
+    // 添加视频资源
+    addVideoResource(lessonId, videoFile) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson) {
+        if (!lesson.resources) {
+          lesson.resources = { videos: [], pdfs: [], ppts: [], excels: [], words: [] }
+        }
+        const video = {
+          id: Date.now(),
+          name: videoFile.name,
+          size: videoFile.size,
+          type: videoFile.type,
+          url: videoFile.url || '',
+          uploadTime: new Date().toISOString(),
+          duration: videoFile.duration || '未知'
+        }
+        lesson.resources.videos.push(video)
+        this.saveToLocalStorage()
+        return video
+      }
+      return null
+    },
+    
+    // 删除视频资源
+    deleteVideoResource(lessonId, videoId) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson && lesson.resources) {
+        lesson.resources.videos = lesson.resources.videos.filter(v => v.id !== videoId)
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 添加PDF资源
+    addPdfResource(lessonId, pdfFile) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson) {
+        if (!lesson.resources) {
+          lesson.resources = { videos: [], pdfs: [], ppts: [], excels: [], words: [] }
+        }
+        const pdf = {
+          id: Date.now(),
+          name: pdfFile.name,
+          size: pdfFile.size,
+          type: pdfFile.type,
+          url: pdfFile.url || '',
+          uploadTime: new Date().toISOString(),
+          pages: pdfFile.pages || 0
+        }
+        lesson.resources.pdfs.push(pdf)
+        this.saveToLocalStorage()
+        return pdf
+      }
+      return null
+    },
+    
+    // 删除PDF资源
+    deletePdfResource(lessonId, pdfId) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson && lesson.resources) {
+        lesson.resources.pdfs = lesson.resources.pdfs.filter(p => p.id !== pdfId)
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 添加PPT资源
+    addPptResource(lessonId, pptFile) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson) {
+        if (!lesson.resources) {
+          lesson.resources = { videos: [], pdfs: [], ppts: [], excels: [], words: [] }
+        }
+        const ppt = {
+          id: Date.now(),
+          name: pptFile.name,
+          size: pptFile.size,
+          type: pptFile.type,
+          url: pptFile.url || '',
+          uploadTime: new Date().toISOString(),
+          slides: pptFile.slides || 0
+        }
+        lesson.resources.ppts.push(ppt)
+        this.saveToLocalStorage()
+        return ppt
+      }
+      return null
+    },
+    
+    // 删除PPT资源
+    deletePptResource(lessonId, pptId) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson && lesson.resources) {
+        lesson.resources.ppts = lesson.resources.ppts.filter(p => p.id !== pptId)
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 添加Excel资源
+    addExcelResource(lessonId, excelFile) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson) {
+        if (!lesson.resources) {
+          lesson.resources = { videos: [], pdfs: [], ppts: [], excels: [], words: [] }
+        }
+        const excel = {
+          id: Date.now(),
+          name: excelFile.name,
+          size: excelFile.size,
+          type: excelFile.type,
+          url: excelFile.url || '',
+          uploadTime: new Date().toISOString(),
+          sheets: excelFile.sheets || 0
+        }
+        lesson.resources.excels.push(excel)
+        this.saveToLocalStorage()
+        return excel
+      }
+      return null
+    },
+    
+    // 删除Excel资源
+    deleteExcelResource(lessonId, excelId) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson && lesson.resources) {
+        lesson.resources.excels = lesson.resources.excels.filter(e => e.id !== excelId)
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 添加Word资源
+    addWordResource(lessonId, wordFile) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson) {
+        if (!lesson.resources) {
+          lesson.resources = { videos: [], pdfs: [], ppts: [], excels: [], words: [] }
+        }
+        const word = {
+          id: Date.now(),
+          name: wordFile.name,
+          size: wordFile.size,
+          type: wordFile.type,
+          url: wordFile.url || '',
+          uploadTime: new Date().toISOString(),
+          pages: wordFile.pages || 0
+        }
+        lesson.resources.words.push(word)
+        this.saveToLocalStorage()
+        return word
+      }
+      return null
+    },
+    
+    // 删除Word资源
+    deleteWordResource(lessonId, wordId) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      if (lesson && lesson.resources) {
+        lesson.resources.words = lesson.resources.words.filter(w => w.id !== wordId)
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 获取课程的所有资源
+    getLessonResources(lessonId) {
+      const lesson = this.lessons.find(l => l.id === lessonId)
+      return lesson?.resources || { videos: [], pdfs: [], ppts: [], excels: [], words: [] }
+    },
+    
+    // 获取资源统计
+    getResourceStats(lessonId) {
+      const resources = this.getLessonResources(lessonId)
+      return {
+        totalVideos: resources.videos.length,
+        totalPdfs: resources.pdfs.length,
+        totalPpts: resources.ppts.length,
+        totalExcels: resources.excels.length,
+        totalWords: resources.words.length,
+        totalFiles: resources.videos.length + resources.pdfs.length + 
+                   resources.ppts.length + resources.excels.length + resources.words.length
       }
     },
     
