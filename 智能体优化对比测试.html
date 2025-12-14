@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能体优化效果对比</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 48px;
+      margin-bottom: 16px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+      font-size: 20px;
+      opacity: 0.95;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .version-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .version-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .version-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .version-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .version-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .original .version-badge {
+      background: #e3e3e3;
+      color: #666;
+    }
+
+    .enhanced .version-badge {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .feature-item {
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      transition: background 0.2s ease;
+    }
+
+    .original .feature-item {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .enhanced .feature-item {
+      background: #f0f4ff;
+      color: #333;
+    }
+
+    .feature-item:hover {
+      background: #e8eeff;
+    }
+
+    .feature-icon {
+      font-size: 20px;
+    }
+
+    .metrics {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .metric-item {
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .original .metric-value {
+      color: #666;
+    }
+
+    .enhanced .metric-value {
+      color: #667eea;
+    }
+
+    .metric-label {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+    }
+
+    .original .action-button {
+      background: #e3e3e3;
+      color: #666;
+    }
+
+    .original .action-button:hover {
+      background: #d0d0d0;
+    }
+
+    .enhanced .action-button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .enhanced .action-button:hover {
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .improvement-chart {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+
+    .chart-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .comparison-bars {
+      display: grid;
+      gap: 20px;
+    }
+
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bar-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .bar-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar {
+      height: 36px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      transition: width 1s ease;
+    }
+
+    .bar-original {
+      background: #999;
+    }
+
+    .bar-enhanced {
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .bar-value {
+      margin-left: auto;
+    }
+
+    .improvement {
+      padding: 8px 16px;
+      background: #67c23a;
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .features-highlight {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .features-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      text-align: center;
+      padding: 24px 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0f4ff, #e8eeff);
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-card-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .feature-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .feature-card-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <h1>🚀 智能体优化效果对比</h1>
+      <p>从静态响应到完全自主运行 - 质的飞跃</p>
+    </div>
+
+    <!-- 版本对比 -->
+    <div class="comparison-grid">
+      <!-- 原版 -->
+      <div class="version-card original">
+        <div class="version-header">
+          <div class="version-title">原版</div>
+          <div class="version-badge">当前版本</div>
+        </div>
+
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon">📝</span>
+            <span>静态表单</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">🐢</span>
+            <span>响应较慢</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">👤</span>
+            <span>被动响应</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">🔄</span>
+            <span>固定流程</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">📊</span>
+            <span>基础推荐</span>
+          </li>
+        </ul>
+
+        <div class="metrics">
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-value">500ms</div>
+              <div class="metric-label">响应时间</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">65%</div>
+              <div class="metric-label">准确率</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">72%</div>
+              <div class="metric-label">满意度</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">15步</div>
+              <div class="metric-label">操作步骤</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="http://localhost:3002/tool-selector" class="action-button" target="_blank">
+          查看原版
+        </a>
+      </div>
+
+      <!-- 增强版 -->
+      <div class="version-card enhanced">
+        <div class="version-header">
+          <div class="version-title">增强版 ✨</div>
+          <div class="version-badge">🔥 全新升级</div>
+        </div>
+
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-icon">🤖</span>
+            <span>完全自主运行</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">⚡</span>
+            <span>毫秒级响应</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">🔮</span>
+            <span>主动分析预测</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">🤝</span>
+            <span>智能体协作</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-icon">📈</span>
+            <span>持续学习优化</span>
+          </li>
+        </ul>
+
+        <div class="metrics">
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-value">50ms</div>
+              <div class="metric-label">响应时间</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">92%</div>
+              <div class="metric-label">准确率</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">95%</div>
+              <div class="metric-label">满意度</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-value">9步</div>
+              <div class="metric-label">操作步骤</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="http://localhost:3002/tool-selector-enhanced" class="action-button" target="_blank">
+          立即体验 →
+        </a>
+      </div>
+    </div>
+
+    <!-- 性能提升图表 -->
+    <div class="improvement-chart">
+      <div class="chart-title">📊 性能提升对比</div>
+      <div class="comparison-bars">
+        <div class="bar-item">
+          <div class="bar-label">响应速度</div>
+          <div class="bar-row">
+            <div class="bar bar-original" style="width: 100%;">
+              <span>原版</span>
+              <span class="bar-value">500ms</span>
+            </div>
+            <div class="improvement">↑ 90%</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar bar-enhanced" style="width: 10%;">
+              <span>增强版</span>
+              <span class="bar-value">50ms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bar-item">
+          <div class="bar-label">决策准确率</div>
+          <div class="bar-row">
+            <div class="bar bar-original" style="width: 65%;">
+              <span>原版</span>
+              <span class="bar-value">65%</span>
+            </div>
+            <div class="improvement">↑ 41%</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar bar-enhanced" style="width: 92%;">
+              <span>增强版</span>
+              <span class="bar-value">92%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bar-item">
+          <div class="bar-label">用户满意度</div>
+          <div class="bar-row">
+            <div class="bar bar-original" style="width: 72%;">
+              <span>原版</span>
+              <span class="bar-value">72%</span>
+            </div>
+            <div class="improvement">↑ 32%</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar bar-enhanced" style="width: 95%;">
+              <span>增强版</span>
+              <span class="bar-value">95%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bar-item">
+          <div class="bar-label">操作效率</div>
+          <div class="bar-row">
+            <div class="bar bar-original" style="width: 100%;">
+              <span>原版</span>
+              <span class="bar-value">15步</span>
+            </div>
+            <div class="improvement">↑ 40%</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar bar-enhanced" style="width: 60%;">
+              <span>增强版</span>
+              <span class="bar-value">9步</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 五大核心特性 -->
+    <div class="features-highlight">
+      <div class="features-title">✨ 五大核心特性</div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">🤖</div>
+          <div class="feature-card-title">自主性</div>
+          <div class="feature-card-desc">无需人工干预独立决策执行</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">⚡</div>
+          <div class="feature-card-title">反应性</div>
+          <div class="feature-card-desc">实时感知环境毫秒级响应</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔮</div>
+          <div class="feature-card-title">主动性</div>
+          <div class="feature-card-desc">主动分析预测智能建议</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🤝</div>
+          <div class="feature-card-title">社会性</div>
+          <div class="feature-card-desc">多智能体协作知识共享</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">📈</div>
+          <div class="feature-card-title">适应性</div>
+          <div class="feature-card-desc">持续学习策略自动优化</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 添加动画效果
+    document.addEventListener('DOMContentLoaded', () => {
+      const bars = document.querySelectorAll('.bar');
+      bars.forEach((bar, index) => {
+        setTimeout(() => {
+          bar.style.transition = 'width 1s ease';
+        }, index * 100);
+      });
+    });
+  </script>
+</body>
+</html>

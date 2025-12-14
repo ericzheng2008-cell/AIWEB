@@ -107,6 +107,15 @@ const routes = [
     component: () => import('../views/ToolSelector.vue')
   },
   {
+    path: '/tool-selector-enhanced',
+    name: 'ToolSelectorEnhanced',
+    component: () => import('../views/ToolSelectorEnhanced.vue'),
+    meta: { 
+      title: '拧紧工具选型（增强版）',
+      description: '具备完全自主运行能力的智能体系统'
+    }
+  },
+  {
     path: '/tightening-data',
     name: 'TighteningData',
     component: () => import('../views/admin/TighteningDataAnalysis.vue')
