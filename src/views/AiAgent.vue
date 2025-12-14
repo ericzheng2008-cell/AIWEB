@@ -105,7 +105,7 @@ const router = useRouter()
 const agents = ref([
   { 
     id: 1, 
-    name: '拧紧工具选型与工艺改进', 
+    name: '拧紧工具选型', 
     description: '基于AI的智能工具选型系统，帮助您选择最优拧紧方案，提升装配工艺效率', 
     icon: 'Tools',
     tags: ['工具选型', '工艺优化', 'AI推荐', '效率提升']

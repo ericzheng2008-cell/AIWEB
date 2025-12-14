@@ -71,7 +71,7 @@ export const usePageContentStore = defineStore('pageContent', {
         visible: true,
         children: [
           { id: 'equipment-dashboard', name: { 'zh-CN': '数字监控驾驶舱', 'en-US': 'Digital Monitoring Dashboard' }, path: '/equipment-dashboard', order: 1, visible: true },
-          { id: 'tool-selector', name: { 'zh-CN': '工具选型', 'en-US': 'Tool Selection Advisor' }, path: '/tool-selector', order: 2, visible: true },
+          { id: 'tool-selector', name: { 'zh-CN': '拧紧工具选型', 'en-US': 'Tool Selection Advisor' }, path: '/tool-selector', order: 2, visible: true },
           { id: 'tightening-data', name: { 'zh-CN': '拧紧数据采集分析', 'en-US': 'Torque Data Analytics' }, path: '/tightening-data', order: 3, visible: true },
           { id: 'equipment-lifecycle', name: { 'zh-CN': '设备生命周期', 'en-US': 'Equipment Lifecycle Management' }, path: '/equipment-lifecycle', order: 4, visible: true },
           { id: 'fault-tracking', name: { 'zh-CN': '工单管理', 'en-US': 'Work Order Management' }, path: '/fault-tracking', order: 5, visible: true },

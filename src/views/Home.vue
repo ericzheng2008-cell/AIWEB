@@ -256,7 +256,7 @@ const solutions = ref([
 const aiAgents = ref([
   { 
     id: 1, 
-    name: '拧紧工具选型与工艺改进', 
+    name: '拧紧工具选型', 
     description: '智能分析工艺需求，推荐最优拧紧工具方案', 
     icon: 'Tools',
     tags: ['工具选型', '工艺优化', 'AI推荐'],

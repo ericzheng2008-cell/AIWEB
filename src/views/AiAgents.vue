@@ -94,7 +94,7 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>拧紧工具选型与工艺改进</h2>
+            <h2>拧紧工具选型</h2>
             <p class="agent-desc">智能分析工艺需求，推荐最优拧紧工具方案，提供专业的工艺优化建议</p>
             <div class="agent-features">
               <div class="feature-item">
