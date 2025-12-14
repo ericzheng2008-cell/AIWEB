@@ -121,6 +121,15 @@ const routes = [
     component: () => import('../views/admin/TighteningDataAnalysis.vue')
   },
   {
+    path: '/tightening-dashboard',
+    name: 'TighteningDashboard',
+    component: () => import('../views/TighteningDataDashboard.vue'),
+    meta: { 
+      title: '拧紧数据采集分析 - ToolsNet 8仪表板',
+      description: '可拖拽小工具窗口，实时数据分析'
+    }
+  },
+  {
     path: '/socket-selector',
     name: 'SocketSelector',
     component: () => import('../views/SocketSelector.vue')
