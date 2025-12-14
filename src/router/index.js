@@ -47,6 +47,11 @@ const routes = [
     component: () => import('../views/ProductDetail.vue')
   },
   {
+    path: '/tech-classroom',
+    name: 'TechClassroom',
+    component: () => import('../views/TechClassroom.vue')
+  },
+  {
     path: '/solutions',
     name: 'Solutions',
     component: () => import('../views/Solutions.vue')
@@ -102,6 +107,11 @@ const routes = [
     component: () => import('../views/ToolSelector.vue')
   },
   {
+    path: '/tightening-data',
+    name: 'TighteningData',
+    component: () => import('../views/admin/TighteningDataAnalysis.vue')
+  },
+  {
     path: '/socket-selector',
     name: 'SocketSelector',
     component: () => import('../views/SocketSelector.vue')
@@ -126,6 +136,11 @@ const routes = [
     path: '/curve-analysis',
     name: 'CurveAnalysis',
     component: () => import('../views/CurveAnalysis.vue')
+  },
+  {
+    path: '/process-verification',
+    name: 'ProcessVerification',
+    component: () => import('../views/ProcessVerification.vue')
   },
   {
     path: '/fault-tracking',
@@ -181,6 +196,21 @@ const routes = [
         component: () => import('../views/admin/CmsManage.vue')
       },
       {
+        path: 'products-services',
+        name: 'AdminProductsServices',
+        component: () => import('../views/admin/ProductsServicesManage.vue')
+      },
+      {
+        path: 'tightening-data',
+        name: 'TighteningDataAnalysis',
+        component: () => import('../views/admin/TighteningDataAnalysis.vue')
+      },
+      {
+        path: 'classroom',
+        name: 'AdminClassroom',
+        component: () => import('../views/admin/ClassroomManage.vue')
+      },
+      {
         path: 'users',
         name: 'AdminUsers',
         component: () => import('../views/admin/UserManagement.vue')
@@ -214,6 +244,16 @@ const routes = [
         path: 'ai-knowledge',
         name: 'AdminAiKnowledge',
         component: () => import('../views/AiKnowledgeManager.vue')
+      },
+      {
+        path: 'workstation',
+        name: 'AdminWorkstation',
+        component: () => import('../views/admin/WorkstationManage.vue')
+      },
+      {
+        path: 'production-line',
+        name: 'AdminProductionLine',
+        component: () => import('../views/admin/ProductionLineManage.vue')
       }
     ]
   }
