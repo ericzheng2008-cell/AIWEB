@@ -1,0 +1,172 @@
+// ==================== 监控页面标签切换诊断脚本 ====================
+// 请在监控页面 (http://localhost:3002/admin/monitoring-dashboard)
+// 按 F12 打开控制台,复制粘贴这段代码并按回车
+
+console.clear()
+console.log('%c🔍 开始诊断监控页面标签切换问题...', 'color: #409eff; font-size: 16px; font-weight: bold')
+console.log('')
+
+// ==================== 1. 检查标签页元素 ====================
+console.log('%c=== 1. 检查标签页元素 ===', 'color: #67c23a; font-weight: bold')
+
+const tabsContainer = document.querySelector('.el-tabs')
+const tabItems = document.querySelectorAll('.el-tabs__item')
+const tabPanes = document.querySelectorAll('.el-tab-pane')
+
+console.log('标签页容器:', tabsContainer ? '✅ 找到' : '❌ 未找到')
+console.log('标签页标题数量:', tabItems.length)
+console.log('标签页内容数量:', tabPanes.length)
+
+if (tabItems.length === 0) {
+  console.error('❌ 致命错误: 未找到标签页元素! Element Plus 可能未正确渲染')
+  console.log('请检查:')
+  console.log('  1. Element Plus 是否正确引入')
+  console.log('  2. Vue 组件是否正确挂载')
+  console.log('  3. 是否有 JavaScript 错误阻止了渲染')
+} else {
+  console.log('✅ 标签页元素存在')
+  
+  tabItems.forEach((tab, index) => {
+    const computedStyle = window.getComputedStyle(tab)
+    const isActive = tab.classList.contains('is-active')
+    const isDisabled = tab.classList.contains('is-disabled')
+    
+    console.log(`\n标签 ${index + 1}: "${tab.textContent.trim()}"`, {
+      '✅ 激活': isActive,
+      '❌ 禁用': isDisabled,
+      '指针事件': computedStyle.pointerEvents,
+      '显示状态': computedStyle.display,
+      '可见性': computedStyle.visibility,
+      '透明度': computedStyle.opacity,
+      'z轴层级': computedStyle.zIndex,
+      '位置': computedStyle.position
+    })
+  })
+}
+
+console.log('')
+
+// ==================== 2. 检查元素覆盖 ====================
+console.log('%c=== 2. 检查是否有元素覆盖标签页 ===', 'color: #67c23a; font-weight: bold')
+
+if (tabItems.length > 0) {
+  const firstTab = tabItems[0]
+  const rect = firstTab.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+  
+  const elementAtCenter = document.elementFromPoint(centerX, centerY)
+  
+  console.log('第一个标签的位置:', {
+    left: rect.left,
+    top: rect.top,
+    width: rect.width,
+    height: rect.height
+  })
+  
+  console.log('中心点坐标:', { x: centerX, y: centerY })
+  console.log('中心点的元素:', elementAtCenter)
+  
+  if (elementAtCenter === firstTab || firstTab.contains(elementAtCenter)) {
+    console.log('✅ 标签页未被覆盖,可以正常点击')
+  } else {
+    console.error('❌ 标签页被其他元素覆盖!')
+    console.log('覆盖元素:', elementAtCenter)
+    console.log('覆盖元素的样式:', window.getComputedStyle(elementAtCenter))
+    console.log('')
+    console.log('💡 解决方案: 需要调整覆盖元素的 z-index 或 position')
+  }
+}
+
+console.log('')
+
+// ==================== 3. 检查事件监听器 ====================
+console.log('%c=== 3. 检查事件监听器 ===', 'color: #67c23a; font-weight: bold')
+
+if (typeof getEventListeners === 'function') {
+  tabItems.forEach((tab, index) => {
+    const listeners = getEventListeners(tab)
+    console.log(`标签 ${index + 1} 的事件监听器:`, listeners)
+  })
+} else {
+  console.log('⚠️ 此功能仅在 Chrome DevTools 中可用')
+  console.log('在 Chrome 中打开此页面以查看事件监听器详情')
+}
+
+// 手动添加测试监听器
+let clickDetected = false
+tabItems.forEach((tab, index) => {
+  tab.addEventListener('click', function testListener(e) {
+    clickDetected = true
+    console.log(`%c✅ 标签 ${index + 1} 被点击了!`, 'color: #67c23a; font-weight: bold')
+    console.log('事件详情:', {
+      目标: e.target,
+      当前目标: e.currentTarget,
+      事件阶段: e.eventPhase,
+      是否冒泡: !e.cancelBubble,
+      默认行为: !e.defaultPrevented
+    })
+  }, { once: true, capture: true })
+})
+
+console.log('✅ 已为所有标签添加点击监听器')
+console.log('💡 请尝试点击任意标签,控制台会显示点击事件')
+
+console.log('')
+
+// ==================== 4. 测试手动切换 ====================
+console.log('%c=== 4. 测试手动点击 ===', 'color: #67c23a; font-weight: bold')
+
+if (tabItems.length >= 2) {
+  console.log('尝试模拟点击第2个标签...')
+  
+  const secondTab = tabItems[1]
+  secondTab.click()
+  
+  setTimeout(() => {
+    const activeTab = document.querySelector('.el-tabs__item.is-active')
+    const activeTabText = activeTab ? activeTab.textContent.trim() : '无'
+    
+    console.log('点击后的结果:')
+    console.log('  当前激活的标签:', activeTabText)
+    
+    if (clickDetected) {
+      console.log('  ✅ 点击事件被触发')
+    } else {
+      console.error('  ❌ 点击事件未被触发!')
+      console.log('  💡 这说明点击被阻止或事件未绑定')
+    }
+    
+    if (activeTabText === secondTab.textContent.trim()) {
+      console.log('%c✅ 成功! 标签切换正常工作!', 'color: #67c23a; font-size: 14px; font-weight: bold')
+    } else {
+      console.error('%c❌ 失败! 标签未切换!', 'color: #f56c6c; font-size: 14px; font-weight: bold')
+      console.log('')
+      console.log('%c可能的原因:', 'font-weight: bold')
+      console.log('  1. v-model 绑定的变量未更新')
+      console.log('  2. Vue 响应式系统失效')
+      console.log('  3. Element Plus 内部错误')
+      console.log('  4. 有其他代码阻止了标签切换')
+    }
+  }, 500)
+}
+
+console.log('')
+
+// ==================== 5. 检查 Vue 实例 ====================
+console.log('%c=== 5. 检查 Vue 实例 ===', 'color: #67c23a; font-weight: bold')
+
+const app = document.querySelector('#app')
+if (app && app.__vue_app__) {
+  console.log('✅ Vue 应用实例存在')
+} else {
+  console.error('❌ 无法访问 Vue 应用实例')
+}
+
+console.log('')
+console.log('%c🎯 诊断完成!', 'color: #409eff; font-size: 16px; font-weight: bold')
+console.log('')
+console.log('请等待 0.5 秒查看手动点击测试的结果')
+console.log('然后尝试手动点击标签,观察控制台输出')
+console.log('')
+console.log('========================')

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能算账与推荐系统测试 - 设备全生命周期运营</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .demo-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: #52c41a;
+      color: white;
+    }
+
+    .badge-primary {
+      background: #1890ff;
+      color: white;
+    }
+
+    .badge-warning {
+      background: #faad14;
+      color: white;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #1890ff;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #1890ff;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #40a9ff;
+    }
+
+    .btn-success {
+      background: #52c41a;
+      color: white;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .result-box {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .comparison-table th {
+      background: #fafafa;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .highlight {
+      background: #fff7e6;
+      font-weight: 600;
+      color: #fa8c16;
+    }
+
+    .savings-box {
+      background: linear-gradient(135deg, #52c41a, #73d13d);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+      text-align: center;
+    }
+
+    .savings-amount {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .savings-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .pitch-box {
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+      white-space: pre-line;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .recommendation-card {
+      background: white;
+      border: 2px solid #1890ff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .recommendation-card.recommended {
+      background: #f0f9ff;
+    }
+
+    .rec-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .rec-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .rec-body {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .rec-footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .metric-item {
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1890ff;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .iceberg-chart {
+      position: relative;
+      height: 300px;
+      margin: 20px 0;
+    }
+
+    .iceberg-visible {
+      background: linear-gradient(135deg, #1890ff, #40a9ff);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .iceberg-hidden {
+      background: linear-gradient(135deg, #ff4d4f, #ff7875);
+      color: white;
+      padding: 40px 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .cost-item {
+      padding: 8px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.3);
+    }
+
+    .cost-item:last-child {
+      border-bottom: none;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎯 设备全生命周期智能运营系统</h1>
+      <p>基于PPT大纲的核心功能演示 | AI算账 + 智能推荐 + 成本分析</p>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Demo 1: 必中算账法 -->
+      <div class="demo-card">
+        <div class="card-title">
+          <span>📊 必中算账法 - 3秒算清账</span>
+          <span class="badge badge-success">PPT P12</span>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">工具数量（把）</label>
+          <input type="number" class="form-input" id="toolCount" value="100" min="10" max="1000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">工具单价（元）</label>
+          <input type="number" class="form-input" id="toolPrice" value="20000" min="5000" max="50000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">当前使用寿命（年）</label>
+          <input type="number" class="form-input" id="toolLifespan" value="3" min="1" max="10">
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="calculate()">
+          🧮 立即计算ROI
+        </button>
+
+        <div id="calculatorResult" class="result-box">
+          <div class="result-title">💰 算账结果</div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>项目</th>
+                <th>传统模式</th>
+                <th>年包模式</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonBody">
+            </tbody>
+          </table>
+
+          <div class="savings-box">
+            <div class="savings-amount" id="savingsAmount">-</div>
+            <div class="savings-label">每年直接节省</div>
+          </div>
+
+          <div class="pitch-box" id="salesPitch"></div>
+        </div>
+      </div>
+
+      <!-- Demo 2: 年包产品推荐 -->
+      <div class="demo-card">
+        <div class="card-title">
+          <span>🎁 智能年包推荐</span>
+          <span class="badge badge-primary">PPT P16</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">预算水平</label>
+          <select class="form-select" id="budgetLevel">
+            <option value="tight">预算紧张</option>
+            <option value="normal" selected>预算正常</option>
+            <option value="ample">预算充裕</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">产线关键度（1-10分）</label>
+          <input type="range" class="form-input" id="criticality" min="1" max="10" value="5" 
+                 oninput="document.getElementById('criticalityValue').textContent=this.value">
+          <div style="text-align: center; margin-top: 8px;">
+            <span id="criticalityValue" style="font-size: 18px; font-weight: 600; color: #1890ff;">5</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">工具数量（把）</label>
+          <input type="number" class="form-input" id="toolCountForPackage" value="100">
+        </div>
+
+        <button class="btn btn-success btn-block" onclick="recommendPackage()">
+          🚀 获取推荐方案
+        </button>
+
+        <div id="packageResult" class="result-box">
+        </div>
+      </div>
+
+      <!-- Demo 3: 成本冰山分析 -->
+      <div class="demo-card full-width">
+        <div class="card-title">
+          <span>❄️ 成本冰山分析 - 揭秘隐性成本</span>
+          <span class="badge badge-warning">PPT P4</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <div class="form-group">
+              <label class="form-label">设备采购价（万元）</label>
+              <input type="number" class="form-input" id="purchasePrice" value="28" min="10" max="500">
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="analyzeIceberg()">
+              🔍 分析成本结构
+            </button>
+          </div>
+
+          <div id="icebergResult" class="result-box">
+            <div class="iceberg-chart">
+              <div class="iceberg-visible">
+                <div style="font-size: 24px; font-weight: 600;">可见成本 30%</div>
+                <div style="font-size: 18px; margin-top: 8px;" id="visibleCost">-</div>
+              </div>
+              <div class="iceberg-hidden">
+                <div style="font-size: 24px; font-weight: 600;">隐性成本 70%</div>
+                <div style="font-size: 18px; margin-top: 12px;" id="hiddenCost">-</div>
+                <div style="margin-top: 16px; font-size: 14px; opacity: 0.9;" id="hiddenBreakdown">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo 4: 五级价值路径推荐 -->
+      <div class="demo-card full-width">
+        <div class="card-title">
+          <span>🎯 五级价值路径智能推荐</span>
+          <span class="badge badge-success">PPT P7-P8</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label">预算水平</label>
+            <select class="form-select" id="pathBudget">
+              <option value="tight">预算紧</option>
+              <option value="normal" selected>正常</option>
+              <option value="ample">充裕</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">故障频率</label>
+            <select class="form-select" id="faultFreq">
+              <option value="low">低</option>
+              <option value="medium" selected>中</option>
+              <option value="high">高</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">进口依赖</label>
+            <select class="form-select" id="importDep">
+              <option value="low">低</option>
+              <option value="medium" selected>中</option>
+              <option value="high">高</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">确定性需求</label>
+            <select class="form-select" id="certainty">
+              <option value="low">低</option>
+              <option value="medium">中</option>
+              <option value="high" selected>高</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="recommendPath()">
+          🚀 获取最优路径
+        </button>
+
+        <div id="pathResult" class="result-box">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 必中算账法
+    function calculate() {
+      const toolCount = parseInt(document.getElementById('toolCount').value)
+      const toolPrice = parseInt(document.getElementById('toolPrice').value)
+      const lifespan = parseInt(document.getElementById('toolLifespan').value)
+
+      const traditional = {
+        replacement: Math.ceil(toolCount / lifespan),
+        replacementCost: Math.ceil(toolCount / lifespan) * toolPrice,
+        spareCost: toolCount * 500
+      }
+      traditional.total = traditional.replacementCost + traditional.spareCost
+
+      const ourModel = {
+        replacement: Math.ceil(traditional.replacement * 0.5),
+        replacementCost: Math.ceil(traditional.replacement * 0.5) * toolPrice,
+        packageFee: toolCount * toolPrice * 0.12
+      }
+      ourModel.total = ourModel.replacementCost + ourModel.packageFee
+
+      const savings = traditional.total - ourModel.total
+      const savingsRate = ((savings / traditional.total) * 100).toFixed(1)
+
+      // 填充表格
+      const tbody = document.getElementById('comparisonBody')
+      tbody.innerHTML = `
+        <tr>
+          <td>年换新数量</td>
+          <td>${traditional.replacement}把</td>
+          <td>${ourModel.replacement}把</td>
+        </tr>
+        <tr>
+          <td>新购成本</td>
+          <td>${(traditional.replacementCost/10000).toFixed(1)}万</td>
+          <td>${(ourModel.replacementCost/10000).toFixed(1)}万</td>
+        </tr>
+        <tr>
+          <td>年包/备件费</td>
+          <td>${(traditional.spareCost/10000).toFixed(1)}万</td>
+          <td>${(ourModel.packageFee/10000).toFixed(1)}万</td>
+        </tr>
+        <tr class="highlight">
+          <td><strong>总年成本</strong></td>
+          <td><strong>${(traditional.total/10000).toFixed(1)}万</strong></td>
+          <td><strong>${(ourModel.total/10000).toFixed(1)}万</strong></td>
+        </tr>
+      `
+
+      document.getElementById('savingsAmount').textContent = 
+        `${(savings/10000).toFixed(1)}万元/年 (↓${savingsRate}%)`
+
+      document.getElementById('salesPitch').textContent = `
+【传统模式】
+  ${toolCount}把工具 ÷ ${lifespan}年寿命 = 每年换${traditional.replacement}把
+  年成本: ${(traditional.total/10000).toFixed(1)}万
+
+【年包模式】
+  换新量↓50% = 每年换${ourModel.replacement}把
+  新购: ${(ourModel.replacementCost/10000).toFixed(1)}万 + 年包: ${(ourModel.packageFee/10000).toFixed(1)}万
+  总成本: ${(ourModel.total/10000).toFixed(1)}万
+
+【直接省】${(savings/10000).toFixed(1)}万/年
+
+【您省下的不只是维修费，更是现金流】
+  ✓ ${(savings/10000).toFixed(1)}万现金直接省
+  ✓ 0停线风险（工具年包兜底）
+  ✓ 0库存压力（明升备机管理）
+  ✓ 释放库存资金50-80万
+      `
+
+      document.getElementById('calculatorResult').classList.add('show')
+    }
+
+    // 年包产品推荐
+    function recommendPackage() {
+      const budget = document.getElementById('budgetLevel').value
+      const criticality = parseInt(document.getElementById('criticality').value)
+      const toolCount = parseInt(document.getElementById('toolCountForPackage').value)
+
+      const packages = [
+        {
+          name: 'A. 基础保障包',
+          rate: 0.10,
+          roi: '75-125%',
+          适用: '预算紧、工具量大',
+          服务: ['检测分级', '维修翻新', 'SLA 48h', '年度报告']
+        },
+        {
+          name: 'B. 标准运营包 ⭐',
+          rate: 0.12,
+          roi: '125-167%',
+          适用: '主线产线、追求稳产',
+          服务: ['基础包全部', '10%备机池', '月度巡检', '预防维护']
+        },
+        {
+          name: 'C. 战略托管包',
+          rate: 0.15,
+          roi: '139-278%',
+          适用: '关键产线、极致确定性',
+          服务: ['标准包全部', '工具全托管', 'TCO对赌', '驻场工程师']
+        }
+      ]
+
+      let recommended = packages[1] // 默认推荐标准包
+
+      if (budget === 'tight' && toolCount > 80) {
+        recommended = packages[0]
+      } else if (criticality >= 8) {
+        recommended = packages[2]
+      }
+
+      const resultHtml = packages.map((pkg, i) => {
+        const isRecommended = pkg === recommended
+        const fee = toolCount * 20000 * pkg.rate
+
+        return `
+          <div class="recommendation-card ${isRecommended ? 'recommended' : ''}">
+            <div class="rec-header">
+              <div class="rec-title">${pkg.name}</div>
+              ${isRecommended ? '<span class="badge badge-success">推荐</span>' : ''}
+            </div>
+            <div class="rec-body">
+              <div style="margin-bottom: 8px;">
+                <strong>年包费用:</strong> ${(fee/10000).toFixed(1)}万元（${(pkg.rate*100)}%资产价值）
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>适用客户:</strong> ${pkg.适用}
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>核心服务:</strong> ${pkg.服务.join(' | ')}
+              </div>
+            </div>
+            <div class="rec-footer">
+              <div class="metric-item">
+                <div class="metric-value">${pkg.roi}</div>
+                <div class="metric-label">预期ROI</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">${pkg.rate*100}%</div>
+                <div class="metric-label">费率</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-value">${(fee/10000).toFixed(1)}万</div>
+                <div class="metric-label">年费</div>
+              </div>
+            </div>
+          </div>
+        `
+      }).join('')
+
+      document.getElementById('packageResult').innerHTML = resultHtml
+      document.getElementById('packageResult').classList.add('show')
+    }
+
+    // 成本冰山分析
+    function analyzeIceberg() {
+      const purchase = parseFloat(document.getElementById('purchasePrice').value) * 10000
+
+      const visible = purchase
+      const hidden = {
+        停机损失: purchase * 0.25,
+        被动维修: purchase * 0.15,
+        备件库存: purchase * 0.08,
+        过早报废: purchase * 0.10,
+        紧急物流: purchase * 0.05,
+        人工低效: purchase * 0.04,
+        质量损失: purchase * 0.03
+      }
+
+      const totalHidden = Object.values(hidden).reduce((a,b) => a+b, 0)
+
+      document.getElementById('visibleCost').textContent = 
+        `采购成本: ${(visible/10000).toFixed(1)}万元`
+
+      document.getElementById('hiddenCost').textContent = 
+        `总计: ${(totalHidden/10000).toFixed(1)}万元`
+
+      const breakdown = Object.entries(hidden)
+        .map(([k, v]) => `• ${k}: ${(v/10000).toFixed(1)}万`)
+        .join('\n')
+
+      document.getElementById('hiddenBreakdown').innerHTML = 
+        breakdown.replace(/\n/g, '<br>') + 
+        `<br><br><strong>💡 优化潜力: ${(totalHidden*0.4/10000).toFixed(1)}万/年</strong>`
+
+      document.getElementById('icebergResult').classList.add('show')
+    }
+
+    // 五级路径推荐
+    function recommendPath() {
+      const budget = document.getElementById('pathBudget').value
+      const fault = document.getElementById('faultFreq').value
+      const importDep = document.getElementById('importDep').value
+      const certainty = document.getElementById('certainty').value
+
+      const paths = [
+        { name: 'L1 利旧改造', cost: '5-10万', roi: '160%', period: '5-8个月', score: 0 },
+        { name: 'L2 原厂翻新', cost: '10-20万', roi: '150%', period: '6-9个月', score: 0 },
+        { name: 'L3 部件替换', cost: '20-40万', roi: '167%', period: '4.5-7个月', score: 0 },
+        { name: 'L4 年包服务', cost: '年费12-18%', roi: '125-167%', period: '持续', score: 0 },
+        { name: 'L5 国产替代', cost: '100万+', roi: '150-200%', period: '6-8个月', score: 0 }
+      ]
+
+      if (budget === 'tight') {
+        paths[0].score += 30
+        paths[1].score += 20
+      }
+      if (fault === 'high') {
+        paths[2].score += 25
+        paths[3].score += 30
+      }
+      if (importDep === 'high') {
+        paths[4].score += 35
+      }
+      if (certainty === 'high') {
+        paths[3].score += 25
+        paths[4].score += 15
+      }
+
+      paths.sort((a, b) => b.score - a.score)
+
+      const resultHtml = `
+        <div class="result-title">🎯 推荐方案</div>
+        <div class="recommendation-card recommended">
+          <div class="rec-header">
+            <div class="rec-title">${paths[0].name}</div>
+            <span class="badge badge-success">最优选择</span>
+          </div>
+          <div class="rec-body">
+            投入: ${paths[0].cost} | ROI: ${paths[0].roi} | 回本期: ${paths[0].period}
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <strong>备选方案:</strong>
+        </div>
+        ${paths.slice(1, 3).map(p => `
+          <div class="recommendation-card">
+            <div class="rec-header">
+              <div class="rec-title">${p.name}</div>
+            </div>
+            <div class="rec-body">
+              投入: ${p.cost} | ROI: ${p.roi} | 回本期: ${p.period}
+            </div>
+          </div>
+        `).join('')}
+
+        ${certainty === 'high' ? `
+          <div style="background: #fff7e6; padding: 16px; border-radius: 8px; margin-top: 16px;">
+            <strong>💡 组合建议:</strong><br>
+            L4年包服务 + L5国产替代 = 双重保障<br>
+            预期ROI: 150-208% | 实施周期: 6-12个月
+          </div>
+        ` : ''}
+      `
+
+      document.getElementById('pathResult').innerHTML = resultHtml
+      document.getElementById('pathResult').classList.add('show')
+    }
+  </script>
+</body>
+</html>

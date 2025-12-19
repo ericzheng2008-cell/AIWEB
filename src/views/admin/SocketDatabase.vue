@@ -6,10 +6,23 @@
           <h2>套筒选型数据库</h2>
           <p class="subtitle">管理和维护套筒选型数据，支持智能推荐</p>
         </div>
-        <el-button type="primary" size="large" @click="showAddDialog">
-          <el-icon><Plus /></el-icon>
-          添加套筒
-        </el-button>
+        <div class="header-actions">
+          <el-upload
+            :show-file-list="false"
+            :before-upload="handleExcelUpload"
+            accept=".xlsx,.xls"
+            :auto-upload="true"
+          >
+            <el-button type="success" size="large">
+              <el-icon><Upload /></el-icon>
+              Excel批量导入
+            </el-button>
+          </el-upload>
+          <el-button type="primary" size="large" @click="showAddDialog">
+            <el-icon><Plus /></el-icon>
+            添加套筒
+          </el-button>
+        </div>
       </div>
     </el-card>
 
@@ -19,7 +32,7 @@
         <el-form-item label="品牌">
           <el-select v-model="filterForm.brand" placeholder="全部品牌" clearable style="width: 150px">
             <el-option label="全部" value="" />
-            <el-option label="阿特拉斯" value="阿特拉斯" />
+            <el-option label="Atlascopco" value="Atlascopco" />
             <el-option label="其他" value="其他" />
           </el-select>
         </el-form-item>
@@ -117,7 +130,7 @@
           <el-col :span="12">
             <el-form-item label="品牌" prop="brand">
               <el-select v-model="formData.brand" placeholder="请选择品牌">
-                <el-option label="阿特拉斯" value="阿特拉斯" />
+                <el-option label="Atlascopco" value="Atlascopco" />
                 <el-option label="其他" value="其他" />
               </el-select>
             </el-form-item>
@@ -176,8 +189,8 @@
         <el-divider content-position="left">套筒选型参数</el-divider>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="外形" prop="socketType.shape">
-              <el-select v-model="formData.socketType.shape" placeholder="请选择外形">
+            <el-form-item label="长度外形" prop="socketType.shape">
+              <el-select v-model="formData.socketType.shape" placeholder="请选择长度外形" filterable allow-create>
                 <el-option label="标准" value="标准" />
                 <el-option label="加长" value="加长" />
                 <el-option label="接杆" value="接杆" />
@@ -186,7 +199,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="输入端类型" prop="socketType.inputType">
-              <el-select v-model="formData.socketType.inputType" placeholder="请选择输入端类型">
+              <el-select v-model="formData.socketType.inputType" placeholder="请选择输入端类型" filterable allow-create>
                 <el-option label="外六角" value="外六角" />
                 <el-option label="内六角" value="内六角" />
                 <el-option label="内六星" value="内六星" />
@@ -200,13 +213,22 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="输入端尺寸" prop="socketType.inputSize">
-              <el-input v-model="formData.socketType.inputSize" placeholder="如：15mm 或 T25" />
+            <el-form-item label="输出端对边尺寸" prop="socketType.inputSize">
+              <el-select v-model="formData.socketType.inputSize" placeholder="请选择或输入尺寸" filterable allow-create>
+                <el-option label="10mm" value="10mm" />
+                <el-option label="12mm" value="12mm" />
+                <el-option label="13mm" value="13mm" />
+                <el-option label="14mm" value="14mm" />
+                <el-option label="15mm" value="15mm" />
+                <el-option label="17mm" value="17mm" />
+                <el-option label="18mm" value="18mm" />
+                <el-option label="T25" value="T25" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="磁性" prop="socketType.magnetic">
-              <el-select v-model="formData.socketType.magnetic" placeholder="请选择磁性">
+              <el-select v-model="formData.socketType.magnetic" placeholder="请选择磁性" filterable allow-create>
                 <el-option label="固定磁" value="固定磁" />
                 <el-option label="伸缩磁" value="伸缩磁" />
                 <el-option label="中空磁" value="中空磁" />
@@ -219,19 +241,20 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="长度类型" prop="socketType.length">
-              <el-select v-model="formData.socketType.length" placeholder="请选择长度类型">
-                <el-option label="标准" value="标准" />
-                <el-option label="加长" value="加长" />
-                <el-option label="接杆" value="接杆" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="长度尺寸" prop="specifications.length">
-              <el-input v-model="formData.specifications.length" placeholder="如：150mm">
-                <template #append>mm</template>
-              </el-input>
+              <el-select v-model="formData.specifications.length" placeholder="请选择或输入长度" filterable allow-create>
+                <el-option label="30mm" value="30mm" />
+                <el-option label="40mm" value="40mm" />
+                <el-option label="50mm" value="50mm" />
+                <el-option label="60mm" value="60mm" />
+                <el-option label="70mm" value="70mm" />
+                <el-option label="75mm" value="75mm" />
+                <el-option label="100mm" value="100mm" />
+                <el-option label="150mm" value="150mm" />
+                <el-option label="200mm" value="200mm" />
+                <el-option label="250mm" value="250mm" />
+                <el-option label="300mm" value="300mm" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -254,12 +277,26 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="输入端" prop="specifications.inputEnd">
-              <el-input v-model="formData.specifications.inputEnd" placeholder="如：3/8四方" />
+              <el-select v-model="formData.specifications.inputEnd" placeholder="请选择或输入" filterable allow-create style="width: 100%">
+                <el-option label="1/4快换" value="1/4快换" />
+                <el-option label="1/4四方" value="1/4四方" />
+                <el-option label="3/8四方" value="3/8四方" />
+                <el-option label="1/2四方" value="1/2四方" />
+                <el-option label="3/4四方" value="3/4四方" />
+                <el-option label="1寸四方" value="1寸四方" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="输出端" prop="specifications.outputEnd">
-              <el-input v-model="formData.specifications.outputEnd" placeholder="如：外六角" />
+              <el-select v-model="formData.specifications.outputEnd" placeholder="请选择或输入" filterable allow-create style="width: 100%">
+                <el-option label="外六角" value="外六角" />
+                <el-option label="内六角" value="内六角" />
+                <el-option label="内六星" value="内六星" />
+                <el-option label="Torx" value="Torx" />
+                <el-option label="十字" value="十字" />
+                <el-option label="一字" value="一字" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -267,12 +304,27 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="输出端尺寸" prop="specifications.size">
-              <el-input v-model="formData.specifications.size" placeholder="如：15mm" />
+              <el-select v-model="formData.specifications.size" placeholder="请选择或输入" filterable allow-create style="width: 100%">
+                <el-option label="10mm" value="10mm" />
+                <el-option label="12mm" value="12mm" />
+                <el-option label="13mm" value="13mm" />
+                <el-option label="14mm" value="14mm" />
+                <el-option label="15mm" value="15mm" />
+                <el-option label="17mm" value="17mm" />
+                <el-option label="18mm" value="18mm" />
+                <el-option label="T25" value="T25" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="磁性类型" prop="specifications.magnetic">
-              <el-input v-model="formData.specifications.magnetic" placeholder="如：固定磁" />
+              <el-select v-model="formData.specifications.magnetic" placeholder="请选择或输入" filterable allow-create style="width: 100%">
+                <el-option label="固定磁" value="固定磁" />
+                <el-option label="伸缩磁" value="伸缩磁" />
+                <el-option label="中空磁" value="中空磁" />
+                <el-option label="外置磁环" value="外置磁环" />
+                <el-option label="无磁性" value="无磁性" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -319,7 +371,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useSocketDatabaseStore } from '@/store/socketDatabase'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, Upload } from '@element-plus/icons-vue'
+import * as XLSX from 'xlsx'
 
 const socketStore = useSocketDatabaseStore()
 
@@ -379,9 +432,9 @@ const formRules = {
   squareSize: [{ required: true, message: '请选择四方尺寸', trigger: 'change' }],
   model: [{ required: true, message: '请输入套筒型号', trigger: 'blur' }],
   name: [{ required: true, message: '请输入套筒名称', trigger: 'blur' }],
-  'socketType.shape': [{ required: true, message: '请选择外形', trigger: 'change' }],
+  'socketType.shape': [{ required: true, message: '请选择长度外形', trigger: 'change' }],
   'socketType.inputType': [{ required: true, message: '请选择输入端类型', trigger: 'change' }],
-  'socketType.inputSize': [{ required: true, message: '请输入输入端尺寸', trigger: 'blur' }],
+  'socketType.inputSize': [{ required: true, message: '请输入输出端对边尺寸', trigger: 'blur' }],
   'socketType.magnetic': [{ required: true, message: '请选择磁性', trigger: 'change' }]
 }
 
@@ -494,8 +547,7 @@ const resetForm = () => {
       shape: '',
       inputType: '',
       inputSize: '',
-      magnetic: '',
-      length: ''
+      magnetic: ''
     },
     features: {
       antiVibration: false,
@@ -516,6 +568,96 @@ const resetForm = () => {
   }
 }
 
+// Excel 批量导入处理
+const handleExcelUpload = (file) => {
+  const reader = new FileReader()
+  
+  reader.onload = (e) => {
+    try {
+      const data = new Uint8Array(e.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
+      
+      // 读取第一个工作表
+      const sheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[sheetName]
+      
+      // 转换为 JSON
+      const jsonData = XLSX.utils.sheet_to_json(worksheet)
+      
+      if (!jsonData || jsonData.length === 0) {
+        ElMessage.warning('Excel 文件为空')
+        return false
+      }
+      
+      // 转换数据格式并导入
+      let successCount = 0
+      let errorCount = 0
+      
+      jsonData.forEach((row, index) => {
+        try {
+          const socketData = {
+            brand: row['品牌'] || '',
+            toolType: row['工具类型'] || '',
+            squareSize: row['四方尺寸'] || '',
+            toolModel: row['工具型号'] || '',
+            model: row['套筒型号'] || '',
+            name: row['套筒名称'] || '',
+            fullName: row['完整名称'] || '',
+            description: row['描述说明'] || '',
+            socketType: {
+              shape: row['长度外形'] || row['外形'] || '',
+              inputType: row['输入端类型'] || '',
+              inputSize: row['输出端对边尺寸'] || '',
+              magnetic: row['磁性'] || ''
+            },
+            features: {
+              antiVibration: row['是否抗振'] === '是' || row['是否抗振'] === true,
+              sealRingPin: row['配密封圈销子'] === '是' || row['配密封圈销子'] === true
+            },
+            specifications: {
+              inputEnd: row['输入端'] || '',
+              outputEnd: row['输出端'] || '',
+              size: row['输出端尺寸'] || '',
+              length: row['长度尺寸'] || '',
+              magnetic: row['磁性类型'] || '',
+              antiVibration: row['是否抗振'] === '是' || row['是否抗振'] === true,
+              sealRingPin: row['配密封圈销子'] === '是' || row['配密封圈销子'] === true
+            },
+            applications: row['应用场景'] ? row['应用场景'].split(',') : [],
+            price: parseFloat(row['价格']) || 0,
+            stock: parseInt(row['库存']) || 0
+          }
+          
+          // 验证必填字段
+          if (!socketData.model || !socketData.name) {
+            console.warn(`第 ${index + 2} 行数据缺少必填字段，已跳过`)
+            errorCount++
+            return
+          }
+          
+          socketStore.addSocket(socketData)
+          successCount++
+          
+        } catch (error) {
+          console.error(`处理第 ${index + 2} 行时出错:`, error)
+          errorCount++
+        }
+      })
+      
+      ElMessage.success(`导入完成！成功: ${successCount} 条，失败: ${errorCount} 条`)
+      
+    } catch (error) {
+      console.error('Excel 解析错误:', error)
+      ElMessage.error('Excel 文件解析失败，请检查文件格式')
+    }
+  }
+  
+  reader.readAsArrayBuffer(file)
+  
+  // 阻止自动上传
+  return false
+}
+
 onMounted(() => {
   // 初始化
 })
@@ -534,6 +676,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
 }
 
 .header h2 {

@@ -69,3 +69,6 @@ echo.
 echo 复制该地址即可访问！
 echo.
 pause
+echo  部署到 Netlify
+
+

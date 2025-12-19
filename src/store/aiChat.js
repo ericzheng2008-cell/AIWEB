@@ -1,11 +1,26 @@
 import { defineStore } from 'pinia'
 import router from '../router'
+import { useClassroomStore } from './classroom'
 
 export const useAiChatStore = defineStore('aiChat', {
   state: () => ({
     messages: [],
     isTyping: false,
     chatVisible: false,
+    conversationContext: {
+      lastTopic: null,
+      lastIntent: null,
+      userName: null,
+      conversationDepth: 0
+    },
+    // AI个性设置
+    personality: {
+      name: '小明',
+      greeting: ['您好!我是明升智能助手小明 👋', '很高兴为您服务!我是小明 😊', '嗨!有什么我可以帮您的吗? 🌟'],
+      encouragement: ['我会竭尽全力帮助您!💪', '放心交给我吧!✨', '让我们一起解决这个问题!🚀'],
+      thinking: ['让我想想...🤔', '稍等,我查一下...⏳', '嗯...我来看看...👀'],
+      enthusiasm: ['太好了!😄', '很棒的问题!👍', '这个我很拿手!💯']
+    },
     // 智能体功能映射表
     agentFunctions: {
       toolSelection: {
@@ -23,7 +38,7 @@ export const useAiChatStore = defineStore('aiChat', {
         answer: '我可以帮您选择合适的套筒配件！\n\n我会根据：\n✓ 工具品牌和型号\n✓ 四方尺寸（1/4、3/8、1/2等）\n✓ 螺栓类型和尺寸\n✓ 特殊要求（抗振、密封圈、磁性等）\n\n为您匹配最合适的套筒配件。'
       },
       brandMatch: {
-        keywords: ['品牌', '型号', '品牌匹配', '工具型号', '博世', '阿特拉斯', 'EQTCF', 'brand', 'model', 'bosch'],
+        keywords: ['品牌', '型号', '品牌匹配', '工具型号', '博世', 'Atlascopco', 'EQTCF', 'brand', 'model', 'bosch'],
         route: '/tool-brand-match',
         name: '品牌型号匹配',
         description: '智能匹配符合要求的工具品牌和具体型号',
@@ -84,6 +99,13 @@ export const useAiChatStore = defineStore('aiChat', {
         name: '数字监控驾驶舱',
         description: '可视化数字监控中心，实时掌控设备状态、维护流程、零配件订货',
         answer: '我可以为您打开数字监控驾驶舱！\n\n一站式监控平台：\n✓ 设备状态实时监控\n✓ 维护流程可视化\n✓ 零配件订货追踪\n✓ 多角色视图切换\n✓ 智能预警提醒\n✓ 快速联系通讯\n\n支持设备管理人员、设备使用人员、供应商服务人员三种视角。'
+      },
+      techClassroom: {
+        keywords: ['学习', '小课堂', '课程', '培训', '技术学习', '教程', '视频教程', '协作机器人学习', 'AGV学习', 'PLC学习', '拧紧工艺学习', '节卡学院', 'classroom', 'training', 'course', 'tutorial', 'learn', 'education'],
+        route: '/tech-classroom',
+        name: '产品技术销售小课堂',
+        description: '专业的工业自动化技术知识分享平台，包括协作机器人、AGV、PLC、拧紧工艺等多个领域',
+        answer: '欢迎来到产品技术销售小课堂！🎓\n\n我们提供9大技术领域的专业课程：\n✓ 协作机器人技术\n✓ AGV/AMR导航技术\n✓ PLC控制系统\n✓ 拧紧工艺与工具\n✓ 自动涂胶系统\n✓ 机器视觉\n✓ 精密测量\n✓ 焊装NC柔性系统\n✓ 设备服务知识\n\n每个领域都有详细的分级课程、视频教程和官方学习资源链接（如节卡学院等）！'
       }
     },
     knowledgeBase: {
@@ -135,6 +157,35 @@ export const useAiChatStore = defineStore('aiChat', {
           'zh-CN': '我们提供专业的定制化服务：\n\n🎨 定制范围：\n1. 工装夹具定制：根据产品特点设计专用夹具\n2. 自动化方案定制：定制化产线设计\n3. 软件系统定制：MES、数据采集等系统开发\n4. 非标设备定制：特殊工况设备设计制造\n\n⚙️ 定制流程：\n1. 需求沟通 → 2. 方案设计 → 3. 评审确认 → 4. 样机制作 → 5. 测试验收 → 6. 批量生产\n\n✨ 我们的优势：\n- 专业研发团队\n- 丰富项目经验\n- 快速响应周期\n- 完善的质量体系\n\n欢迎联系我们讨论您的定制需求！',
           'en-US': 'We provide professional customization services:\n\n🎨 Customization Scope:\n1. Tooling & Fixtures: Design special fixtures based on product characteristics\n2. Automation Solutions: Customized production line design\n3. Software Systems: MES, data collection system development\n4. Non-standard Equipment: Design and manufacture for special conditions\n\n⚙️ Customization Process:\n1. Requirement Communication → 2. Solution Design → 3. Review Confirmation → 4. Prototype Production → 5. Testing Acceptance → 6. Mass Production\n\n✨ Our Advantages:\n- Professional R&D team\n- Rich project experience\n- Fast response time\n- Perfect quality system\n\nWelcome to contact us to discuss your customization needs!'
         }
+      },
+      // 🆕 国际买家专属顾问
+      internationalBuyer: {
+        keywords: ['export', 'international', 'overseas', 'shipping', 'global', 'worldwide', 'import', '出口', '国际', '海外', '跨境'],
+        answers: {
+          'zh-CN': '欢迎国际买家！🌍\n\n我是您的专属国际贸易顾问，可以帮助您：\n\n📦 **采购服务**\n• 产品选型与推荐\n• 技术参数确认\n• 定制化方案\n• 批量采购优惠\n\n🌏 **物流支持**\n• 支持全球200+国家配送\n• 海运/空运/快递多种方式\n• FOB/CIF/DDP多种贸易条款\n• 专业报关清关服务\n\n💼 **商务服务**\n• 英语/西班牙语/德语/日语等多语言服务\n• 提供CE/ROHS/UL等国际认证\n• 支持信用证/T/T等多种付款方式\n• 样品试用与批量订购\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567\n\n需要我推荐适合您的产品吗？',
+          'en-US': 'Welcome International Buyers! 🌍\n\nI\'m your dedicated international trade advisor, ready to help you with:\n\n📦 **Procurement Services**\n• Product selection & recommendation\n• Technical specification confirmation\n• Customized solutions\n• Bulk purchase discounts\n\n🌏 **Logistics Support**\n• Delivery to 200+ countries worldwide\n• Sea/Air/Express shipping options\n• FOB/CIF/DDP trade terms available\n• Professional customs clearance\n\n💼 **Business Services**\n• Multilingual support (EN/ES/DE/JA/PT/FR)\n• International certifications (CE/ROHS/UL)\n• Multiple payment methods (L/C, T/T, etc.)\n• Sample trial & bulk ordering\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567\n\nWould you like me to recommend products for you?',
+          'es-ES': '¡Bienvenidos Compradores Internacionales! 🌍\n\nSoy su asesor comercial dedicado:\n\n📦 Servicios de Adquisición\n🌏 Soporte Logístico Global\n💼 Servicio Multilingüe\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567',
+          'de-DE': 'Willkommen Internationale Käufer! 🌍\n\nIch bin Ihr persönlicher Handelsberater:\n\n📦 Beschaffungsdienstleistungen\n🌏 Globale Logistikunterstützung\n💼 Mehrsprachiger Service\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567',
+          'ja-JP': '国際バイヤーの皆様、ようこそ！🌍\n\n専任の貿易アドバイザーとして：\n\n📦 調達サービス\n🌏 グローバル物流サポート\n💼 多言語対応\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567',
+          'pt-BR': 'Bem-vindos Compradores Internacionais! 🌍\n\nSou seu consultor comercial dedicado:\n\n📦 Serviços de Aquisição\n🌏 Suporte Logístico Global\n💼 Serviço Multilíngue\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567',
+          'fr-FR': 'Bienvenue Acheteurs Internationaux! 🌍\n\nJe suis votre conseiller commercial dédié:\n\n📦 Services d\'Approvisionnement\n🌏 Support Logistique Mondial\n💼 Service Multilingue\n\n📧 international@mingsheng.com\n📞 +86-400-123-4567'
+        }
+      },
+      // 🆕 产品推荐系统
+      productRecommendation: {
+        keywords: ['recommend', 'suggestion', 'which product', 'what to buy', '推荐', '建议', '买什么', '哪个产品', '适合'],
+        answers: {
+          'zh-CN': '让我为您推荐合适的产品！🎯\n\n请告诉我您的需求：\n\n1️⃣ **应用场景**\n• 汽车制造装配？\n• 电子产品组装？\n• 机械加工？\n• 其他行业？\n\n2️⃣ **具体需求**\n• 扭矩范围（如30-150Nm）\n• 工作环境（空间限制、噪音要求）\n• 使用频率（偶尔/日常/高强度）\n• 预算范围\n\n3️⃣ **特殊要求**\n• 需要数字显示吗？\n• 需要数据采集吗？\n• 有无认证要求？\n\n回复您的需求，我会推荐最适合的产品！💡',
+          'en-US': 'Let me recommend the right products for you! 🎯\n\nPlease tell me your requirements:\n\n1️⃣ **Application**\n• Automotive assembly?\n• Electronics manufacturing?\n• Mechanical processing?\n• Other industries?\n\n2️⃣ **Specifications**\n• Torque range (e.g., 30-150Nm)\n• Working environment (space, noise)\n• Usage frequency (occasional/daily/intensive)\n• Budget range\n\n3️⃣ **Special Requirements**\n• Digital display needed?\n• Data collection required?\n• Certification requirements?\n\nShare your needs and I\'ll recommend the best products! 💡'
+        }
+      },
+      // 🆕 询盘与报价
+      inquiry: {
+        keywords: ['quote', 'quotation', 'price inquiry', 'rfq', 'inquiry', '询价', '报价', '价格咨询', '询盘'],
+        answers: {
+          'zh-CN': '感谢您的询价！💼\n\n**快速获取报价**：\n\n1️⃣ **在线询盘表单**\n点击右下角"获取报价"按钮，填写详细需求\n\n2️⃣ **直接联系**\n📧 sales@mingsheng.com\n📞 400-123-4567\n💬 WhatsApp: +86-138-0000-0000\n\n3️⃣ **提供信息**\n为了快速准确报价，请提供：\n• 产品型号或规格\n• 采购数量\n• 交货要求\n• 目标价格（如有）\n\n⏰ **响应时间**\n• 标准询价：24小时内\n• 紧急询价：4小时内\n• 复杂项目：48小时内\n\n我们提供极具竞争力的价格！✨',
+          'en-US': 'Thank you for your inquiry! 💼\n\n**Quick Quote Process**:\n\n1️⃣ **Online Inquiry Form**\nClick "Get Quote" button below to submit detailed requirements\n\n2️⃣ **Direct Contact**\n📧 sales@mingsheng.com\n📞 +86-400-123-4567\n💬 WhatsApp: +86-138-0000-0000\n\n3️⃣ **Information Needed**\nFor fast & accurate quotation, please provide:\n• Product model or specifications\n• Purchase quantity\n• Delivery requirements\n• Target price (if any)\n\n⏰ **Response Time**\n• Standard inquiry: Within 24 hours\n• Urgent inquiry: Within 4 hours\n• Complex project: Within 48 hours\n\nWe offer highly competitive prices! ✨'
+        }
       }
     }
   }),
@@ -149,32 +200,206 @@ export const useAiChatStore = defineStore('aiChat', {
     },
 
     async sendMessage(content, locale = 'zh-CN') {
+      const userInput = content.trim()
+      
       // 添加用户消息
       this.addMessage({
         type: 'user',
-        content
+        content: userInput
       })
+
+      // 更新对话上下文
+      this.conversationContext.conversationDepth++
 
       // 显示输入中状态
       this.isTyping = true
 
-      // 模拟AI思考时间
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 模拟AI思考时间（更自然的思考延迟）
+      const thinkingTime = 800 + Math.random() * 400
+      await new Promise(resolve => setTimeout(resolve, thinkingTime))
 
-      // 智能匹配答案
-      const answer = this.matchAnswer(content, locale)
+      // 智能匹配答案（带上下文理解）
+      const answer = this.matchAnswer(userInput, locale)
 
-      // 添加AI回复
-      this.addMessage({
-        type: 'ai',
-        content: answer
-      })
+      // 使用打字机效果逐字显示 - 传入用户问题
+      await this.typewriterEffect(answer, locale, userInput)
 
       this.isTyping = false
     },
 
+    // 打字机效果 - 添加question参数
+    async typewriterEffect(text, locale, question = '') {
+      const messageId = Date.now()
+      
+      // 先添加空消息，包含原始问题用于反馈
+      this.addMessage({
+        type: 'ai',
+        content: '',
+        question: question, // 新增：记录原始问题
+        id: messageId
+      })
+
+      // 逐字添加内容
+      const words = text.split('')
+      for (let i = 0; i < words.length; i++) {
+        const message = this.messages.find(m => m.id === messageId)
+        if (message) {
+          message.content += words[i]
+          // 每个字符延迟（中文慢一点，英文快一点）
+          const delay = /[\u4e00-\u9fa5]/.test(words[i]) ? 30 : 20
+          await new Promise(resolve => setTimeout(resolve, delay))
+        }
+      }
+
+      // 检查是否需要添加建议卡片
+      const suggestions = this.getRelatedSuggestions(text, locale)
+      if (suggestions.length > 0) {
+        await new Promise(resolve => setTimeout(resolve, 300))
+        const message = this.messages.find(m => m.id === messageId)
+        if (message) {
+          message.suggestions = suggestions
+        }
+      }
+    },
+
+    // 获取相关建议
+    getRelatedSuggestions(answer, locale) {
+      const suggestions = []
+      
+      // 如果回答中包含功能推荐，提供快捷操作
+      if (this.lastMatchedRoute) {
+        suggestions.push({
+          text: locale === 'zh-CN' ? '立即打开' : 'Open Now',
+          action: 'navigate',
+          route: this.lastMatchedRoute,
+          icon: 'Promotion'
+        })
+      }
+
+      // 根据话题推荐相关功能
+      if (answer.includes('工具选型') || answer.includes('Tool Selection')) {
+        if (!suggestions.some(s => s.route === '/socket-selector')) {
+          suggestions.push({
+            text: locale === 'zh-CN' ? '套筒配件选型' : 'Socket Selection',
+            action: 'navigate',
+            route: '/socket-selector',
+            icon: 'Tools'
+          })
+        }
+      }
+
+      if (answer.includes('拧紧') || answer.includes('Tightening')) {
+        if (!suggestions.some(s => s.route === '/curve-analysis')) {
+          suggestions.push({
+            text: locale === 'zh-CN' ? '拧紧曲线分析' : 'Curve Analysis',
+            action: 'navigate',
+            route: '/curve-analysis',
+            icon: 'TrendCharts'
+          })
+        }
+      }
+
+      // 如果提到学习、课程等，推荐小课堂和外部资源
+      if (answer.includes('小课堂') || answer.includes('学习') || answer.includes('课程') || 
+          answer.includes('classroom') || answer.includes('learn') || answer.includes('training')) {
+        if (!suggestions.some(s => s.route === '/tech-classroom')) {
+          suggestions.push({
+            text: locale === 'zh-CN' ? '📚 进入小课堂' : '📚 Enter Classroom',
+            action: 'navigate',
+            route: '/tech-classroom',
+            icon: 'Reading'
+          })
+        }
+        
+        // 推荐外部学习资源（如节卡学院）
+        const externalLinksStore = useClassroomStore()
+        const recommendedLinks = externalLinksStore.getAllExternalLinks
+          .filter(link => link.status === 'active' && link.linkType === 'academy')
+          .slice(0, 1) // 只推荐1个
+        
+        recommendedLinks.forEach(link => {
+          suggestions.push({
+            text: locale === 'zh-CN' ? `🎓 ${link.title.substring(0, 15)}...` : `🎓 ${link.title.substring(0, 15)}...`,
+            action: 'external_link',
+            url: link.url,
+            linkId: link.id,
+            icon: 'Link'
+          })
+        })
+      }
+
+      // 如果提到协作机器人，推荐相关外部资源
+      if (answer.includes('协作机器人') || answer.includes('cobot') || answer.includes('collaborative robot')) {
+        const externalLinksStore = useClassroomStore()
+        const cobotLinks = externalLinksStore.getExternalLinksByCategory(1) // 协作机器人分类ID为1
+          .filter(link => link.linkType === 'academy' || link.linkType === 'video')
+          .slice(0, 1)
+        
+        cobotLinks.forEach(link => {
+          suggestions.push({
+            text: locale === 'zh-CN' ? `${link.icon} ${link.title.substring(0, 12)}...` : `${link.icon} ${link.title.substring(0, 12)}...`,
+            action: 'external_link',
+            url: link.url,
+            linkId: link.id,
+            icon: 'Link'
+          })
+        })
+      }
+
+      return suggestions.slice(0, 3) // 最多3个建议
+    },
+
+    // 检测问候语
+    isGreeting(text) {
+      const greetings = ['你好', '您好', 'hello', 'hi', '嗨', '早上好', '晚上好', '下午好', 'good morning', 'good afternoon', 'good evening']
+      return greetings.some(g => text.toLowerCase().includes(g))
+    },
+
+    // 检测感谢语
+    isThanks(text) {
+      const thanks = ['谢谢', '感谢', 'thank', 'thanks', '多谢']
+      return thanks.some(t => text.toLowerCase().includes(t))
+    },
+
+    // 生成问候回复
+    getGreetingResponse(locale) {
+      const greetings = this.personality.greeting
+      const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+      
+      const followUp = locale === 'zh-CN' ? 
+        '\n\n我可以帮您：\n✨ 工具选型和配件匹配\n✨ 拧紧工艺优化分析\n✨ 设备管理和故障追踪\n✨ 成本优化和ROI计算\n\n请告诉我您的需求！' :
+        '\n\nI can help you with:\n✨ Tool selection and fitting\n✨ Tightening process optimization\n✨ Equipment management and fault tracking\n✨ Cost optimization and ROI calculation\n\nPlease let me know your needs!'
+      
+      return greeting + followUp
+    },
+
+    // 生成感谢回复
+    getThanksResponse(locale) {
+      const responses = locale === 'zh-CN' ? [
+        '不客气！很高兴能帮到您！😊',
+        '随时为您服务！有其他问题随时找我！👋',
+        '我的荣幸！期待下次为您服务！✨'
+      ] : [
+        'You\'re welcome! Happy to help! 😊',
+        'Anytime! Feel free to ask if you have more questions! 👋',
+        'My pleasure! Looking forward to serving you next time! ✨'
+      ]
+      
+      return responses[Math.floor(Math.random() * responses.length)]
+    },
+
     matchAnswer(question, locale) {
       const lowerQuestion = question.toLowerCase()
+      
+      // 检测问候语
+      if (this.isGreeting(lowerQuestion)) {
+        return this.getGreetingResponse(locale)
+      }
+
+      // 检测感谢语
+      if (this.isThanks(lowerQuestion)) {
+        return this.getThanksResponse(locale)
+      }
       
       // 优先匹配智能体功能
       for (const [key, func] of Object.entries(this.agentFunctions)) {
@@ -183,9 +408,15 @@ export const useAiChatStore = defineStore('aiChat', {
         )
         
         if (matched) {
+          // 更新对话上下文
+          this.conversationContext.lastTopic = key
+          this.conversationContext.lastIntent = 'feature_inquiry'
+          
+          const enthusiasm = this.personality.enthusiasm[Math.floor(Math.random() * this.personality.enthusiasm.length)]
+          
           const answer = locale === 'en-US' ? 
-            `I can help you with ${func.name}!\n\n${func.description}\n\nWould you like me to open this feature for you?` :
-            `${func.answer}\n\n💡 是否需要我为您打开【${func.name}】功能？`
+            `${enthusiasm}\n\nI can help you with ${func.name}!\n\n${func.description}\n\n💡 Would you like me to open this feature for you?` :
+            `${enthusiasm}\n\n${func.answer}\n\n💡 是否需要我为您打开【${func.name}】功能？`
           
           // 存储匹配到的功能，用于后续跳转
           this.lastMatchedRoute = func.route
@@ -200,6 +431,8 @@ export const useAiChatStore = defineStore('aiChat', {
         )
         
         if (matched) {
+          this.conversationContext.lastTopic = category
+          this.conversationContext.lastIntent = 'knowledge_inquiry'
           return data.answers[locale] || data.answers['zh-CN']
         }
       }
@@ -210,10 +443,12 @@ export const useAiChatStore = defineStore('aiChat', {
         return fuzzyMatch
       }
 
-      // 默认回复
+      // 默认回复（更友好和个性化）
+      const thinking = this.personality.thinking[Math.floor(Math.random() * this.personality.thinking.length)]
+      
       const defaultAnswers = {
-        'zh-CN': '感谢您的咨询！😊\n\n我可以帮您：\n\n🔧 工具选型相关：\n• 扭矩工具选型\n• 套筒配件选型\n• 品牌型号匹配\n\n⚙️ 工艺优化相关：\n• 拧紧策略优化\n• 成本优化分析\n\n📊 服务支持相关：\n• 在线设备查询\n• 故障追踪\n• 保养计划\n\n您可以直接问我，比如：\n"我需要选择合适的扭矩工具"\n"帮我优化拧紧策略"\n"查看设备运行状态"\n\n或者拨打服务热线：400-123-4567',
-        'en-US': 'Thank you for your inquiry! 😊\n\nI can help you with:\n\n🔧 Tool Selection:\n• Torque Tool Selection\n• Socket Selection\n• Brand Model Matching\n\n⚙️ Process Optimization:\n• Tightening Strategy\n• Cost Optimization\n\n📊 Service Support:\n• Device Status Query\n• Fault Tracking\n• Maintenance Planning\n\nYou can ask me directly, for example:\n"I need to select a suitable torque tool"\n"Help me optimize tightening strategy"\n"Check device running status"\n\nOr call our hotline: 400-123-4567'
+        'zh-CN': `${thinking}\n\n抱歉，我可能没有完全理解您的问题。\n\n我擅长的领域包括：\n\n🔧 **工具选型**\n• 扭矩工具选型\n• 套筒配件选型\n• 品牌型号匹配\n\n⚙️ **工艺优化**\n• 拧紧策略优化\n• 拧紧曲线分析\n• 成本优化分析\n\n📊 **设备管理**\n• 设备全生命周期管理\n• 故障工单追踪\n• 数字监控驾驶舱\n\n您可以换个方式问我，比如：\n"我需要选择合适的扭矩工具"\n"帮我分析拧紧曲线"\n"查看设备运行状态"\n\n📞 需要人工服务？拨打：400-123-4567`,
+        'en-US': `${thinking}\n\nSorry, I may not fully understand your question.\n\nMy expertise includes:\n\n🔧 **Tool Selection**\n• Torque Tool Selection\n• Socket Selection\n• Brand Model Matching\n\n⚙️ **Process Optimization**\n• Tightening Strategy\n• Curve Analysis\n• Cost Optimization\n\n📊 **Equipment Management**\n• Equipment Lifecycle Management\n• Fault Tracking\n• Digital Monitoring Dashboard\n\nYou can try asking:\n"I need to select a suitable torque tool"\n"Help me analyze tightening curves"\n"Check device running status"\n\n📞 Need human support? Call: 400-123-4567`
       }
 
       return defaultAnswers[locale] || defaultAnswers['zh-CN']

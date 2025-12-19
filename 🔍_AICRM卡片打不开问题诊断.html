@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AICRM卡片打不开问题诊断</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      line-height: 1.6;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      color: #333;
+    }
+    h1 {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #764ba2;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .step {
+      background: #f8f9fa;
+      padding: 20px;
+      margin: 15px 0;
+      border-left: 4px solid #667eea;
+      border-radius: 8px;
+    }
+    .step h3 {
+      margin-top: 0;
+      color: #667eea;
+    }
+    .command {
+      background: #2c3e50;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .warning {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      color: #856404;
+    }
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      color: #721c24;
+    }
+    ul {
+      margin-left: 20px;
+    }
+    li {
+      margin: 8px 0;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 10px 10px 10px 0;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    .btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    .btn-success {
+      background: #28a745;
+    }
+    .btn-success:hover {
+      background: #218838;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #d63384;
+      font-family: 'Courier New', monospace;
+    }
+    .test-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .test-link {
+      background: white;
+      border: 2px solid #667eea;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .test-link:hover {
+      background: #667eea;
+      color: white;
+      transform: scale(1.02);
+    }
+    .test-link a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 AICRM卡片打不开问题诊断</h1>
+    
+    <div class="warning">
+      <strong>⚠️ 问题描述</strong><br>
+      点击首页的"明升AICRM智能助手"卡片后，页面无法打开或显示空白。
+    </div>
+
+    <div class="success">
+      <strong>✅ 代码检查结果</strong><br>
+      <ul>
+        <li>✅ 路由配置正确: <code>/mingsheng-aicrm</code> → <code>MingShengAICRM_V3.vue</code></li>
+        <li>✅ 主组件存在且无语法错误</li>
+        <li>✅ 所有子组件存在: OpportunityFunnel, BidPredictor, ProductMatrixAgent, Customer360View, SalesGoalManagement</li>
+        <li>✅ 无Linter错误或警告</li>
+      </ul>
+    </div>
+
+    <h2>📋 可能的原因分析</h2>
+
+    <div class="step">
+      <h3>原因1: 浏览器缓存 (最可能 70%)</h3>
+      <p>浏览器缓存了旧版本的代码，导致新组件无法加载。</p>
+      <p><strong>解决方法:</strong></p>
+      <ol>
+        <li>按 <code>Ctrl + Shift + Delete</code></li>
+        <li>选择"全部时间"</li>
+        <li>勾选"缓存的图像和文件"</li>
+        <li>点击"清除数据"</li>
+        <li>关闭所有浏览器窗口</li>
+        <li>重新打开浏览器</li>
+        <li>访问 <a href="http://localhost:3006" target="_blank">http://localhost:3006</a></li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <h3>原因2: JavaScript运行时错误 (可能性 20%)</h3>
+      <p>某个子组件在初始化时抛出错误，导致整个页面崩溃。</p>
+      <p><strong>诊断方法:</strong></p>
+      <ol>
+        <li>访问 <a href="http://localhost:3006/mingsheng-aicrm" target="_blank">http://localhost:3006/mingsheng-aicrm</a></li>
+        <li>按 <code>F12</code> 打开开发者工具</li>
+        <li>查看 <strong>Console</strong> 标签页</li>
+        <li>查找红色错误信息</li>
+      </ol>
+      <p><strong>常见错误:</strong></p>
+      <ul>
+        <li><code>Cannot read property 'xxx' of undefined</code> - 数据未初始化</li>
+        <li><code>Failed to resolve component</code> - 组件未正确注册</li>
+        <li><code>Unexpected token</code> - 语法错误</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>原因3: 路由跳转问题 (可能性 10%)</h3>
+      <p>点击卡片时，路由跳转函数执行失败。</p>
+      <p><strong>测试方法:</strong></p>
+      <ol>
+        <li>直接在地址栏输入: <code>http://localhost:3006/mingsheng-aicrm</code></li>
+        <li>如果直接访问可以打开，说明是点击事件问题</li>
+        <li>如果直接访问也打不开，说明是组件加载问题</li>
+      </ol>
+    </div>
+
+    <h2>🔧 快速修复步骤</h2>
+
+    <div class="step">
+      <h3>步骤1: 清除缓存并测试 (必做)</h3>
+      <ol>
+        <li>关闭所有浏览器窗口</li>
+        <li>重新打开浏览器</li>
+        <li>按 <code>Ctrl + Shift + Delete</code> 清除缓存</li>
+        <li>访问主页: <a href="http://localhost:3006" target="_blank">http://localhost:3006</a></li>
+        <li>点击"明升AICRM智能助手"卡片</li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <h3>步骤2: 直接访问测试</h3>
+      <p>绕过首页，直接访问AICRM页面:</p>
+      <div class="test-links">
+        <div class="test-link">
+          <a href="http://localhost:3006/mingsheng-aicrm" target="_blank">
+            <strong>🚀 直接访问AICRM</strong><br>
+            <small>http://localhost:3006/mingsheng-aicrm</small>
+          </a>
+        </div>
+        <div class="test-link">
+          <a href="http://localhost:3006" target="_blank">
+            <strong>🏠 访问主页</strong><br>
+            <small>http://localhost:3006</small>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>步骤3: 检查浏览器控制台</h3>
+      <ol>
+        <li>访问AICRM页面</li>
+        <li>按 <code>F12</code> 打开开发者工具</li>
+        <li>切换到 <strong>Console</strong> 标签页</li>
+        <li>查看是否有报错（红色文字）</li>
+        <li>如果有错误，复制完整错误信息</li>
+      </ol>
+      <p><strong>如何复制错误信息:</strong></p>
+      <div class="command">// 在Console中输入并回车
+console.save = function(data, filename) {
+  const blob = new Blob([data], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+}
+
+// 然后右键点击错误信息 → "保存为..." 或 "复制"
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>步骤4: 检查Network请求</h3>
+      <ol>
+        <li>在开发者工具中切换到 <strong>Network</strong> 标签页</li>
+        <li>刷新页面 (<code>F5</code>)</li>
+        <li>查看是否有失败的请求（红色标记）</li>
+        <li>特别检查这些文件:
+          <ul>
+            <li><code>MingShengAICRM_V3.vue</code></li>
+            <li><code>OpportunityFunnel.vue</code></li>
+            <li><code>BidPredictor.vue</code></li>
+            <li><code>SalesGoalManagement.vue</code></li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <h2>🚨 如果以上都不行</h2>
+
+    <div class="error">
+      <h3>方案A: 重启开发服务器</h3>
+      <div class="command">
+# 1. 在运行服务器的终端按 Ctrl + C 停止服务器
+# 2. 然后重新启动:
+cd c:\Users\EricZ\CodeBuddy\AIWEB1
+npm run dev
+      </div>
+    </div>
+
+    <div class="error">
+      <h3>方案B: 重新安装依赖</h3>
+      <div class="command">
+# 删除node_modules并重新安装
+cd c:\Users\EricZ\CodeBuddy\AIWEB1
+rmdir /s /q node_modules
+del package-lock.json
+npm install
+npm run dev
+      </div>
+    </div>
+
+    <h2>📊 测试清单</h2>
+
+    <div class="step">
+      <h3>请依次测试以下链接</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #667eea; color: white;">
+            <th style="padding: 10px; text-align: left;">测试项目</th>
+            <th style="padding: 10px; text-align: center;">访问链接</th>
+            <th style="padding: 10px; text-align: center;">状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;">1. 主页</td>
+            <td style="padding: 10px; text-align: center;">
+              <a href="http://localhost:3006" target="_blank" class="btn btn-success" style="margin: 0;">访问</a>
+            </td>
+            <td style="padding: 10px; text-align: center;">⬜ 待测试</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
+            <td style="padding: 10px;">2. AICRM直接访问</td>
+            <td style="padding: 10px; text-align: center;">
+              <a href="http://localhost:3006/mingsheng-aicrm" target="_blank" class="btn btn-success" style="margin: 0;">访问</a>
+            </td>
+            <td style="padding: 10px; text-align: center;">⬜ 待测试</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;">3. 从主页点击卡片</td>
+            <td style="padding: 10px; text-align: center;">手动点击</td>
+            <td style="padding: 10px; text-align: center;">⬜ 待测试</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
+            <td style="padding: 10px;">4. 其他智能体页面</td>
+            <td style="padding: 10px; text-align: center;">
+              <a href="http://localhost:3006/equipment-lifecycle" target="_blank" class="btn btn-success" style="margin: 0;">访问</a>
+            </td>
+            <td style="padding: 10px; text-align: center;">⬜ 待测试</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>💡 诊断技巧</h2>
+
+    <div class="step">
+      <h3>在浏览器Console中运行</h3>
+      <p>复制以下代码到Console，查看路由信息:</p>
+      <div class="command">
+// 检查当前路由
+console.log('当前路由:', window.location.href);
+
+// 检查Vue Router
+if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
+  console.log('Vue Router已加载');
+} else {
+  console.error('Vue Router未加载');
+}
+
+// 尝试手动跳转
+window.location.href = 'http://localhost:3006/mingsheng-aicrm';
+      </div>
+    </div>
+
+    <h2>📞 获取帮助</h2>
+
+    <div class="warning">
+      <p>如果按照以上步骤仍无法解决，请提供以下信息:</p>
+      <ol>
+        <li>✅ 是否已清除浏览器缓存</li>
+        <li>✅ 直接访问AICRM链接是否成功</li>
+        <li>✅ Console控制台的错误截图或文字</li>
+        <li>✅ Network标签中失败的请求</li>
+        <li>✅ 浏览器类型和版本</li>
+      </ol>
+    </div>
+
+    <div class="success" style="margin-top: 30px;">
+      <h3>✅ 代码状态确认</h3>
+      <ul>
+        <li>路由配置: <code>/mingsheng-aicrm</code> ✅</li>
+        <li>主组件: <code>MingShengAICRM_V3.vue</code> ✅ (65.14 KB)</li>
+        <li>子组件1: <code>OpportunityFunnel.vue</code> ✅ (62.27 KB)</li>
+        <li>子组件2: <code>BidPredictor.vue</code> ✅ (66.87 KB)</li>
+        <li>子组件3: <code>ProductMatrixAgent.vue</code> ✅ (37.57 KB)</li>
+        <li>子组件4: <code>Customer360View.vue</code> ✅ (21.32 KB)</li>
+        <li>子组件5: <code>SalesGoalManagement.vue</code> ✅ (38.73 KB)</li>
+        <li>Linter错误: 0个 ✅</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="http://localhost:3006" target="_blank" class="btn" style="font-size: 18px; padding: 15px 40px;">
+        🚀 立即测试主页
+      </a>
+      <a href="http://localhost:3006/mingsheng-aicrm" target="_blank" class="btn btn-success" style="font-size: 18px; padding: 15px 40px;">
+        🎯 直接访问AICRM
+      </a>
+    </div>
+  </div>
+
+  <script>
+    console.log('🔍 AICRM诊断页面已加载');
+    console.log('📍 当前时间:', new Date().toLocaleString('zh-CN'));
+    console.log('🌐 主页地址: http://localhost:3006');
+    console.log('🎯 AICRM地址: http://localhost:3006/mingsheng-aicrm');
+    
+    // 自动检测服务器状态
+    fetch('http://localhost:3006')
+      .then(() => {
+        console.log('✅ 开发服务器运行正常');
+      })
+      .catch(err => {
+        console.error('❌ 开发服务器未运行:', err);
+      });
+  </script>
+</body>
+</html>

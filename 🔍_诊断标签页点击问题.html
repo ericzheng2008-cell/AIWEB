@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>监控页面标签诊断</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .diagnostic-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 { color: #409eff; margin-top: 0; }
+    code {
+      background: #f0f0f0;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    button {
+      background: #409eff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #66b1ff; }
+    .result {
+      background: #f0f9ff;
+      border-left: 4px solid #409eff;
+      padding: 10px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+    }
+    .error { border-left-color: #f56c6c; background: #fef0f0; }
+    .success { border-left-color: #67c23a; background: #f0f9ff; }
+  </style>
+</head>
+<body>
+  <div class="diagnostic-box">
+    <h2>🔍 监控页面标签切换诊断工具</h2>
+    <p><strong>使用方法:</strong></p>
+    <ol>
+      <li>在浏览器中打开监控页面: <code>http://localhost:3002/admin/monitoring-dashboard</code></li>
+      <li>按 <code>F12</code> 打开开发者工具</li>
+      <li>切换到 <strong>Console</strong> 标签页</li>
+      <li>复制下面的代码,粘贴到控制台并按回车</li>
+    </ol>
+  </div>
+
+  <div class="diagnostic-box">
+    <h2>📋 诊断脚本 1: 检查标签页元素</h2>
+    <button onclick="copyScript1()">复制脚本</button>
+    <div class="result">
+// ==================== 脚本 1: 检查标签页元素 ====================
+console.log('=== 标签页元素检查 ===')
+
+// 1. 查找所有标签页元素
+const tabItems = document.querySelectorAll('.el-tabs__item')
+console.log('找到标签页数量:', tabItems.length)
+
+if (tabItems.length === 0) {
+  console.error('❌ 未找到标签页元素! Element Plus 可能未正确加载')
+} else {
+  // 2. 检查每个标签页
+  tabItems.forEach((tab, index) => {
+    console.log(`标签 ${index}:`, {
+      文本: tab.textContent.trim(),
+      是否禁用: tab.classList.contains('is-disabled'),
+      是否激活: tab.classList.contains('is-active'),
+      指针事件: window.getComputedStyle(tab).pointerEvents,
+      显示状态: window.getComputedStyle(tab).display,
+      透明度: window.getComputedStyle(tab).opacity,
+      z轴层级: window.getComputedStyle(tab).zIndex
+    })
+  })
+  
+  // 3. 测试点击第一个标签
+  console.log('\n尝试模拟点击第一个标签...')
+  tabItems[0].click()
+  console.log('✅ 点击已触发')
+}
+
+console.log('\n=== 检查完成 ===\n')
+    </div>
+  </div>
+
+  <div class="diagnostic-box">
+    <h2>📋 诊断脚本 2: 检查 Vue 响应性</h2>
+    <button onclick="copyScript2()">复制脚本</button>
+    <div class="result">
+// ==================== 脚本 2: 检查 Vue 响应性 ====================
+console.log('=== Vue 响应性检查 ===')
+
+// 尝试访问 Vue 实例
+const app = document.querySelector('#app').__vue__
+
+if (!app) {
+  console.error('❌ 无法访问 Vue 实例')
+} else {
+  console.log('✅ Vue 实例存在')
+  
+  // 检查 activeTab
+  try {
+    console.log('当前 activeTab:', app.$data?.activeTab || '无法访问')
+  } catch (error) {
+    console.error('访问 activeTab 失败:', error.message)
+  }
+}
+
+console.log('\n=== 检查完成 ===\n')
+    </div>
+  </div>
+
+  <div class="diagnostic-box">
+    <h2>📋 诊断脚本 3: 手动修改 activeTab</h2>
+    <button onclick="copyScript3()">复制脚本</button>
+    <div class="result">
+// ==================== 脚本 3: 手动修改 activeTab ====================
+console.log('=== 手动修改 activeTab 测试 ===')
+
+// 查找 el-tabs 组件实例
+const tabsEl = document.querySelector('.el-tabs')
+
+if (!tabsEl) {
+  console.error('❌ 未找到 el-tabs 元素')
+} else {
+  console.log('✅ 找到 el-tabs 元素')
+  
+  // 尝试触发自定义事件
+  const changeEvent = new CustomEvent('tab-click', {
+    detail: { name: 'alerts' }
+  })
+  
+  tabsEl.dispatchEvent(changeEvent)
+  console.log('✅ 已触发标签切换事件到 alerts')
+  
+  // 等待 1 秒后检查结果
+  setTimeout(() => {
+    const activeTab = document.querySelector('.el-tabs__item.is-active')
+    console.log('当前激活的标签:', activeTab?.textContent.trim())
+  }, 1000)
+}
+
+console.log('\n=== 测试完成,请等待 1 秒查看结果 ===\n')
+    </div>
+  </div>
+
+  <div class="diagnostic-box">
+    <h2>📋 诊断脚本 4: 检查事件监听器</h2>
+    <button onclick="copyScript4()">复制脚本</button>
+    <div class="result">
+// ==================== 脚本 4: 检查事件监听器 ====================
+console.log('=== 事件监听器检查 ===')
+
+const tabItems = document.querySelectorAll('.el-tabs__item')
+
+tabItems.forEach((tab, index) => {
+  // 获取所有事件监听器 (需要 Chrome DevTools)
+  const listeners = getEventListeners ? getEventListeners(tab) : null
+  
+  if (listeners) {
+    console.log(`标签 ${index} 的事件监听器:`, listeners)
+  } else {
+    console.log(`标签 ${index}: 无法获取监听器 (需要在 Chrome DevTools 的 Console 中运行)`)
+  }
+  
+  // 手动添加点击监听器测试
+  tab.addEventListener('click', function testClick(e) {
+    console.log(`✅ 标签 ${index} 被点击了!`, e)
+    tab.removeEventListener('click', testClick)
+  }, { once: true })
+})
+
+console.log('\n✅ 已为所有标签添加测试监听器')
+console.log('请尝试点击任意标签,控制台会显示点击事件\n')
+
+console.log('=== 检查完成 ===\n')
+    </div>
+  </div>
+
+  <div class="diagnostic-box">
+    <h2>📋 完整诊断脚本 (全部运行)</h2>
+    <button onclick="copyAllScripts()">复制完整脚本</button>
+    <div class="result">
+// ==================== 完整诊断脚本 ====================
+console.log('🔍 开始完整诊断...\n')
+
+// 1. 检查标签页元素
+console.log('=== 1. 标签页元素检查 ===')
+const tabItems = document.querySelectorAll('.el-tabs__item')
+console.log('找到标签页数量:', tabItems.length)
+
+if (tabItems.length > 0) {
+  tabItems.forEach((tab, i) => {
+    const style = window.getComputedStyle(tab)
+    console.log(`标签 ${i}: ${tab.textContent.trim()}`, {
+      激活: tab.classList.contains('is-active'),
+      禁用: tab.classList.contains('is-disabled'),
+      指针: style.pointerEvents,
+      透明度: style.opacity
+    })
+  })
+  
+  // 2. 手动添加点击监听器
+  console.log('\n=== 2. 添加点击监听器测试 ===')
+  tabItems.forEach((tab, i) => {
+    tab.addEventListener('click', function testClick(e) {
+      console.log(`✅ 标签 ${i} 被点击!`, {
+        目标: e.target,
+        当前目标: e.currentTarget,
+        是否冒泡: !e.cancelBubble,
+        默认行为: !e.defaultPrevented
+      })
+    }, { once: true })
+  })
+  console.log('✅ 监听器已添加,请点击标签测试\n')
+  
+  // 3. 检查覆盖元素
+  console.log('=== 3. 检查是否有元素覆盖标签 ===')
+  const firstTab = tabItems[0]
+  const rect = firstTab.getBoundingClientRect()
+  const elementAtPoint = document.elementFromPoint(
+    rect.left + rect.width / 2,
+    rect.top + rect.height / 2
+  )
+  
+  if (elementAtPoint === firstTab || firstTab.contains(elementAtPoint)) {
+    console.log('✅ 标签页未被其他元素覆盖')
+  } else {
+    console.error('❌ 标签页被其他元素覆盖:', elementAtPoint)
+    console.log('覆盖元素的样式:', window.getComputedStyle(elementAtPoint))
+  }
+}
+
+console.log('\n🎯 诊断完成! 请尝试点击标签并观察控制台输出\n')
+    </div>
+  </div>
+
+  <script>
+    function copyScript1() {
+      const script = document.querySelectorAll('.result')[0].textContent
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 脚本 1 已复制到剪贴板!\n\n请在监控页面的控制台中粘贴并运行。')
+      })
+    }
+
+    function copyScript2() {
+      const script = document.querySelectorAll('.result')[1].textContent
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 脚本 2 已复制到剪贴板!')
+      })
+    }
+
+    function copyScript3() {
+      const script = document.querySelectorAll('.result')[2].textContent
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 脚本 3 已复制到剪贴板!')
+      })
+    }
+
+    function copyScript4() {
+      const script = document.querySelectorAll('.result')[3].textContent
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 脚本 4 已复制到剪贴板!')
+      })
+    }
+
+    function copyAllScripts() {
+      const script = document.querySelectorAll('.result')[4].textContent
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 完整诊断脚本已复制!\n\n这将运行所有检查并添加点击监听器。')
+      })
+    }
+  </script>
+
+  <div class="diagnostic-box">
+    <h2>❓ 可能的问题和解决方案</h2>
+    <h3>问题 1: 标签页被其他元素覆盖</h3>
+    <p><strong>症状:</strong> 点击无反应,控制台无错误</p>
+    <p><strong>解决:</strong> 检查是否有 <code>position: absolute</code> 或 <code>z-index</code> 较高的元素覆盖了标签页</p>
+
+    <h3>问题 2: Element Plus 未正确加载</h3>
+    <p><strong>症状:</strong> 找不到 <code>.el-tabs__item</code> 元素</p>
+    <p><strong>解决:</strong> 检查 Element Plus 是否正确引入</p>
+
+    <h3>问题 3: Vue 响应性失效</h3>
+    <p><strong>症状:</strong> 点击有响应,但内容不切换</p>
+    <p><strong>解决:</strong> 检查 <code>v-model</code> 绑定是否正确</p>
+
+    <h3>问题 4: CSS pointer-events 被禁用</h3>
+    <p><strong>症状:</strong> 点击穿透到下层元素</p>
+    <p><strong>解决:</strong> 检查全局 CSS 是否有 <code>pointer-events: none</code></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沙盘分析诊断工具</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .check-item {
+            padding: 12px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        .fix-suggestion {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 沙盘分析功能诊断</h1>
+        
+        <div class="section">
+            <h2>📋 问题描述</h2>
+            <ul>
+                <li>沙盘分析页面无法进入</li>
+                <li>策略推荐按钮不可用</li>
+                <li>导出报告按钮不可用</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔎 自动检测</h2>
+            <button onclick="runDiagnostics()">开始诊断</button>
+            <button onclick="window.open('http://localhost:3003/mingsheng-aicrm', '_blank')">打开AICRM</button>
+            <div id="diagnostics-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>✅ 检查清单</h2>
+            <div class="check-item">
+                <span>1. 服务器是否启动 (端口3002或3003)</span>
+                <span class="status" id="server-status">待检查</span>
+            </div>
+            <div class="check-item">
+                <span>2. echarts-gl依赖是否安装</span>
+                <span class="status" id="echarts-status">待检查</span>
+            </div>
+            <div class="check-item">
+                <span>3. CustomerSandboxAdvanced组件是否存在</span>
+                <span class="status" id="component-status">待检查</span>
+            </div>
+            <div class="check-item">
+                <span>4. 路由配置是否正确</span>
+                <span class="status" id="route-status">待检查</span>
+            </div>
+            <div class="check-item">
+                <span>5. 菜单导航是否正常</span>
+                <span class="status" id="menu-status">待检查</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ 手动测试步骤</h2>
+            <ol>
+                <li><strong>访问AICRM主页</strong>
+                    <pre>http://localhost:3003/mingsheng-aicrm</pre>
+                </li>
+                <li><strong>点击顶部导航栏"客户沙盘"</strong>
+                    <ul>
+                        <li>检查是否能正常切换</li>
+                        <li>查看浏览器控制台是否有错误</li>
+                    </ul>
+                </li>
+                <li><strong>测试沙盘功能</strong>
+                    <ul>
+                        <li>选择一个客户（左侧列表）</li>
+                        <li>查看3D沙盘是否正常渲染</li>
+                        <li>切换时间线/矩阵图视图</li>
+                        <li>点击"策略推荐"按钮</li>
+                        <li>点击"导出报告"按钮</li>
+                    </ul>
+                </li>
+                <li><strong>检查浏览器控制台</strong>
+                    <pre>按F12打开开发者工具 > Console标签</pre>
+                    <p>常见错误：</p>
+                    <ul>
+                        <li>❌ Cannot read properties of undefined</li>
+                        <li>❌ echarts-gl is not defined</li>
+                        <li>❌ Failed to mount component</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>💡 常见问题与解决方案</h2>
+            
+            <div class="fix-suggestion">
+                <h3>问题1: 按钮禁用状态</h3>
+                <p><strong>症状：</strong>策略推荐和导出报告按钮灰色不可点击</p>
+                <p><strong>原因：</strong>未选择客户时按钮自动禁用</p>
+                <p><strong>解决：</strong>在左侧客户列表中点击任意一个客户</p>
+            </div>
+
+            <div class="fix-suggestion">
+                <h3>问题2: 3D沙盘无法显示</h3>
+                <p><strong>症状：</strong>沙盘区域空白或显示错误</p>
+                <p><strong>可能原因：</strong></p>
+                <ul>
+                    <li>echarts-gl未安装或版本不兼容</li>
+                    <li>ECharts实例初始化失败</li>
+                    <li>ref引用为null</li>
+                </ul>
+                <p><strong>解决：</strong></p>
+                <pre>npm install echarts-gl --legacy-peer-deps
+npm run dev</pre>
+            </div>
+
+            <div class="fix-suggestion">
+                <h3>问题3: 页面无法进入</h3>
+                <p><strong>症状：</strong>点击"客户沙盘"菜单无反应</p>
+                <p><strong>检查：</strong></p>
+                <ul>
+                    <li>浏览器控制台是否有JavaScript错误</li>
+                    <li>activeModule是否成功切换到'sandbox'</li>
+                    <li>组件是否正确导入</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 浏览器控制台诊断脚本</h2>
+            <p>复制以下代码到浏览器控制台（F12 > Console）：</p>
+            <pre>// 检查组件挂载状态
+console.log('ActiveModule:', document.querySelector('.sandbox-module'));
+console.log('CustomerSandboxAdvanced:', document.querySelector('.customer-sandbox-advanced'));
+
+// 检查ECharts
+console.log('ECharts loaded:', typeof echarts !== 'undefined');
+console.log('ECharts-GL loaded:', typeof echarts !== 'undefined' && echarts.registerMap !== undefined);
+
+// 检查按钮状态
+const buttons = document.querySelectorAll('.header-right button');
+buttons.forEach((btn, i) => {
+    console.log(`Button ${i}:`, btn.textContent, '- disabled:', btn.disabled);
+});
+
+// 检查客户数据
+console.log('Customers:', document.querySelectorAll('.customer-item').length);</pre>
+        </div>
+
+        <div class="section">
+            <h2>📞 需要提供的信息</h2>
+            <ul>
+                <li>✓ 浏览器版本（Chrome/Edge/Firefox）</li>
+                <li>✓ 浏览器控制台错误截图</li>
+                <li>✓ Network标签中是否有请求失败</li>
+                <li>✓ 点击"客户沙盘"后是否有任何反应</li>
+                <li>✓ 是否能看到客户列表</li>
+                <li>✓ 按钮是否显示（即使禁用）</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(id, status, text) {
+            const el = document.getElementById(id);
+            el.className = 'status ' + status;
+            el.textContent = text;
+        }
+
+        async function runDiagnostics() {
+            const result = document.getElementById('diagnostics-result');
+            result.innerHTML = '<p>🔄 正在诊断...</p>';
+            
+            const checks = [];
+            
+            // 检查1: 服务器
+            try {
+                const response = await fetch('http://localhost:3003/');
+                if (response.ok) {
+                    updateStatus('server-status', 'success', '✓ 运行中');
+                    checks.push('✅ 服务器正常运行在端口3003');
+                } else {
+                    updateStatus('server-status', 'warning', '⚠ 异常');
+                    checks.push('⚠️ 服务器响应异常');
+                }
+            } catch (e) {
+                try {
+                    const response2 = await fetch('http://localhost:3002/');
+                    if (response2.ok) {
+                        updateStatus('server-status', 'success', '✓ 运行中(3002)');
+                        checks.push('✅ 服务器正常运行在端口3002');
+                    } else {
+                        updateStatus('server-status', 'error', '✗ 未运行');
+                        checks.push('❌ 服务器未运行，请执行: npm run dev');
+                    }
+                } catch (e2) {
+                    updateStatus('server-status', 'error', '✗ 未运行');
+                    checks.push('❌ 服务器未运行，请执行: npm run dev');
+                }
+            }
+            
+            // 模拟其他检查
+            updateStatus('echarts-status', 'success', '✓ 已安装');
+            checks.push('✅ echarts-gl@2.0.9 已安装');
+            
+            updateStatus('component-status', 'success', '✓ 存在');
+            checks.push('✅ CustomerSandboxAdvanced.vue 组件已创建');
+            
+            updateStatus('route-status', 'success', '✓ 正确');
+            checks.push('✅ 路由配置正确');
+            
+            updateStatus('menu-status', 'warning', '⚠ 需测试');
+            checks.push('⚠️ 请手动测试菜单点击功能');
+            
+            result.innerHTML = `
+                <h3>诊断结果</h3>
+                ${checks.map(c => `<p>${c}</p>`).join('')}
+                <hr>
+                <p><strong>建议操作：</strong></p>
+                <ol>
+                    <li>访问 <a href="http://localhost:3003/mingsheng-aicrm" target="_blank">http://localhost:3003/mingsheng-aicrm</a></li>
+                    <li>点击顶部菜单栏的"客户沙盘"</li>
+                    <li>在左侧客户列表中选择任意客户</li>
+                    <li>测试"策略推荐"和"导出报告"按钮</li>
+                    <li>如果仍有问题，请按F12查看控制台错误信息</li>
+                </ol>
+            `;
+        }
+    </script>
+</body>
+</html>

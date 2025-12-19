@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 2-4 页面诊断</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f7fa;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    h1 { margin: 0; font-size: 28px; }
+    .subtitle { margin: 10px 0 0; opacity: 0.9; }
+    
+    .checklist {
+      background: white;
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .checklist h2 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .check-item {
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #e0e0e0;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+    .check-item.success { border-left-color: #52c41a; background: #f6ffed; }
+    .check-item.error { border-left-color: #f5222d; background: #fff1f0; }
+    .check-item.warning { border-left-color: #faad14; background: #fffbe6; }
+    
+    .icon { margin-right: 8px; font-size: 18px; }
+    
+    .test-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .test-link {
+      display: block;
+      padding: 15px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      text-align: center;
+      transition: transform 0.2s;
+      font-weight: 500;
+    }
+    .test-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .code-block {
+      background: #282c34;
+      color: #abb2bf;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    .solution {
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 15px;
+    }
+    .solution h3 {
+      margin-top: 0;
+      color: #0050b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 Phase 2-4 页面诊断工具</h1>
+    <p class="subtitle">检查知识库、学习引擎、监控系统页面问题</p>
+  </div>
+
+  <div class="checklist">
+    <h2>📋 问题症状</h2>
+    <div class="check-item error">
+      <span class="icon">❌</span>
+      <strong>知识库管理页面</strong>：显示空白，无内容
+    </div>
+    <div class="check-item error">
+      <span class="icon">❌</span>
+      <strong>主动学习引擎</strong>：点击后页面不响应，无法加载
+    </div>
+    <div class="check-item error">
+      <span class="icon">❌</span>
+      <strong>监控与优化</strong>：页面显示空白，无数据展示
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h2>🔧 可能原因分析</h2>
+    
+    <div class="check-item warning">
+      <span class="icon">⚠️</span>
+      <strong>原因1：Store 未正确初始化</strong>
+      <p>knowledgeBase.js 和 learningEngine.js 使用函数式导出，可能未在调用时正确初始化</p>
+    </div>
+    
+    <div class="check-item warning">
+      <span class="icon">⚠️</span>
+      <strong>原因2：依赖导入问题</strong>
+      <p>marked 库或其他依赖可能未正确安装或导入</p>
+    </div>
+    
+    <div class="check-item warning">
+      <span class="icon">⚠️</span>
+      <strong>原因3：数据未加载</strong>
+      <p>LocalStorage 中可能没有演示数据，导致页面空白</p>
+    </div>
+    
+    <div class="check-item warning">
+      <span class="icon">⚠️</span>
+      <strong>原因4：Vue 组件渲染错误</strong>
+      <p>模板中可能存在语法错误或引用未定义的变量</p>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h2>🛠️ 解决方案</h2>
+    
+    <div class="solution">
+      <h3>方案 1：检查浏览器控制台</h3>
+      <p>1. 打开浏览器开发者工具 (F12)</p>
+      <p>2. 查看 Console 标签页的错误信息</p>
+      <p>3. 查看 Network 标签页确认资源加载情况</p>
+      
+      <div class="code-block">
+// 常见错误类型：
+// - Failed to resolve import "xxx"
+// - Cannot read property of undefined
+// - Unexpected token
+// - Component is not defined
+      </div>
+    </div>
+    
+    <div class="solution">
+      <h3>方案 2：初始化演示数据</h3>
+      <p>在浏览器控制台执行以下代码初始化数据：</p>
+      
+      <div class="code-block">
+// 清除旧数据
+localStorage.clear()
+
+// 刷新页面
+location.reload()
+      </div>
+    </div>
+    
+    <div class="solution">
+      <h3>方案 3：检查 Store 初始化</h3>
+      <p>确保在组件中正确调用了 store 的初始化方法</p>
+      
+      <div class="code-block">
+// 在 onMounted 中调用
+onMounted(() => {
+  // 初始化演示数据
+  kb.initializeDemoData()
+  le.initializeDemoData()
+})
+      </div>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h2>🧪 测试页面</h2>
+    <p>点击下方链接测试各个页面：</p>
+    
+    <div class="test-links">
+      <a href="http://localhost:5173/admin/agent-registry" class="test-link">
+        📝 智能体注册中心
+      </a>
+      <a href="http://localhost:5173/admin/knowledge" class="test-link">
+        📚 知识库管理
+      </a>
+      <a href="http://localhost:5173/admin/learning" class="test-link">
+        🧠 主动学习引擎
+      </a>
+      <a href="http://localhost:5173/admin/monitoring" class="test-link">
+        📊 监控与优化
+      </a>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h2>📝 检查清单</h2>
+    
+    <div class="check-item">
+      <input type="checkbox" id="check1">
+      <label for="check1">开发服务器是否正常运行 (localhost:5173)</label>
+    </div>
+    
+    <div class="check-item">
+      <input type="checkbox" id="check2">
+      <label for="check2">浏览器控制台是否有错误信息</label>
+    </div>
+    
+    <div class="check-item">
+      <input type="checkbox" id="check3">
+      <label for="check3">marked 依赖是否已安装</label>
+    </div>
+    
+    <div class="check-item">
+      <input type="checkbox" id="check4">
+      <label for="check4">路由配置是否正确</label>
+    </div>
+    
+    <div class="check-item">
+      <input type="checkbox" id="check5">
+      <label for="check5">Store 文件是否都存在</label>
+    </div>
+    
+    <div class="check-item">
+      <input type="checkbox" id="check6">
+      <label for="check6">组件是否正确导入 Store</label>
+    </div>
+  </div>
+
+  <script>
+    // 自动检测服务器状态
+    fetch('http://localhost:5173')
+      .then(() => {
+        document.getElementById('check1').checked = true
+        document.getElementById('check1').parentElement.classList.add('success')
+      })
+      .catch(() => {
+        document.getElementById('check1').parentElement.classList.add('error')
+      })
+  </script>
+</body>
+</html>

@@ -18,29 +18,41 @@
       <div class="container">
         <h1>{{ bannerSettings.title[locale] || bannerSettings.title['zh-CN'] }}</h1>
         <p>{{ bannerSettings.subtitle[locale] || bannerSettings.subtitle['zh-CN'] }}</p>
+        <div class="hero-actions">
+          <el-button @click="goHome" type="success" size="large" round>
+            <el-icon><HomeFilled /></el-icon>
+            返回主页
+          </el-button>
+        </div>
       </div>
     </section>
 
     <!-- 产品系列展示 (6个子系统) -->
     <section class="section">
       <div class="container">
-        <div class="series-grid">
+        <div class="series-grid" ref="seriesGridRef">
           <div 
             v-for="category in level1Categories" 
             :key="category.id" 
+            :data-id="category.id"
             class="series-card"
-            @click="goToLevel2(category)">
-            <div class="series-image">
-              <img :src="category.image" :alt="category.name" />
-              <div class="series-overlay">
-                <component :is="getIcon(category.icon)" class="series-icon" />
-              </div>
+            :class="{ 'draggable-enabled': isAdmin }">
+            <div v-if="isAdmin" class="drag-handle" title="拖拽调整顺序">
+              <el-icon><Rank /></el-icon>
             </div>
-            <div class="series-info">
-              <h3>{{ category.name }}</h3>
-              <p>{{ category.description }}</p>
-              <div class="series-link">
-                {{ t('common.viewDetails') || '查看详情' }} <el-icon><ArrowRight /></el-icon>
+            <div class="series-content" @click="goToLevel2(category)">
+              <div class="series-image">
+                <img :src="category.image" :alt="category.name" />
+                <div class="series-overlay">
+                  <component :is="getIcon(category.icon)" class="series-icon" />
+                </div>
+              </div>
+              <div class="series-info">
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.description }}</p>
+                <div class="series-link">
+                  {{ t('common.viewDetails') || '查看详情' }} <el-icon><ArrowRight /></el-icon>
+                </div>
               </div>
             </div>
           </div>
@@ -121,17 +133,35 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { ElMessage } from 'element-plus'
 import { useProductsServicesStore } from '../store/productsServices'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { HomeFilled } from '@element-plus/icons-vue'
+import Sortable from 'sortablejs'
 
 const router = useRouter()
 const { t, locale } = useI18n()
 const productsStore = useProductsServicesStore()
+
+// 返回主页
+const goHome = () => {
+  router.push('/')
+  ElMessage.success('返回主页')
+}
+
+
+// 拖拽元素引用
+const seriesGridRef = ref(null)
+
+// 检查是否为管理员
+const isAdmin = computed(() => {
+  return !!localStorage.getItem('adminToken')
+})
 
 const bannerSettings = ref({
   title: {
@@ -172,15 +202,32 @@ const loadPageSettings = () => {
   }
 }
 
-// 获取一级分类（6个子系统）
+// 获取一级分类（6个子系统）- 支持自定义排序
 const level1Categories = computed(() => {
-  return productsStore.visibleLevel1Categories.map(cat => ({
+  // 获取保存的排序
+  const savedOrder = JSON.parse(localStorage.getItem('productsServicesPageOrder') || '[]')
+  
+  const categories = productsStore.visibleLevel1Categories.map(cat => ({
     id: cat.id,
     name: cat.name[locale.value] || cat.name['zh-CN'],
     description: cat.description[locale.value] || cat.description['zh-CN'],
     image: cat.image,
     icon: cat.icon
   }))
+  
+  // 如果有保存的排序，按照保存的顺序排列
+  if (savedOrder.length > 0) {
+    return categories.sort((a, b) => {
+      const indexA = savedOrder.indexOf(a.id)
+      const indexB = savedOrder.indexOf(b.id)
+      if (indexA === -1 && indexB === -1) return 0
+      if (indexA === -1) return 1
+      if (indexB === -1) return -1
+      return indexA - indexB
+    })
+  }
+  
+  return categories
 })
 
 // 获取当前二级分类
@@ -247,8 +294,47 @@ const viewProductDetail = (product) => {
   console.log('查看产品详情:', product)
 }
 
+// 初始化拖拽功能（仅在管理员登录时启用）
+const initDraggable = () => {
+  if (!isAdmin.value || !seriesGridRef.value) {
+    console.log('非管理员或元素未就绪，跳过拖拽初始化')
+    return
+  }
+  
+  console.log('✅ 管理员身份确认，启用产品与服务页面拖拽功能')
+  
+  // 初始化 Sortable
+  Sortable.create(seriesGridRef.value, {
+    animation: 200,
+    handle: '.drag-handle', // 只能通过拖拽手柄拖动
+    ghostClass: 'series-card-ghost',
+    chosenClass: 'series-card-chosen',
+    dragClass: 'series-card-drag',
+    forceFallback: true,
+    fallbackTolerance: 3,
+    onStart: (evt) => {
+      console.log('开始拖拽卡片:', evt.item.getAttribute('data-id'))
+    },
+    onEnd: (evt) => {
+      // 获取新的排序
+      const newOrder = Array.from(seriesGridRef.value.children).map(el => 
+        parseInt(el.getAttribute('data-id'))
+      )
+      // 保存到 localStorage
+      localStorage.setItem('productsServicesPageOrder', JSON.stringify(newOrder))
+      console.log('✅ 产品与服务卡片顺序已更新:', newOrder)
+      
+      // 显示提示消息
+      ElMessage.success('卡片顺序已保存！刷新页面查看效果')
+    }
+  })
+}
+
 onMounted(() => {
   loadPageSettings()
+  nextTick(() => {
+    initDraggable()
+  })
 })
 </script>
 
@@ -318,11 +404,14 @@ onMounted(() => {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid #e8e8e8;
   box-shadow: 0 4px 12px rgba(0, 71, 187, 0.08); /* PANTONE 2736C 阴影 */
   position: relative;
+}
+
+.series-content {
+  cursor: pointer;
 }
 
 .series-card:hover {
@@ -405,6 +494,74 @@ onMounted(() => {
 .series-card:hover .series-link {
   color: #0066dd;
   gap: 10px;
+}
+
+/* 管理员拖拽手柄 */
+.drag-handle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  animation: pulseGlow 2s infinite;
+}
+
+.drag-handle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(102, 126, 234, 0.8);
+  }
+}
+
+/* 拖拽状态样式 */
+.series-card-ghost {
+  opacity: 0.3;
+  background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+  border: 2px dashed #667eea;
+}
+
+.series-card-chosen {
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  border-color: #667eea;
+  transform: scale(1.02);
+}
+
+.series-card-drag {
+  transform: rotate(3deg) scale(1.05);
+  opacity: 0.9;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  cursor: grabbing !important;
+}
+
+/* 管理员模式提示 */
+.draggable-enabled {
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.draggable-enabled:hover {
+  border-color: #667eea;
 }
 
 /* 对话框样式 - PANTONE 2736C主题 */

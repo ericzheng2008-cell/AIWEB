@@ -29,7 +29,7 @@
 
                 <el-form-item label="工具品牌">
                   <el-select v-model="selectionCriteria.brand" placeholder="请选择品牌">
-                    <el-option label="阿特拉斯" value="阿特拉斯" />
+                    <el-option label="Atlascopco" value="Atlascopco" />
                     <el-option label="其他" value="其他" />
                   </el-select>
                 </el-form-item>
@@ -81,7 +81,7 @@
                   </el-select>
                 </el-form-item>
 
-                <el-form-item label="输入端尺寸">
+                <el-form-item label="输出端对边尺寸">
                   <el-input v-model="selectionCriteria.inputSize" placeholder="如：15mm 或 T25">
                     <template #append>mm</template>
                   </el-input>
@@ -315,7 +315,7 @@ const handleRecommend = () => {
 const autoFillExample = () => {
   Object.assign(selectionCriteria, {
     workstation: '门盖工位',
-    brand: '阿特拉斯',
+    brand: 'Atlascopco',
     toolType: '油压脉冲',
     toolModel: 'ETBP45-10',
     squareSize: '3/8四方',
@@ -389,8 +389,8 @@ const generateReport = () => {
   report += `工具型号：${selectionCriteria.toolModel || '未填写'}\n`
   report += `四方尺寸：${selectionCriteria.squareSize || '未填写'}\n`
   report += `套筒外形：${selectionCriteria.socketShape || '未填写'}\n`
-  report += `输入端类型：${selectionCriteria.inputType || '未填写'}\n`
-  report += `输入端尺寸：${selectionCriteria.inputSize || '未填写'}\n`
+  report += `输出端类型：${selectionCriteria.inputType || '未填写'}\n`
+  report += `输出端对边尺寸：${selectionCriteria.inputSize || '未填写'}\n`
   report += `磁性要求：${selectionCriteria.magnetic || '未填写'}\n`
   report += `长度要求：${selectionCriteria.lengthRequirement ? selectionCriteria.lengthRequirement + 'mm' : '未填写'}\n`
   report += `是否抗振：${selectionCriteria.antiVibration ? '是' : '否'}\n`

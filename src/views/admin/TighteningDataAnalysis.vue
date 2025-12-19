@@ -1390,30 +1390,138 @@ const initOkRateChart = () => {
 
   const chart = echarts.init(okRateChart.value)
   
-  const results = dataStore.filteredResults.slice(0, 50).reverse()
-  const xData = results.map((_, index) => index + 1)
-  const okData = []
+  const results = dataStore.filteredResults.slice(0, 100).reverse()
   
-  let okCount = 0
-  results.forEach((r, index) => {
-    if (r.result === 'OK') okCount++
-    okData.push(((okCount / (index + 1)) * 100).toFixed(2))
-  })
+  if (results.length === 0) {
+    chart.setOption({
+      title: { text: 'OK率趋势分析', left: 'center' },
+      graphic: [{
+        type: 'text',
+        left: 'center',
+        top: 'middle',
+        style: { text: '暂无数据', fontSize: 16, fill: '#999' }
+      }]
+    })
+    return
+  }
+  
+  // 按时间分组统计(每10个数据一组)
+  const groupSize = 10
+  const groups = []
+  for (let i = 0; i < results.length; i += groupSize) {
+    const group = results.slice(i, i + groupSize)
+    const okCount = group.filter(r => r.result === 'OK').length
+    const okRate = (okCount / group.length * 100).toFixed(1)
+    groups.push({
+      index: Math.floor(i / groupSize) + 1,
+      okRate: parseFloat(okRate),
+      okCount,
+      totalCount: group.length
+    })
+  }
+  
+  const xData = groups.map(g => `批次${g.index}`)
+  const okData = groups.map(g => g.okRate)
+  
+  // 计算平均OK率
+  const avgOkRate = (okData.reduce((sum, val) => sum + val, 0) / okData.length).toFixed(1)
 
   chart.setOption({
-    title: { text: 'OK率趋势', left: 'center' },
-    tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: xData, name: '拧紧次数' },
-    yAxis: { type: 'value', name: 'OK率(%)', min: 0, max: 100 },
-    series: [{
-      name: 'OK率',
-      type: 'line',
-      data: okData,
-      smooth: true,
-      areaStyle: { color: 'rgba(103, 194, 58, 0.1)' },
-      lineStyle: { color: '#67c23a' },
-      itemStyle: { color: '#67c23a' }
-    }]
+    title: { 
+      text: 'OK率趋势分析', 
+      subtext: `平均OK率: ${avgOkRate}% | 样本数: ${results.length} | 每批次: ${groupSize}个`,
+      left: 'center' 
+    },
+    tooltip: { 
+      trigger: 'axis',
+      formatter: function(params) {
+        const group = groups[params[0].dataIndex]
+        return `${params[0].name}<br/>
+                OK率: ${params[0].value}%<br/>
+                合格: ${group.okCount}/${group.totalCount}次`
+      }
+    },
+    grid: {
+      left: '60px',
+      right: '40px',
+      top: '80px',
+      bottom: '40px'
+    },
+    xAxis: { 
+      type: 'category', 
+      data: xData, 
+      name: '批次',
+      axisLabel: {
+        interval: 0,
+        fontSize: 11
+      }
+    },
+    yAxis: { 
+      type: 'value', 
+      name: 'OK率(%)', 
+      min: 0, 
+      max: 100,
+      axisLabel: {
+        formatter: '{value}%'
+      }
+    },
+    series: [
+      {
+        name: 'OK率',
+        type: 'line',
+        data: okData,
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+        lineStyle: {
+          width: 3,
+          color: '#409EFF'
+        },
+        itemStyle: {
+          color: (params) => {
+            const rate = params.value
+            if (rate >= 95) return '#67C23A' // 优秀 - 绿色
+            if (rate >= 90) return '#409EFF' // 良好 - 蓝色
+            if (rate >= 85) return '#E6A23C' // 一般 - 橙色
+            return '#F56C6C' // 较差 - 红色
+          }
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+              offset: 0,
+              color: 'rgba(64, 158, 255, 0.3)'
+            }, {
+              offset: 1,
+              color: 'rgba(64, 158, 255, 0.05)'
+            }]
+          }
+        },
+        markLine: {
+          silent: true,
+          symbol: 'none',
+          data: [
+            { 
+              yAxis: 95,
+              name: '目标线',
+              lineStyle: { color: '#67C23A', width: 2, type: 'dashed' },
+              label: { formatter: '目标: 95%', position: 'end' }
+            },
+            { 
+              yAxis: avgOkRate,
+              name: '平均线',
+              lineStyle: { color: '#909399', width: 1, type: 'solid' },
+              label: { formatter: `平均: ${avgOkRate}%`, position: 'start' }
+            }
+          ]
+        }
+      }
+    ]
   })
 }
 
@@ -1424,28 +1532,123 @@ const initTorqueDistChart = () => {
   const chart = echarts.init(torqueDistChart.value)
   
   const results = dataStore.filteredResults
-  const torqueData = results.map(r => r.torque)
+  if (results.length === 0) {
+    chart.setOption({
+      title: { text: '扭矩分布直方图', left: 'center' },
+      graphic: [{
+        type: 'text',
+        left: 'center',
+        top: 'middle',
+        style: { text: '暂无数据', fontSize: 16, fill: '#999' }
+      }]
+    })
+    return
+  }
+  
+  const torqueData = results.map(r => r.torque).filter(t => t != null && !isNaN(t))
+  
+  // 计算目标扭矩和上下限
+  const target = results[0]?.targetTorque || 35
+  const upperLimit = target * 1.1
+  const lowerLimit = target * 0.9
+  
+  // 计算扭矩范围和分组
+  const minTorque = Math.min(...torqueData)
+  const maxTorque = Math.max(...torqueData)
+  const range = maxTorque - minTorque
+  const binSize = range / 20 // 分成20个区间
+  
+  // 创建直方图数据
+  const histogram = {}
+  torqueData.forEach(torque => {
+    const bin = Math.floor((torque - minTorque) / binSize) * binSize + minTorque
+    const binKey = bin.toFixed(1)
+    histogram[binKey] = (histogram[binKey] || 0) + 1
+  })
+  
+  // 转换为图表数据
+  const bins = Object.keys(histogram).sort((a, b) => parseFloat(a) - parseFloat(b))
+  const counts = bins.map(bin => histogram[bin])
+  const binLabels = bins.map(bin => `${parseFloat(bin).toFixed(1)}-${(parseFloat(bin) + binSize).toFixed(1)}`)
 
   chart.setOption({
-    title: { text: '扭矩分布', left: 'center' },
-    tooltip: { trigger: 'axis' },
-    xAxis: { type: 'value', name: '扭矩(Nm)' },
-    yAxis: { type: 'value', name: '频次' },
-    series: [{
-      type: 'scatter',
-      data: torqueData.map((t, i) => [t, i]),
-      symbolSize: 8,
-      itemStyle: {
-        color: (params) => {
-          const torque = params.data[0]
-          const target = results[0]?.targetTorque || 35
-          const deviation = Math.abs((torque - target) / target * 100)
-          if (deviation < 5) return '#67c23a'
-          if (deviation < 10) return '#e6a23c'
-          return '#f56c6c'
-        }
+    title: { 
+      text: '扭矩分布直方图', 
+      subtext: `目标: ${target}Nm | 上限: ${upperLimit.toFixed(1)}Nm | 下限: ${lowerLimit.toFixed(1)}Nm`,
+      left: 'center' 
+    },
+    tooltip: { 
+      trigger: 'axis',
+      formatter: function(params) {
+        return `扭矩范围: ${params[0].name}<br/>
+                数量: ${params[0].value} 次<br/>
+                占比: ${(params[0].value / torqueData.length * 100).toFixed(1)}%`
       }
-    }]
+    },
+    grid: {
+      left: '60px',
+      right: '40px',
+      top: '80px',
+      bottom: '60px'
+    },
+    xAxis: { 
+      type: 'category', 
+      data: binLabels,
+      name: '扭矩范围(Nm)',
+      nameLocation: 'middle',
+      nameGap: 35,
+      axisLabel: {
+        rotate: 45,
+        fontSize: 10
+      }
+    },
+    yAxis: { 
+      type: 'value', 
+      name: '数量(次)',
+      nameLocation: 'middle',
+      nameGap: 45
+    },
+    series: [{
+      name: '扭矩分布',
+      type: 'bar',
+      data: counts.map((count, index) => {
+        const binStart = parseFloat(bins[index])
+        const binCenter = binStart + binSize / 2
+        let color = '#409EFF' // 默认蓝色
+        
+        // 根据是否在目标范围内着色
+        if (binCenter < lowerLimit) {
+          color = '#F56C6C' // 红色 - 过低
+        } else if (binCenter > upperLimit) {
+          color = '#E6A23C' // 橙色 - 过高
+        } else {
+          color = '#67C23A' // 绿色 - 合格
+        }
+        
+        return {
+          value: count,
+          itemStyle: { color }
+        }
+      }),
+      barWidth: '60%',
+      label: {
+        show: true,
+        position: 'top',
+        fontSize: 10
+      }
+    }],
+    markLine: {
+      silent: true,
+      symbol: 'none',
+      data: [
+        { 
+          xAxis: binLabels[Math.floor(binLabels.length / 2)],
+          name: '目标值',
+          lineStyle: { color: '#67C23A', width: 2, type: 'dashed' },
+          label: { formatter: `目标: ${target}Nm`, position: 'end' }
+        }
+      ]
+    }
   })
 }
 

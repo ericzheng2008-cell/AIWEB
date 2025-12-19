@@ -71,6 +71,10 @@
                 </el-tag>
               </div>
               <div class="header-right">
+                <el-button @click="goHome" type="success" size="small">
+                  <el-icon><HomeFilled /></el-icon>
+                  返回主页
+                </el-button>
                 <el-button type="primary" size="small" @click="autoFillExample">
                   <el-icon><MagicStick /></el-icon>
                   快速填充示例
@@ -230,31 +234,107 @@
 
             <el-divider content-position="left">套筒选型</el-divider>
             
+            <!-- 套筒选型列表 -->
+            <div v-for="(socket, index) in requirements.sockets" :key="index" class="socket-item">
+              <div class="socket-header">
+                <span class="socket-label">套筒 {{ index + 1 }}</span>
+                <el-button 
+                  v-if="requirements.sockets.length > 1" 
+                  type="danger" 
+                  size="small" 
+                  link 
+                  @click="removeSocket(index)"
+                >
+                  <el-icon><Delete /></el-icon>
+                  删除
+                </el-button>
+              </div>
+
             <el-row :gutter="20">
               <el-col :span="8">
+                <el-form-item label="工具类型">
+                  <el-select 
+                    v-model="socket.toolType" 
+                    placeholder="选择工具类型" 
+                    clearable 
+                    @change="handleToolTypeChange(index)"
+                  >
+                    <el-option label="油压脉冲" value="油压脉冲" />
+                    <el-option label="其他" value="其他" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="套筒型号">
+                  <el-select 
+                    v-model="socket.model" 
+                    placeholder="选择或搜索型号" 
+                    clearable 
+                    filterable
+                    @focus="loadModelSuggestions(index)"
+                    @change="handleModelSelect(index, socket.model)"
+                  >
+                    <el-option 
+                      v-for="suggestion in socket.modelSuggestions" 
+                      :key="suggestion.model"
+                      :label="`${suggestion.model} - ${suggestion.name}`"
+                      :value="suggestion.model"
+                    >
+                      <div class="model-option">
+                        <span class="model-code">{{ suggestion.model }}</span>
+                        <span class="model-name">{{ suggestion.name }}</span>
+                        <el-tag size="small" type="success">{{ suggestion.socketType.outputType }}</el-tag>
+                        <el-tag size="small" type="warning">{{ suggestion.socketType.outputSize }}</el-tag>
+                      </div>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="套筒数量">
+                  <el-input-number v-model="socket.quantity" :min="1" :max="999" placeholder="数量" style="width: 100%" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="工具品牌">
+                  <el-input v-model="socket.toolBrand" placeholder="工具品牌" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="工具型号">
+                  <el-input v-model="socket.toolModel" placeholder="工具型号" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
                 <el-form-item label="套筒外形">
-                  <el-select v-model="requirements.socket.shape" placeholder="选择外形" clearable>
+                  <el-select v-model="socket.shape" placeholder="选择外形" clearable @change="loadModelSuggestions(index)">
                     <el-option label="标准" value="标准" />
                     <el-option label="加长" value="加长" />
                     <el-option label="接杆" value="接杆" />
                   </el-select>
                 </el-form-item>
               </el-col>
+            </el-row>
+
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <el-form-item label="输出端类型">
+                    <el-select v-model="socket.outputType" placeholder="选择输出端类型" clearable @change="loadModelSuggestions(index)">
+                      <el-option label="外六角" value="外六角" />
+                      <el-option label="内六角" value="内六角" />
+                      <el-option label="内六星" value="内六星" />
+                      <el-option label="Torx" value="Torx" />
+                      <el-option label="十字" value="十字" />
+                      <el-option label="一字" value="一字" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
               <el-col :span="8">
-                <el-form-item label="输入端类型">
-                  <el-select v-model="requirements.socket.inputType" placeholder="选择输入端类型" clearable>
-                    <el-option label="外六角" value="外六角" />
-                    <el-option label="内六角" value="内六角" />
-                    <el-option label="内六星" value="内六星" />
-                    <el-option label="Torx" value="Torx" />
-                    <el-option label="十字" value="十字" />
-                    <el-option label="一字" value="一字" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="输入端尺寸">
-                  <el-select v-model="requirements.socket.size" placeholder="选择尺寸" clearable>
+                <el-form-item label="输出端对边尺寸">
+                  <el-select v-model="socket.outputSize" placeholder="选择尺寸" clearable @change="loadModelSuggestions(index)">
                     <el-option label="10mm" value="10mm" />
                     <el-option label="12mm" value="12mm" />
                     <el-option label="13mm" value="13mm" />
@@ -265,39 +345,76 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-            </el-row>
+              <el-col :span="8">
+                <el-form-item label="四方尺寸">
+                  <el-select v-model="socket.inputSquareSize" placeholder="选择四方尺寸" clearable @change="loadModelSuggestions(index)">
+                    <el-option label="1/4快换" value="1/4快换" />
+                    <el-option label="1/4" value="1/4" />
+                    <el-option label="3/8" value="3/8" />
+                    <el-option label="1/2" value="1/2" />
+                    <el-option label="3/4" value="3/4" />
+                    <el-option label="1寸" value="1寸" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              </el-row>
 
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="磁性类型">
-                  <el-select v-model="requirements.socket.magnetic" placeholder="选择磁性类型" clearable>
-                    <el-option label="无磁性" value="无磁性" />
-                    <el-option label="固定磁" value="固定磁" />
-                    <el-option label="伸缩磁" value="伸缩磁" />
-                    <el-option label="中空磁" value="中空磁" />
-                    <el-option label="外置磁环" value="外置磁环" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="长度类型">
-                  <el-select v-model="requirements.socket.length" placeholder="选择长度" clearable>
-                    <el-option label="标准" value="标准" />
-                    <el-option label="加长" value="加长" />
-                    <el-option label="接杆" value="接杆" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="特殊要求">
-                  <el-checkbox-group v-model="requirements.socket.specialRequirements" @change="handleSpecialRequirementsChange">
-                    <el-checkbox label="抗振" />
-                    <el-checkbox label="密封圈" />
-                    <el-checkbox label="销子" />
-                  </el-checkbox-group>
-                </el-form-item>
-              </el-col>
-            </el-row>
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <el-form-item label="长度">
+                    <el-select v-model="socket.length" placeholder="选择或输入长度" clearable filterable allow-create @change="loadModelSuggestions(index)">
+                      <el-option label="30mm" value="30mm" />
+                      <el-option label="40mm" value="40mm" />
+                      <el-option label="50mm" value="50mm" />
+                      <el-option label="60mm" value="60mm" />
+                      <el-option label="75mm" value="75mm" />
+                      <el-option label="100mm" value="100mm" />
+                      <el-option label="150mm" value="150mm" />
+                      <el-option label="200mm" value="200mm" />
+                      <el-option label="250mm" value="250mm" />
+                      <el-option label="300mm" value="300mm" />
+                      <el-option label="350mm" value="350mm" />
+                      <el-option label="400mm" value="400mm" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="磁性类型">
+                    <el-select v-model="socket.magnetic" placeholder="选择磁性类型" clearable @change="loadModelSuggestions(index)">
+                      <el-option label="无磁性" value="无磁性" />
+                      <el-option label="固定磁" value="固定磁" />
+                      <el-option label="伸缩磁" value="伸缩磁" />
+                      <el-option label="中空磁" value="中空磁" />
+                      <el-option label="外置磁环" value="外置磁环" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="特殊要求">
+                    <el-checkbox-group v-model="socket.specialRequirements" @change="handleSpecialRequirementsChange(index)">
+                      <el-checkbox label="抗振" />
+                      <el-checkbox label="密封圈" />
+                      <el-checkbox label="销子" />
+                    </el-checkbox-group>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </div>
+
+            <!-- 添加套筒按钮 -->
+            <div class="add-socket-btn">
+              <el-button type="primary" plain @click="addSocket">
+                <el-icon><Plus /></el-icon>
+                添加更多套筒
+              </el-button>
+              <el-button type="success" @click="generateSocketReport">
+                <el-icon><Document /></el-icon>
+                生成报价单(Excel)
+              </el-button>
+              <el-text type="info" size="small" style="margin-left: 8px;">
+                💡 生成后可在Excel中编辑价格、打印或导出PDF
+              </el-text>
+            </div>
 
             <el-divider content-position="left">防错要求</el-divider>
             
@@ -584,24 +701,24 @@
       <div style="padding: 20px 0;">
         <p style="margin-bottom: 20px; font-size: 15px; color: #666;">
           <el-icon style="color: #409eff;"><InfoFilled /></el-icon>
-          您选择了抗振套筒，请确认您使用的工具品牌：
+          您选择了{{ dialogTriggerType === 'toolType' ? '油压脉冲工具' : '抗振套筒' }}，请确认您使用的工具品牌：
         </p>
         <el-radio-group v-model="antiVibrationBrand" size="large" style="width: 100%;">
-          <el-radio label="阿特拉斯工具" border style="width: 100%; margin-bottom: 12px;">
+          <el-radio label="AtlasCopco油压脉冲" border style="width: 100%; margin-bottom: 12px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-weight: 600;">阿特拉斯（Atlas Copco）工具</span>
+              <span style="font-weight: 600;">阿特拉斯科普柯（Atlas Copco）油压脉冲</span>
               <el-tag size="small" type="primary">推荐</el-tag>
             </div>
             <p style="margin: 4px 0 0 0; font-size: 12px; color: #999;">
-              适用于阿特拉斯品牌拧紧工具，专用抗振套筒
+              适用于阿特拉斯科普柯品牌油压脉冲工具，专用抗振套筒，型号自动加"a"后缀
             </p>
           </el-radio>
-          <el-radio label="其他品牌工具" border style="width: 100%;">
+          <el-radio label="其他品牌" border style="width: 100%;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-weight: 600;">其他品牌工具</span>
+              <span style="font-weight: 600;">其他品牌</span>
             </div>
             <p style="margin: 4px 0 0 0; font-size: 12px; color: #999;">
-              适用于其他品牌拧紧工具的通用抗振套筒
+              适用于其他品牌油压脉冲工具的通用抗振套筒
             </p>
           </el-radio>
         </el-radio-group>
@@ -621,21 +738,30 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToolDatabaseStore } from '../store/toolDatabase'
+import { useSocketDatabaseStore } from '../store/socketDatabase'
 import { useProductionLineStore } from '../store/productionLine'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Tools, Search, RefreshLeft, Document, CircleCheck, 
   Star, InfoFilled, Phone, View, MagicStick, Checked,
-  Setting, QuestionFilled
+  Setting, QuestionFilled, Plus, Delete, Check, HomeFilled
 } from '@element-plus/icons-vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import * as XLSX from 'xlsx'
 
 const router = useRouter()
 const toolStore = useToolDatabaseStore()
+const socketStore = useSocketDatabaseStore()
 const productionLineStore = useProductionLineStore()
+
+// 返回主页
+const goHome = () => {
+  router.push('/')
+  ElMessage.success('返回主页')
+}
 
 // 初始化动画
 onMounted(() => {
@@ -658,6 +784,7 @@ const showGuide = ref(false)
 // 抗振品牌选择
 const antiVibrationDialogVisible = ref(false)
 const antiVibrationBrand = ref('')
+const dialogTriggerType = ref('') // 'toolType' 或 'antiVibration'
 
 // 线体和工位数据
 const productionLines = computed(() => productionLineStore.productionLines)
@@ -688,16 +815,25 @@ const requirements = reactive({
   // 通讯配置
   wirelessComm: [],
   commProtocol: [],
-  // 套筒选型
-  socket: {
-    shape: '',
-    inputType: '',
-    size: '',
-    magnetic: '',
-    length: '',
-    specialRequirements: [],
-    antiVibrationBrand: '' // 抗振品牌
-  },
+  // 套筒选型 - 支持多个套筒
+  sockets: [
+    {
+      toolType: '', // 工具类型(油压脉冲/其他)
+      model: '', // 套筒型号
+      quantity: 1, // 套筒数量
+      toolBrand: '', // 工具品牌
+      toolModel: '', // 工具型号
+      shape: '',
+      outputType: '', // 输出端类型(原:输入端类型)
+      outputSize: '', // 输出端对边尺寸(原:输出端尺寸)
+      inputSquareSize: '', // 四方尺寸(原:输入端四方尺寸)
+      magnetic: '',
+      length: '', // 长度(原:长度类型)
+      specialRequirements: [],
+      antiVibrationBrand: '', // 抗振品牌
+      modelSuggestions: [] // 型号建议列表
+    }
+  ],
   // 防错要求
   errorProofing: [],
   // 工装附件
@@ -747,28 +883,69 @@ const calculateCompleteness = () => {
 
 // 是否有高级需求
 const hasAdvancedRequirements = computed(() => {
-  return requirements.socket.inputType || 
+  return requirements.sockets.some(s => s.outputType) || 
          requirements.errorProofing.length > 0 || 
          requirements.accessories.length > 0 || 
          requirements.software.length > 0
 })
 
-// 处理特殊要求变化（监听抗振勾选）
-const handleSpecialRequirementsChange = (value) => {
-  // 检查是否新增了"抗振"选项
-  const hasAntiVibration = value.includes('抗振')
-  const hadAntiVibration = requirements.socket.antiVibrationBrand !== ''
+// 处理工具类型变化
+const handleToolTypeChange = (socketIndex) => {
+  const socket = requirements.sockets[socketIndex]
   
-  if (hasAntiVibration && !hadAntiVibration) {
-    // 用户刚勾选了抗振，弹出品牌选择对话框
+  if (socket.toolType === '油压脉冲') {
+    // 自动勾选"抗振"
+    if (!socket.specialRequirements.includes('抗振')) {
+      socket.specialRequirements.push('抗振')
+    }
+    
+    // 弹出品牌选择对话框
+    dialogTriggerType.value = 'toolType'
     antiVibrationDialogVisible.value = true
     antiVibrationBrand.value = '' // 重置选择
+    currentSocketIndex.value = socketIndex // 记录当前套筒索引
+    
+    // 套筒型号加AV前缀
+    if (socket.model && !socket.model.startsWith('AV')) {
+      socket.model = 'AV' + socket.model
+    }
+  } else if (socket.toolType === '其他') {
+    // 清除抗振品牌
+    socket.antiVibrationBrand = ''
+    socket.toolBrand = ''
+    // 不自动移除"抗振"选项,用户可能手动保留
+  }
+  
+  // 重新加载型号建议
+  loadModelSuggestions(socketIndex)
+}
+
+// 处理特殊要求变化（监听抗振勾选）
+const handleSpecialRequirementsChange = (socketIndex) => {
+  const socket = requirements.sockets[socketIndex]
+  // 检查是否新增了"抗振"选项
+  const hasAntiVibration = socket.specialRequirements.includes('抗振')
+  const hadAntiVibration = socket.antiVibrationBrand !== ''
+  
+  if (hasAntiVibration && !hadAntiVibration && socket.toolType !== '油压脉冲') {
+    // 用户手动勾选了抗振(非油压脉冲触发)，弹出品牌选择对话框
+    dialogTriggerType.value = 'antiVibration'
+    antiVibrationDialogVisible.value = true
+    antiVibrationBrand.value = '' // 重置选择
+    currentSocketIndex.value = socketIndex // 记录当前套筒索引
   } else if (!hasAntiVibration) {
     // 用户取消了抗振，清除品牌选择
-    requirements.socket.antiVibrationBrand = ''
-    antiVibrationBrand.value = ''
+    socket.antiVibrationBrand = ''
+    socket.toolBrand = ''
+    socket.toolModel = ''
   }
+  
+  // 重新加载型号建议
+  loadModelSuggestions(socketIndex)
 }
+
+// 当前正在编辑的套筒索引
+const currentSocketIndex = ref(0)
 
 // 确认抗振品牌
 const confirmAntiVibrationBrand = () => {
@@ -777,23 +954,157 @@ const confirmAntiVibrationBrand = () => {
     return
   }
   
-  requirements.socket.antiVibrationBrand = antiVibrationBrand.value
+  const socket = requirements.sockets[currentSocketIndex.value]
+  socket.antiVibrationBrand = antiVibrationBrand.value
+  
+  // 根据选择设置工具品牌和型号
+  if (antiVibrationBrand.value === 'AtlasCopco油压脉冲') {
+    socket.toolBrand = 'Atlas Copco'
+    
+    // 工具型号自动加小写"a"(如果没有)
+    if (socket.toolModel && !socket.toolModel.endsWith('a')) {
+      socket.toolModel = socket.toolModel + 'a'
+    }
+    
+    // 套筒型号加AV前缀(如果还没有) 并确保后缀带a
+    if (socket.model) {
+      // 先加AV前缀
+      if (!socket.model.startsWith('AV')) {
+        socket.model = 'AV' + socket.model
+      }
+      // 确保末尾带a（Atlascopco油压脉冲专用）
+      if (!socket.model.endsWith('a')) {
+        socket.model = socket.model + 'a'
+      }
+    }
+  } else {
+    socket.toolBrand = '其他品牌'
+  }
+  
   antiVibrationDialogVisible.value = false
   
   ElMessage.success({
-    message: `已选择：${antiVibrationBrand.value}`,
+    message: `已选择:${antiVibrationBrand.value}`,
     duration: 2000
   })
+  
+  // 重新加载型号建议
+  loadModelSuggestions(currentSocketIndex.value)
+}
+
+// 加载型号建议 - 根据当前选择的参数从数据库匹配
+const loadModelSuggestions = (socketIndex) => {
+  const socket = requirements.sockets[socketIndex]
+  
+  // 构建查询条件
+  const criteria = {}
+  
+  if (socket.shape) criteria.socketShape = socket.shape
+  if (socket.outputType) criteria.inputType = socket.outputType
+  if (socket.outputSize) criteria.inputSize = socket.outputSize
+  if (socket.inputSquareSize) {
+    // 转换格式: 1/4快换 -> 1/4快换, 1/2 -> 1/2四方
+    if (socket.inputSquareSize.includes('快换')) {
+      criteria.squareSize = socket.inputSquareSize
+    } else {
+      criteria.squareSize = socket.inputSquareSize + '四方'
+    }
+  }
+  if (socket.magnetic) criteria.magnetic = socket.magnetic
+  if (socket.length) criteria.lengthRequirement = socket.length.replace('mm', '')
+  if (socket.specialRequirements.includes('抗振')) criteria.antiVibration = true
+  if (socket.specialRequirements.includes('密封圈')) criteria.sealRingPin = true
+  
+  // 从数据库推荐
+  const suggestions = socketStore.recommendSockets(criteria)
+  
+  // 更新建议列表
+  socket.modelSuggestions = suggestions.slice(0, 10) // 最多显示10个建议
+  
+  console.log('型号建议:', socket.modelSuggestions.length, '个')
+}
+
+// 选择型号后自动填充
+const handleModelSelect = (socketIndex, modelCode) => {
+  const socket = requirements.sockets[socketIndex]
+  
+  // 找到选中的型号
+  const selected = socket.modelSuggestions.find(s => s.model === modelCode)
+  
+  if (selected) {
+    // 自动填充数据
+    socket.shape = selected.socketType.shape || socket.shape
+    socket.outputType = selected.socketType.inputType || socket.outputType
+    socket.outputSize = selected.socketType.inputSize || socket.outputSize
+    socket.magnetic = selected.socketType.magnetic || socket.magnetic
+    socket.length = selected.specifications.length || socket.length
+    
+    // 填充四方尺寸(去掉"四方"后缀)
+    if (selected.squareSize) {
+      socket.inputSquareSize = selected.squareSize.replace('四方', '')
+    }
+    
+    // 如果选中的是Atlascopco品牌且为油压脉冲，确保套筒型号带a后缀
+    if (selected.brand === 'Atlascopco' && selected.toolType === '油压脉冲') {
+      if (!socket.model.endsWith('a')) {
+        socket.model = socket.model + 'a'
+      }
+    }
+    
+    ElMessage.success(`已选择: ${selected.model} - ${selected.name}`)
+  }
+}
+
+// 添加套筒
+const addSocket = () => {
+  requirements.sockets.push({
+    toolType: '',
+    model: '',
+    quantity: 1,
+    toolBrand: '',
+    toolModel: '',
+    shape: '',
+    outputType: '',
+    outputSize: '',
+    inputSquareSize: '',
+    magnetic: '',
+    length: '',
+    specialRequirements: [],
+    antiVibrationBrand: '',
+    modelSuggestions: []
+  })
+  
+  ElMessage.success('已添加新套筒')
+}
+
+// 删除套筒
+const removeSocket = (index) => {
+  if (requirements.sockets.length === 1) {
+    ElMessage.warning('至少保留一个套筒')
+    return
+  }
+  
+  requirements.sockets.splice(index, 1)
+  ElMessage.success('已删除套筒')
 }
 
 // 取消抗振选择
 const cancelAntiVibration = () => {
-  // 取消时移除"抗振"选项
-  const index = requirements.socket.specialRequirements.indexOf('抗振')
-  if (index > -1) {
-    requirements.socket.specialRequirements.splice(index, 1)
+  const socket = requirements.sockets[currentSocketIndex.value]
+  
+  if (dialogTriggerType.value === 'toolType') {
+    // 由工具类型触发,取消时清空工具类型
+    socket.toolType = ''
   }
-  requirements.socket.antiVibrationBrand = ''
+  
+  // 取消时移除"抗振"选项
+  const index = socket.specialRequirements.indexOf('抗振')
+  if (index > -1) {
+    socket.specialRequirements.splice(index, 1)
+  }
+  
+  socket.antiVibrationBrand = ''
+  socket.toolBrand = ''
   antiVibrationBrand.value = ''
   antiVibrationDialogVisible.value = false
   
@@ -815,15 +1126,24 @@ const autoFillExample = () => {
     needLowReaction: true,
     wirelessComm: [],
     commProtocol: ['I/O'],
-    socket: {
-      shape: '标准',
-      inputType: '外六角',
-      size: '13mm',
-      magnetic: '固定磁',
-      length: '标准',
-      specialRequirements: ['抗振'],
-      antiVibrationBrand: '' // 将触发对话框
-    },
+    sockets: [
+      {
+        toolType: '',
+        model: 'SK-001',
+        quantity: 2,
+        toolBrand: '',
+        toolModel: '',
+        shape: '标准',
+        outputType: '外六角',
+        outputSize: '13mm',
+        inputSquareSize: '1/2',
+        magnetic: '固定磁',
+        length: '50mm',
+        specialRequirements: ['抗振'],
+        antiVibrationBrand: '',
+        modelSuggestions: []
+      }
+    ],
     errorProofing: ['防低扭矩', '防过扭矩', '防漏拧'],
     accessories: ['三色灯', '工具小车', '机械抗扭臂'],
     services: ['现场工位试用', '现场工位工具调试'],
@@ -912,9 +1232,12 @@ const resetForm = () => {
     wirelessComm: [],
     commProtocol: [],
     socket: {
+      model: '',
+      quantity: 1,
       shape: '',
-      inputType: '',
-      size: '',
+      outputType: '',
+      outputSize: '',
+      inputSquareSize: '',
       magnetic: '',
       length: '',
       specialRequirements: [],
@@ -997,18 +1320,14 @@ const contactCustomService = () => {
 
 // 生成需求报告
 const generateReport = () => {
-  if (!requirements.productionLine || !requirements.workstation || !requirements.powerType || !requirements.torque) {
-    ElMessage.warning('请至少填写线体名称、工位名称、动力形式和扭矩要求')
-    return
-  }
-
+  // 移除必填限制,允许部分填写
   const report = {
     基本信息: {
-      线体名称: requirements.productionLine,
-      工位名称: requirements.workstation,
-      动力形式: requirements.powerType,
-      扭矩要求: `${requirements.torque}Nm`,
-      精度要求: requirements.accuracy
+      线体名称: requirements.productionLine || '未填写',
+      工位名称: requirements.workstation || '未填写',
+      动力形式: requirements.powerType || '未选择',
+      扭矩要求: requirements.torque ? `${requirements.torque}Nm` : '未填写',
+      精度要求: requirements.accuracy || '未选择'
     },
     功能需求: {
       数据采集: requirements.needDataCollection ? '需要' : '不需要',
@@ -1025,17 +1344,7 @@ const generateReport = () => {
         ? requirements.commProtocol.join('、') 
         : '无'
     },
-    套筒配置: {
-      外形: requirements.socket.shape || '未指定',
-      输入端类型: requirements.socket.inputType || '未指定',
-      输入端尺寸: requirements.socket.size || '未指定',
-      磁性类型: requirements.socket.magnetic || '未指定',
-      长度类型: requirements.socket.length || '未指定',
-      特殊要求: requirements.socket.specialRequirements.length > 0 
-        ? requirements.socket.specialRequirements.join('、') 
-        : '无',
-      抗振品牌: requirements.socket.antiVibrationBrand || '未选择'
-    },
+    套筒配置: getSocketsInfo(),
     防错要求: requirements.errorProofing.length > 0 
       ? requirements.errorProofing.join('、') 
       : '无',
@@ -1071,11 +1380,233 @@ const generateReport = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `工具选型需求报告_${requirements.productionLine}_${requirements.workstation}_${new Date().getTime()}.txt`
+  const fileName = requirements.workstation || '未命名工位'
+  link.download = `工具选型需求报告_${fileName}_${new Date().getTime()}.txt`
   link.click()
   URL.revokeObjectURL(url)
   
   ElMessage.success('需求报告已生成并下载')
+}
+
+// 获取套筒信息摘要
+const getSocketsInfo = () => {
+  if (requirements.sockets.length === 0) return '未配置'
+  
+  return requirements.sockets.map((socket, index) => {
+    const parts = []
+    if (socket.toolType) parts.push(`工具类型:${socket.toolType}`)
+    if (socket.model) parts.push(`型号:${socket.model}`)
+    if (socket.quantity > 1) parts.push(`数量:${socket.quantity}`)
+    if (socket.toolBrand) parts.push(`工具品牌:${socket.toolBrand}`)
+    if (socket.toolModel) parts.push(`工具型号:${socket.toolModel}`)
+    if (socket.shape) parts.push(`外形:${socket.shape}`)
+    if (socket.outputType) parts.push(`输出端:${socket.outputType}`)
+    if (socket.outputSize) parts.push(`尺寸:${socket.outputSize}`)
+    if (socket.length) parts.push(`长度:${socket.length}`)
+    if (socket.magnetic) parts.push(`磁性:${socket.magnetic}`)
+    
+    return `套筒${index + 1}: ${parts.length > 0 ? parts.join(', ') : '未配置'}`
+  }).join('\n  ')
+}
+
+// 生成套筒选型报告(Excel 格式 - 专业报价单)
+const generateSocketReport = () => {
+  if (requirements.sockets.length === 0 || !requirements.sockets[0].model) {
+    ElMessage.warning('请至少配置一个套筒')
+    return
+  }
+  
+  // 准备 Excel 数据
+  const excelData = []
+  
+  // ========== 标题 ==========
+  excelData.push(['套筒选型报价单'])
+  excelData.push([]) // 空行
+  
+  // ========== 买方信息 ==========
+  excelData.push(['买方信息'])
+  excelData.push(['公司名称', '', '', '联系人', '', '电话'])
+  excelData.push(['', '', '', '', '', ''])
+  excelData.push(['地址', '', '', '邮箱', '', ''])
+  excelData.push(['', '', '', '', '', ''])
+  excelData.push(['收货地址', '', '', '', '', ''])
+  excelData.push(['', '', '', '', '', ''])
+  excelData.push([]) // 空行
+  
+  // ========== 卖方信息 ==========
+  excelData.push(['卖方信息'])
+  excelData.push(['公司名称', '广州市明升伟业机电有限公司', '', '联系人', '', ''])
+  excelData.push(['电话', '020-36815338 / 81196563 / 80720355', '', '', '', ''])
+  excelData.push(['公司地址', '广州市荔湾区中山八路23号1709房', '', '', '', ''])
+  excelData.push(['工厂地址', '广州市花都区秀全街红棉大道东，永祥路8号', '', '', '', ''])
+  excelData.push(['网址', 'www.minsheng.net.cn / www.eqtcf.cn', '', '', '', ''])
+  excelData.push(['邮箱', 'mingsheng@minsheng.net.cn', '', '', '', ''])
+  excelData.push([]) // 空行
+  
+  // ========== 产品明细表头 ==========
+  excelData.push(['产品明细'])
+  excelData.push([
+    '序号',
+    '工具类型',
+    '套筒型号',
+    '工具品牌',
+    '工具型号',
+    '套筒外形',
+    '输出端类型',
+    '输出端对边尺寸',
+    '四方尺寸',
+    '长度',
+    '磁性类型',
+    '是否抗振',
+    '特殊要求',
+    '数量',
+    '单价(不含税)',
+    '单价(含税)',
+    '总价',
+    '货期(天)',
+    '备注'
+  ])
+  
+  // ========== 产品数据行 ==========
+  let totalAmount = 0
+  requirements.sockets.forEach((socket, index) => {
+    const quantity = socket.quantity || 1
+    const unitPrice = 0 // 默认单价,可手动填写
+    const unitPriceWithTax = 0 // 含税单价,可手动填写
+    const total = unitPriceWithTax * quantity
+    totalAmount += total
+    
+    excelData.push([
+      index + 1,
+      socket.toolType || '', // 工具类型
+      socket.model || '',
+      socket.toolBrand || '', // 工具品牌
+      socket.toolModel || '', // 工具型号
+      socket.shape || '',
+      socket.outputType || '',
+      socket.outputSize || '',
+      socket.inputSquareSize || '',
+      socket.length || '',
+      socket.magnetic || '',
+      socket.specialRequirements.includes('抗振') ? '是' : '否', // 是否抗振
+      socket.specialRequirements.filter(r => r !== '抗振').join('、') || '无', // 其他特殊要求
+      quantity,
+      unitPrice,
+      unitPriceWithTax,
+      total,
+      '', // 货期(可手动填写)
+      '' // 备注
+    ])
+  })
+  
+  // ========== 合计 ==========
+  excelData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '合计',
+    '',
+    '',
+    totalAmount,
+    '',
+    ''
+  ])
+  excelData.push([]) // 空行
+  
+  // ========== 报价信息 ==========
+  const now = new Date()
+  const quoteDate = now.toLocaleDateString('zh-CN')
+  const validUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('zh-CN') // 默认30天有效期
+  
+  excelData.push(['报价信息'])
+  excelData.push(['报价时间', quoteDate])
+  excelData.push(['报价有效期', validUntil])
+  excelData.push(['备注说明', ''])
+  excelData.push([]) // 空行
+  
+  // ========== 附加信息 ==========
+  if (requirements.productionLine || requirements.workstation) {
+    excelData.push(['应用信息'])
+    if (requirements.productionLine) {
+      excelData.push(['线体名称', requirements.productionLine])
+    }
+    if (requirements.workstation) {
+      excelData.push(['工位名称', requirements.workstation])
+    }
+  }
+  
+  // ========== 创建工作簿 ==========
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData)
+  
+  // ========== 设置列宽 ==========
+  worksheet['!cols'] = [
+    { wch: 6 },  // 序号
+    { wch: 12 }, // 工具类型
+    { wch: 16 }, // 套筒型号
+    { wch: 14 }, // 工具品牌
+    { wch: 14 }, // 工具型号
+    { wch: 10 }, // 套筒外形
+    { wch: 12 }, // 输出端类型
+    { wch: 16 }, // 输出端对边尺寸
+    { wch: 12 }, // 四方尺寸
+    { wch: 10 }, // 长度
+    { wch: 12 }, // 磁性类型
+    { wch: 10 }, // 是否抗振
+    { wch: 12 }, // 特殊要求
+    { wch: 8 },  // 数量
+    { wch: 14 }, // 单价(不含税)
+    { wch: 14 }, // 单价(含税)
+    { wch: 12 }, // 总价
+    { wch: 12 }, // 货期
+    { wch: 20 }  // 备注
+  ]
+  
+  // ========== 设置单元格样式(合并单元格) ==========
+  const merges = []
+  
+  // 标题合并 A1:S1
+  merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: 18 } })
+  
+  // 买方信息标题 A3:F3
+  merges.push({ s: { r: 2, c: 0 }, e: { r: 2, c: 5 } })
+  
+  // 卖方信息标题
+  const sellerTitleRow = 9
+  merges.push({ s: { r: sellerTitleRow, c: 0 }, e: { r: sellerTitleRow, c: 5 } })
+  
+  // 产品明细标题
+  const productTitleRow = 13
+  merges.push({ s: { r: productTitleRow, c: 0 }, e: { r: productTitleRow, c: 18 } })
+  
+  worksheet['!merges'] = merges
+  
+  // ========== 设置行高 ==========
+  worksheet['!rows'] = [
+    { hpt: 30 }, // 标题行
+  ]
+  
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, '套筒选型报价单')
+  
+  // ========== 生成文件名 ==========
+  const fileName = requirements.workstation 
+    ? `套筒选型报价单_${requirements.workstation}_${new Date().getTime()}.xlsx`
+    : `套筒选型报价单_${new Date().getTime()}.xlsx`
+  
+  // ========== 下载 Excel ==========
+  XLSX.writeFile(workbook, fileName)
+  
+  ElMessage.success('套筒选型报价单(Excel)已生成并下载，可直接编辑和打印')
 }
 </script>
 
@@ -1529,5 +2060,56 @@ const generateReport = () => {
 .software-group :deep(.el-checkbox__label) {
   white-space: nowrap;
 }
+
+/* 套筒选型样式 */
+.socket-item {
+  padding: 20px;
+  background: #f9fafb;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.socket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.socket-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.add-socket-btn {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* 型号选项样式 */
+.model-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.model-code {
+  font-weight: 600;
+  color: #303133;
+  min-width: 120px;
+}
+
+.model-name {
+  flex: 1;
+  color: #606266;
+  font-size: 13px;
+}
+
+
 
 </style>

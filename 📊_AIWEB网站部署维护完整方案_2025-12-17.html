@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AIWEB网站部署维护完整方案 - 明升伟业</title>
+    <style>
+        @media print {
+            @page { size: A4; margin: 2cm; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", Arial, sans-serif; line-height: 1.8; color: #333; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 20px auto; background: #fff; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+        .cover { background: linear-gradient(135deg, #0047BB, #0066dd); color: #fff; padding: 80px 60px; text-align: center; }
+        .cover h1 { font-size: 42px; font-weight: 700; margin-bottom: 16px; }
+        .cover .subtitle { font-size: 18px; opacity: 0.95; margin-bottom: 30px; }
+        .cover-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 30px; }
+        .cover-meta-item { background: rgba(255,255,255,0.15); padding: 10px 20px; border-radius: 6px; }
+        .content { padding: 50px; }
+        .section { margin-bottom: 40px; }
+        .section-title { color: #0047BB; font-size: 28px; font-weight: 700; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #0047BB; }
+        .subsection-title { color: #0066dd; font-size: 20px; font-weight: 600; margin: 24px 0 12px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        thead { background: linear-gradient(135deg, #0047BB, #0066dd); color: #fff; }
+        th { padding: 12px 10px; text-align: left; font-weight: 600; font-size: 13px; }
+        td { padding: 12px 10px; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
+        .info-box { background: #f8fafc; border-left: 4px solid #0047BB; padding: 16px 20px; margin: 16px 0; }
+        .info-box-title { font-weight: 600; margin-bottom: 8px; }
+        .price { color: #0047BB; font-weight: 600; font-size: 15px; }
+        .price-unit { font-size: 11px; color: #666; }
+        .highlight { background: #fff9c4; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+        .tag { display: inline-block; padding: 3px 10px; background: #e3f2fd; color: #0047BB; border-radius: 12px; font-size: 11px; font-weight: 600; margin: 2px; }
+        .tag.success { background: #e8f5e9; color: #388e3c; }
+        .tag.warning { background: #fff8e1; color: #f57c00; }
+        .tag.danger { background: #ffebee; color: #c62828; }
+        .summary-box { background: linear-gradient(135deg, #f8fafc, #e8f4fd); border: 2px solid #0047BB; border-radius: 10px; padding: 30px; margin: 30px 0; }
+        .summary-title { font-size: 22px; font-weight: 700; color: #0047BB; margin-bottom: 16px; text-align: center; }
+        .toolbar { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .btn { padding: 10px 20px; background: linear-gradient(135deg, #0047BB, #0066dd); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 12px rgba(0,71,187,0.3); margin-left: 10px; }
+        ul, ol { margin: 12px 0; padding-left: 24px; }
+        li { margin: 6px 0; }
+    </style>
+</head>
+<body>
+    <div class="toolbar no-print">
+        <button class="btn" onclick="window.print()">🖨️ 打印PDF</button>
+    </div>
+
+    <div class="container">
+        <!-- 封面 -->
+        <div class="cover">
+            <h1>AIWEB网站部署维护完整方案</h1>
+            <div class="subtitle">全栈智能化工业互联网平台 - 技术实施与运营指南</div>
+            <div class="cover-meta">
+                <div class="cover-meta-item">项目：明升伟业AIWEB平台</div>
+                <div class="cover-meta-item">版本：v1.0</div>
+                <div class="cover-meta-item">日期：2025-12-17</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 目录 -->
+            <div class="section">
+                <h2 class="section-title">📋 目录</h2>
+                <ol style="font-size: 15px; line-height: 2;">
+                    <li>网站部署方案</li>
+                    <li>日常维护管理</li>
+                    <li>成本费用预算</li>
+                    <li>人员配置要求</li>
+                    <li>企业准备事项</li>
+                    <li>实施时间规划</li>
+                    <li>总结与建议</li>
+                </ol>
+            </div>
+
+            <!-- 1. 网站部署方案 -->
+            <div class="section page-break">
+                <h2 class="section-title">🚀 一、网站部署方案</h2>
+                
+                <h3 class="subsection-title">1.1 部署方式对比</h3>
+                <table>
+                    <thead>
+                        <tr><th>部署方式</th><th>优点</th><th>缺点</th><th>年成本</th><th>推荐度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>云服务器</strong><span class="tag success">推荐</span></td>
+                            <td>稳定可靠、易扩展、99.9%可用</td>
+                            <td>需持续付费</td>
+                            <td><span class="price">¥8,000-15,000</span></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>自建服务器</strong></td>
+                            <td>完全掌控、无月租</td>
+                            <td>初期投资大、需专业运维</td>
+                            <td><span class="price">¥20,000+</span></td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>免费托管</strong></td>
+                            <td>零成本、快速部署</td>
+                            <td>功能受限、稳定性差</td>
+                            <td><span class="price">¥0</span></td>
+                            <td>⭐⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">1.2 推荐配置（阿里云/腾讯云）</h3>
+                <table>
+                    <thead>
+                        <tr><th>组件</th><th>配置</th><th>用途</th><th>月费</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>前端</strong></td><td>OSS + CDN</td><td>静态托管、加速访问</td><td class="price">¥50-200</td></tr>
+                        <tr><td><strong>后端</strong></td><td>ECS 2核4G</td><td>Node.js服务器</td><td class="price">¥300-600</td></tr>
+                        <tr><td><strong>数据库</strong></td><td>RDS MySQL 1核2G</td><td>数据存储</td><td class="price">¥200-400</td></tr>
+                        <tr><td><strong>域名+SSL</strong></td><td>.com域名 + 免费证书</td><td>访问地址、安全加密</td><td class="price">¥5-25</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">1.3 部署流程（25个工作日）</h3>
+                <div class="info-box">
+                    <div class="info-box-title">⏱️ 时间线</div>
+                    <ul>
+                        <li><strong>第1周：</strong>域名注册、服务器购买、提交ICP备案</li>
+                        <li><strong>第2-3周：</strong>备案审核（7-20天）、环境配置</li>
+                        <li><strong>第4周：</strong>代码部署、功能测试、人员培训</li>
+                        <li><strong>第5周：</strong>性能优化、SEO设置、正式运营</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. 日常维护管理 -->
+            <div class="section page-break">
+                <h2 class="section-title">🔧 二、日常维护管理</h2>
+                
+                <table>
+                    <thead>
+                        <tr><th>维护类别</th><th>工作内容</th><th>频率</th><th>技能要求</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>内容更新</strong></td>
+                            <td>产品信息、新闻资讯、Banner更换</td>
+                            <td>每周1-2次</td>
+                            <td>基础电脑操作</td>
+                        </tr>
+                        <tr>
+                            <td><strong>系统监控</strong></td>
+                            <td>服务器状态、访问速度、错误日志</td>
+                            <td>每日1次</td>
+                            <td>基础运维知识</td>
+                        </tr>
+                        <tr>
+                            <td><strong>数据备份</strong></td>
+                            <td>数据库备份、文件备份、异地存储</td>
+                            <td>每天自动</td>
+                            <td>备份工具配置</td>
+                        </tr>
+                        <tr>
+                            <td><strong>安全防护</strong></td>
+                            <td>系统更新、密码更换、SSL续期</td>
+                            <td>每月1次</td>
+                            <td>信息安全知识</td>
+                        </tr>
+                        <tr>
+                            <td><strong>性能优化</strong></td>
+                            <td>图片压缩、缓存调整、数据库优化</td>
+                            <td>每季度1次</td>
+                            <td>Web性能优化</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">应急响应机制</h3>
+                <table>
+                    <thead>
+                        <tr><th>故障级别</th><th>影响范围</th><th>响应时间</th><th>解决时间</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="tag danger">P0-紧急</span></td><td>网站完全不可访问</td><td>15分钟内</td><td>1小时内</td></tr>
+                        <tr><td><span class="tag warning">P1-严重</span></td><td>核心功能不可用</td><td>30分钟内</td><td>4小时内</td></tr>
+                        <tr><td><span class="tag">P2-一般</span></td><td>部分功能异常</td><td>2小时内</td><td>24小时内</td></tr>
+                        <tr><td><span class="tag success">P3-轻微</span></td><td>体验问题</td><td>1工作日内</td><td>1周内</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 3. 成本费用预算 -->
+            <div class="section page-break">
+                <h2 class="section-title">💰 三、成本费用预算</h2>
+                
+                <h3 class="subsection-title">3.1 一次性投入</h3>
+                <table>
+                    <thead>
+                        <tr><th>项目</th><th>说明</th><th>预算</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>域名注册</td><td>.com域名首年</td><td class="price">¥60</td></tr>
+                        <tr><td>SSL证书</td><td>免费证书</td><td class="price">¥0</td></tr>
+                        <tr><td>备案服务</td><td>自助办理</td><td class="price">¥0</td></tr>
+                        <tr><td>初次部署</td><td>服务器配置、代码部署</td><td class="price">¥3,000</td></tr>
+                        <tr><td>人员培训</td><td>后台管理、维护培训</td><td class="price">¥2,000</td></tr>
+                        <tr><td colspan="2" style="text-align: right; font-weight: 600;">合计：</td><td class="price" style="font-size: 16px;">¥5,060</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">3.2 年度固定支出</h3>
+                <table>
+                    <thead>
+                        <tr><th>项目</th><th>配置</th><th>月费</th><th>年费</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>云服务器(ECS)</td><td>2核4G，40G SSD，3M带宽</td><td class="price">¥400</td><td class="price">¥4,800</td></tr>
+                        <tr><td>云数据库(RDS)</td><td>MySQL 8.0，1核2G，20G存储</td><td class="price">¥250</td><td class="price">¥3,000</td></tr>
+                        <tr><td>对象存储(OSS)</td><td>100G存储，50G流量/月</td><td class="price">¥100</td><td class="price">¥1,200</td></tr>
+                        <tr><td>CDN加速</td><td>200G流量/月</td><td class="price">¥150</td><td class="price">¥1,800</td></tr>
+                        <tr><td>域名续费</td><td>.com域名</td><td class="price">-</td><td class="price">¥80</td></tr>
+                        <tr><td>数据备份</td><td>自动备份30天</td><td class="price">¥50</td><td class="price">¥600</td></tr>
+                        <tr><td colspan="2" style="text-align: right; font-weight: 600;">月度合计：</td><td class="price" style="font-size: 16px;">¥950</td><td></td></tr>
+                        <tr><td colspan="3" style="text-align: right; font-weight: 600;">年度合计：</td><td class="price" style="font-size: 18px; color: #ef5350;">¥11,480</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box" style="background: #fff8e1; border-left-color: #ffa726;">
+                    <div class="info-box-title">💡 成本优化：包年优惠后预估 <span class="highlight">¥9,000-10,000/年</span></div>
+                </div>
+
+                <div class="summary-box">
+                    <div class="summary-title">💰 年度总成本预估</div>
+                    <table style="margin: 16px 0; box-shadow: none;">
+                        <tbody>
+                            <tr style="background: #fff;"><td style="border: none;">一次性投入</td><td style="border: none; text-align: right;" class="price" style="font-size: 16px;">¥5,060元</td></tr>
+                            <tr style="background: #fff;"><td style="border: none;">首年固定支出</td><td style="border: none; text-align: right;" class="price" style="font-size: 16px;">¥9,500元</td></tr>
+                            <tr style="background: #e8f4fd;"><td style="border: none; font-weight: 600;">首年总成本</td><td style="border: none; text-align: right;" class="price" style="font-size: 18px;">¥14,560元</td></tr>
+                            <tr style="background: #e8f4fd;"><td style="border: none; font-weight: 600;">次年起年费</td><td style="border: none; text-align: right;" class="price" style="font-size: 18px;">¥9,500元</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. 人员配置要求 -->
+            <div class="section page-break">
+                <h2 class="section-title">👥 四、人员配置要求</h2>
+                
+                <table>
+                    <thead>
+                        <tr><th>岗位</th><th>职责</th><th>工作量</th><th>技能要求</th><th>人数</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>内容管理员</strong><span class="tag success">必需</span></td>
+                            <td>产品更新、新闻发布、素材管理</td>
+                            <td>每天2-3小时</td>
+                            <td>基础电脑操作、简单图片处理</td>
+                            <td><strong>1人</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>技术运维</strong><span class="tag warning">兼职可</span></td>
+                            <td>服务器监控、系统维护、故障处理</td>
+                            <td>每周5-10小时</td>
+                            <td>基础运维知识、服务器管理</td>
+                            <td><strong>0.5人</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>数据分析</strong><span class="tag">可选</span></td>
+                            <td>数据统计、用户分析、报告输出</td>
+                            <td>每月4-8小时</td>
+                            <td>数据分析、Excel/BI工具</td>
+                            <td><strong>0.2人</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <div class="info-box-title">💼 推荐配置</div>
+                    <p><span class="highlight">1名内容管理员 + IT部门兼职技术支持</span></p>
+                    <ul>
+                        <li><strong>小型企业：</strong>1名内容管理员 + 外包技术支持</li>
+                        <li><strong>中型企业：</strong>1名内容管理员 + IT部门兼职</li>
+                        <li><strong>大型企业：</strong>专职团队（内容1人 + 运维1人）</li>
+                    </ul>
+                </div>
+
+                <h3 class="subsection-title">培训计划</h3>
+                <table>
+                    <thead>
+                        <tr><th>阶段</th><th>内容</th><th>时长</th><th>方式</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>入职培训</td><td>系统介绍、后台演示、基础操作</td><td>1天</td><td>现场培训</td></tr>
+                        <tr><td>进阶培训</td><td>高级功能、问题处理、优化技巧</td><td>0.5天</td><td>在线培训</td></tr>
+                        <tr><td>定期复训</td><td>新功能、经验分享、答疑解惑</td><td>每季度2小时</td><td>在线会议</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 5. 企业准备事项 -->
+            <div class="section page-break">
+                <h2 class="section-title">📋 五、企业准备事项</h2>
+                
+                <h3 class="subsection-title">5.1 基础设施准备</h3>
+                <table>
+                    <thead>
+                        <tr><th>类别</th><th>准备事项</th><th>负责部门</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>网络环境</td><td>企业邮箱、稳定网络、VPN(可选)</td><td>IT部门</td></tr>
+                        <tr><td>云服务账号</td><td>阿里云/腾讯云账号、实名认证、充值</td><td>财务/IT</td></tr>
+                        <tr><td>域名注册</td><td>选定域名、注册商账号、解析权限</td><td>市场/IT</td></tr>
+                        <tr><td>支付方式</td><td>企业对公账户或信用卡、自动扣费授权</td><td>财务部</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">5.2 资质证照办理（ICP备案必须）</h3>
+                <div class="info-box" style="background: #ffebee; border-left-color: #ef5350;">
+                    <div class="info-box-title">⚠️ 重要：ICP备案是强制要求，需7-20个工作日</div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr><th>资质</th><th>必要性</th><th>所需材料</th><th>办理时间</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ICP备案</strong></td>
+                            <td><span class="tag danger">必须</span></td>
+                            <td>营业执照、法人身份证、负责人信息、核验照片</td>
+                            <td>7-20工作日</td>
+                        </tr>
+                        <tr>
+                            <td><strong>公安备案</strong></td>
+                            <td><span class="tag warning">建议</span></td>
+                            <td>ICP备案号、网站信息</td>
+                            <td>1-3工作日</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">5.3 数据资料准备</h3>
+                <table>
+                    <thead>
+                        <tr><th>资料类型</th><th>内容要求</th><th>准备部门</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>企业介绍</td><td>公司简介(中英文)、发展历程、资质证书</td><td>行政/市场</td></tr>
+                        <tr><td>产品资料</td><td>产品图片(≥1200px)、技术参数、说明书</td><td>产品/技术</td></tr>
+                        <tr><td>案例素材</td><td>成功案例、现场照片、客户评价</td><td>销售/市场</td></tr>
+                        <tr><td>新闻资讯</td><td>企业动态、行业新闻、展会活动</td><td>市场/公关</td></tr>
+                        <tr><td>联系方式</td><td>地址、电话、邮箱、社交媒体</td><td>行政部</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 6. 实施时间规划 -->
+            <div class="section page-break">
+                <h2 class="section-title">📅 六、实施时间规划</h2>
+                
+                <table>
+                    <thead>
+                        <tr><th>阶段</th><th>主要工作</th><th>时长</th><th>里程碑</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>第1周<br>准备阶段</strong></td>
+                            <td>域名注册、服务器购买、提交备案、资料收集</td>
+                            <td>5工作日</td>
+                            <td>✅ 备案提交</td>
+                        </tr>
+                        <tr>
+                            <td><strong>第2-3周<br>等待备案</strong></td>
+                            <td>备案审核、环境配置、测试部署、内容准备</td>
+                            <td>10工作日</td>
+                            <td>✅ 备案通过</td>
+                        </tr>
+                        <tr>
+                            <td><strong>第4周<br>部署上线</strong></td>
+                            <td>正式部署、数据导入、功能测试、人员培训</td>
+                            <td>5工作日</td>
+                            <td>✅ 正式上线</td>
+                        </tr>
+                        <tr>
+                            <td><strong>第5周<br>优化运营</strong></td>
+                            <td>性能优化、SEO设置、内容完善、运营培训</td>
+                            <td>5工作日</td>
+                            <td>✅ 稳定运营</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box" style="background: #fff8e1; border-left-color: #ffa726;">
+                    <div class="info-box-title">⏰ 时间提示</div>
+                    <ul>
+                        <li><strong>正常上线时间：</strong><span class="highlight">25个工作日</span></li>
+                        <li><strong>建议留余地：</strong>30个工作日（约6周）</li>
+                        <li><strong>关键瓶颈：</strong>ICP备案审核7-20天（不可控）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 7. 总结与建议 -->
+            <div class="section page-break">
+                <h2 class="section-title">📝 七、总结与建议</h2>
+                
+                <div class="summary-box">
+                    <div class="summary-title">🎯 核心要点总结</div>
+                    
+                    <h4 style="color: #0047BB; margin: 20px 0 10px 0;">💰 成本投入</h4>
+                    <ul>
+                        <li><strong>首年总投入：</strong><span class="highlight">约 ¥14,560元</span></li>
+                        <li><strong>次年起年费：</strong><span class="highlight">约 ¥9,500元/年</span></li>
+                        <li><strong>平均月成本：</strong><span class="highlight">约 ¥800元/月</span></li>
+                    </ul>
+
+                    <h4 style="color: #0047BB; margin: 20px 0 10px 0;">👥 人员配置</h4>
+                    <ul>
+                        <li><strong>最小配置：</strong>1名内容管理员 + IT兼职支持</li>
+                        <li><strong>日常工作：</strong>每天2-3小时</li>
+                        <li><strong>培训周期：</strong>1天入职培训</li>
+                    </ul>
+
+                    <h4 style="color: #0047BB; margin: 20px 0 10px 0;">⏱️ 时间规划</h4>
+                    <ul>
+                        <li><strong>准备阶段：</strong>5个工作日</li>
+                        <li><strong>备案审核：</strong>7-20个工作日（关键）</li>
+                        <li><strong>部署上线：</strong>5个工作日</li>
+                        <li><strong>总计时间：</strong><span class="highlight">25-30个工作日</span></li>
+                    </ul>
+                </div>
+
+                <h3 class="subsection-title">关键建议</h3>
+                <div class="info-box" style="background: #e8f5e9; border-left-color: #66bb6a;">
+                    <div class="info-box-title">✅ 推荐部署方案</div>
+                    <ul>
+                        <li><strong>云服务商：</strong>阿里云/腾讯云（稳定可靠）</li>
+                        <li><strong>配置方案：</strong>ECS 2核4G + RDS 1核2G + OSS + CDN</li>
+                        <li><strong>成本控制：</strong>包年购买享15-20%折扣</li>
+                        <li><strong>人员安排：</strong>1名专职内容管理 + IT兼职</li>
+                        <li><strong>时间规划：</strong>预留30个工作日（含备案）</li>
+                    </ul>
+                </div>
+
+                <h3 class="subsection-title">风险控制</h3>
+                <table>
+                    <thead>
+                        <tr><th>风险</th><th>影响</th><th>预防措施</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>备案延迟</td><td>上线推迟</td><td>提前15天备案、准备完整资料</td></tr>
+                        <tr><td>人员流失</td><td>维护中断</td><td>多人培训、完善文档</td></tr>
+                        <tr><td>数据丢失</td><td>业务损失</td><td>每天自动备份、异地存储</td></tr>
+                        <tr><td>安全攻击</td><td>服务中断</td><td>WAF防火墙、安全监控</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 附录 -->
+            <div class="section page-break">
+                <h2 class="section-title">📎 附录</h2>
+                
+                <h3 class="subsection-title">常见问题解答</h3>
+                <div style="line-height: 1.8;">
+                    <p><strong>Q1: 网站一定要备案吗？</strong><br>
+                    A: 是的，根据工信部规定，使用国内服务器必须备案，否则无法访问。</p>
+
+                    <p><strong>Q2: 备案需要多长时间？</strong><br>
+                    A: 通常7-20个工作日，具体时间因地区而异。</p>
+
+                    <p><strong>Q3: 可以不用云服务器吗？</strong><br>
+                    A: 可以，但云服务器稳定性高、运维简单，是最佳选择。</p>
+
+                    <p><strong>Q4: 网站上线后能自己维护吗？</strong><br>
+                    A: 可以，我们提供完整培训和文档，日常更新很简单。</p>
+
+                    <p><strong>Q5: 费用包含哪些内容？</strong><br>
+                    A: 包含服务器、数据库、存储、CDN、域名等全部基础费用。</p>
+
+                    <p><strong>Q6: 后期需要技术支持怎么办？</strong><br>
+                    A: 提供技术支持热线、微信群、远程协助服务。</p>
+
+                    <p><strong>Q7: 网站可以扩展新功能吗？</strong><br>
+                    A: 可以，按需定制开发，费用另计。</p>
+
+                    <p><strong>Q8: 数据安全有保障吗？</strong><br>
+                    A: 每天自动备份，支持一键恢复，确保数据安全。</p>
+                </div>
+
+                <h3 class="subsection-title" style="margin-top: 30px;">联系方式</h3>
+                <div class="info-box">
+                    <ul style="list-style: none; padding: 0;">
+                        <li><strong>技术支持：</strong>提供技术支持热线</li>
+                        <li><strong>培训服务：</strong>提供现场/在线培训</li>
+                        <li><strong>应急响应：</strong>7×24小时故障处理</li>
+                        <li><strong>版本更新：</strong>定期功能升级</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div style="background: #263238; color: #fff; padding: 30px 50px; text-align: center;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">广州市明升伟业机电有限公司</div>
+            <div style="opacity: 0.9; font-size: 13px;">专业工业工具解决方案提供商 | 28年行业经验</div>
+            <div style="opacity: 0.8; font-size: 12px; margin-top: 10px;">本文档版权所有 © 2025 All Rights Reserved</div>
+        </div>
+    </div>
+
+    <script>
+        // 打印时自动调整样式
+        window.onbeforeprint = function() {
+            document.title = "AIWEB网站部署维护完整方案";
+        };
+    </script>
+</body>
+</html>

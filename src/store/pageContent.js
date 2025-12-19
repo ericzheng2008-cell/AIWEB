@@ -3,11 +3,11 @@ import { defineStore } from 'pinia'
 export const usePageContentStore = defineStore('pageContent', {
   state: () => ({
     // 导航栏配置版本号（更新配置时递增此版本号）
-    navConfigVersion: '2.4.0', // v2.4.0 - 统一第1个智能体名称为"拧紧工具选型"
+    navConfigVersion: '3.0.0', // v3.0.0 - 添加AI国际营销中台功能（Phase 2-4）
     
     // 导航栏配置
     navItems: (() => {
-      const currentVersion = '2.4.0'
+      const currentVersion = '3.0.0'
       const savedVersion = localStorage.getItem('navConfigVersion')
       
       // 如果版本号不匹配，忽略缓存，使用新配置
@@ -23,19 +23,34 @@ export const usePageContentStore = defineStore('pageContent', {
         order: 2, 
         visible: true,
         children: [
-          { id: 'electric-tools', name: { 'zh-CN': '电动工具', 'en-US': 'Electric Tools' }, path: '/products-services?category=electric', order: 1, visible: true },
-          { id: 'pneumatic-tools', name: { 'zh-CN': '气动工具', 'en-US': 'Pneumatic Tools' }, path: '/products-services?category=pneumatic', order: 2, visible: true },
-          { id: 'manual-tools', name: { 'zh-CN': '手动工具', 'en-US': 'Manual Tools' }, path: '/products-services?category=manual', order: 3, visible: true },
-          { id: 'measurement-tools', name: { 'zh-CN': '测量工具', 'en-US': 'Measurement Tools' }, path: '/products-services?category=measurement', order: 4, visible: true },
-          { id: 'automated-systems', name: { 'zh-CN': '自动化系统', 'en-US': 'Automation Systems' }, path: '/products-services?category=automation', order: 5, visible: true },
-          { id: 'smart-solutions', name: { 'zh-CN': '智能解决方案', 'en-US': 'Smart Solutions' }, path: '/products-services?category=smart', order: 6, visible: true }
+          { id: 'electric-tools', name: { 'zh-CN': '电动工具', 'en-US': 'Electric Tools' }, path: '/products-services?category=1', order: 1, visible: true },
+          { id: 'pneumatic-tools', name: { 'zh-CN': '气动工具', 'en-US': 'Pneumatic Tools' }, path: '/products-services?category=2', order: 2, visible: true },
+          { id: 'manual-tools', name: { 'zh-CN': '手动工具', 'en-US': 'Manual Tools' }, path: '/products-services?category=3', order: 3, visible: true },
+          { id: 'measurement-tools', name: { 'zh-CN': '测量工具', 'en-US': 'Measurement Tools' }, path: '/products-services?category=4', order: 4, visible: true },
+          { id: 'automated-systems', name: { 'zh-CN': '自动化系统', 'en-US': 'Automation Systems' }, path: '/products-services?category=5', order: 5, visible: true },
+          { id: 'smart-solutions', name: { 'zh-CN': '智能解决方案', 'en-US': 'Smart Solutions' }, path: '/products-services?category=6', order: 6, visible: true },
+          { id: 'tool-selector', name: { 'zh-CN': '拧紧工具选型', 'en-US': 'Tool Selection' }, path: '/tool-selector', order: 7, visible: true }
+        ]
+      },
+      { 
+        id: 'marketing-hub', 
+        name: { 'zh-CN': 'AI营销中台', 'en-US': 'AI Marketing Hub' }, 
+        path: '/ai-product-selector', 
+        order: 3, 
+        visible: true,
+        children: [
+          { id: 'ai-selector', name: { 'zh-CN': 'AI产品选型', 'en-US': 'AI Product Selector' }, path: '/ai-product-selector', order: 1, visible: true },
+          { id: 'resource-center', name: { 'zh-CN': '资源中心', 'en-US': 'Resource Center' }, path: '/resource-center', order: 2, visible: true },
+          { id: 'email-marketing', name: { 'zh-CN': '邮件营销', 'en-US': 'Email Marketing' }, path: '/email-marketing', order: 3, visible: true },
+          { id: 'lead-nurturing', name: { 'zh-CN': '线索孵化', 'en-US': 'Lead Nurturing' }, path: '/lead-nurturing', order: 4, visible: true },
+          { id: 'data-hub', name: { 'zh-CN': '营销数据中台', 'en-US': 'Marketing Data Hub' }, path: '/marketing-data-hub', order: 5, visible: true }
         ]
       },
       { 
         id: 'divisions', 
         name: { 'zh-CN': '事业部', 'en-US': 'Business Divisions' }, 
         path: '/divisions', 
-        order: 3, 
+        order: 4, 
         visible: true,
         children: [
           { id: 'division-assembly', name: { 'zh-CN': '工业智能装配事业部', 'en-US': 'Intelligent Assembly Division' }, path: '/divisions?id=1', order: 1, visible: true },
@@ -52,7 +67,7 @@ export const usePageContentStore = defineStore('pageContent', {
         id: 'solutions', 
         name: { 'zh-CN': '应用案例', 'en-US': 'Case Studies' }, 
         path: '/solutions', 
-        order: 4, 
+        order: 5, 
         visible: true,
         children: [
           { id: 'automotive', name: { 'zh-CN': '汽车制造', 'en-US': 'Automotive Manufacturing' }, path: '/solutions?category=automotive', order: 1, visible: true },
@@ -67,7 +82,7 @@ export const usePageContentStore = defineStore('pageContent', {
         id: 'aiagents', 
         name: { 'zh-CN': 'AI智能体', 'en-US': 'AI Solutions' }, 
         path: '/ai-agents', 
-        order: 5, 
+        order: 6, 
         visible: true,
         children: [
           { id: 'equipment-dashboard', name: { 'zh-CN': '数字监控驾驶舱', 'en-US': 'Digital Monitoring Dashboard' }, path: '/equipment-dashboard', order: 1, visible: true },
@@ -80,9 +95,18 @@ export const usePageContentStore = defineStore('pageContent', {
           { id: 'process-verification', name: { 'zh-CN': '拧紧工艺改进与验证', 'en-US': 'Process Optimization & Verification' }, path: '/process-verification', order: 8, visible: true }
         ]
       },
-      { id: 'about', name: { 'zh-CN': '关于我们', 'en-US': 'About Us' }, path: '/about', order: 6, visible: true },
-      { id: 'service', name: { 'zh-CN': '服务与支持', 'en-US': 'Service & Support' }, path: '/service', order: 7, visible: true },
-      { id: 'contact', name: { 'zh-CN': '联系我们', 'en-US': 'Contact Us' }, path: '/contact', order: 8, visible: true }
+      { id: 'about', name: { 'zh-CN': '关于我们', 'en-US': 'About Us' }, path: '/about', order: 7, visible: true },
+      { 
+        id: 'service', 
+        name: { 'zh-CN': '服务与支持', 'en-US': 'Service & Support' }, 
+        path: '/service', 
+        order: 8, 
+        visible: true,
+        children: [
+          { id: 'work-order-query', name: { 'zh-CN': '工单查询系统', 'en-US': 'Work Order Query' }, path: '/work-order-query', order: 1, visible: true }
+        ]
+      },
+      { id: 'contact', name: { 'zh-CN': '联系我们', 'en-US': 'Contact Us' }, path: '/contact', order: 9, visible: true }
         ]
         localStorage.setItem('navItems', JSON.stringify(newNavItems))
         return newNavItems
@@ -635,6 +659,19 @@ export const usePageContentStore = defineStore('pageContent', {
   
   actions: {
     // ========== 导航栏管理 ==========
+    loadNavItems() {
+      // 从localStorage重新加载导航配置
+      const saved = localStorage.getItem('navItems')
+      if (saved) {
+        try {
+          this.navItems = JSON.parse(saved)
+          console.log('✅ 导航栏配置已重新加载')
+        } catch (e) {
+          console.error('加载导航配置失败:', e)
+        }
+      }
+    },
+    
     addNavItem(item) {
       const maxId = this.navItems.length > 0 ? Math.max(...this.navItems.map(i => parseInt(i.id.replace(/[^\d]/g, '')) || 0)) : 0
       const maxOrder = this.navItems.length > 0 ? Math.max(...this.navItems.map(i => i.order)) : 0

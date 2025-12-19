@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>监控页面问题诊断</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #409eff;
+      border-bottom: 3px solid #409eff;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #67c23a;
+    }
+    .error {
+      border-left-color: #f56c6c;
+    }
+    .warning {
+      border-left-color: #e6a23c;
+    }
+    button {
+      background: #409eff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #66b1ff;
+    }
+    code {
+      background: #ecf5ff;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+    pre {
+      background: #303133;
+      color: #67c23a;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .step {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 监控与优化页面问题诊断</h1>
+    
+    <div class="section">
+      <h3>📋 诊断步骤</h3>
+      <div class="step">
+        <strong>步骤 1:</strong> 打开监控页面
+        <br>
+        <button onclick="openMonitoring()">📂 打开监控页面</button>
+      </div>
+      
+      <div class="step">
+        <strong>步骤 2:</strong> 按 <code>F12</code> 打开浏览器开发者工具
+      </div>
+      
+      <div class="step">
+        <strong>步骤 3:</strong> 查看 Console 标签页中的错误信息
+      </div>
+      
+      <div class="step">
+        <strong>步骤 4:</strong> 复制错误信息并告诉我
+      </div>
+    </div>
+    
+    <div class="section warning">
+      <h3>⚠️ 常见错误类型</h3>
+      <p><strong>1. 导入错误:</strong></p>
+      <pre>Failed to resolve module specifier</pre>
+      
+      <p><strong>2. 属性未定义:</strong></p>
+      <pre>Cannot read properties of undefined (reading '...')</pre>
+      
+      <p><strong>3. 方法不存在:</strong></p>
+      <pre>...is not a function</pre>
+    </div>
+    
+    <div class="section">
+      <h3>🔧 临时修复方案</h3>
+      <div class="step">
+        <strong>清除缓存:</strong>
+        <br>
+        <button onclick="clearCache()">🗑️ 清除缓存并刷新</button>
+      </div>
+      
+      <div class="step">
+        <strong>硬刷新:</strong>
+        <br>
+        <button onclick="hardRefresh()">♻️ 硬刷新页面</button>
+      </div>
+    </div>
+    
+    <div class="section error">
+      <h3>📝 请告诉我:</h3>
+      <ol>
+        <li>页面是完全空白,还是显示了部分内容?</li>
+        <li>浏览器控制台(F12)中有什么错误信息?</li>
+        <li>是否看到了统计卡片(系统健康度等)?</li>
+        <li>点击哪个按钮或标签页会有问题?</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script>
+    function openMonitoring() {
+      window.open('http://localhost:3002/admin/monitoring-dashboard', '_blank');
+      setTimeout(() => {
+        alert('页面已打开,请按 F12 打开开发者工具,查看 Console 中的错误信息');
+      }, 1000);
+    }
+    
+    function clearCache() {
+      if (confirm('这将清除本地存储并刷新页面,确定继续吗?')) {
+        const script = `
+localStorage.clear();
+sessionStorage.clear();
+location.reload(true);
+        `;
+        alert('请在监控页面的控制台中执行以下命令:\n\n' + script);
+      }
+    }
+    
+    function hardRefresh() {
+      alert('请在监控页面按 Ctrl + Shift + R 进行硬刷新');
+    }
+  </script>
+</body>
+</html>

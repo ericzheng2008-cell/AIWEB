@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIWEB网站企业内网部署完整方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            font-size: 38px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .header .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #67c23a, #42b983);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 5px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 26px;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+            font-weight: 600;
+        }
+        
+        .section-subtitle {
+            font-size: 20px;
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        .content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border-left: 4px solid #f56c6c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #67c23a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-left: 4px solid #e6a23c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #409eff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .code-block .comment {
+            color: #90cdf4;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .badge-success {
+            background: #67c23a;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #e6a23c;
+            color: white;
+        }
+        
+        .badge-danger {
+            background: #f56c6c;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #409eff;
+            color: white;
+        }
+        
+        .architecture-diagram {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 25px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 2;
+        }
+        
+        .step-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .step-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 40px;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📘 AIWEB网站企业内网部署完整方案</h1>
+            <p class="subtitle">Enterprise Intranet Deployment Solution</p>
+            <span class="badge">🏢 企业内网部署</span>
+            <span class="badge">🔒 安全可控</span>
+            <span class="badge">⚡ 快速上线</span>
+            <p style="margin-top: 20px; color: #999;">版本：v1.0.0 | 日期：2025-12-17</p>
+        </div>
+
+        <!-- 一、项目概述 -->
+        <div class="section">
+            <h2 class="section-title">一、项目概述</h2>
+            
+            <div class="success-box">
+                <h3 style="margin-bottom: 15px;">🎯 部署目标</h3>
+                <p>将<strong>AIWEB完整网站</strong>（前台+后台+所有智能体功能）部署在企业内部服务器，实现内网环境下的完整测试和使用。</p>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">📊 AIWEB网站包含内容</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>模块类型</th>
+                            <th>功能名称</th>
+                            <th>数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="8"><strong>前台页面</strong></td>
+                            <td>首页（Banner + 明星产品 + 智能体中心）</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>产品与服务（拖拽布局 + 4级分类）</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>AI智能体（9个智能体页面）</td>
+                            <td>9</td>
+                        </tr>
+                        <tr>
+                            <td>产品技术销售小课堂</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>工单查询系统</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>AI营销中台（Phase 1-4）</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>明升AICRM智能助手</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>关于我们、联系我们等</td>
+                            <td>3+</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="10"><strong>后台管理</strong></td>
+                            <td>CMS内容管理</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>产品与服务管理</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>首页Banner与明星产品管理</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>智能体注册中心</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>知识库管理系统</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>主动学习引擎</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>监控与优化系统</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>AI营销中台管理</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>学习训练系统资料管理</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>明升AICRM后台管理</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="5"><strong>9大智能体</strong></td>
+                            <td>安彤智能应答机器人（AI聊天）</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>工具选型智能体（套筒/拧紧工具）</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>拧紧数据采集与分析</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>拧紧曲线智能分析</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>设备全生命周期管理 + 其他4个</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>总计页面/功能</strong></td>
+                            <td><strong>40+</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🎯 部署优势</h3>
+                <ul>
+                    <li>✅ <strong>数据安全</strong>：所有数据在企业内网，不出公网</li>
+                    <li>✅ <strong>访问速度快</strong>：内网延迟<5ms，公网需20-50ms</li>
+                    <li>✅ <strong>成本低</strong>：无云服务器租赁费（年省¥14,000-30,000）</li>
+                    <li>✅ <strong>完全可控</strong>：自主管理、随时调整</li>
+                    <li>✅ <strong>无限制</strong>：无流量/并发/存储限制</li>
+                    <li>✅ <strong>测试环境</strong>：内网测试后再考虑公网发布</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 二、服务器硬件要求 -->
+        <div class="section">
+            <h2 class="section-title">二、服务器硬件要求</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">🖥️ 推荐配置</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>配置项</th>
+                            <th>最低配置</th>
+                            <th>推荐配置</th>
+                            <th>高性能配置</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CPU</strong></td>
+                            <td>4核 2.0GHz</td>
+                            <td>8核 2.5GHz</td>
+                            <td>16核 3.0GHz</td>
+                        </tr>
+                        <tr>
+                            <td><strong>内存</strong></td>
+                            <td>8GB</td>
+                            <td>16GB</td>
+                            <td>32GB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>硬盘</strong></td>
+                            <td>128GB SSD</td>
+                            <td>512GB SSD</td>
+                            <td>1TB SSD + RAID 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>网卡</strong></td>
+                            <td>100Mbps</td>
+                            <td>1Gbps</td>
+                            <td>10Gbps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>操作系统</strong></td>
+                            <td colspan="3">Ubuntu 20.04 LTS / CentOS 7+ / Windows Server 2019+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>适用规模</strong></td>
+                            <td>10-30人</td>
+                            <td>30-100人</td>
+                            <td>100-500人</td>
+                        </tr>
+                        <tr>
+                            <td><strong>并发用户</strong></td>
+                            <td>30人</td>
+                            <td>100人</td>
+                            <td>500人</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ 重要提示</h3>
+                <ul>
+                    <li><strong>必选SSD硬盘</strong>：机械硬盘会导致数据库性能极差</li>
+                    <li><strong>推荐RAID</strong>：RAID 1或RAID 5保证数据安全</li>
+                    <li><strong>UPS电源</strong>：配置不间断电源，防止突然断电</li>
+                    <li><strong>虚拟化</strong>：如有VMware/Hyper-V，可创建虚拟机</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 三、技术架构 -->
+        <div class="section">
+            <h2 class="section-title">三、技术架构</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">🏗️ 整体架构图</h3>
+                
+                <div class="architecture-diagram">
+<strong>企业内网环境</strong>
+│
+├── <strong>【网络层】</strong>
+│   ├── 防火墙（仅开放80/443端口）
+│   ├── 内网DNS（可选：配置域名aiwei.company.local）
+│   └── 交换机（1Gbps内网）
+│
+├── <strong>【服务器层】</strong>自有服务器（192.168.x.x）
+│   │
+│   ├── <strong>Nginx</strong>（反向代理 + 静态资源服务器）
+│   │   ├── 端口：80（HTTP）
+│   │   ├── 前台静态文件：/var/www/aiweb-frontend
+│   │   └── 后台静态文件：/var/www/aiweb-admin
+│   │
+│   ├── <strong>Node.js API服务</strong>（后端API）
+│   │   ├── 端口：3000（内网）
+│   │   ├── 进程管理：PM2
+│   │   └── 自动重启：PM2守护进程
+│   │
+│   ├── <strong>MySQL数据库</strong>（数据存储）
+│   │   ├── 端口：3306（仅本机访问）
+│   │   ├── 数据库：aiweb_db
+│   │   └── 备份：每日凌晨2点自动备份
+│   │
+│   ├── <strong>Redis缓存</strong>（会话缓存 + 数据缓存）
+│   │   ├── 端口：6379（仅本机访问）
+│   │   ├── 持久化：AOF + RDB
+│   │   └── 缓存：用户会话、热点数据
+│   │
+│   └── <strong>文件存储</strong>（本地磁盘）
+│       ├── 上传文件：/data/aiweb/uploads
+│       ├── 图片：/data/aiweb/images
+│       └── 日志：/var/log/aiweb
+│
+└── <strong>【客户端层】</strong>
+    ├── PC浏览器（Chrome/Edge/Firefox）
+    │   ├── 前台访问：http://192.168.x.x
+    │   └── 后台访问：http://192.168.x.x/admin
+    │
+    └── 移动端浏览器（响应式设计）
+        └── 访问：http://192.168.x.x
+                </div>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">💻 技术栈</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>层级</th>
+                            <th>技术</th>
+                            <th>版本</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="3"><strong>前端</strong></td>
+                            <td>Vue 3</td>
+                            <td>3.3+</td>
+                            <td>前端框架（Composition API）</td>
+                        </tr>
+                        <tr>
+                            <td>Element Plus</td>
+                            <td>2.4+</td>
+                            <td>UI组件库</td>
+                        </tr>
+                        <tr>
+                            <td>Vite</td>
+                            <td>4.5+</td>
+                            <td>构建工具</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>后端</strong></td>
+                            <td>Node.js</td>
+                            <td>18 LTS</td>
+                            <td>运行环境</td>
+                        </tr>
+                        <tr>
+                            <td>Express</td>
+                            <td>4.18+</td>
+                            <td>Web框架</td>
+                        </tr>
+                        <tr>
+                            <td>PM2</td>
+                            <td>5.3+</td>
+                            <td>进程管理</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>数据库</strong></td>
+                            <td>MySQL</td>
+                            <td>8.0+</td>
+                            <td>关系型数据库</td>
+                        </tr>
+                        <tr>
+                            <td>Redis</td>
+                            <td>7.0+</td>
+                            <td>缓存数据库</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Web服务器</strong></td>
+                            <td>Nginx</td>
+                            <td>1.22+</td>
+                            <td>反向代理 + 静态资源</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 四、详细部署步骤 -->
+        <div class="section">
+            <h2 class="section-title">四、详细部署步骤（5天完成）</h2>
+            
+            <div class="info-box">
+                <h3>📅 部署时间线</h3>
+                <ul>
+                    <li><strong>第1天</strong>：服务器准备 + 基础软件安装</li>
+                    <li><strong>第2天</strong>：数据库配置 + 后端API部署</li>
+                    <li><strong>第3天</strong>：前端部署 + Nginx配置</li>
+                    <li><strong>第4天</strong>：数据初始化 + 功能测试</li>
+                    <li><strong>第5天</strong>：全面测试 + 培训上线</li>
+                </ul>
+            </div>
+
+            <!-- 第1天：服务器准备 -->
+            <div class="content">
+                <h3 class="section-subtitle">📅 第1天：服务器准备（6小时）</h3>
+                
+                <div class="step-card">
+                    <h4><span class="step-number">1</span>安装操作系统（推荐Ubuntu 20.04 LTS）</h4>
+                    <div class="code-block">
+<span class="comment"># 下载Ubuntu Server 20.04 LTS</span>
+# https://ubuntu.com/download/server
+
+<span class="comment"># 安装后更新系统</span>
+sudo apt update && sudo apt upgrade -y
+
+<span class="comment"># 设置时区</span>
+sudo timedatectl set-timezone Asia/Shanghai
+
+<span class="comment"># 查看系统信息</span>
+uname -a
+cat /etc/os-release
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">2</span>安装Node.js 18 LTS</h4>
+                    <div class="code-block">
+<span class="comment"># 添加NodeSource仓库</span>
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
+<span class="comment"># 安装Node.js</span>
+sudo apt install -y nodejs
+
+<span class="comment"># 验证安装</span>
+node -v   <span class="comment"># 应显示 v18.x.x</span>
+npm -v    <span class="comment"># 应显示 9.x.x</span>
+
+<span class="comment"># 配置npm国内镜像（加速）</span>
+npm config set registry https://registry.npmmirror.com
+
+<span class="comment"># 全局安装PM2进程管理器</span>
+sudo npm install -g pm2
+pm2 -v
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">3</span>安装Nginx Web服务器</h4>
+                    <div class="code-block">
+<span class="comment"># 安装Nginx</span>
+sudo apt install -y nginx
+
+<span class="comment"># 启动Nginx</span>
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+<span class="comment"># 检查状态</span>
+sudo systemctl status nginx
+
+<span class="comment"># 测试访问（应看到Nginx欢迎页）</span>
+curl http://localhost
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">4</span>安装MySQL 8.0数据库</h4>
+                    <div class="code-block">
+<span class="comment"># 安装MySQL Server</span>
+sudo apt install -y mysql-server
+
+<span class="comment"># 启动MySQL</span>
+sudo systemctl start mysql
+sudo systemctl enable mysql
+
+<span class="comment"># 安全初始化配置</span>
+sudo mysql_secure_installation
+
+<span class="comment"># 配置提示：</span>
+# VALIDATE PASSWORD COMPONENT? Y
+# Password validation policy: 1 (MEDIUM)
+# New password: AIWEB@MySQL2025
+# Remove anonymous users? Y
+# Disallow root login remotely? Y
+# Remove test database? Y
+# Reload privilege tables? Y
+
+<span class="comment"># 登录MySQL测试</span>
+sudo mysql -u root -p
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">5</span>安装Redis缓存服务器</h4>
+                    <div class="code-block">
+<span class="comment"># 安装Redis</span>
+sudo apt install -y redis-server
+
+<span class="comment"># 修改配置（可选）</span>
+sudo nano /etc/redis/redis.conf
+<span class="comment"># 修改以下内容：</span>
+# bind 127.0.0.1  （仅本机访问）
+# requirepass AIWEB@Redis2025  （设置密码）
+
+<span class="comment"># 重启Redis</span>
+sudo systemctl restart redis
+sudo systemctl enable redis
+
+<span class="comment"># 测试连接</span>
+redis-cli ping   <span class="comment"># 返回PONG表示成功</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">6</span>配置防火墙（UFW）</h4>
+                    <div class="code-block">
+<span class="comment"># 启用UFW防火墙</span>
+sudo ufw enable
+
+<span class="comment"># 设置默认策略</span>
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+<span class="comment"># 开放必要端口</span>
+sudo ufw allow 22/tcp     <span class="comment"># SSH（仅内网IP）</span>
+sudo ufw allow 80/tcp     <span class="comment"># HTTP</span>
+sudo ufw allow 443/tcp    <span class="comment"># HTTPS（可选）</span>
+
+<span class="comment"># 查看状态</span>
+sudo ufw status verbose
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第2天：数据库和后端 -->
+            <div class="content">
+                <h3 class="section-subtitle">📅 第2天：数据库配置 + 后端API部署（6小时）</h3>
+                
+                <div class="step-card">
+                    <h4><span class="step-number">7</span>创建数据库和用户</h4>
+                    <div class="code-block">
+<span class="comment"># 登录MySQL</span>
+sudo mysql -u root -p
+
+<span class="comment"># 创建数据库（使用utf8mb4编码）</span>
+CREATE DATABASE aiweb_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+<span class="comment"># 创建专用用户</span>
+CREATE USER 'aiweb_user'@'localhost' IDENTIFIED BY 'AIWEB@User2025';
+
+<span class="comment"># 授予权限</span>
+GRANT ALL PRIVILEGES ON aiweb_db.* TO 'aiweb_user'@'localhost';
+FLUSH PRIVILEGES;
+
+<span class="comment"># 验证</span>
+SHOW DATABASES;
+SELECT User, Host FROM mysql.user WHERE User='aiweb_user';
+
+<span class="comment"># 退出</span>
+EXIT;
+
+<span class="comment"># 测试新用户登录</span>
+mysql -u aiweb_user -p aiweb_db
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">8</span>上传后端代码</h4>
+                    <div class="code-block">
+<span class="comment"># 创建项目目录</span>
+sudo mkdir -p /home/aiweb
+sudo chown -R $USER:$USER /home/aiweb
+
+<span class="comment"># 方式1：使用Git克隆（推荐）</span>
+cd /home/aiweb
+git clone https://github.com/yourcompany/aiweb-backend.git
+cd aiweb-backend
+
+<span class="comment"># 方式2：使用SCP上传（从本地）</span>
+<span class="comment"># 在本地Windows电脑执行：</span>
+# 使用WinSCP或：
+# scp -r C:\Users\EricZ\CodeBuddy\AIWEB1\server user@192.168.x.x:/home/aiweb/
+
+<span class="comment"># 安装依赖（生产环境）</span>
+cd /home/aiweb/aiweb-backend
+npm install --production
+
+<span class="comment"># 查看项目结构</span>
+ls -la
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">9</span>配置环境变量</h4>
+                    <div class="code-block">
+<span class="comment"># 创建.env配置文件</span>
+cd /home/aiweb/aiweb-backend
+nano .env
+
+<span class="comment"># 添加以下内容：</span>
+# ==================================
+# AIWEB后端环境变量配置
+# ==================================
+
+# 运行环境
+NODE_ENV=production
+PORT=3000
+
+# 数据库配置
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=aiweb_db
+DB_USER=aiweb_user
+DB_PASS=AIWEB@User2025
+
+# Redis配置
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASS=AIWEB@Redis2025
+
+# JWT密钥（请修改为随机字符串）
+JWT_SECRET=AIWEB_Secret_Key_Change_Me_2025
+JWT_EXPIRES_IN=7d
+
+# 文件上传配置
+UPLOAD_PATH=/data/aiweb/uploads
+MAX_FILE_SIZE=50MB
+ALLOWED_FILE_TYPES=jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx
+
+# CORS配置（内网访问）
+CORS_ORIGIN=http://192.168.x.x
+
+# 日志配置
+LOG_LEVEL=info
+LOG_PATH=/var/log/aiweb
+
+<span class="comment"># 保存并退出（Ctrl+X, Y, Enter）</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">10</span>初始化数据库结构</h4>
+                    <div class="code-block">
+<span class="comment"># 导入数据库结构（SQL文件）</span>
+cd /home/aiweb/aiweb-backend/database
+
+<span class="comment"># 导入表结构</span>
+mysql -u aiweb_user -p aiweb_db < schema.sql
+
+<span class="comment"># 导入初始数据</span>
+mysql -u aiweb_user -p aiweb_db < init_data.sql
+
+<span class="comment"># 验证数据库表</span>
+mysql -u aiweb_user -p aiweb_db -e "SHOW TABLES;"
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">11</span>创建必要目录并设置权限</h4>
+                    <div class="code-block">
+<span class="comment"># 创建上传目录</span>
+sudo mkdir -p /data/aiweb/uploads
+sudo mkdir -p /data/aiweb/images
+sudo mkdir -p /data/aiweb/backups
+
+<span class="comment"># 创建日志目录</span>
+sudo mkdir -p /var/log/aiweb
+
+<span class="comment"># 设置权限</span>
+sudo chown -R www-data:www-data /data/aiweb
+sudo chmod -R 755 /data/aiweb
+
+sudo chown -R www-data:www-data /var/log/aiweb
+sudo chmod -R 755 /var/log/aiweb
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">12</span>使用PM2启动后端API</h4>
+                    <div class="code-block">
+<span class="comment"># 进入项目目录</span>
+cd /home/aiweb/aiweb-backend
+
+<span class="comment"># 使用PM2启动应用</span>
+pm2 start npm --name "aiweb-api" -- start
+
+<span class="comment"># 查看运行状态</span>
+pm2 status
+
+<span class="comment"># 查看日志</span>
+pm2 logs aiweb-api --lines 50
+
+<span class="comment"># 设置开机自启</span>
+pm2 startup
+pm2 save
+
+<span class="comment"># 测试API（应返回JSON）</span>
+curl http://localhost:3000/api/health
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第3天：前端部署 -->
+            <div class="content">
+                <h3 class="section-subtitle">📅 第3天：前端部署 + Nginx配置（6小时）</h3>
+                
+                <div class="step-card">
+                    <h4><span class="step-number">13</span>构建前端代码（在本地Windows电脑）</h4>
+                    <div class="code-block">
+<span class="comment"># 在本地开发环境构建</span>
+cd C:\Users\EricZ\CodeBuddy\AIWEB1
+
+<span class="comment"># 安装依赖（如未安装）</span>
+npm install
+
+<span class="comment"># 修改API地址为内网服务器IP</span>
+<span class="comment"># 编辑 .env.production 文件：</span>
+# VITE_API_BASE_URL=http://192.168.x.x:3000/api
+
+<span class="comment"># 构建生产版本</span>
+npm run build
+
+<span class="comment"># 构建完成后，dist目录包含所有静态文件</span>
+dir dist
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">14</span>上传前端文件到服务器</h4>
+                    <div class="code-block">
+<span class="comment"># 方式1：使用WinSCP上传（推荐）</span>
+# 1. 下载WinSCP：https://winscp.net
+# 2. 连接服务器：192.168.x.x
+# 3. 上传dist目录到：/home/aiweb/
+
+<span class="comment"># 方式2：使用SCP命令（在Windows PowerShell）</span>
+scp -r .\dist user@192.168.x.x:/home/aiweb/aiweb-frontend
+
+<span class="comment"># 在服务器上验证</span>
+ls -la /home/aiweb/aiweb-frontend
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">15</span>移动前端文件到Nginx目录</h4>
+                    <div class="code-block">
+<span class="comment"># 在服务器上执行</span>
+sudo mkdir -p /var/www/aiweb
+sudo cp -r /home/aiweb/aiweb-frontend/* /var/www/aiweb/
+
+<span class="comment"># 设置权限</span>
+sudo chown -R www-data:www-data /var/www/aiweb
+sudo chmod -R 755 /var/www/aiweb
+
+<span class="comment"># 验证文件</span>
+ls -la /var/www/aiweb
+<span class="comment"># 应该包含：index.html, assets/, favicon.ico等</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">16</span>配置Nginx（内网版本）</h4>
+                    <div class="code-block">
+<span class="comment"># 创建Nginx配置文件</span>
+sudo nano /etc/nginx/sites-available/aiweb
+
+<span class="comment"># 添加以下配置：</span>
+server {
+    listen 80;
+    server_name 192.168.x.x;  # 替换为服务器内网IP
+
+    # 日志文件
+    access_log /var/log/nginx/aiweb_access.log;
+    error_log /var/log/nginx/aiweb_error.log;
+
+    # 前端静态资源
+    location / {
+        root /var/www/aiweb;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 后端API代理
+    location /api {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        
+        # 超时设置
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # 静态资源缓存
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        root /var/www/aiweb;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # 文件上传大小限制
+    client_max_body_size 50M;
+    client_body_buffer_size 10M;
+
+    # Gzip压缩
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript 
+               application/javascript application/json application/xml+rss;
+}
+
+<span class="comment"># 启用配置</span>
+sudo ln -s /etc/nginx/sites-available/aiweb /etc/nginx/sites-enabled/
+
+<span class="comment"># 测试配置</span>
+sudo nginx -t
+
+<span class="comment"># 重新加载Nginx</span>
+sudo systemctl reload nginx
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">17</span>测试访问</h4>
+                    <div class="code-block">
+<span class="comment"># 在服务器本机测试</span>
+curl -I http://localhost
+<span class="comment"># 应返回 HTTP/1.1 200 OK</span>
+
+<span class="comment"># 在其他内网电脑浏览器访问</span>
+# http://192.168.x.x
+<span class="comment"># 应能看到AIWEB首页</span>
+
+<span class="comment"># 测试API</span>
+curl http://192.168.x.x/api/health
+<span class="comment"># 应返回JSON数据</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第4天：数据初始化 -->
+            <div class="content">
+                <h3 class="section-subtitle">📅 第4天：数据初始化 + 功能测试（8小时）</h3>
+                
+                <div class="step-card">
+                    <h4><span class="step-number">18</span>初始化系统数据</h4>
+                    
+                    <p><strong>通过后台管理界面初始化数据：</strong></p>
+                    <ol>
+                        <li>访问：<code>http://192.168.x.x/admin</code></li>
+                        <li>使用默认管理员账号登录：
+                            <ul>
+                                <li>用户名：<code>admin</code></li>
+                                <li>密码：<code>Admin@2025</code></li>
+                            </ul>
+                        </li>
+                        <li>进入各个管理模块，添加测试数据</li>
+                    </ol>
+
+                    <p style="margin-top: 20px;"><strong>需要初始化的数据模块：</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>模块</th>
+                                <th>路径</th>
+                                <th>初始化内容</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CMS内容管理</td>
+                                <td>/admin/cms</td>
+                                <td>首页内容、关于我们、联系方式</td>
+                            </tr>
+                            <tr>
+                                <td>产品与服务</td>
+                                <td>/admin/products-services</td>
+                                <td>产品分类、产品列表</td>
+                            </tr>
+                            <tr>
+                                <td>首页Banner</td>
+                                <td>/admin/cms</td>
+                                <td>轮播图、明星产品</td>
+                            </tr>
+                            <tr>
+                                <td>智能体注册</td>
+                                <td>/admin/agent-registry</td>
+                                <td>9个智能体配置</td>
+                            </tr>
+                            <tr>
+                                <td>知识库</td>
+                                <td>/admin/knowledge-base</td>
+                                <td>产品知识、技术文档</td>
+                            </tr>
+                            <tr>
+                                <td>小课堂</td>
+                                <td>/admin/classroom</td>
+                                <td>课程分类、课程内容</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">19</span>功能测试清单</h4>
+                    
+                    <p><strong>前台功能测试（20+功能）：</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>模块</th>
+                                <th>测试项</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>首页</td>
+                                <td>Banner轮播、明星产品、智能体卡片</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>产品与服务</td>
+                                <td>4级分类、产品列表、详情页</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>智能体1</td>
+                                <td>安彤AI聊天机器人</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>智能体2</td>
+                                <td>工具选型（套筒/拧紧工具）</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>智能体3</td>
+                                <td>拧紧数据采集与分析</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>智能体4</td>
+                                <td>拧紧曲线智能分析</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>智能体5</td>
+                                <td>设备全生命周期管理</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>智能体6-9</td>
+                                <td>其他4个智能体</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>小课堂</td>
+                                <td>课程分类、视频播放、文档下载</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>工单查询</td>
+                                <td>工单提交、查询、状态更新</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>AI营销中台</td>
+                                <td>Phase 1-4功能</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>明升AICRM</td>
+                                <td>客户管理、商机管理、任务管理</td>
+                                <td>☐</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top: 20px;"><strong>后台功能测试（10+功能）：</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>模块</th>
+                                <th>测试项</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>登录系统</td>
+                                <td>管理员登录、权限验证</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>CMS管理</td>
+                                <td>内容编辑、中英文切换</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>产品管理</td>
+                                <td>分类管理、产品增删改查</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Banner管理</td>
+                                <td>图片上传、排序、发布</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>智能体注册</td>
+                                <td>智能体配置、启用/禁用</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>知识库管理</td>
+                                <td>文件上传、分类管理</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>学习引擎</td>
+                                <td>训练任务、模型管理</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>监控系统</td>
+                                <td>性能监控、日志查看</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>AI营销中台</td>
+                                <td>配置管理、数据分析</td>
+                                <td>☐</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>AICRM管理</td>
+                                <td>客户数据、商机配置</td>
+                                <td>☐</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 第5天：全面测试 -->
+            <div class="content">
+                <h3 class="section-subtitle">📅 第5天：全面测试 + 培训上线（8小时）</h3>
+                
+                <div class="step-card">
+                    <h4><span class="step-number">20</span>性能测试</h4>
+                    <div class="code-block">
+<span class="comment"># 测试服务器性能</span>
+
+<span class="comment"># 1. 查看CPU和内存使用</span>
+top
+htop   # 需安装：sudo apt install htop
+
+<span class="comment"># 2. 查看PM2进程状态</span>
+pm2 monit
+
+<span class="comment"># 3. 查看Nginx连接数</span>
+sudo netstat -an | grep :80 | wc -l
+
+<span class="comment"># 4. 查看数据库连接</span>
+mysql -u aiweb_user -p -e "SHOW PROCESSLIST;"
+
+<span class="comment"># 5. 测试页面加载速度（使用curl）</span>
+time curl http://192.168.x.x > /dev/null
+<span class="comment"># 应在0.5秒内完成</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">21</span>安全检查</h4>
+                    <ul>
+                        <li>✅ 防火墙已启用，仅开放必要端口</li>
+                        <li>✅ MySQL仅监听127.0.0.1，禁止外部访问</li>
+                        <li>✅ Redis仅监听127.0.0.1，设置了密码</li>
+                        <li>✅ 管理员密码已修改（不使用默认密码）</li>
+                        <li>✅ 文件上传目录权限正确（755）</li>
+                        <li>✅ 日志文件定期清理</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">22</span>配置自动备份</h4>
+                    <div class="code-block">
+<span class="comment"># 创建备份脚本</span>
+sudo nano /home/aiweb/backup.sh
+
+<span class="comment"># 添加以下内容：</span>
+#!/bin/bash
+BACKUP_DIR="/data/aiweb/backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+# 备份数据库
+mysqldump -u aiweb_user -pAIWEB@User2025 aiweb_db > $BACKUP_DIR/db_$DATE.sql
+
+# 备份上传文件
+tar -czf $BACKUP_DIR/uploads_$DATE.tar.gz /data/aiweb/uploads
+
+# 删除7天前的备份
+find $BACKUP_DIR -name "*.sql" -mtime +7 -delete
+find $BACKUP_DIR -name "*.tar.gz" -mtime +7 -delete
+
+echo "Backup completed: $DATE"
+
+<span class="comment"># 设置执行权限</span>
+sudo chmod +x /home/aiweb/backup.sh
+
+<span class="comment"># 添加定时任务（每天凌晨2点）</span>
+crontab -e
+<span class="comment"># 添加：</span>
+0 2 * * * /home/aiweb/backup.sh >> /var/log/aiweb/backup.log 2>&1
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">23</span>员工培训和文档</h4>
+                    
+                    <p><strong>准备以下培训材料：</strong></p>
+                    <ol>
+                        <li><strong>用户手册</strong>：前台功能使用说明</li>
+                        <li><strong>管理员手册</strong>：后台管理操作指南</li>
+                        <li><strong>快速入门</strong>：常用功能快速指南</li>
+                        <li><strong>FAQ文档</strong>：常见问题解答</li>
+                    </ol>
+
+                    <p style="margin-top: 15px;"><strong>培训内容：</strong></p>
+                    <ul>
+                        <li>如何访问系统：<code>http://192.168.x.x</code></li>
+                        <li>各个智能体的使用方法</li>
+                        <li>工单提交和查询流程</li>
+                        <li>后台管理基本操作（管理员）</li>
+                        <li>常见问题排查</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <h4><span class="step-number">24</span>正式上线</h4>
+                    
+                    <p><strong>上线检查清单：</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>检查项</th>
+                                <th>状态</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>服务器运行稳定</td>
+                                <td>☐</td>
+                                <td>CPU<60%, 内存<70%</td>
+                            </tr>
+                            <tr>
+                                <td>所有页面可正常访问</td>
+                                <td>☐</td>
+                                <td>前台+后台40+页面</td>
+                            </tr>
+                            <tr>
+                                <td>9个智能体功能正常</td>
+                                <td>☐</td>
+                                <td>测试核心功能</td>
+                            </tr>
+                            <tr>
+                                <td>数据库备份正常</td>
+                                <td>☐</td>
+                                <td>每日凌晨2点自动备份</td>
+                            </tr>
+                            <tr>
+                                <td>日志记录正常</td>
+                                <td>☐</td>
+                                <td>/var/log/aiweb</td>
+                            </tr>
+                            <tr>
+                                <td>防火墙配置正确</td>
+                                <td>☐</td>
+                                <td>仅开放80/443</td>
+                            </tr>
+                            <tr>
+                                <td>员工培训完成</td>
+                                <td>☐</td>
+                                <td>至少20人参加</td>
+                            </tr>
+                            <tr>
+                                <td>文档准备齐全</td>
+                                <td>☐</td>
+                                <td>用户手册+管理员手册</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top: 20px;"><strong>上线公告（发送到全体员工）：</strong></p>
+                    <div class="info-box">
+                        <h4>AIWEB企业智能平台正式上线通知</h4>
+                        <p>各位同事：</p>
+                        <p>AIWEB企业智能平台已于今日正式上线，可在企业内网使用。</p>
+                        <p><strong>访问地址</strong>：<code>http://192.168.x.x</code></p>
+                        <p><strong>主要功能</strong>：</p>
+                        <ul>
+                            <li>9大AI智能体（工具选型、拧紧分析、设备管理等）</li>
+                            <li>产品与服务查询</li>
+                            <li>产品技术销售小课堂</li>
+                            <li>工单管理系统</li>
+                            <li>AI营销中台</li>
+                            <li>明升AICRM客户管理</li>
+                        </ul>
+                        <p><strong>技术支持</strong>：IT部门 内线xxx</p>
+                        <p>请各部门组织员工学习使用，有问题随时联系IT部门。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 五、运维管理 -->
+        <div class="section">
+            <h2 class="section-title">五、运维管理</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">📊 日常监控</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>监控项</th>
+                            <th>检查频率</th>
+                            <th>正常范围</th>
+                            <th>检查命令</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CPU使用率</td>
+                            <td>每天</td>
+                            <td><70%</td>
+                            <td><code>top</code></td>
+                        </tr>
+                        <tr>
+                            <td>内存使用率</td>
+                            <td>每天</td>
+                            <td><80%</td>
+                            <td><code>free -h</code></td>
+                        </tr>
+                        <tr>
+                            <td>磁盘使用率</td>
+                            <td>每周</td>
+                            <td><80%</td>
+                            <td><code>df -h</code></td>
+                        </tr>
+                        <tr>
+                            <td>PM2进程状态</td>
+                            <td>每天</td>
+                            <td>online</td>
+                            <td><code>pm2 status</code></td>
+                        </tr>
+                        <tr>
+                            <td>Nginx状态</td>
+                            <td>每天</td>
+                            <td>active</td>
+                            <td><code>systemctl status nginx</code></td>
+                        </tr>
+                        <tr>
+                            <td>MySQL状态</td>
+                            <td>每天</td>
+                            <td>active</td>
+                            <td><code>systemctl status mysql</code></td>
+                        </tr>
+                        <tr>
+                            <td>Redis状态</td>
+                            <td>每天</td>
+                            <td>active</td>
+                            <td><code>systemctl status redis</code></td>
+                        </tr>
+                        <tr>
+                            <td>错误日志</td>
+                            <td>每天</td>
+                            <td>无严重错误</td>
+                            <td><code>tail -100 /var/log/aiweb/error.log</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🔧 常规运维任务</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>频率</th>
+                            <th>任务</th>
+                            <th>操作</th>
+                            <th>耗时</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="3"><strong>每天</strong></td>
+                            <td>检查服务状态</td>
+                            <td>查看PM2/Nginx/MySQL/Redis状态</td>
+                            <td>5分钟</td>
+                        </tr>
+                        <tr>
+                            <td>查看错误日志</td>
+                            <td>检查/var/log/aiweb/下的日志文件</td>
+                            <td>5分钟</td>
+                        </tr>
+                        <tr>
+                            <td>验证备份</td>
+                            <td>检查备份是否成功执行</td>
+                            <td>2分钟</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>每周</strong></td>
+                            <td>查看资源使用</td>
+                            <td>CPU/内存/磁盘使用趋势</td>
+                            <td>10分钟</td>
+                        </tr>
+                        <tr>
+                            <td>清理临时文件</td>
+                            <td>删除/tmp下的旧文件</td>
+                            <td>5分钟</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>每月</strong></td>
+                            <td>系统更新</td>
+                            <td><code>sudo apt update && sudo apt upgrade</code></td>
+                            <td>30分钟</td>
+                        </tr>
+                        <tr>
+                            <td>优化数据库</td>
+                            <td>清理慢查询、优化索引</td>
+                            <td>30分钟</td>
+                        </tr>
+                        <tr>
+                            <td>验证备份恢复</td>
+                            <td>测试备份文件是否可恢复</td>
+                            <td>1小时</td>
+                        </tr>
+                        <tr>
+                            <td><strong>每季度</strong></td>
+                            <td>安全审计</td>
+                            <td>检查防火墙、权限、日志</td>
+                            <td>2小时</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🚨 常见问题排查</h3>
+                
+                <div class="step-card">
+                    <h4>问题1：网站无法访问</h4>
+                    <div class="code-block">
+<span class="comment"># 1. 检查Nginx状态</span>
+sudo systemctl status nginx
+
+<span class="comment"># 2. 如果stopped，重启Nginx</span>
+sudo systemctl restart nginx
+
+<span class="comment"># 3. 检查端口是否监听</span>
+sudo netstat -tulnp | grep :80
+
+<span class="comment"># 4. 查看Nginx错误日志</span>
+sudo tail -100 /var/log/nginx/aiweb_error.log
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4>问题2：API接口报错</h4>
+                    <div class="code-block">
+<span class="comment"># 1. 检查PM2进程</span>
+pm2 status
+
+<span class="comment"># 2. 查看应用日志</span>
+pm2 logs aiweb-api --lines 100
+
+<span class="comment"># 3. 重启API服务</span>
+pm2 restart aiweb-api
+
+<span class="comment"># 4. 如果一直重启，检查配置</span>
+cat /home/aiweb/aiweb-backend/.env
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4>问题3：数据库连接失败</h4>
+                    <div class="code-block">
+<span class="comment"># 1. 检查MySQL状态</span>
+sudo systemctl status mysql
+
+<span class="comment"># 2. 重启MySQL</span>
+sudo systemctl restart mysql
+
+<span class="comment"># 3. 测试连接</span>
+mysql -u aiweb_user -p aiweb_db
+
+<span class="comment"># 4. 查看MySQL错误日志</span>
+sudo tail -100 /var/log/mysql/error.log
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h4>问题4：服务器性能慢</h4>
+                    <div class="code-block">
+<span class="comment"># 1. 查看CPU和内存</span>
+top
+
+<span class="comment"># 2. 查看磁盘IO</span>
+iostat -x 1 5
+
+<span class="comment"># 3. 查看数据库慢查询</span>
+mysql -u aiweb_user -p -e "SHOW FULL PROCESSLIST;"
+
+<span class="comment"># 4. 重启服务器（最后手段）</span>
+sudo reboot
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 六、成本分析 -->
+        <div class="section">
+            <h2 class="section-title">六、成本分析</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">💰 总成本估算</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>成本项</th>
+                            <th>云服务器方案</th>
+                            <th>自有服务器方案</th>
+                            <th>节省</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" style="background: #f0f0f0; font-weight: bold;">一次性成本</td>
+                        </tr>
+                        <tr>
+                            <td>服务器购置</td>
+                            <td>¥0</td>
+                            <td>¥0（已有）或¥8,000-15,000（新购）</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>软件授权</td>
+                            <td>¥0</td>
+                            <td>¥0（全部开源）</td>
+                            <td>¥0</td>
+                        </tr>
+                        <tr>
+                            <td>部署实施</td>
+                            <td>¥5,000-10,000</td>
+                            <td>¥3,000-8,000</td>
+                            <td>¥2,000</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; background: #fff5e6;">首次总成本</td>
+                            <td style="font-weight: bold;">¥5,000-10,000</td>
+                            <td style="font-weight: bold; color: #67c23a;">¥3,000-23,000</td>
+                            <td style="font-weight: bold;">-</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #f0f0f0; font-weight: bold;">年度运营成本</td>
+                        </tr>
+                        <tr>
+                            <td>云服务器租赁</td>
+                            <td>¥3,600-6,000</td>
+                            <td>¥0</td>
+                            <td>¥3,600-6,000</td>
+                        </tr>
+                        <tr>
+                            <td>数据库服务</td>
+                            <td>¥2,400-4,800</td>
+                            <td>¥0（自建）</td>
+                            <td>¥2,400-4,800</td>
+                        </tr>
+                        <tr>
+                            <td>CDN/带宽</td>
+                            <td>¥1,800-5,400</td>
+                            <td>¥0（内网）</td>
+                            <td>¥1,800-5,400</td>
+                        </tr>
+                        <tr>
+                            <td>电费</td>
+                            <td>¥0</td>
+                            <td>¥500-1,200</td>
+                            <td>-¥500-1,200</td>
+                        </tr>
+                        <tr>
+                            <td>运维人力</td>
+                            <td>¥6,000-12,000</td>
+                            <td>¥2,000-5,000</td>
+                            <td>¥4,000-7,000</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; background: #fff5e6;">年度总成本</td>
+                            <td style="font-weight: bold;">¥13,800-28,200</td>
+                            <td style="font-weight: bold; color: #67c23a;">¥2,500-6,200</td>
+                            <td style="font-weight: bold; color: #67c23a;">¥11,300-22,000</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #f0f0f0; font-weight: bold;">3年总成本（TCO）</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">总计</td>
+                            <td style="font-weight: bold;">¥46,400-94,600</td>
+                            <td style="font-weight: bold; color: #67c23a; font-size: 18px;">¥10,500-41,600</td>
+                            <td style="font-weight: bold; color: #67c23a; font-size: 18px;">¥35,900-53,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 成本节省总结</h3>
+                <ul>
+                    <li><strong>首年节省</strong>：¥11,300-22,000（年度运营成本）</li>
+                    <li><strong>3年总节省</strong>：¥35,900-53,000</li>
+                    <li><strong>节省比例</strong>：约78%-85%</li>
+                    <li><strong>投资回收期</strong>：如需新购服务器，约8-18个月回收成本</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 七、FAQ -->
+        <div class="section">
+            <h2 class="section-title">七、常见问题FAQ</h2>
+            
+            <div class="content">
+                <h4>Q1：部署需要多长时间？</h4>
+                <p><strong>A1：</strong>5个工作日可完成完整部署：</p>
+                <ul>
+                    <li>第1天：服务器环境准备</li>
+                    <li>第2天：数据库和后端部署</li>
+                    <li>第3天：前端部署和Nginx配置</li>
+                    <li>第4-5天：数据初始化和测试上线</li>
+                </ul>
+
+                <h4 style="margin-top: 20px;">Q2：需要什么样的服务器？</h4>
+                <p><strong>A2：</strong>推荐配置（适合30-100人企业）：</p>
+                <ul>
+                    <li>CPU：8核 2.5GHz</li>
+                    <li>内存：16GB</li>
+                    <li>硬盘：512GB SSD</li>
+                    <li>操作系统：Ubuntu 20.04 LTS</li>
+                </ul>
+
+                <h4 style="margin-top: 20px;">Q3：可以用虚拟机部署吗？</h4>
+                <p><strong>A3：</strong>完全可以！如果企业有VMware/Hyper-V虚拟化平台，创建虚拟机即可，无需单独购买物理服务器。</p>
+
+                <h4 style="margin-top: 20px;">Q4：外出时能访问吗？</h4>
+                <p><strong>A4：</strong>纯内网部署外出无法访问。如需外出访问：</p>
+                <ul>
+                    <li>方案1：配置企业VPN，外出时连接VPN后访问</li>
+                    <li>方案2：配置内网穿透（frp/ngrok）</li>
+                    <li>方案3：仅内网使用，外出查看离线数据</li>
+                </ul>
+
+                <h4 style="margin-top: 20px;">Q5：数据安全吗？</h4>
+                <p><strong>A5：</strong>非常安全！</p>
+                <ul>
+                    <li>✅ 所有数据在企业内网，不出公网</li>
+                    <li>✅ 防火墙保护，仅开放80/443端口</li>
+                    <li>✅ MySQL/Redis仅本机访问</li>
+                    <li>✅ 每日自动备份</li>
+                </ul>
+
+                <h4 style="margin-top: 20px;">Q6：如何升级系统？</h4>
+                <p><strong>A6：</strong></p>
+                <div class="code-block">
+<span class="comment"># 拉取新代码</span>
+cd /home/aiweb/aiweb-backend
+git pull origin main
+
+<span class="comment"># 安装新依赖</span>
+npm install --production
+
+<span class="comment"># 无缝重启</span>
+pm2 reload aiweb-api
+
+<span class="comment"># 前端更新</span>
+npm run build  # 本地构建
+# 上传新的dist目录到服务器
+# 替换/var/www/aiweb目录
+                </div>
+
+                <h4 style="margin-top: 20px;">Q7：服务器挂了怎么办？</h4>
+                <p><strong>A7：</strong></p>
+                <ul>
+                    <li>配置UPS不间断电源，防止突然断电</li>
+                    <li>配置RAID 1，硬盘冗余</li>
+                    <li>每日自动备份，1小时内可恢复</li>
+                    <li>准备备用服务器（可选）</li>
+                </ul>
+
+                <h4 style="margin-top: 20px;">Q8：运维需要什么技能？</h4>
+                <p><strong>A8：</strong>需要IT运维人员（至少1人），掌握：</p>
+                <ul>
+                    <li>Linux基础操作（Ubuntu/CentOS）</li>
+                    <li>Nginx/MySQL基础配置</li>
+                    <li>Shell脚本基础</li>
+                    <li>日志分析能力</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 八、总结 -->
+        <div class="section">
+            <h2 class="section-title">八、总结</h2>
+            
+            <div class="success-box">
+                <h3>✅ 部署优势总结</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>维度</th>
+                            <th>优势</th>
+                            <th>数据</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>成本</strong></td>
+                            <td>年度运营成本降低78%-85%</td>
+                            <td>节省¥11,000-22,000/年</td>
+                        </tr>
+                        <tr>
+                            <td><strong>安全</strong></td>
+                            <td>数据完全在企业内网</td>
+                            <td>物理隔离，不出公网</td>
+                        </tr>
+                        <tr>
+                            <td><strong>速度</strong></td>
+                            <td>内网访问延迟极低</td>
+                            <td><5ms（云服务器20-50ms）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>控制</strong></td>
+                            <td>完全自主可控</td>
+                            <td>随时调整、无需审批</td>
+                        </tr>
+                        <tr>
+                            <td><strong>无限制</strong></td>
+                            <td>无流量/并发/存储限制</td>
+                            <td>根据服务器配置</td>
+                        </tr>
+                        <tr>
+                            <td><strong>上线</strong></td>
+                            <td>快速部署</td>
+                            <td>5个工作日上线</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-box">
+                <h3>📋 部署检查清单</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>阶段</th>
+                            <th>任务</th>
+                            <th>完成</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="6"><strong>第1天</strong></td>
+                            <td>安装Ubuntu 20.04 LTS</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>安装Node.js 18 LTS</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>安装Nginx</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>安装MySQL 8.0</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>安装Redis</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>配置防火墙</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="6"><strong>第2天</strong></td>
+                            <td>创建数据库和用户</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>上传后端代码</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>配置环境变量</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>初始化数据库结构</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>创建必要目录</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>启动PM2服务</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="5"><strong>第3天</strong></td>
+                            <td>构建前端代码（本地）</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>上传前端文件</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>配置Nginx</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>测试前台访问</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>测试API接口</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>第4天</strong></td>
+                            <td>初始化系统数据</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>功能全面测试</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4"><strong>第5天</strong></td>
+                            <td>性能测试</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>安全检查</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>配置自动备份</td>
+                            <td>☐</td>
+                        </tr>
+                        <tr>
+                            <td>员工培训和上线</td>
+                            <td>☐</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div style="margin-top: 60px; padding-top: 30px; border-top: 2px solid #e0e0e0; text-align: center; color: #999;">
+            <p><strong>AIWEB网站企业内网部署完整方案</strong></p>
+            <p>版本：v1.0.0 | 日期：2025-12-17</p>
+            <p>技术支持：IT部门 | 400-xxx-xxxx</p>
+            <p style="margin-top: 15px; font-size: 12px;">
+                文档包含：服务器配置、详细部署步骤、运维管理、成本分析、FAQ等完整内容
+            </p>
+        </div>
+    </div>
+</body>
+</html>

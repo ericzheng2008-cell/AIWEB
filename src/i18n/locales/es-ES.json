@@ -1,0 +1,74 @@
+{
+  "common": {
+    "home": "Inicio",
+    "products": "Productos",
+    "solutions": "Casos de Estudio",
+    "about": "Sobre Nosotros",
+    "service": "Servicio y Soporte",
+    "contact": "Contacto",
+    "divisions": "Divisiones de Negocio",
+    "search": "Buscar productos, soluciones...",
+    "readMore": "Leer Más",
+    "viewDetails": "Ver Detalles",
+    "contactUs": "Contáctenos",
+    "consultSolution": "Solicitar Consulta"
+  },
+  "header": {
+    "hotline": "Línea Directa",
+    "email": "Correo Electrónico",
+    "language": "ES / EN",
+    "companyName": "Mingsheng",
+    "slogan": "Proveedor Profesional de Herramientas Industriales"
+  },
+  "footer": {
+    "companyInfo": "Información de la Empresa",
+    "quickLinks": "Enlaces Rápidos",
+    "contactInfo": "Contacto",
+    "followUs": "Síguenos",
+    "address": "Dirección",
+    "addressDetail": "Distrito Tianhe, Guangzhou, China",
+    "phone": "Teléfono",
+    "copyright": "© 2024 Guangzhou Mingsheng Weiye Electromechanical Co., Ltd. Todos los Derechos Reservados"
+  },
+  "aiChat": {
+    "title": "Asistente AI",
+    "subtitle": "En línea 24/7",
+    "welcome": "¡Hola! Soy su asistente AI. ¿En qué puedo ayudarle hoy?",
+    "placeholder": "Escriba su mensaje...",
+    "quickQuestions": "Preguntas Frecuentes",
+    "questions": {
+      "q1": "¿Qué productos ofrecen?",
+      "q2": "¿Cómo puedo solicitar una cotización?",
+      "q3": "¿Cuál es su plazo de entrega?",
+      "q4": "¿Ofrecen envío internacional?",
+      "q5": "¿Tienen servicio técnico?",
+      "q6": "¿Cómo puedo convertirme en distribuidor?"
+    }
+  },
+  "inquiry": {
+    "title": "Formulario de Consulta",
+    "subtitle": "Complete el formulario y nos pondremos en contacto pronto",
+    "name": "Nombre Completo",
+    "namePlaceholder": "Ingrese su nombre",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "Ingrese su correo electrónico",
+    "company": "Empresa",
+    "companyPlaceholder": "Nombre de su empresa",
+    "phone": "Teléfono",
+    "phonePlaceholder": "Número de teléfono",
+    "country": "País",
+    "countryPlaceholder": "Seleccione su país",
+    "product": "Producto de Interés",
+    "productPlaceholder": "¿Qué producto le interesa?",
+    "quantity": "Cantidad Estimada",
+    "quantityPlaceholder": "Cantidad que necesita",
+    "message": "Mensaje",
+    "messagePlaceholder": "Descríbanos sus requisitos",
+    "submit": "Enviar Consulta",
+    "submitting": "Enviando...",
+    "successTitle": "¡Consulta Enviada!",
+    "successMessage": "Gracias por su interés. Nos pondremos en contacto pronto.",
+    "errorTitle": "Error",
+    "errorMessage": "No se pudo enviar la consulta. Por favor, inténtelo de nuevo."
+  }
+}

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>诊断主页空白问题</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      line-height: 1.6;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      color: #333;
+    }
+    h1 {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #764ba2;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .step {
+      background: #f8f9fa;
+      padding: 20px;
+      margin: 15px 0;
+      border-left: 4px solid #667eea;
+      border-radius: 8px;
+    }
+    .step h3 {
+      margin-top: 0;
+      color: #667eea;
+    }
+    .command {
+      background: #2c3e50;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .warning {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      color: #856404;
+    }
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      color: #155724;
+    }
+    ul {
+      margin-left: 20px;
+    }
+    li {
+      margin: 8px 0;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 10px 10px 10px 0;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 主页空白问题诊断指南</h1>
+    
+    <div class="warning">
+      <strong>⚠️ 常见原因</strong><br>
+      主页空白通常由以下几个原因导致：
+      <ul>
+        <li>JavaScript错误导致组件渲染失败</li>
+        <li>路由配置问题</li>
+        <li>组件导入错误</li>
+        <li>浏览器缓存问题</li>
+        <li>Store初始化失败</li>
+      </ul>
+    </div>
+
+    <h2>📋 快速诊断步骤</h2>
+
+    <div class="step">
+      <h3>步骤1: 清除浏览器缓存</h3>
+      <p>按 <code>Ctrl + Shift + Delete</code> 清除浏览器缓存，然后硬刷新页面 (<code>Ctrl + F5</code>)</p>
+    </div>
+
+    <div class="step">
+      <h3>步骤2: 检查浏览器控制台</h3>
+      <ol>
+        <li>访问 <a href="http://localhost:3006" target="_blank">http://localhost:3006</a></li>
+        <li>按 <code>F12</code> 打开浏览器开发者工具</li>
+        <li>切换到 <strong>Console</strong> 标签页</li>
+        <li>查看是否有<span style="color: red;">红色错误信息</span></li>
+      </ol>
+      <p><strong>常见错误类型：</strong></p>
+      <ul>
+        <li><code>Failed to resolve component</code> - 组件未正确导入</li>
+        <li><code>Cannot read property of undefined</code> - Store数据未初始化</li>
+        <li><code>Unexpected token</code> - 语法错误</li>
+        <li><code>Module not found</code> - 文件路径错误</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>步骤3: 检查Network请求</h3>
+      <ol>
+        <li>在开发者工具中切换到 <strong>Network</strong> 标签页</li>
+        <li>刷新页面 (<code>F5</code>)</li>
+        <li>查看是否有<span style="color: red;">失败的请求</span>（红色标记）</li>
+        <li>检查 <code>main.js</code> 和 <code>Home.vue</code> 是否成功加载</li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <h3>步骤4: 检查Elements</h3>
+      <ol>
+        <li>在开发者工具中切换到 <strong>Elements</strong> 标签页</li>
+        <li>查看 <code>&lt;div id="app"&gt;</code> 内是否有内容</li>
+        <li>如果完全空白，说明Vue应用未成功挂载</li>
+        <li>如果有内容但不显示，可能是CSS问题</li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <h3>步骤5: 尝试访问其他页面</h3>
+      <p>测试其他页面是否正常：</p>
+      <ul>
+        <li><a href="http://localhost:3006/products-services" target="_blank">产品与服务页面</a></li>
+        <li><a href="http://localhost:3006/mingsheng-aicrm" target="_blank">明升AICRM页面</a></li>
+        <li><a href="http://localhost:3006/admin" target="_blank">后台管理页面</a></li>
+      </ul>
+      <p>如果其他页面正常，说明问题只在主页；如果都空白，说明是全局问题。</p>
+    </div>
+
+    <h2>🔧 常见修复方法</h2>
+
+    <div class="step">
+      <h3>修复1: 重新安装依赖</h3>
+      <div class="command">
+npm install
+npm run dev
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>修复2: 清除node_modules重装</h3>
+      <div class="command">
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+      </div>
+      <p><strong>Windows系统:</strong></p>
+      <div class="command">
+rmdir /s /q node_modules
+del package-lock.json
+npm install
+npm run dev
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>修复3: 检查端口冲突</h3>
+      <p>当前开发服务器运行在 <code>http://localhost:3006</code></p>
+      <p>如果端口被占用，请关闭占用端口的程序或使用其他端口</p>
+    </div>
+
+    <h2>📊 系统状态</h2>
+
+    <div class="success">
+      <strong>✅ 当前状态:</strong>
+      <ul>
+        <li>开发服务器: <code>http://localhost:3006</code></li>
+        <li>所有组件: 无Linter错误</li>
+        <li>路由配置: 正常</li>
+        <li>新增功能: 销售目标管理已集成</li>
+      </ul>
+    </div>
+
+    <h2>🚀 快速操作</h2>
+    
+    <a href="http://localhost:3006" target="_blank" class="btn">访问主页</a>
+    <a href="http://localhost:3006/mingsheng-aicrm" target="_blank" class="btn">访问明升AICRM</a>
+    <a href="http://localhost:3006/admin" target="_blank" class="btn btn-secondary">后台管理</a>
+
+    <div class="warning" style="margin-top: 30px;">
+      <strong>💡 提示:</strong><br>
+      如果按照以上步骤仍无法解决，请复制浏览器控制台的完整错误信息，我会帮您进一步分析。
+    </div>
+
+    <div class="step" style="margin-top: 30px;">
+      <h3>📞 获取帮助</h3>
+      <p>请提供以下信息：</p>
+      <ol>
+        <li>浏览器控制台的错误截图或文字</li>
+        <li>Network标签页中失败的请求</li>
+        <li>是否清除了缓存</li>
+        <li>其他页面是否正常</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    console.log('🔍 诊断页面已加载');
+    console.log('📍 当前时间:', new Date().toLocaleString('zh-CN'));
+    console.log('🌐 服务器地址: http://localhost:3006');
+  </script>
+</body>
+</html>

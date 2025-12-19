@@ -72,61 +72,6 @@
         </div>
         
         <div class="agents-grid">
-          <!-- 工具选型智能体 -->
-          <div 
-            class="agent-card" 
-            @click="goToAgent('/tool-selector')"
-            @mouseenter="onCardHover($event)"
-            @mouseleave="onCardLeave($event)"
-            data-aos="fade-up"
-            data-aos-delay="100"
-            data-category="tool">
-            <div class="card-glow"></div>
-            <div class="agent-icon">
-              <el-icon :size="64"><Tools /></el-icon>
-            </div>
-            <el-tooltip content="查看使用教程" placement="top">
-              <el-button 
-                class="help-btn" 
-                circle 
-                size="small" 
-                @click.stop="showHelp('tool-selector')">
-                <el-icon><QuestionFilled /></el-icon>
-              </el-button>
-            </el-tooltip>
-            <h2>拧紧工具选型</h2>
-            <p class="agent-desc">智能分析工艺需求，推荐最优拧紧工具方案，提供专业的工艺优化建议</p>
-            <div class="agent-features">
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>AI智能推荐</span>
-              </div>
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>工具匹配</span>
-              </div>
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>工艺优化</span>
-              </div>
-            </div>
-            <div class="agent-stats">
-              <div class="stat-item">
-                <div class="stat-value">98%</div>
-                <div class="stat-label">匹配准确率</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">3分钟</div>
-                <div class="stat-label">平均响应时间</div>
-              </div>
-            </div>
-            <el-button type="primary" size="large" class="action-btn">
-              立即使用
-              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
-            </el-button>
-          </div>
-
-
           <!-- 数字监控驾驶舱 -->
           <div 
             class="agent-card highlight" 
@@ -231,60 +176,6 @@
               <div class="stat-item">
                 <div class="stat-value">30%↓</div>
                 <div class="stat-label">降本空间</div>
-              </div>
-            </div>
-            <el-button type="primary" size="large" class="action-btn">
-              立即使用
-              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
-            </el-button>
-          </div>
-
-          <!-- 工单管理 -->
-          <div 
-            class="agent-card" 
-            @click="goToAgent('/fault-tracking')"
-            @mouseenter="onCardHover($event)"
-            @mouseleave="onCardLeave($event)"
-            data-aos="fade-up"
-            data-aos-delay="400"
-            data-category="equipment">
-            <div class="card-glow"></div>
-            <div class="agent-icon">
-              <el-icon :size="64"><List /></el-icon>
-            </div>
-            <el-tooltip content="查看使用教程" placement="top">
-              <el-button 
-                class="help-btn" 
-                circle 
-                size="small" 
-                @click.stop="showHelp('fault-tracking')">
-                <el-icon><QuestionFilled /></el-icon>
-              </el-button>
-            </el-tooltip>
-            <h2>故障工单管理</h2>
-            <p class="agent-desc">全流程工单管理系统，从创建到追踪到完成，全程数字化管理维修工单</p>
-            <div class="agent-features">
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>工单创建</span>
-              </div>
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>进度追踪</span>
-              </div>
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>历史记录</span>
-              </div>
-            </div>
-            <div class="agent-stats">
-              <div class="stat-item">
-                <div class="stat-value">2小时</div>
-                <div class="stat-label">平均响应</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">95%</div>
-                <div class="stat-label">按时完成率</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
@@ -510,6 +401,60 @@
             </div>
             <el-button type="primary" size="large" class="action-btn">
               立即使用
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </div>
+
+          <!-- 故障工单管理智能体 -->
+          <div 
+            class="agent-card" 
+            @click="goToAgent('/fault-tracking')"
+            @mouseenter="onCardHover($event)"
+            @mouseleave="onCardLeave($event)"
+            data-aos="fade-up"
+            data-aos-delay="900"
+            data-category="equipment">
+            <div class="card-glow"></div>
+            <div class="agent-icon">
+              <el-icon :size="64"><List /></el-icon>
+            </div>
+            <el-tooltip content="查看使用教程" placement="top">
+              <el-button 
+                class="help-btn" 
+                circle 
+                size="small" 
+                @click.stop="showHelp('fault-tracking')">
+                <el-icon><QuestionFilled /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <h2>故障工单管理</h2>
+            <p class="agent-desc">全流程工单管理系统，从创建工单到维修追踪，实现完整的故障处理闭环管理</p>
+            <div class="agent-features">
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>工单创建</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>进度追踪</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>历史记录</span>
+              </div>
+            </div>
+            <div class="agent-stats">
+              <div class="stat-item">
+                <div class="stat-value">2小时</div>
+                <div class="stat-label">平均响应</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">95%</div>
+                <div class="stat-label">按时完成率</div>
+              </div>
+            </div>
+            <el-button type="primary" size="large" class="action-btn">
+              进入系统
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>

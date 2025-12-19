@@ -457,6 +457,326 @@ export const useEquipmentLifecycleStore = defineStore('equipmentLifecycle', {
     // 保存到本地存储
     saveToLocalStorage() {
       localStorage.setItem('equipmentAssets', JSON.stringify(this.equipmentAssets))
+    },
+
+    // ========== 新增：核心商业功能 ==========
+
+    // 【升级6】"必中算账法"实时计算器
+    generateOnPageCalculator(customerInput) {
+      const {
+        toolCount = 100,
+        toolUnitPrice = 20000,
+        currentLifespan = 3,  // 年
+        currentAnnualReplacement = Math.ceil(toolCount / currentLifespan)
+      } = customerInput
+      
+      // 传统模式
+      const traditional = {
+        年换新数量: currentAnnualReplacement,
+        年换新成本: currentAnnualReplacement * toolUnitPrice,
+        备件成本: toolCount * 500  // 备件库存成本
+      }
+      traditional.总成本 = traditional.年换新成本 + traditional.备件成本
+      
+      // 明升年包模式
+      const ourModel = {
+        换新量下降率: 0.5,
+        年换新数量: Math.ceil(currentAnnualReplacement * 0.5),
+        年换新成本: Math.ceil(currentAnnualReplacement * 0.5) * toolUnitPrice,
+        年包费率: 0.12,  // 12%年包费率
+        年包费用: toolCount * toolUnitPrice * 0.12
+      }
+      ourModel.总成本 = ourModel.年换新成本 + ourModel.年包费用
+      
+      // 算账结果
+      const result = {
+        传统模式年成本: traditional.总成本,
+        年包模式年成本: ourModel.总成本,
+        直接节省现金: traditional.总成本 - ourModel.总成本,
+        节省率: ((traditional.总成本 - ourModel.总成本) / traditional.总成本 * 100).toFixed(1) + '%',
+        
+        额外收益: {
+          停线规避价值: '20-30万/年',
+          人工节省: '10万/年',
+          库存释放: '50-80万（一次性）'
+        },
+        
+        // 现场演示金句
+        salesPitch: `
+【传统模式】
+  ${toolCount}把工具 ÷ ${currentLifespan}年寿命 = 每年换${currentAnnualReplacement}把
+  年成本: ${(traditional.总成本/10000).toFixed(1)}万（换新${(traditional.年换新成本/10000).toFixed(1)}万 + 备件${(traditional.备件成本/10000).toFixed(1)}万）
+
+【年包模式】
+  换新量↓50% = 每年换${ourModel.年换新数量}把
+  新购成本: ${(ourModel.年换新成本/10000).toFixed(1)}万
+  年包费用: ${(ourModel.年包费用/10000).toFixed(1)}万（${toolCount}把×${(ourModel.年包费率*100)}%）
+  总成本: ${(ourModel.总成本/10000).toFixed(1)}万
+
+【直接省】
+  ${(traditional.总成本/10000).toFixed(1)}万 - ${(ourModel.总成本/10000).toFixed(1)}万 = ${(result.直接节省现金/10000).toFixed(1)}万/年
+
+【您省下的不只是维修费，更是现金流】
+  ✓ ${(result.直接节省现金/10000).toFixed(1)}万现金直接省
+  ✓ 0停线风险（工具年包兜底）
+  ✓ 0库存压力（明升备机管理）
+  ✓ 释放库存资金50-80万
+        `.trim(),
+        
+        // 详细对比数据
+        detailedComparison: {
+          traditional,
+          ourModel,
+          toolCount,
+          toolUnitPrice,
+          currentLifespan
+        }
+      }
+      
+      return result
+    },
+
+    // 【升级7】年包产品智能推荐
+    recommendAnnualPackage(customerProfile) {
+      const {
+        budgetLevel = 'normal',      // 'tight' | 'normal' | 'ample'
+        productionCriticality = 5,   // 1-10分
+        toolCount = 100,
+        currentPainPoints = []
+      } = customerProfile
+      
+      const products = [
+        {
+          sku: 'AP-BASIC',
+          name: 'A. 基础保障包',
+          tagline: '止血方案 - 适合预算紧',
+          pricing: {
+            rateOfAssetValue: 0.10,
+            annualFee: toolCount * 20000 * 0.10
+          },
+          services: [
+            '检测分级（每季度）',
+            '维修翻新（按需）',
+            'SLA响应（48小时）',
+            '年度健康报告'
+          ],
+          适用客户: '工具量大、预算有限、希望快速止血',
+          expectedROI: '75-125%',
+          score: 0
+        },
+        {
+          sku: 'AP-STANDARD',
+          name: 'B. 标准运营包（推荐⭐）',
+          tagline: '降本+稳产 - 适合主线产线',
+          pricing: {
+            rateOfAssetValue: 0.12,
+            annualFee: toolCount * 20000 * 0.12
+          },
+          services: [
+            '✓ 基础包全部内容',
+            '备机保障（10%备机池）',
+            '定期巡检（每月）',
+            '年度结算',
+            '优先支持（24小时）',
+            '预防性维护'
+          ],
+          适用客户: '主线产线、追求稳产、需要确定性',
+          expectedROI: '125-167%',
+          score: 0
+        },
+        {
+          sku: 'AP-STRATEGIC',
+          name: 'C. 战略托管包',
+          tagline: '长期绑定 - 适合焊装/高节拍',
+          pricing: {
+            rateOfAssetValue: 0.15,
+            annualFee: toolCount * 20000 * 0.15
+          },
+          services: [
+            '✓ 标准包全部内容',
+            '工具全托管',
+            '健康度管理',
+            '预防性翻新',
+            'TCO目标共担',
+            '专属服务团队',
+            '数字化平台'
+          ],
+          适用客户: '关键产线、集团客户、追求极致确定性',
+          expectedROI: '139-278%',
+          score: 0
+        }
+      ]
+      
+      // 智能评分
+      products[0].score += budgetLevel === 'tight' ? 30 : 0
+      products[0].score += toolCount > 80 ? 20 : 0
+      
+      products[1].score += budgetLevel === 'normal' ? 30 : 0
+      products[1].score += productionCriticality >= 5 && productionCriticality <= 7 ? 25 : 0
+      products[1].score += 20  // 默认推荐
+      
+      products[2].score += budgetLevel === 'ample' ? 30 : 0
+      products[2].score += productionCriticality >= 8 ? 30 : 0
+      
+      // 排序
+      products.sort((a, b) => b.score - a.score)
+      
+      const recommended = products[0]
+      recommended.reasoning = this.generateRecommendationReasoning(recommended, customerProfile)
+      
+      return {
+        recommended,
+        alternatives: products.slice(1),
+        customQuotation: {
+          年包费用: recommended.pricing.annualFee,
+          服务内容: recommended.services,
+          预期ROI: recommended.expectedROI,
+          适用场景: recommended.适用客户
+        }
+      }
+    },
+
+    // 生成推荐理由
+    generateRecommendationReasoning(product, profile) {
+      const reasons = []
+      
+      if (product.sku === 'AP-BASIC') {
+        reasons.push('工具量大，预算有限')
+        reasons.push('建议先从基础保障包起步')
+        reasons.push('见效后可升级到标准包')
+      } else if (product.sku === 'AP-STRATEGIC') {
+        reasons.push('产线关键度高')
+        reasons.push('建议直接战略托管包')
+        reasons.push('彻底消除停线风险')
+      } else {
+        reasons.push('综合性价比最优')
+        reasons.push('90%客户选择')
+        reasons.push('续签率90%')
+      }
+      
+      return reasons.join('，')
+    },
+
+    // 【升级1】智能成本冰山分析
+    generateCostIcebergAnalysis(equipmentId, timeRange = 12) {
+      const equipment = this.equipmentAssets.find(eq => eq.id === equipmentId)
+      if (!equipment) return null
+      
+      // 可见成本（30%）
+      const visibleCosts = {
+        purchase: equipment.purchasePrice,
+        percentage: 30
+      }
+      
+      // 隐性成本（70%）- 基于行业经验估算
+      const purchasePrice = equipment.purchasePrice
+      const hiddenCosts = {
+        downtimeLoss: purchasePrice * 0.25,           // 停机损失25%
+        emergencyRepair: purchasePrice * 0.15,        // 被动维修15%
+        inventoryCost: purchasePrice * 0.08,          // 备件库存8%
+        earlyScrap: purchasePrice * 0.10,             // 过早报废10%
+        urgentLogistics: purchasePrice * 0.05,        // 紧急物流5%
+        inefficientLabor: purchasePrice * 0.04,       // 人工低效4%
+        qualityLoss: purchasePrice * 0.03,            // 质量损失3%
+        percentage: 70
+      }
+      
+      const totalHiddenCost = Object.values(hiddenCosts)
+        .filter(v => typeof v === 'number')
+        .reduce((sum, cost) => sum + cost, 0)
+      
+      return {
+        equipment: equipment.name,
+        visibleCosts,
+        hiddenCosts: {
+          ...hiddenCosts,
+          total: totalHiddenCost
+        },
+        totalLifecycleCost: visibleCosts.purchase + totalHiddenCost,
+        hiddenCostRatio: ((totalHiddenCost / (visibleCosts.purchase + totalHiddenCost)) * 100).toFixed(1) + '%',
+        potentialSavings: totalHiddenCost * 0.4,  // 优化可节省40%隐性成本
+        recommendation: '通过年包服务可将隐性成本降低40-60%'
+      }
+    },
+
+    // 【升级3】五级价值路径智能推荐
+    recommendOptimalPath(customerSituation) {
+      const {
+        budget = 'normal',           // 'tight' | 'normal' | 'ample'
+        faultFrequency = 'medium',   // 'low' | 'medium' | 'high'
+        importDependency = 'medium', // 'low' | 'medium' | 'high'
+        targetCertainty = 'medium'   // 'low' | 'medium' | 'high'
+      } = customerSituation
+      
+      const paths = {
+        L1: { name: '利旧改造', score: 0, cost: '5-10万', roi: '160%', period: '5-8个月' },
+        L2: { name: '原厂翻新', score: 0, cost: '10-20万', roi: '150%', period: '6-9个月' },
+        L3: { name: '部件替换', score: 0, cost: '20-40万', roi: '167%', period: '4.5-7个月' },
+        L4: { name: '年包服务', score: 0, cost: '年费12-18%', roi: '125-167%', period: '持续' },
+        L5: { name: '国产替代', score: 0, cost: '100万+', roi: '150-200%', period: '6-8个月' }
+      }
+      
+      // 评分逻辑
+      if (budget === 'tight') {
+        paths.L1.score += 30
+        paths.L2.score += 20
+      }
+      if (faultFrequency === 'high') {
+        paths.L3.score += 25
+        paths.L4.score += 30
+      }
+      if (importDependency === 'high') {
+        paths.L5.score += 35
+      }
+      if (targetCertainty === 'high') {
+        paths.L4.score += 25
+        paths.L5.score += 15
+      }
+      
+      // 排序
+      const sortedPaths = Object.entries(paths)
+        .map(([key, value]) => ({ key, ...value }))
+        .sort((a, b) => b.score - a.score)
+      
+      return {
+        primaryPath: sortedPaths[0],
+        alternativePaths: sortedPaths.slice(1, 3),
+        reasoning: this.generatePathReasoning(sortedPaths[0], customerSituation),
+        combinationRecommendation: this.suggestCombination(sortedPaths, customerSituation)
+      }
+    },
+
+    // 生成路径推荐理由
+    generatePathReasoning(path, situation) {
+      const reasons = []
+      
+      if (path.key === 'L1' || path.key === 'L2') {
+        reasons.push('预算有限，追求快速见效')
+      }
+      if (path.key === 'L3' || path.key === 'L4') {
+        reasons.push('故障频繁，需要消除隐患')
+      }
+      if (path.key === 'L5') {
+        reasons.push('进口依赖高，追求供应链安全')
+      }
+      if (path.key === 'L4') {
+        reasons.push('追求成本确定性，风险转移')
+      }
+      
+      return reasons.join('；')
+    },
+
+    // 推荐组合方案
+    suggestCombination(paths, situation) {
+      if (situation.targetCertainty === 'high') {
+        return {
+          recommended: ['L4', 'L5'],
+          reasoning: '年包锁定成本 + 国产替代降本，双重保障',
+          expectedROI: '150-208%',
+          implementationPeriod: '6-12个月'
+        }
+      }
+      return null
     }
   }
 })

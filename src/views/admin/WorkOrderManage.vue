@@ -1,713 +1,609 @@
 <template>
-  <div class="workorder-manage">
-    <div class="page-header">
-      <h2>工单管理系统</h2>
-      <el-button type="primary" @click="showAddDialog">创建工单</el-button>
-    </div>
+  <div class="work-order-manage">
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <div>
+            <el-icon><List /></el-icon>
+            <span>工单管理</span>
+          </div>
+          <el-button type="primary" @click="showCreateDialog = true">
+            <el-icon><Plus /></el-icon>
+            创建工单
+          </el-button>
+        </div>
+      </template>
 
-    <el-row :gutter="20" class="stats-row">
-      <el-col :span="6">
-        <div class="stat-card">
-          <div class="stat-value">{{ faultStore.workOrders.length }}</div>
-          <div class="stat-label">工单总数</div>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="stat-card">
-          <div class="stat-value">{{ getPendingCount }}</div>
-          <div class="stat-label">待处理</div>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="stat-card">
-          <div class="stat-value">{{ getInProgressCount }}</div>
-          <div class="stat-label">处理中</div>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="stat-card">
-          <div class="stat-value">{{ getCompletedCount }}</div>
-          <div class="stat-label">已完成</div>
-        </div>
-      </el-col>
-    </el-row>
+      <!-- 搜索筛选 -->
+      <el-form :model="searchForm" inline class="search-form">
+        <el-form-item label="工单号">
+          <el-input v-model="searchForm.orderNumber" placeholder="输入工单号" clearable />
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="searchForm.phone" placeholder="输入手机号" clearable />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.status" placeholder="选择状态" clearable>
+            <el-option 
+              v-for="option in workOrderStore.statusOptions" 
+              :key="option.value" 
+              :label="option.label" 
+              :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">
+            <el-icon><Search /></el-icon>
+            搜索
+          </el-button>
+          <el-button @click="handleReset">重置</el-button>
+        </el-form-item>
+      </el-form>
 
-    <el-card class="filter-card">
-      <el-row :gutter="16" style="margin-bottom: 16px;">
-        <el-col :span="6">
-          <el-input v-model="searchKeyword" placeholder="搜索工单号/设备名称" clearable />
-        </el-col>
-        <el-col :span="6">
-          <el-input v-model="customerNameKeyword" placeholder="搜索客户姓名" clearable />
-        </el-col>
-        <el-col :span="6">
-          <el-input v-model="customerPhoneKeyword" placeholder="搜索客户手机号" clearable />
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="resetFilter">重置</el-button>
-        </el-col>
-      </el-row>
-      <el-row :gutter="16">
-        <el-col :span="6">
-          <el-select v-model="filterStatus" placeholder="工单状态" clearable>
-            <el-option label="全部状态" value="" />
-            <el-option label="待处理" value="pending" />
-            <el-option label="处理中" value="in_progress" />
-            <el-option label="已完成" value="completed" />
-          </el-select>
-        </el-col>
-        <el-col :span="6">
-          <el-select v-model="filterServiceStatus" placeholder="服务状态" clearable>
-            <el-option label="全部服务状态" value="" />
-            <el-option label="待服务" value="pending" />
-            <el-option label="诊断中" value="diagnosing" />
-            <el-option label="维修中" value="repairing" />
-            <el-option label="测试中" value="testing" />
-            <el-option label="已完成" value="completed" />
-          </el-select>
-        </el-col>
-        <el-col :span="6">
-          <el-select v-model="filterPriority" placeholder="优先级" clearable>
-            <el-option label="全部优先级" value="" />
-            <el-option label="低" value="low" />
-            <el-option label="中" value="medium" />
-            <el-option label="高" value="high" />
-          </el-select>
-        </el-col>
-        <el-col :span="6">
-          <el-select v-model="filterPartsStatus" placeholder="配件状态" clearable>
-            <el-option label="全部配件状态" value="" />
-            <el-option label="无需配件" value="not_required" />
-            <el-option label="待订购" value="pending" />
-            <el-option label="已订购" value="ordered" />
-            <el-option label="运输中" value="in_transit" />
-            <el-option label="已到货" value="received" />
-          </el-select>
-        </el-col>
-      </el-row>
-    </el-card>
-
-    <el-card class="table-card">
-      <el-table :data="filteredWorkOrders" stripe>
-        <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="id" label="工单号" width="140" />
-        <el-table-column label="客户信息" min-width="150">
+      <!-- 工单列表 -->
+      <el-table :data="filteredOrders" border stripe v-loading="loading">
+        <el-table-column prop="orderNumber" label="工单号" width="160" fixed />
+        <el-table-column prop="customerName" label="客户姓名" width="100" />
+        <el-table-column prop="contactPhone" label="联系电话" width="120" />
+        <el-table-column prop="deviceModel" label="设备型号" width="150" />
+        <el-table-column label="状态" width="130">
           <template #default="{ row }">
-            <div>{{ row.customerName || '-' }}</div>
-            <div style="font-size: 12px; color: #999;">{{ row.customerPhone || '-' }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="faultType" label="故障类型" width="120" />
-        <el-table-column prop="deviceName" label="设备名称" min-width="150" />
-        <el-table-column label="优先级" width="90">
-          <template #default="{ row }">
-            <el-tag :type="getPriorityType(row.priority)">{{ getPriorityText(row.priority) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="工单状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="服务状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="getServiceStatusType(row.serviceStatus)">
-              {{ getServiceStatusText(row.serviceStatus) }}
+            <el-tag :color="workOrderStore.getStatusColor(row.status)" style="color: #fff;">
+              {{ workOrderStore.getStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="配件状态" width="100">
+        <el-table-column label="创建时间" width="160">
           <template #default="{ row }">
-            <el-tag :type="getPartsStatusType(row.partsOrderStatus)" size="small">
-              {{ getPartsStatusText(row.partsOrderStatus) }}
-            </el-tag>
+            {{ formatDateTime(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column prop="reportedBy" label="报告人" width="100" />
-        <el-table-column label="处理人" width="120">
+        <el-table-column label="配件数量" width="100" align="center">
           <template #default="{ row }">
-            {{ row.assignedTo || '未分配' }}
+            <el-badge :value="row.parts ? row.parts.length : 0" type="primary">
+              <el-icon><Box /></el-icon>
+            </el-badge>
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" width="160" />
-        <el-table-column label="操作" width="220" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" @click="viewDetail(row)">查看</el-button>
-            <el-button size="small" type="primary" @click="editWorkOrder(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="deleteWorkOrder(row)">删除</el-button>
+            <el-button link type="primary" size="small" @click="viewDetail(row)">
+              <el-icon><View /></el-icon>
+              查看
+            </el-button>
+            <el-button link type="primary" size="small" @click="editStatus(row)">
+              <el-icon><Edit /></el-icon>
+              更新状态
+            </el-button>
+            <el-button link type="primary" size="small" @click="manageParts(row)">
+              <el-icon><Box /></el-icon>
+              配件管理
+            </el-button>
+            <el-button link type="danger" size="small" @click="deleteOrder(row)">
+              <el-icon><Delete /></el-icon>
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 统计信息 -->
+      <div class="statistics">
+        <el-row :gutter="20">
+          <el-col :span="6" v-for="(value, key) in workOrderStore.statusStatistics" :key="key">
+            <el-statistic 
+              :title="workOrderStore.getStatusLabel(key)" 
+              :value="value"
+              :value-style="{ color: workOrderStore.getStatusColor(key) }" />
+          </el-col>
+        </el-row>
+      </div>
     </el-card>
 
-    <el-dialog v-model="detailVisible" title="工单详情" width="900px">
-      <div v-if="currentWorkOrder">
-        <el-tabs v-model="activeTab">
-          <el-tab-pane label="基本信息" name="basic">
-            <el-descriptions :column="2" border>
-              <el-descriptions-item label="工单号">{{ currentWorkOrder.id }}</el-descriptions-item>
-              <el-descriptions-item label="故障类型">{{ currentWorkOrder.faultType }}</el-descriptions-item>
-              <el-descriptions-item label="设备名称">{{ currentWorkOrder.deviceName }}</el-descriptions-item>
-              <el-descriptions-item label="设备型号">{{ currentWorkOrder.deviceModel }}</el-descriptions-item>
-              <el-descriptions-item label="设备位置">{{ currentWorkOrder.location }}</el-descriptions-item>
-              <el-descriptions-item label="优先级">
-                <el-tag :type="getPriorityType(currentWorkOrder.priority)">
-                  {{ getPriorityText(currentWorkOrder.priority) }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="工单状态">
-                <el-tag :type="getStatusType(currentWorkOrder.status)">
-                  {{ getStatusText(currentWorkOrder.status) }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="报告人">{{ currentWorkOrder.reportedBy }}</el-descriptions-item>
-              <el-descriptions-item label="处理人">{{ currentWorkOrder.assignedTo || '未分配' }}</el-descriptions-item>
-              <el-descriptions-item label="创建时间">{{ currentWorkOrder.createdAt }}</el-descriptions-item>
-              <el-descriptions-item label="预估时间">{{ currentWorkOrder.estimatedTime }}</el-descriptions-item>
-              <el-descriptions-item label="实际时间">{{ currentWorkOrder.actualTime || '进行中' }}</el-descriptions-item>
-              <el-descriptions-item label="故障描述" :span="2">
-                {{ currentWorkOrder.faultDescription }}
-              </el-descriptions-item>
-              <el-descriptions-item label="维护计划" :span="2" v-if="currentWorkOrder.maintenancePlan">
-                <pre style="white-space: pre-wrap; margin: 0;">{{ currentWorkOrder.maintenancePlan }}</pre>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-tab-pane>
-
-          <el-tab-pane label="客户信息" name="customer">
-            <el-descriptions :column="2" border>
-              <el-descriptions-item label="客户姓名">
-                {{ currentWorkOrder.customerName || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="客户电话">
-                {{ currentWorkOrder.customerPhone || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="客户公司" :span="2">
-                {{ currentWorkOrder.customerCompany || '-' }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-tab-pane>
-
-          <el-tab-pane label="服务跟踪" name="service">
-            <el-descriptions :column="2" border>
-              <el-descriptions-item label="服务状态">
-                <el-tag :type="getServiceStatusType(currentWorkOrder.serviceStatus)">
-                  {{ getServiceStatusText(currentWorkOrder.serviceStatus) }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="配件订购状态">
-                <el-tag :type="getPartsStatusType(currentWorkOrder.partsOrderStatus)">
-                  {{ getPartsStatusText(currentWorkOrder.partsOrderStatus) }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="配件订购详情" :span="2">
-                {{ currentWorkOrder.partsOrderDetails || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="检测结果" :span="2">
-                <div v-if="currentWorkOrder.inspectionResult">
-                  <div><strong>结果：</strong>{{ currentWorkOrder.inspectionResult }}</div>
-                  <div><strong>检测时间：</strong>{{ currentWorkOrder.inspectionTime }}</div>
-                  <div><strong>检测人员：</strong>{{ currentWorkOrder.inspectionBy }}</div>
-                </div>
-                <span v-else>-</span>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-tab-pane>
-
-          <el-tab-pane label="交付验收" name="delivery">
-            <el-descriptions :column="2" border>
-              <el-descriptions-item label="交付状态">
-                <el-tag :type="getDeliveryStatusType(currentWorkOrder.deliveryStatus)">
-                  {{ getDeliveryStatusText(currentWorkOrder.deliveryStatus) }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="验收状态">
-                <el-tag :type="getAcceptanceStatusType(currentWorkOrder.acceptanceStatus)">
-                  {{ getAcceptanceStatusText(currentWorkOrder.acceptanceStatus) }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="交付时间">
-                {{ currentWorkOrder.deliveryTime || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="交付人员">
-                {{ currentWorkOrder.deliveryBy || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="验收时间">
-                {{ currentWorkOrder.acceptanceTime || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="验收人员">
-                {{ currentWorkOrder.acceptanceBy || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="验收备注" :span="2">
-                {{ currentWorkOrder.acceptanceNotes || '-' }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-tab-pane>
-
-          <el-tab-pane label="人员信息" name="personnel">
-            <el-descriptions :column="2" border>
-              <el-descriptions-item label="设备负责部门" :span="2">
-                <el-tag type="success">{{ currentWorkOrder.deviceDepartment || '-' }}</el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="设备管理人员">
-                {{ currentWorkOrder.deviceManagerName || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="管理人员电话">
-                {{ currentWorkOrder.deviceManagerPhone || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="维修人员">
-                {{ currentWorkOrder.repairPersonName || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="维修人员电话">
-                {{ currentWorkOrder.repairPersonPhone || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="供应商服务人员">
-                {{ currentWorkOrder.supplierPersonName || '-' }}
-              </el-descriptions-item>
-              <el-descriptions-item label="供应商人员电话">
-                {{ currentWorkOrder.supplierPersonPhone || '-' }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-tab-pane>
-
-          <el-tab-pane label="维修日志" name="logs">
-            <el-timeline v-if="currentWorkOrder.maintenanceLog && currentWorkOrder.maintenanceLog.length">
-              <el-timeline-item
-                v-for="(log, index) in currentWorkOrder.maintenanceLog"
-                :key="index"
-                :timestamp="log.time"
-                placement="top"
-              >
-                <el-card>
-                  <h4>{{ log.action }} - {{ log.operator }}</h4>
-                  <p>{{ log.details }}</p>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
-            <el-empty v-else description="暂无维修日志" />
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </el-dialog>
-
-    <!-- 编辑工单对话框 -->
-    <el-dialog v-model="editVisible" title="编辑工单" width="800px">
-      <el-form :model="editForm" label-width="120px">
-        <el-divider content-position="left">客户信息</el-divider>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="客户姓名">
-              <el-input v-model="editForm.customerName" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="客户电话">
-              <el-input v-model="editForm.customerPhone" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="客户公司">
-          <el-input v-model="editForm.customerCompany" />
+    <!-- 创建工单对话框 -->
+    <el-dialog v-model="showCreateDialog" title="创建工单" width="700px">
+      <el-form :model="createForm" :rules="createRules" ref="createFormRef" label-width="120px">
+        <el-form-item label="客户姓名" prop="customerName">
+          <el-input v-model="createForm.customerName" placeholder="请输入客户姓名" />
         </el-form-item>
-
-        <el-divider content-position="left">服务跟踪</el-divider>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="服务状态">
-              <el-select v-model="editForm.serviceStatus" style="width: 100%">
-                <el-option label="待服务" value="pending" />
-                <el-option label="诊断中" value="diagnosing" />
-                <el-option label="维修中" value="repairing" />
-                <el-option label="测试中" value="testing" />
-                <el-option label="已完成" value="completed" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="配件订购状态">
-              <el-select v-model="editForm.partsOrderStatus" style="width: 100%">
-                <el-option label="无需配件" value="not_required" />
-                <el-option label="待订购" value="pending" />
-                <el-option label="已订购" value="ordered" />
-                <el-option label="运输中" value="in_transit" />
-                <el-option label="已到货" value="received" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="配件订购详情">
-          <el-input v-model="editForm.partsOrderDetails" type="textarea" :rows="2" />
+        <el-form-item label="联系电话" prop="contactPhone">
+          <el-input v-model="createForm.contactPhone" placeholder="请输入联系电话" maxlength="11" />
         </el-form-item>
-
-        <el-divider content-position="left">检测结果</el-divider>
-        <el-form-item label="检测结果">
-          <el-input v-model="editForm.inspectionResult" type="textarea" :rows="3" />
+        <el-form-item label="设备型号" prop="deviceModel">
+          <el-input v-model="createForm.deviceModel" placeholder="请输入设备型号" />
         </el-form-item>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="检测人员">
-              <el-input v-model="editForm.inspectionBy" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-divider content-position="left">交付验收</el-divider>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="交付状态">
-              <el-select v-model="editForm.deliveryStatus" style="width: 100%">
-                <el-option label="未交付" value="not_delivered" />
-                <el-option label="已交付" value="delivered" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="验收状态">
-              <el-select v-model="editForm.acceptanceStatus" style="width: 100%">
-                <el-option label="未验收" value="not_accepted" />
-                <el-option label="已验收" value="accepted" />
-                <el-option label="已拒绝" value="rejected" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="验收备注">
-          <el-input v-model="editForm.acceptanceNotes" type="textarea" :rows="2" />
+        <el-form-item label="设备序列号">
+          <el-input v-model="createForm.deviceSN" placeholder="请输入设备序列号" />
+        </el-form-item>
+        <el-form-item label="故障描述" prop="faultDescription">
+          <el-input 
+            v-model="createForm.faultDescription" 
+            type="textarea" 
+            :rows="4" 
+            placeholder="请描述故障现象" />
+        </el-form-item>
+        <el-form-item label="预计完成时间">
+          <el-date-picker 
+            v-model="createForm.estimatedCompletion" 
+            type="date" 
+            placeholder="选择日期"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="editVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveEdit">保存</el-button>
+        <el-button @click="showCreateDialog = false">取消</el-button>
+        <el-button type="primary" @click="handleCreate">创建</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 更新状态对话框 -->
+    <el-dialog v-model="showStatusDialog" title="更新工单状态" width="600px">
+      <el-form :model="statusForm" label-width="100px">
+        <el-form-item label="当前状态">
+          <el-tag :color="workOrderStore.getStatusColor(statusForm.currentStatus)" style="color: #fff;">
+            {{ workOrderStore.getStatusLabel(statusForm.currentStatus) }}
+          </el-tag>
+        </el-form-item>
+        <el-form-item label="新状态" required>
+          <el-select v-model="statusForm.newStatus" placeholder="选择新状态">
+            <el-option 
+              v-for="option in workOrderStore.statusOptions" 
+              :key="option.value" 
+              :label="option.label" 
+              :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input 
+            v-model="statusForm.note" 
+            type="textarea" 
+            :rows="3" 
+            placeholder="填写状态变更说明（可选）" />
+        </el-form-item>
+        <el-form-item label="操作人">
+          <el-input v-model="statusForm.operator" placeholder="输入操作人姓名" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showStatusDialog = false">取消</el-button>
+        <el-button type="primary" @click="handleUpdateStatus">确认更新</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 配件管理对话框 -->
+    <el-dialog v-model="showPartsDialog" title="配件管理" width="900px">
+      <div v-if="currentOrder">
+        <div class="parts-header">
+          <h3>工单号: {{ currentOrder.orderNumber }}</h3>
+          <el-button type="primary" size="small" @click="showAddPartDialog = true">
+            <el-icon><Plus /></el-icon>
+            添加配件
+          </el-button>
+        </div>
+        
+        <el-table :data="currentOrder.parts || []" border>
+          <el-table-column prop="name" label="配件名称" />
+          <el-table-column prop="partNumber" label="零件编号" width="120" />
+          <el-table-column prop="quantity" label="数量" width="80" align="center" />
+          <el-table-column label="状态" width="120">
+            <template #default="{ row }">
+              <el-tag :color="workOrderStore.getPartsStatusColor(row.status)" size="small" style="color: #fff;">
+                {{ workOrderStore.getPartsStatusLabel(row.status) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="supplier" label="供应商" width="120" />
+          <el-table-column prop="estimatedArrival" label="预计到货" width="110" />
+          <el-table-column label="操作" width="150">
+            <template #default="{ row, $index }">
+              <el-button link type="primary" size="small" @click="editPartStatus(row, $index)">
+                更新状态
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
+
+    <!-- 添加配件对话框 -->
+    <el-dialog v-model="showAddPartDialog" title="添加配件" width="600px">
+      <el-form :model="partForm" :rules="partRules" ref="partFormRef" label-width="100px">
+        <el-form-item label="配件名称" prop="name">
+          <el-input v-model="partForm.name" placeholder="请输入配件名称" />
+        </el-form-item>
+        <el-form-item label="零件编号">
+          <el-input v-model="partForm.partNumber" placeholder="请输入零件编号" />
+        </el-form-item>
+        <el-form-item label="数量" prop="quantity">
+          <el-input-number v-model="partForm.quantity" :min="1" />
+        </el-form-item>
+        <el-form-item label="供应商">
+          <el-input v-model="partForm.supplier" placeholder="请输入供应商名称" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showAddPartDialog = false">取消</el-button>
+        <el-button type="primary" @click="handleAddPart">添加</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 更新配件状态对话框 -->
+    <el-dialog v-model="showPartStatusDialog" title="更新配件状态" width="600px">
+      <el-form :model="partStatusForm" label-width="100px">
+        <el-form-item label="配件名称">
+          <el-text>{{ partStatusForm.partName }}</el-text>
+        </el-form-item>
+        <el-form-item label="当前状态">
+          <el-tag :color="workOrderStore.getPartsStatusColor(partStatusForm.currentStatus)" size="small" style="color: #fff;">
+            {{ workOrderStore.getPartsStatusLabel(partStatusForm.currentStatus) }}
+          </el-tag>
+        </el-form-item>
+        <el-form-item label="新状态" required>
+          <el-select v-model="partStatusForm.newStatus" placeholder="选择新状态">
+            <el-option 
+              v-for="option in workOrderStore.partsStatusOptions" 
+              :key="option.value" 
+              :label="option.label" 
+              :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="预计到货日期">
+          <el-date-picker 
+            v-model="partStatusForm.estimatedArrival" 
+            type="date" 
+            placeholder="选择日期"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD" />
+        </el-form-item>
+        <el-form-item label="物流单号">
+          <el-input v-model="partStatusForm.trackingNumber" placeholder="输入物流单号（可选）" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showPartStatusDialog = false">取消</el-button>
+        <el-button type="primary" @click="handleUpdatePartStatus">确认更新</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useFaultTrackingStore } from '../../store'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useWorkOrderStore } from '../../store/workOrder'
 
-const faultStore = useFaultTrackingStore()
+const workOrderStore = useWorkOrderStore()
 
-const searchKeyword = ref('')
-const customerNameKeyword = ref('')
-const customerPhoneKeyword = ref('')
-const filterStatus = ref('')
-const filterServiceStatus = ref('')
-const filterPriority = ref('')
-const filterPartsStatus = ref('')
-const detailVisible = ref(false)
-const editVisible = ref(false)
-const currentWorkOrder = ref(null)
-const activeTab = ref('basic')
-const editForm = ref({})
-
-const getPendingCount = computed(() => {
-  return faultStore.workOrders.filter(wo => wo.status === 'pending').length
+// 搜索表单
+const searchForm = ref({
+  orderNumber: '',
+  phone: '',
+  status: ''
 })
 
-const getInProgressCount = computed(() => {
-  return faultStore.workOrders.filter(wo => ['assigned', 'in_progress'].includes(wo.status)).length
+// 加载状态
+const loading = ref(false)
+
+// 创建工单
+const showCreateDialog = ref(false)
+const createForm = ref({
+  customerName: '',
+  contactPhone: '',
+  deviceModel: '',
+  deviceSN: '',
+  faultDescription: '',
+  estimatedCompletion: ''
+})
+const createFormRef = ref(null)
+const createRules = {
+  customerName: [{ required: true, message: '请输入客户姓名', trigger: 'blur' }],
+  contactPhone: [
+    { required: true, message: '请输入联系电话', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+  ],
+  deviceModel: [{ required: true, message: '请输入设备型号', trigger: 'blur' }],
+  faultDescription: [{ required: true, message: '请描述故障现象', trigger: 'blur' }]
+}
+
+// 更新状态
+const showStatusDialog = ref(false)
+const statusForm = ref({
+  orderId: '',
+  currentStatus: '',
+  newStatus: '',
+  note: '',
+  operator: ''
 })
 
-const getCompletedCount = computed(() => {
-  return faultStore.workOrders.filter(wo => ['resolved', 'closed'].includes(wo.status)).length
+// 配件管理
+const showPartsDialog = ref(false)
+const currentOrder = ref(null)
+const showAddPartDialog = ref(false)
+const partForm = ref({
+  name: '',
+  partNumber: '',
+  quantity: 1,
+  supplier: ''
+})
+const partFormRef = ref(null)
+const partRules = {
+  name: [{ required: true, message: '请输入配件名称', trigger: 'blur' }],
+  quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }]
+}
+
+// 配件状态更新
+const showPartStatusDialog = ref(false)
+const partStatusForm = ref({
+  partIndex: -1,
+  partName: '',
+  currentStatus: '',
+  newStatus: '',
+  estimatedArrival: '',
+  trackingNumber: ''
 })
 
-const filteredWorkOrders = computed(() => {
-  let result = [...faultStore.workOrders]
+// 过滤后的工单列表
+const filteredOrders = computed(() => {
+  let orders = workOrderStore.workOrders
   
-  // 基础搜索
-  if (searchKeyword.value) {
-    const keyword = searchKeyword.value.toLowerCase()
-    result = result.filter(wo => 
-      wo.id.toLowerCase().includes(keyword) ||
-      wo.faultType.toLowerCase().includes(keyword) ||
-      wo.deviceName.toLowerCase().includes(keyword)
+  if (searchForm.value.orderNumber) {
+    orders = orders.filter(order => 
+      order.orderNumber.includes(searchForm.value.orderNumber)
     )
   }
   
-  // 客户姓名搜索
-  if (customerNameKeyword.value) {
-    const keyword = customerNameKeyword.value.toLowerCase()
-    result = result.filter(wo => 
-      wo.customerName && wo.customerName.toLowerCase().includes(keyword)
+  if (searchForm.value.phone) {
+    orders = orders.filter(order => 
+      order.contactPhone.includes(searchForm.value.phone)
     )
   }
   
-  // 客户手机号搜索
-  if (customerPhoneKeyword.value) {
-    const keyword = customerPhoneKeyword.value
-    result = result.filter(wo => 
-      wo.customerPhone && wo.customerPhone.includes(keyword)
-    )
+  if (searchForm.value.status) {
+    orders = orders.filter(order => order.status === searchForm.value.status)
   }
   
-  // 工单状态筛选
-  if (filterStatus.value) {
-    if (filterStatus.value === 'in_progress') {
-      result = result.filter(wo => ['assigned', 'in_progress'].includes(wo.status))
-    } else if (filterStatus.value === 'completed') {
-      result = result.filter(wo => ['resolved', 'closed'].includes(wo.status))
-    } else {
-      result = result.filter(wo => wo.status === filterStatus.value)
-    }
-  }
-  
-  // 服务状态筛选
-  if (filterServiceStatus.value) {
-    result = result.filter(wo => wo.serviceStatus === filterServiceStatus.value)
-  }
-  
-  // 优先级筛选
-  if (filterPriority.value) {
-    result = result.filter(wo => wo.priority === filterPriority.value)
-  }
-  
-  // 配件状态筛选
-  if (filterPartsStatus.value) {
-    result = result.filter(wo => wo.partsOrderStatus === filterPartsStatus.value)
-  }
-  
-  return result
+  return orders
 })
 
+// 搜索
 const handleSearch = () => {
-  // 触发计算属性重新计算
-  ElMessage.success(`找到 ${filteredWorkOrders.value.length} 条工单`)
+  // 已通过computed自动过滤
 }
 
-const getPriorityText = (priority) => {
-  const priorityMap = {
-    low: '低',
-    medium: '中',
-    high: '高',
-    urgent: '紧急'
+// 重置
+const handleReset = () => {
+  searchForm.value = {
+    orderNumber: '',
+    phone: '',
+    status: ''
   }
-  return priorityMap[priority] || priority
 }
 
-const getPriorityType = (priority) => {
-  const typeMap = {
-    low: 'info',
-    medium: '',
-    high: 'warning',
-    urgent: 'danger'
+// 查看详情
+const viewDetail = (order) => {
+  ElMessageBox.alert(`
+    <div style="line-height: 2;">
+      <strong>工单号：</strong>${order.orderNumber}<br>
+      <strong>客户：</strong>${order.customerName}<br>
+      <strong>设备：</strong>${order.deviceModel}<br>
+      <strong>故障：</strong>${order.faultDescription || '-'}<br>
+      <strong>状态：</strong>${workOrderStore.getStatusLabel(order.status)}
+    </div>
+  `, '工单详情', {
+    dangerouslyUseHTMLString: true,
+    confirmButtonText: '关闭'
+  })
+}
+
+// 编辑状态
+const editStatus = (order) => {
+  statusForm.value = {
+    orderId: order.id,
+    currentStatus: order.status,
+    newStatus: '',
+    note: '',
+    operator: '管理员'
   }
-  return typeMap[priority] || ''
+  showStatusDialog.value = true
 }
 
-const getStatusText = (status) => {
-  const statusMap = {
-    pending: '待处理',
-    assigned: '已分配',
-    in_progress: '处理中',
-    resolved: '已解决',
-    completed: '已完成',
-    closed: '已关闭'
+// 更新状态
+const handleUpdateStatus = () => {
+  if (!statusForm.value.newStatus) {
+    ElMessage.warning('请选择新状态')
+    return
   }
-  return statusMap[status] || status
-}
-
-const getStatusType = (status) => {
-  const typeMap = {
-    pending: 'warning',
-    assigned: 'primary',
-    in_progress: 'primary',
-    resolved: 'success',
-    completed: 'success',
-    closed: 'info'
-  }
-  return typeMap[status] || ''
-}
-
-const getServiceStatusText = (status) => {
-  const statusMap = {
-    pending: '待服务',
-    diagnosing: '诊断中',
-    repairing: '维修中',
-    testing: '测试中',
-    completed: '已完成'
-  }
-  return statusMap[status] || status
-}
-
-const getServiceStatusType = (status) => {
-  const typeMap = {
-    pending: 'warning',
-    diagnosing: 'primary',
-    repairing: 'primary',
-    testing: '',
-    completed: 'success'
-  }
-  return typeMap[status] || ''
-}
-
-const getPartsStatusText = (status) => {
-  const statusMap = {
-    not_required: '无需配件',
-    pending: '待订购',
-    ordered: '已订购',
-    in_transit: '运输中',
-    received: '已到货'
-  }
-  return statusMap[status] || status
-}
-
-const getPartsStatusType = (status) => {
-  const typeMap = {
-    not_required: 'info',
-    pending: 'warning',
-    ordered: 'primary',
-    in_transit: '',
-    received: 'success'
-  }
-  return typeMap[status] || ''
-}
-
-const getDeliveryStatusText = (status) => {
-  const statusMap = {
-    not_delivered: '未交付',
-    delivered: '已交付'
-  }
-  return statusMap[status] || status
-}
-
-const getDeliveryStatusType = (status) => {
-  const typeMap = {
-    not_delivered: 'warning',
-    delivered: 'success'
-  }
-  return typeMap[status] || ''
-}
-
-const getAcceptanceStatusText = (status) => {
-  const statusMap = {
-    not_accepted: '未验收',
-    accepted: '已验收',
-    rejected: '已拒绝'
-  }
-  return statusMap[status] || status
-}
-
-const getAcceptanceStatusType = (status) => {
-  const typeMap = {
-    not_accepted: 'warning',
-    accepted: 'success',
-    rejected: 'danger'
-  }
-  return typeMap[status] || ''
-}
-
-const showAddDialog = () => {
-  ElMessage.info('请使用前台页面创建工单')
-}
-
-const viewDetail = (row) => {
-  currentWorkOrder.value = row
-  activeTab.value = 'basic'
-  detailVisible.value = true
-}
-
-const editWorkOrder = (row) => {
-  currentWorkOrder.value = row
-  editForm.value = {
-    customerName: row.customerName,
-    customerPhone: row.customerPhone,
-    customerCompany: row.customerCompany,
-    serviceStatus: row.serviceStatus,
-    partsOrderStatus: row.partsOrderStatus,
-    partsOrderDetails: row.partsOrderDetails,
-    inspectionResult: row.inspectionResult,
-    inspectionBy: row.inspectionBy,
-    deliveryStatus: row.deliveryStatus,
-    acceptanceStatus: row.acceptanceStatus,
-    acceptanceNotes: row.acceptanceNotes
-  }
-  editVisible.value = true
-}
-
-const saveEdit = () => {
-  const success = faultStore.updateWorkOrder(currentWorkOrder.value.id, editForm.value)
+  
+  const success = workOrderStore.updateOrderStatus(
+    statusForm.value.orderId,
+    statusForm.value.newStatus,
+    statusForm.value.note,
+    statusForm.value.operator
+  )
+  
   if (success) {
-    ElMessage.success('保存成功')
-    editVisible.value = false
+    ElMessage.success('状态更新成功')
+    showStatusDialog.value = false
   } else {
-    ElMessage.error('保存失败')
+    ElMessage.error('状态更新失败')
   }
 }
 
-const deleteWorkOrder = (row) => {
-  ElMessageBox.confirm('确定要删除这个工单吗？', '确认删除', {
-    type: 'warning'
-  }).then(() => {
-    const success = faultStore.deleteWorkOrder(row.id)
+// 配件管理
+const manageParts = (order) => {
+  currentOrder.value = order
+  showPartsDialog.value = true
+}
+
+// 添加配件
+const handleAddPart = async () => {
+  try {
+    await partFormRef.value.validate()
+    
+    const success = workOrderStore.addPart(currentOrder.value.id, partForm.value)
+    
     if (success) {
-      ElMessage.success('删除成功')
+      ElMessage.success('配件添加成功')
+      showAddPartDialog.value = false
+      partForm.value = {
+        name: '',
+        partNumber: '',
+        quantity: 1,
+        supplier: ''
+      }
+    } else {
+      ElMessage.error('配件添加失败')
+    }
+  } catch (error) {
+    console.log('验证失败:', error)
+  }
+}
+
+// 编辑配件状态
+const editPartStatus = (part, index) => {
+  partStatusForm.value = {
+    partIndex: index,
+    partName: part.name,
+    currentStatus: part.status,
+    newStatus: '',
+    estimatedArrival: part.estimatedArrival || '',
+    trackingNumber: part.trackingNumber || ''
+  }
+  showPartStatusDialog.value = true
+}
+
+// 更新配件状态
+const handleUpdatePartStatus = () => {
+  if (!partStatusForm.value.newStatus) {
+    ElMessage.warning('请选择新状态')
+    return
+  }
+  
+  const success = workOrderStore.updatePartsStatus(
+    currentOrder.value.id,
+    partStatusForm.value.partIndex,
+    partStatusForm.value.newStatus,
+    partStatusForm.value.estimatedArrival
+  )
+  
+  if (success) {
+    // 更新物流单号
+    if (partStatusForm.value.trackingNumber) {
+      const part = currentOrder.value.parts[partStatusForm.value.partIndex]
+      part.trackingNumber = partStatusForm.value.trackingNumber
+      workOrderStore.saveToLocalStorage()
+    }
+    
+    ElMessage.success('配件状态更新成功')
+    showPartStatusDialog.value = false
+  } else {
+    ElMessage.error('配件状态更新失败')
+  }
+}
+
+// 创建工单
+const handleCreate = async () => {
+  try {
+    await createFormRef.value.validate()
+    
+    const newOrder = workOrderStore.createWorkOrder({
+      ...createForm.value,
+      creator: '管理员'
+    })
+    
+    ElMessage.success(`工单创建成功！工单号：${newOrder.orderNumber}`)
+    showCreateDialog.value = false
+    createForm.value = {
+      customerName: '',
+      contactPhone: '',
+      deviceModel: '',
+      deviceSN: '',
+      faultDescription: '',
+      estimatedCompletion: ''
+    }
+  } catch (error) {
+    console.log('验证失败:', error)
+  }
+}
+
+// 删除工单
+const deleteOrder = (order) => {
+  ElMessageBox.confirm(
+    `确定要删除工单 ${order.orderNumber} 吗？此操作不可恢复！`,
+    '警告',
+    {
+      confirmButtonText: '确定删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    const success = workOrderStore.deleteOrder(order.id)
+    if (success) {
+      ElMessage.success('工单已删除')
     } else {
       ElMessage.error('删除失败')
     }
-  }).catch(() => {})
+  }).catch(() => {
+    // 用户取消
+  })
 }
 
-const resetFilter = () => {
-  searchKeyword.value = ''
-  customerNameKeyword.value = ''
-  customerPhoneKeyword.value = ''
-  filterStatus.value = ''
-  filterServiceStatus.value = ''
-  filterPriority.value = ''
-  filterPartsStatus.value = ''
+// 格式化日期时间
+const formatDateTime = (dateString) => {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  return date.toLocaleString('zh-CN')
 }
+
+// 组件挂载时初始化数据
+onMounted(() => {
+  workOrderStore.initDemoData()
+})
 </script>
 
 <style scoped>
-.workorder-manage {
-  padding: 0;
+.work-order-manage {
+  padding: 20px;
 }
 
-.page-header {
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.search-form {
+  margin-bottom: 20px;
+}
+
+.statistics {
+  margin-top: 24px;
+  padding: 20px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.parts-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
 }
 
-.page-header h2 {
+.parts-header h3 {
   margin: 0;
-}
-
-.stats-row {
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #1890ff;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #666;
-}
-
-.filter-card {
-  margin-bottom: 20px;
-}
-
-.table-card {
-  margin-top: 0;
+  font-size: 16px;
+  color: #333;
 }
 </style>

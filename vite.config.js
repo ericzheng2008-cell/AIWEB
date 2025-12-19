@@ -63,7 +63,7 @@ export default defineConfig({
           // 页面内容管理
           'page-content': [
             './src/store/pageContent.js',
-            './src/views/admin/PageContentManage.vue'
+            './src/views/admin/ContentManage.vue'
           ]
         },
         

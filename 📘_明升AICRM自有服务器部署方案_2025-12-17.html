@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>明升AICRM企业自有服务器部署方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .header .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #67c23a, #42b983);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 5px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+            font-weight: 600;
+        }
+        
+        .section-subtitle {
+            font-size: 20px;
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        .content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border-left: 4px solid #f56c6c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #67c23a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-left: 4px solid #e6a23c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .badge-success {
+            background: #67c23a;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #e6a23c;
+            color: white;
+        }
+        
+        .badge-danger {
+            background: #f56c6c;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #409eff;
+            color: white;
+        }
+        
+        .comparison-table {
+            margin: 30px 0;
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 40px;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📘 明升AICRM企业自有服务器部署方案</h1>
+            <p class="subtitle">On-Premise Deployment Solution</p>
+            <span class="badge">✅ 数据自主可控</span>
+            <span class="badge">💰 成本大幅降低</span>
+            <span class="badge">🔒 安全性更高</span>
+            <p style="margin-top: 20px; color: #999;">版本：v2.0.0 | 日期：2025-12-17</p>
+        </div>
+
+        <!-- 一、方案概述 -->
+        <div class="section">
+            <h2 class="section-title">一、企业自有服务器部署优势</h2>
+            
+            <div class="success-box">
+                <h3 style="margin-bottom: 15px;">🎯 核心优势</h3>
+                <ul>
+                    <li>💰 <strong>成本降低70%+</strong>：无需云服务器租赁费用</li>
+                    <li>🔒 <strong>数据完全自主</strong>：客户数据不出企业内网</li>
+                    <li>⚡ <strong>访问速度更快</strong>：内网访问，延迟<10ms</li>
+                    <li>🛡️ <strong>安全性极高</strong>：物理隔离，杜绝外部攻击</li>
+                    <li>📊 <strong>无流量限制</strong>：不受云服务商带宽限制</li>
+                    <li>🔧 <strong>自主可控</strong>：随时调整配置，无需等待云服务商</li>
+                </ul>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">💡 适用场景</h3>
+                <ul>
+                    <li>✅ 企业已有机房或服务器资源</li>
+                    <li>✅ 对数据安全有严格要求（客户信息、商机数据敏感）</li>
+                    <li>✅ 主要在办公内网使用，外网访问需求少</li>
+                    <li>✅ 有IT运维人员（至少1人）</li>
+                    <li>✅ 希望长期降低运营成本</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 二、成本对比 -->
+        <div class="section">
+            <h2 class="section-title">二、成本对比分析</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>成本项</th>
+                        <th>云服务器方案</th>
+                        <th>自有服务器方案</th>
+                        <th>节省金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" style="background: #f0f0f0; font-weight: bold;">一次性费用</td>
+                    </tr>
+                    <tr>
+                        <td>认证费用</td>
+                        <td>¥600</td>
+                        <td>¥600</td>
+                        <td>¥0</td>
+                    </tr>
+                    <tr>
+                        <td>域名注册</td>
+                        <td>¥60</td>
+                        <td>¥0（内网可用IP）</td>
+                        <td>¥60</td>
+                    </tr>
+                    <tr>
+                        <td>SSL证书</td>
+                        <td>¥0-2,000</td>
+                        <td>¥0（自签名证书）</td>
+                        <td>¥0-2,000</td>
+                    </tr>
+                    <tr>
+                        <td>开发成本</td>
+                        <td>¥30,000-80,000</td>
+                        <td>¥25,000-60,000</td>
+                        <td>¥5,000-20,000</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; background: #fff5e6;">首次总成本</td>
+                        <td style="font-weight: bold;">¥30,660-82,660</td>
+                        <td style="font-weight: bold; color: #67c23a;">¥25,600-60,600</td>
+                        <td style="font-weight: bold; color: #67c23a;">¥5,060-22,060</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="background: #f0f0f0; font-weight: bold;">年度运营费用</td>
+                    </tr>
+                    <tr>
+                        <td>服务器租赁</td>
+                        <td>¥3,600-6,000</td>
+                        <td>¥0（已有）</td>
+                        <td>¥3,600-6,000</td>
+                    </tr>
+                    <tr>
+                        <td>数据库服务</td>
+                        <td>¥2,400-4,800</td>
+                        <td>¥0（自建）</td>
+                        <td>¥2,400-4,800</td>
+                    </tr>
+                    <tr>
+                        <td>CDN/带宽</td>
+                        <td>¥1,800-5,400</td>
+                        <td>¥0（内网）</td>
+                        <td>¥1,800-5,400</td>
+                    </tr>
+                    <tr>
+                        <td>短信服务</td>
+                        <td>¥600-1,200</td>
+                        <td>¥600-1,200</td>
+                        <td>¥0</td>
+                    </tr>
+                    <tr>
+                        <td>运维支持</td>
+                        <td>¥6,000-12,000</td>
+                        <td>¥2,000-5,000（内部IT）</td>
+                        <td>¥4,000-7,000</td>
+                    </tr>
+                    <tr>
+                        <td>认证年审</td>
+                        <td>¥600</td>
+                        <td>¥600</td>
+                        <td>¥0</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; background: #fff5e6;">年度总成本</td>
+                        <td style="font-weight: bold;">¥14,460-30,300</td>
+                        <td style="font-weight: bold; color: #67c23a;">¥3,200-6,800</td>
+                        <td style="font-weight: bold; color: #67c23a;">¥11,260-23,500</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="background: #f0f0f0; font-weight: bold;">首年总成本（一次性+年度）</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">总计</td>
+                        <td style="font-weight: bold;">¥45,120-112,960</td>
+                        <td style="font-weight: bold; color: #67c23a; font-size: 18px;">¥28,800-67,400</td>
+                        <td style="font-weight: bold; color: #67c23a; font-size: 18px;">¥16,320-45,560</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="success-box">
+                <h3>💰 成本节省总结</h3>
+                <ul>
+                    <li><strong>首年节省</strong>：¥16,000-45,000（约35%-40%）</li>
+                    <li><strong>年度节省</strong>：¥11,000-23,000（约78%-80%）</li>
+                    <li><strong>3年总节省</strong>：¥38,000-91,000</li>
+                    <li><strong>5年总节省</strong>：¥60,000-139,000</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 三、服务器要求 -->
+        <div class="section">
+            <h2 class="section-title">三、自有服务器硬件要求</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">🖥️ 推荐配置（中小企业）</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>配置项</th>
+                            <th>最低配置</th>
+                            <th>推荐配置</th>
+                            <th>高性能配置</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CPU</strong></td>
+                            <td>4核</td>
+                            <td>8核</td>
+                            <td>16核</td>
+                        </tr>
+                        <tr>
+                            <td><strong>内存</strong></td>
+                            <td>8GB</td>
+                            <td>16GB</td>
+                            <td>32GB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>硬盘</strong></td>
+                            <td>100GB SSD</td>
+                            <td>500GB SSD</td>
+                            <td>1TB SSD</td>
+                        </tr>
+                        <tr>
+                            <td><strong>网络</strong></td>
+                            <td>100Mbps</td>
+                            <td>1Gbps</td>
+                            <td>10Gbps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>操作系统</strong></td>
+                            <td colspan="3">Ubuntu 20.04 LTS / CentOS 7+ / Windows Server 2019+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>适用规模</strong></td>
+                            <td>20-50人</td>
+                            <td>50-200人</td>
+                            <td>200-500人</td>
+                        </tr>
+                        <tr>
+                            <td><strong>并发用户</strong></td>
+                            <td>50人</td>
+                            <td>200人</td>
+                            <td>500人</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ 重要提醒</h3>
+                <ul>
+                    <li>如果企业已有虚拟化平台（VMware/Hyper-V），可创建虚拟机使用</li>
+                    <li>SSD硬盘必选，机械硬盘会严重影响数据库性能</li>
+                    <li>建议RAID 1或RAID 5，保证数据安全</li>
+                    <li>服务器需配置UPS不间断电源</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 四、部署架构 -->
+        <div class="section">
+            <h2 class="section-title">四、自有服务器部署架构</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">🏗️ 架构图</h3>
+                <div class="code-block">
+企业内网环境
+├── 防火墙
+│   └── 仅开放必要端口（80/443/企业微信回调）
+│
+├── 自有服务器（物理机/虚拟机）
+│   ├── Nginx（反向代理 + 静态资源）
+│   │   └── 端口：80/443
+│   │
+│   ├── Node.js API服务
+│   │   └── 端口：3000（内网）
+│   │
+│   ├── MySQL数据库
+│   │   └── 端口：3306（仅本机）
+│   │
+│   ├── Redis缓存
+│   │   └── 端口：6379（仅本机）
+│   │
+│   └── 文件存储（本地磁盘）
+│       └── /data/aicrm/uploads
+│
+├── 企业微信小程序（员工端）
+│   └── HTTPS访问（需内网穿透或VPN）
+│
+└── 管理后台（PC浏览器）
+    └── 内网访问：http://192.168.x.x
+                </div>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🔗 两种访问模式</h3>
+                
+                <h4 style="margin-top: 20px;">模式1：纯内网模式（推荐）</h4>
+                <ul>
+                    <li>✅ <strong>适用</strong>：员工仅在办公内网使用</li>
+                    <li>✅ <strong>安全性</strong>：最高（完全隔离外网）</li>
+                    <li>✅ <strong>配置</strong>：最简单（无需域名、SSL）</li>
+                    <li>✅ <strong>成本</strong>：最低（¥0额外成本）</li>
+                    <li>⚠️ <strong>限制</strong>：外出时无法访问（除非VPN）</li>
+                </ul>
+
+                <h4 style="margin-top: 20px;">模式2：内网+外网混合模式</h4>
+                <ul>
+                    <li>✅ <strong>适用</strong>：销售外出时也需访问</li>
+                    <li>✅ <strong>灵活性</strong>：内外网均可访问</li>
+                    <li>⚠️ <strong>配置</strong>：需配置内网穿透或VPN</li>
+                    <li>⚠️ <strong>成本</strong>：需域名备案+SSL证书（¥60-2,000/年）</li>
+                    <li>⚠️ <strong>安全性</strong>：需加强防火墙和访问控制</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 五、部署步骤 -->
+        <div class="section">
+            <h2 class="section-title">五、详细部署步骤</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">📋 阶段1：服务器准备（1天）</h3>
+                
+                <h4>步骤1.1：操作系统安装（Linux推荐）</h4>
+                <div class="code-block">
+# 推荐Ubuntu 20.04 LTS
+# 下载地址：https://ubuntu.com/download/server
+
+# 安装后更新系统
+sudo apt update && sudo apt upgrade -y
+
+# 设置时区
+sudo timedatectl set-timezone Asia/Shanghai
+
+# 关闭SELinux（CentOS）
+sudo setenforce 0
+                </div>
+
+                <h4>步骤1.2：安装基础软件</h4>
+                <div class="code-block">
+# 安装Node.js 18 LTS
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# 验证安装
+node -v  # v18.x.x
+npm -v   # 9.x.x
+
+# 安装PM2（进程管理）
+sudo npm install -g pm2
+
+# 安装Nginx
+sudo apt install -y nginx
+
+# 启动Nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+                </div>
+
+                <h4>步骤1.3：安装MySQL数据库</h4>
+                <div class="code-block">
+# 安装MySQL 8.0
+sudo apt install -y mysql-server
+
+# 启动MySQL
+sudo systemctl start mysql
+sudo systemctl enable mysql
+
+# 初始化安全配置
+sudo mysql_secure_installation
+# 设置root密码：MingSheng@2025
+# 删除匿名用户：Yes
+# 禁止root远程登录：Yes
+# 删除测试数据库：Yes
+
+# 创建AICRM数据库
+sudo mysql -u root -p
+CREATE DATABASE aicrm_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'aicrm_user'@'localhost' IDENTIFIED BY 'Aicrm@2025';
+GRANT ALL PRIVILEGES ON aicrm_db.* TO 'aicrm_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+                </div>
+
+                <h4>步骤1.4：安装Redis缓存</h4>
+                <div class="code-block">
+# 安装Redis
+sudo apt install -y redis-server
+
+# 修改配置（可选）
+sudo nano /etc/redis/redis.conf
+# bind 127.0.0.1（仅本机访问）
+# requirepass Aicrm@Redis2025（设置密码）
+
+# 重启Redis
+sudo systemctl restart redis
+sudo systemctl enable redis
+
+# 测试连接
+redis-cli ping  # 返回PONG
+                </div>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">📦 阶段2：应用部署（2天）</h3>
+                
+                <h4>步骤2.1：上传代码到服务器</h4>
+                <div class="code-block">
+# 在本地打包代码
+cd /path/to/aicrm-backend
+npm run build
+
+# 使用SCP上传（Windows用WinSCP）
+scp -r dist/ user@192.168.x.x:/home/aicrm/
+
+# 或使用Git拉取代码
+ssh user@192.168.x.x
+cd /home/aicrm
+git clone https://github.com/yourcompany/aicrm-backend.git
+cd aicrm-backend
+npm install --production
+                </div>
+
+                <h4>步骤2.2：配置环境变量</h4>
+                <div class="code-block">
+# 创建.env文件
+cd /home/aicrm/aicrm-backend
+nano .env
+
+# 添加以下内容
+NODE_ENV=production
+PORT=3000
+
+# 数据库配置
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=aicrm_db
+DB_USER=aicrm_user
+DB_PASS=Aicrm@2025
+
+# Redis配置
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASS=Aicrm@Redis2025
+
+# JWT密钥
+JWT_SECRET=MingSheng_AICRM_Secret_Key_2025
+
+# 企业微信配置
+WEWORK_CORPID=你的企业微信CorpID
+WEWORK_CORPSECRET=你的企业微信CorpSecret
+WEWORK_AGENTID=你的应用AgentID
+
+# 文件上传路径
+UPLOAD_PATH=/data/aicrm/uploads
+                </div>
+
+                <h4>步骤2.3：初始化数据库</h4>
+                <div class="code-block">
+# 导入数据库结构
+cd /home/aicrm/aicrm-backend
+mysql -u aicrm_user -p aicrm_db < database/schema.sql
+
+# 导入初始数据
+mysql -u aicrm_user -p aicrm_db < database/init_data.sql
+
+# 创建上传目录
+sudo mkdir -p /data/aicrm/uploads
+sudo chown -R www-data:www-data /data/aicrm
+sudo chmod -R 755 /data/aicrm
+                </div>
+
+                <h4>步骤2.4：启动应用</h4>
+                <div class="code-block">
+# 使用PM2启动
+cd /home/aicrm/aicrm-backend
+pm2 start npm --name "aicrm-api" -- start
+
+# 设置开机自启
+pm2 startup
+pm2 save
+
+# 查看日志
+pm2 logs aicrm-api
+
+# 查看状态
+pm2 status
+                </div>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🌐 阶段3：Nginx配置（半天）</h3>
+                
+                <h4>步骤3.1：纯内网配置（推荐）</h4>
+                <div class="code-block">
+# 创建Nginx配置文件
+sudo nano /etc/nginx/sites-available/aicrm
+
+# 添加以下内容
+server {
+    listen 80;
+    server_name 192.168.x.x;  # 服务器内网IP
+
+    # 前端静态资源
+    location / {
+        root /home/aicrm/aicrm-frontend/dist;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 后端API代理
+    location /api {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # 文件上传
+    client_max_body_size 50M;
+
+    # 日志
+    access_log /var/log/nginx/aicrm_access.log;
+    error_log /var/log/nginx/aicrm_error.log;
+}
+
+# 启用配置
+sudo ln -s /etc/nginx/sites-available/aicrm /etc/nginx/sites-enabled/
+sudo nginx -t  # 测试配置
+sudo systemctl reload nginx
+                </div>
+
+                <h4>步骤3.2：外网访问配置（可选）</h4>
+                <div class="code-block">
+# 需要域名+SSL证书
+server {
+    listen 443 ssl http2;
+    server_name aicrm.yourcompany.com;
+
+    # SSL证书（Let's Encrypt免费）
+    ssl_certificate /etc/letsencrypt/live/aicrm.yourcompany.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/aicrm.yourcompany.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # 其他配置同上...
+}
+
+# HTTP自动跳转HTTPS
+server {
+    listen 80;
+    server_name aicrm.yourcompany.com;
+    return 301 https://$server_name$request_uri;
+}
+                </div>
+            </div>
+        </div>
+
+        <!-- 六、企业微信小程序配置 -->
+        <div class="section">
+            <h2 class="section-title">六、企业微信小程序配置</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">🔧 模式1：纯内网配置（无需域名）</h3>
+                
+                <div class="warning-box">
+                    <strong>⚠️ 限制说明</strong>：企业微信小程序默认要求HTTPS域名，但可以通过以下方式在内网使用：
+                    <ul>
+                        <li>开发阶段：使用"开发者工具"的"不校验合法域名"选项</li>
+                        <li>生产环境：配置内网DNS或使用自签名证书</li>
+                    </ul>
+                </div>
+
+                <h4>步骤6.1：配置服务器域名（开发阶段）</h4>
+                <ol>
+                    <li>登录企业微信管理后台：https://work.weixin.qq.com</li>
+                    <li>进入"应用管理" → 选择你的小程序</li>
+                    <li>在开发阶段，在"开发者工具"中勾选"不校验合法域名"</li>
+                    <li>配置request合法域名：http://192.168.x.x（内网IP）</li>
+                </ol>
+
+                <h4>步骤6.2：生产环境配置（内网DNS）</h4>
+                <div class="code-block">
+# 方案A：配置企业内网DNS
+# 在企业DNS服务器添加A记录
+aicrm.internal.company.com  →  192.168.x.x
+
+# 企业微信后台配置
+request合法域名：aicrm.internal.company.com
+
+# 方案B：使用自签名SSL证书
+# 生成证书
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/aicrm.key \
+  -out /etc/ssl/certs/aicrm.crt \
+  -subj "/CN=192.168.x.x"
+
+# Nginx配置使用该证书
+                </div>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🌐 模式2：外网访问配置（需域名）</h3>
+                
+                <h4>步骤6.3：域名备案（公网访问必需）</h4>
+                <ol>
+                    <li>注册域名：aicrm.yourcompany.com（¥60/年）</li>
+                    <li>ICP备案：7-20个工作日（免费）</li>
+                    <li>配置DNS解析：A记录指向公网IP</li>
+                    <li>申请SSL证书：Let's Encrypt（免费）或购买（¥1,000-2,000/年）</li>
+                </ol>
+
+                <h4>步骤6.4：配置内网穿透（NAT转发）</h4>
+                <div class="code-block">
+# 在路由器/防火墙配置端口转发
+公网IP:443 → 内网服务器192.168.x.x:443
+公网IP:80  → 内网服务器192.168.x.x:80
+
+# 或使用frp内网穿透工具
+# 服务端（有公网IP的VPS）
+./frps -c frps.ini
+
+# 客户端（企业内网服务器）
+./frpc -c frpc.ini
+
+# frpc.ini配置
+[common]
+server_addr = 公网VPS_IP
+server_port = 7000
+
+[aicrm_http]
+type = http
+local_ip = 127.0.0.1
+local_port = 80
+custom_domains = aicrm.yourcompany.com
+                </div>
+            </div>
+        </div>
+
+        <!-- 七、安全加固 -->
+        <div class="section">
+            <h2 class="section-title">七、安全加固措施</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">🔒 必须实施的安全措施</h3>
+                
+                <h4>7.1 防火墙配置</h4>
+                <div class="code-block">
+# Ubuntu使用UFW防火墙
+sudo ufw enable
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# 仅开放必要端口
+sudo ufw allow 22/tcp    # SSH（仅内网）
+sudo ufw allow 80/tcp    # HTTP
+sudo ufw allow 443/tcp   # HTTPS
+
+# 查看状态
+sudo ufw status
+                </div>
+
+                <h4>7.2 数据库安全</h4>
+                <ul>
+                    <li>✅ MySQL仅监听127.0.0.1，禁止外部访问</li>
+                    <li>✅ 使用强密码（至少16位，大小写+数字+符号）</li>
+                    <li>✅ 定期备份数据库（每日自动备份）</li>
+                    <li>✅ 启用慢查询日志，监控性能</li>
+                </ul>
+
+                <h4>7.3 应用安全</h4>
+                <ul>
+                    <li>✅ 所有API启用JWT认证</li>
+                    <li>✅ 参数过滤，防止SQL注入/XSS攻击</li>
+                    <li>✅ 限制上传文件类型和大小</li>
+                    <li>✅ 日志记录所有敏感操作</li>
+                    <li>✅ 定期更新依赖包，修复漏洞</li>
+                </ul>
+
+                <h4>7.4 数据备份策略</h4>
+                <div class="code-block">
+# 创建自动备份脚本
+sudo nano /home/aicrm/backup.sh
+
+#!/bin/bash
+BACKUP_DIR="/data/backup/aicrm"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+# 备份数据库
+mysqldump -u aicrm_user -pAicrm@2025 aicrm_db > $BACKUP_DIR/db_$DATE.sql
+
+# 备份上传文件
+tar -czf $BACKUP_DIR/uploads_$DATE.tar.gz /data/aicrm/uploads
+
+# 删除7天前的备份
+find $BACKUP_DIR -name "*.sql" -mtime +7 -delete
+find $BACKUP_DIR -name "*.tar.gz" -mtime +7 -delete
+
+# 添加定时任务（每天凌晨2点）
+crontab -e
+0 2 * * * /home/aicrm/backup.sh
+                </div>
+            </div>
+        </div>
+
+        <!-- 八、运维监控 -->
+        <div class="section">
+            <h2 class="section-title">八、运维与监控</h2>
+            
+            <div class="content">
+                <h3 class="section-subtitle">📊 监控指标</h3>
+                
+                <h4>8.1 服务器监控</h4>
+                <ul>
+                    <li>CPU使用率：<80%</li>
+                    <li>内存使用率：<85%</li>
+                    <li>磁盘使用率：<80%</li>
+                    <li>网络流量</li>
+                </ul>
+
+                <h4>8.2 应用监控</h4>
+                <div class="code-block">
+# PM2监控
+pm2 monit  # 实时监控
+
+# 设置PM2 Plus（免费监控平台）
+pm2 link [secret_key] [public_key]
+
+# 查看日志
+pm2 logs aicrm-api --lines 100
+
+# 内存/CPU报警
+pm2 install pm2-auto-pull  # 自动重启
+                </div>
+
+                <h4>8.3 数据库监控</h4>
+                <div class="code-block">
+# 查看慢查询
+sudo tail -f /var/log/mysql/slow-query.log
+
+# 查看连接数
+mysql -u root -p -e "SHOW PROCESSLIST;"
+
+# 查看表大小
+mysql -u root -p -e "
+  SELECT table_name, 
+         ROUND(((data_length + index_length) / 1024 / 1024), 2) AS 'Size (MB)'
+  FROM information_schema.TABLES
+  WHERE table_schema = 'aicrm_db'
+  ORDER BY (data_length + index_length) DESC;
+"
+                </div>
+            </div>
+
+            <div class="content">
+                <h3 class="section-subtitle">🔧 日常运维任务</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>频率</th>
+                            <th>任务</th>
+                            <th>耗时</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>每天</td>
+                            <td>查看PM2状态、检查错误日志</td>
+                            <td>5分钟</td>
+                        </tr>
+                        <tr>
+                            <td>每周</td>
+                            <td>查看服务器资源使用、清理临时文件</td>
+                            <td>15分钟</td>
+                        </tr>
+                        <tr>
+                            <td>每月</td>
+                            <td>更新系统补丁、优化数据库、验证备份</td>
+                            <td>1小时</td>
+                        </tr>
+                        <tr>
+                            <td>每季度</td>
+                            <td>安全审计、性能优化、清理旧数据</td>
+                            <td>2小时</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 九、常见问题 -->
+        <div class="section">
+            <h2 class="section-title">九、常见问题FAQ</h2>
+            
+            <div class="content">
+                <h4>Q1：企业没有固定公网IP怎么办？</h4>
+                <p><strong>A1：</strong>使用内网穿透工具（frp/ngrok）或购买VPS做跳板。成本：¥100-300/年。</p>
+
+                <h4>Q2：自有服务器挂了怎么办？</h4>
+                <p><strong>A2：</strong></p>
+                <ul>
+                    <li>配置服务器硬件冗余（双电源、RAID）</li>
+                    <li>准备备用服务器，定期同步数据</li>
+                    <li>使用虚拟化平台（支持快速迁移）</li>
+                    <li>每日自动备份，故障后1小时内恢复</li>
+                </ul>
+
+                <h4>Q3：如何升级应用版本？</h4>
+                <p><strong>A3：</strong></p>
+                <div class="code-block">
+# 拉取新代码
+cd /home/aicrm/aicrm-backend
+git pull origin main
+
+# 安装新依赖
+npm install --production
+
+# 无缝重启
+pm2 reload aicrm-api --update-env
+
+# 回滚（如有问题）
+git reset --hard HEAD~1
+pm2 reload aicrm-api
+                </div>
+
+                <h4>Q4：数据库爆满怎么办？</h4>
+                <p><strong>A4：</strong></p>
+                <ul>
+                    <li>清理历史日志（保留6个月）</li>
+                    <li>归档旧商机数据（1年前的）</li>
+                    <li>优化图片存储（压缩/CDN）</li>
+                    <li>扩展硬盘容量</li>
+                </ul>
+
+                <h4>Q5：外出销售无法访问怎么办？</h4>
+                <p><strong>A5：</strong></p>
+                <ul>
+                    <li>方案A：配置VPN，外出时连接企业VPN</li>
+                    <li>方案B：配置内网穿透（frp）</li>
+                    <li>方案C：仅在办公室使用，外出查看缓存数据</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 十、实施时间表 -->
+        <div class="section">
+            <h2 class="section-title">十、自有服务器实施时间表</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>阶段</th>
+                        <th>任务</th>
+                        <th>耗时</th>
+                        <th>负责人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="3"><strong>第1天</strong></td>
+                        <td>准备服务器硬件/虚拟机</td>
+                        <td>2小时</td>
+                        <td>IT运维</td>
+                    </tr>
+                    <tr>
+                        <td>安装操作系统（Ubuntu 20.04）</td>
+                        <td>1小时</td>
+                        <td>IT运维</td>
+                    </tr>
+                    <tr>
+                        <td>安装基础软件（Node/Nginx/MySQL/Redis）</td>
+                        <td>2小时</td>
+                        <td>IT运维</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>第2天</strong></td>
+                        <td>上传应用代码</td>
+                        <td>1小时</td>
+                        <td>开发者</td>
+                    </tr>
+                    <tr>
+                        <td>配置环境变量和数据库</td>
+                        <td>1小时</td>
+                        <td>开发者</td>
+                    </tr>
+                    <tr>
+                        <td>初始化数据库和启动应用</td>
+                        <td>1小时</td>
+                        <td>开发者</td>
+                    </tr>
+                    <tr>
+                        <td>配置Nginx反向代理</td>
+                        <td>1小时</td>
+                        <td>IT运维</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>第3天</strong></td>
+                        <td>企业微信小程序配置</td>
+                        <td>2小时</td>
+                        <td>开发者</td>
+                    </tr>
+                    <tr>
+                        <td>内网测试和调试</td>
+                        <td>3小时</td>
+                        <td>测试人员</td>
+                    </tr>
+                    <tr>
+                        <td>安全加固和备份配置</td>
+                        <td>2小时</td>
+                        <td>IT运维</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><strong>第4-5天</strong></td>
+                        <td>员工培训和试用</td>
+                        <td>1天</td>
+                        <td>项目经理</td>
+                    </tr>
+                    <tr>
+                        <td>问题修复和优化</td>
+                        <td>1天</td>
+                        <td>开发者</td>
+                    </tr>
+                    <tr>
+                        <td><strong>第6天</strong></td>
+                        <td>正式上线</td>
+                        <td>-</td>
+                        <td>全员</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="success-box">
+                <h3>✅ 关键里程碑</h3>
+                <ul>
+                    <li><strong>第1天结束</strong>：服务器环境就绪</li>
+                    <li><strong>第2天结束</strong>：应用可内网访问</li>
+                    <li><strong>第3天结束</strong>：企业微信小程序可用</li>
+                    <li><strong>第5天结束</strong>：试用完成，准备上线</li>
+                    <li><strong>第6天</strong>：正式上线全员使用</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 十一、总结对比 -->
+        <div class="section">
+            <h2 class="section-title">十一、云服务器 vs 自有服务器总结</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>对比维度</th>
+                        <th>云服务器</th>
+                        <th>自有服务器</th>
+                        <th>推荐</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>首年成本</strong></td>
+                        <td>¥45,000-113,000</td>
+                        <td style="color: #67c23a; font-weight: bold;">¥28,800-67,400</td>
+                        <td><span class="badge badge-success">自有服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>年度运营</strong></td>
+                        <td>¥14,000-30,000</td>
+                        <td style="color: #67c23a; font-weight: bold;">¥3,200-6,800</td>
+                        <td><span class="badge badge-success">自有服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>3年总成本</strong></td>
+                        <td>¥73,000-173,000</td>
+                        <td style="color: #67c23a; font-weight: bold;">¥35,200-81,000</td>
+                        <td><span class="badge badge-success">自有服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>数据安全</strong></td>
+                        <td>依赖云服务商</td>
+                        <td style="color: #67c23a; font-weight: bold;">完全自主可控</td>
+                        <td><span class="badge badge-success">自有服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>访问速度</strong></td>
+                        <td>20-50ms（公网）</td>
+                        <td style="color: #67c23a; font-weight: bold;">&lt;10ms（内网）</td>
+                        <td><span class="badge badge-success">自有服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>弹性扩展</strong></td>
+                        <td style="color: #67c23a; font-weight: bold;">随时升级配置</td>
+                        <td>需购买硬件</td>
+                        <td><span class="badge badge-success">云服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>运维难度</strong></td>
+                        <td>简单（有托管）</td>
+                        <td>中等（需IT人员）</td>
+                        <td><span class="badge badge-success">云服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>外网访问</strong></td>
+                        <td style="color: #67c23a; font-weight: bold;">原生支持</td>
+                        <td>需配置穿透/VPN</td>
+                        <td><span class="badge badge-success">云服务器</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>适用场景</strong></td>
+                        <td>频繁外出销售</td>
+                        <td style="color: #67c23a; font-weight: bold;">主要在办公室</td>
+                        <td><span class="badge badge-info">看需求</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="success-box">
+                <h3>💡 推荐方案选择</h3>
+                
+                <h4 style="margin-top: 15px;">选择自有服务器，如果：</h4>
+                <ul>
+                    <li>✅ 企业已有机房或服务器</li>
+                    <li>✅ 员工主要在办公室工作</li>
+                    <li>✅ 有IT运维人员（至少1人）</li>
+                    <li>✅ 对数据安全要求极高</li>
+                    <li>✅ 希望降低长期成本</li>
+                </ul>
+
+                <h4 style="margin-top: 15px;">选择云服务器，如果：</h4>
+                <ul>
+                    <li>✅ 没有自有服务器资源</li>
+                    <li>✅ 销售团队经常外出</li>
+                    <li>✅ 没有专职IT运维</li>
+                    <li>✅ 需要快速弹性扩展</li>
+                    <li>✅ 希望简化运维</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div style="margin-top: 60px; padding-top: 30px; border-top: 2px solid #e0e0e0; text-align: center; color: #999;">
+            <p><strong>明升AICRM - 企业自有服务器部署方案</strong></p>
+            <p>版本：v2.0.0 | 日期：2025-12-17</p>
+            <p>技术支持：support@mingsheng.com | 400-xxx-xxxx</p>
+        </div>
+    </div>
+</body>
+</html>

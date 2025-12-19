@@ -139,6 +139,14 @@
               </template>
             </el-table-column>
             <el-table-column prop="duration" label="时长" width="100" />
+            <el-table-column label="外部链接" width="100" align="center">
+              <template #default="scope">
+                <el-tag v-if="scope.row.externalUrl" type="success" size="small">
+                  <el-icon><Link /></el-icon> 已设置
+                </el-tag>
+                <el-tag v-else type="info" size="small">未设置</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="数据" width="150">
               <template #default="scope">
                 <div class="stats">
@@ -238,6 +246,106 @@
           </div>
 
           <el-empty v-if="getAllVideosCount() === 0" description="暂无视频，请先上传" />
+        </el-card>
+      </el-tab-pane>
+
+      <!-- 外部链接管理 -->
+      <el-tab-pane label="外部链接管理" name="externalLinks">
+        <el-card>
+          <div class="section-header">
+            <h3>外部链接列表</h3>
+            <el-button type="primary" @click="showExternalLinkDialog()">
+              <el-icon><Plus /></el-icon> 添加外部链接
+            </el-button>
+          </div>
+
+          <el-form :inline="true" class="filter-form">
+            <el-form-item label="一级分类">
+              <el-select v-model="linkFilterCategory" placeholder="选择分类" clearable @change="onLinkFilterChange">
+                <el-option
+                  v-for="cat in store.getAllCategories"
+                  :key="cat.id"
+                  :label="cat.name"
+                  :value="cat.id" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="链接类型">
+              <el-select v-model="linkFilterType" placeholder="选择类型" clearable>
+                <el-option label="学院平台" value="academy" />
+                <el-option label="技术文档" value="docs" />
+                <el-option label="视频教程" value="video" />
+                <el-option label="在线工具" value="tool" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-select v-model="linkFilterStatus" placeholder="选择状态" clearable>
+                <el-option label="激活" value="active" />
+                <el-option label="停用" value="inactive" />
+              </el-select>
+            </el-form-item>
+          </el-form>
+
+          <el-table :data="filteredExternalLinks" style="width: 100%">
+            <el-table-column prop="order" label="排序" width="80" />
+            <el-table-column label="图标" width="80">
+              <template #default="scope">
+                <span style="font-size: 24px;">{{ scope.row.icon }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="title" label="链接标题" width="250" show-overflow-tooltip />
+            <el-table-column prop="url" label="链接地址" width="300" show-overflow-tooltip>
+              <template #default="scope">
+                <el-link :href="scope.row.url" target="_blank" type="primary">{{ scope.row.url }}</el-link>
+              </template>
+            </el-table-column>
+            <el-table-column label="分类" width="200">
+              <template #default="scope">
+                <div>
+                  <el-tag size="small">{{ getCategoryName(scope.row.categoryId) }}</el-tag>
+                  <br />
+                  <el-tag v-if="scope.row.subcategoryId" size="small" type="success" style="margin-top: 5px;">
+                    {{ getSubcategoryName(scope.row.subcategoryId) }}
+                  </el-tag>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="类型" width="120">
+              <template #default="scope">
+                <el-tag :type="getLinkTypeColor(scope.row.linkType)" size="small">
+                  {{ getLinkTypeName(scope.row.linkType) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="语言" width="80">
+              <template #default="scope">
+                <el-tag size="small">{{ scope.row.language }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="数据" width="150">
+              <template #default="scope">
+                <div class="stats">
+                  <span><el-icon><View /></el-icon> {{ scope.row.views }}</span>
+                  <span><el-icon><StarFilled /></el-icon> {{ scope.row.likes }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" width="100">
+              <template #default="scope">
+                <el-switch
+                  v-model="scope.row.status"
+                  active-value="active"
+                  inactive-value="inactive"
+                  @change="toggleLinkStatus(scope.row.id)"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="200" fixed="right">
+              <template #default="scope">
+                <el-button size="small" @click="showExternalLinkDialog(scope.row)">编辑</el-button>
+                <el-button size="small" type="danger" @click="deleteExternalLink(scope.row.id)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -409,6 +517,28 @@
           <el-input v-model="lessonForm.coverImage" placeholder="或直接输入图片URL" clearable />
         </el-form-item>
 
+        <el-form-item label="外部链接">
+          <el-input 
+            v-model="lessonForm.externalUrl" 
+            placeholder="输入相关网页地址(如产品介绍、详细说明等)" 
+            clearable>
+            <template #prepend>
+              <el-icon><Link /></el-icon>
+            </template>
+            <template #append>
+              <el-button 
+                v-if="lessonForm.externalUrl" 
+                :icon="View" 
+                @click="window.open(lessonForm.externalUrl, '_blank')">
+                预览
+              </el-button>
+            </template>
+          </el-input>
+          <div style="color: #909399; font-size: 12px; margin-top: 5px;">
+            填写完整的URL地址，如：https://www.example.com
+          </div>
+        </el-form-item>
+
         <el-form-item label="发布状态">
           <el-radio-group v-model="lessonForm.status">
             <el-radio label="published">已发布</el-radio>
@@ -522,13 +652,127 @@
         <el-button type="primary" @click="saveVideo">保存</el-button>
       </template>
     </el-dialog>
+
+    <!-- 外部链接编辑对话框 -->
+    <el-dialog
+      v-model="externalLinkDialogVisible"
+      :title="externalLinkForm.id ? '编辑外部链接' : '添加外部链接'"
+      width="800px"
+      :close-on-click-modal="false">
+      <el-form :model="externalLinkForm" label-width="120px">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="一级分类" required>
+              <el-select v-model="externalLinkForm.categoryId" placeholder="选择一级分类">
+                <el-option
+                  v-for="cat in store.getAllCategories"
+                  :key="cat.id"
+                  :label="cat.name"
+                  :value="cat.id">
+                  <span>{{ cat.icon }} {{ cat.name }}</span>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="二级分类">
+              <el-select 
+                v-model="externalLinkForm.subcategoryId" 
+                placeholder="选择二级分类（可选）" 
+                :disabled="!externalLinkForm.categoryId"
+                clearable>
+                <el-option
+                  v-for="sub in store.getSubcategoriesByCategory(externalLinkForm.categoryId)"
+                  :key="sub.id"
+                  :label="sub.name"
+                  :value="sub.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="链接标题" required>
+          <el-input v-model="externalLinkForm.title" placeholder="请输入链接标题" />
+        </el-form-item>
+
+        <el-form-item label="链接地址" required>
+          <el-input v-model="externalLinkForm.url" placeholder="https://example.com" />
+          <div v-if="externalLinkForm.url" style="margin-top: 8px;">
+            <el-link :href="externalLinkForm.url" target="_blank" type="primary">
+              <el-icon><Link /></el-icon> 预览链接
+            </el-link>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="链接描述">
+          <el-input v-model="externalLinkForm.description" type="textarea" :rows="3" placeholder="描述链接内容和用途" />
+        </el-form-item>
+
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="链接类型">
+              <el-select v-model="externalLinkForm.linkType" placeholder="选择类型">
+                <el-option label="🎓 学院平台" value="academy" />
+                <el-option label="📖 技术文档" value="docs" />
+                <el-option label="🎬 视频教程" value="video" />
+                <el-option label="🔧 在线工具" value="tool" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="语言">
+              <el-select v-model="externalLinkForm.language" placeholder="选择语言">
+                <el-option label="中文" value="zh" />
+                <el-option label="英文" value="en" />
+                <el-option label="双语" value="both" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="图标">
+              <el-input v-model="externalLinkForm.icon" placeholder="如: 🎓" />
+              <div v-if="externalLinkForm.icon" class="icon-preview">
+                <span style="font-size: 24px;">{{ externalLinkForm.icon }}</span>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="需要会员">
+              <el-switch v-model="externalLinkForm.isPremium" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="排序">
+              <el-input-number v-model="externalLinkForm.order" :min="1" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="标签">
+          <el-select v-model="externalLinkForm.tags" multiple placeholder="添加标签" allow-create filterable>
+            <el-option label="官方课程" value="官方课程" />
+            <el-option label="免费资源" value="免费资源" />
+            <el-option label="编程教程" value="编程教程" />
+            <el-option label="视频教学" value="视频教学" />
+            <el-option label="技术文档" value="技术文档" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="externalLinkDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveExternalLink">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Reading, Plus, View, StarFilled, VideoPlay } from '@element-plus/icons-vue'
+import { Reading, Plus, View, StarFilled, VideoPlay, Link } from '@element-plus/icons-vue'
 import { useClassroomStore } from '../../store/classroom'
 
 const store = useClassroomStore()
@@ -539,12 +783,16 @@ const categoryDialogVisible = ref(false)
 const subcategoryDialogVisible = ref(false)
 const lessonDialogVisible = ref(false)
 const videoDialogVisible = ref(false)
+const externalLinkDialogVisible = ref(false)
 
 // 筛选
 const filterCategory = ref(null)
 const filterSubcategory = ref(null)
 const videoFilterCategory = ref(null)
 const videoFilterSubcategory = ref(null)
+const linkFilterCategory = ref(null)
+const linkFilterType = ref(null)
+const linkFilterStatus = ref(null)
 
 // 表单数据
 const categoryForm = ref({
@@ -570,6 +818,7 @@ const lessonForm = ref({
   description: '',
   content: '',
   coverImage: '',
+  externalUrl: '',
   author: '',
   duration: '',
   level: '入门',
@@ -588,6 +837,21 @@ const videoForm = ref({
   duration: ''
 })
 
+const externalLinkForm = ref({
+  id: null,
+  categoryId: null,
+  subcategoryId: null,
+  title: '',
+  description: '',
+  url: '',
+  icon: '🎓',
+  linkType: 'academy',
+  language: 'zh',
+  isPremium: false,
+  tags: [],
+  order: 1
+})
+
 // 计算属性
 const filteredLessons = computed(() => {
   let lessons = store.lessons
@@ -598,6 +862,20 @@ const filteredLessons = computed(() => {
     lessons = lessons.filter(l => l.subcategoryId === filterSubcategory.value)
   }
   return lessons
+})
+
+const filteredExternalLinks = computed(() => {
+  let links = store.getAllExternalLinks
+  if (linkFilterCategory.value) {
+    links = links.filter(l => l.categoryId === linkFilterCategory.value)
+  }
+  if (linkFilterType.value) {
+    links = links.filter(l => l.linkType === linkFilterType.value)
+  }
+  if (linkFilterStatus.value) {
+    links = links.filter(l => l.status === linkFilterStatus.value)
+  }
+  return links
 })
 
 // 视频管理的级联选择器数据
@@ -733,6 +1011,7 @@ const showLessonDialog = (lesson = null) => {
       description: '',
       content: '',
       coverImage: '',
+      externalUrl: '',
       author: '技术专家',
       duration: '',
       level: '入门',
@@ -895,6 +1174,92 @@ const deleteVideo = (subcategoryId, videoId) => {
     store.deleteVideo(subcategoryId, videoId)
     ElMessage.success('删除成功')
   }).catch(() => {})
+}
+
+// ===== 外部链接操作 =====
+const onLinkFilterChange = () => {
+  // 筛选变化时的处理
+}
+
+const getLinkTypeName = (type) => {
+  const types = {
+    'academy': '学院平台',
+    'docs': '技术文档',
+    'video': '视频教程',
+    'tool': '在线工具'
+  }
+  return types[type] || type
+}
+
+const getLinkTypeColor = (type) => {
+  const colors = {
+    'academy': '',
+    'docs': 'success',
+    'video': 'warning',
+    'tool': 'info'
+  }
+  return colors[type] || ''
+}
+
+const showExternalLinkDialog = (link = null) => {
+  if (link) {
+    externalLinkForm.value = { ...link }
+  } else {
+    externalLinkForm.value = {
+      id: null,
+      categoryId: null,
+      subcategoryId: null,
+      title: '',
+      description: '',
+      url: '',
+      icon: '🎓',
+      linkType: 'academy',
+      language: 'zh',
+      isPremium: false,
+      tags: [],
+      order: store.externalLinks.length + 1
+    }
+  }
+  externalLinkDialogVisible.value = true
+}
+
+const saveExternalLink = () => {
+  if (!externalLinkForm.value.categoryId || !externalLinkForm.value.title || !externalLinkForm.value.url) {
+    ElMessage.warning('请填写分类、标题和链接地址')
+    return
+  }
+
+  // 验证URL格式
+  try {
+    new URL(externalLinkForm.value.url)
+  } catch {
+    ElMessage.warning('请输入有效的URL地址（如：https://example.com）')
+    return
+  }
+
+  if (externalLinkForm.value.id) {
+    store.updateExternalLink(externalLinkForm.value)
+    ElMessage.success('更新成功')
+  } else {
+    store.addExternalLink(externalLinkForm.value)
+    ElMessage.success('添加成功')
+  }
+
+  externalLinkDialogVisible.value = false
+}
+
+const deleteExternalLink = (id) => {
+  ElMessageBox.confirm('确定要删除这个外部链接吗？', '确认删除', {
+    type: 'warning'
+  }).then(() => {
+    store.deleteExternalLink(id)
+    ElMessage.success('删除成功')
+  }).catch(() => {})
+}
+
+const toggleLinkStatus = (id) => {
+  store.toggleLinkStatus(id)
+  ElMessage.success('状态已更新')
 }
 
 // 初始化

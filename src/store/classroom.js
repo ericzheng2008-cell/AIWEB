@@ -160,6 +160,29 @@ export const useClassroomStore = defineStore('classroom', {
           words: []        // Word文件列表
         }
       }
+    ],
+    
+    // 外部链接资源
+    externalLinks: [
+      // 示例外部链接
+      {
+        id: 2001,
+        categoryId: 1,  // 所属一级分类
+        subcategoryId: 101,  // 所属二级分类（可选）
+        title: '节卡学院 - 协作机器人技术学习平台',
+        description: '节卡机器人官方学习平台，提供完整的协作机器人技术课程、编程教程和应用案例',
+        url: 'https://www.jaka.com/zh/jakaAcademy',
+        icon: '🎓',  // 图标
+        linkType: 'academy',  // 链接类型: academy(学院), docs(文档), video(视频), tool(工具)
+        language: 'zh',  // 语言: zh(中文), en(英文), both(双语)
+        isPremium: false,  // 是否需要付费/会员
+        tags: ['官方课程', '协作机器人', '编程教程'],
+        views: 0,
+        likes: 0,
+        createTime: new Date().toISOString(),
+        status: 'active',  // active(激活), inactive(停用)
+        order: 1
+      }
     ]
   }),
   
@@ -189,6 +212,32 @@ export const useClassroomStore = defineStore('classroom', {
     // 获取课程详情
     getLessonById: (state) => (lessonId) => {
       return state.lessons.find(lesson => lesson.id === lessonId)
+    },
+    
+    // ===== 外部链接相关 =====
+    
+    // 获取所有外部链接
+    getAllExternalLinks: (state) => {
+      return state.externalLinks.sort((a, b) => a.order - b.order)
+    },
+    
+    // 根据一级分类获取外部链接
+    getExternalLinksByCategory: (state) => (categoryId) => {
+      return state.externalLinks
+        .filter(link => link.categoryId === categoryId && link.status === 'active')
+        .sort((a, b) => a.order - b.order)
+    },
+    
+    // 根据二级分类获取外部链接
+    getExternalLinksBySubcategory: (state) => (subcategoryId) => {
+      return state.externalLinks
+        .filter(link => link.subcategoryId === subcategoryId && link.status === 'active')
+        .sort((a, b) => a.order - b.order)
+    },
+    
+    // 获取外部链接详情
+    getExternalLinkById: (state) => (linkId) => {
+      return state.externalLinks.find(link => link.id === linkId)
     }
   },
   
@@ -297,9 +346,95 @@ export const useClassroomStore = defineStore('classroom', {
       }
     },
     
-    // ===== 多媒体资源管理 =====
+    // ===== 视频管理（二级分类直接管理视频）=====
     
-    // 添加视频资源
+    // 获取二级分类的视频列表
+    getVideosBySubcategory(subcategoryId) {
+      const subcategory = this.subcategories.find(s => s.id === subcategoryId)
+      return subcategory?.videos || []
+    },
+    
+    // 添加视频到二级分类
+    addVideo(subcategoryId, videoData) {
+      const subcategory = this.subcategories.find(s => s.id === subcategoryId)
+      if (subcategory) {
+        if (!subcategory.videos) {
+          subcategory.videos = []
+        }
+        const newId = Math.max(
+          ...this.subcategories.flatMap(s => s.videos || []).map(v => v.id || 0),
+          3000
+        ) + 1
+        
+        const video = {
+          id: newId,
+          ...videoData,
+          views: 0,
+          likes: 0,
+          uploadTime: new Date().toISOString()
+        }
+        subcategory.videos.push(video)
+        this.saveToLocalStorage()
+        return newId
+      }
+      return null
+    },
+    
+    // 更新视频
+    updateVideo(subcategoryId, videoId, videoData) {
+      const subcategory = this.subcategories.find(s => s.id === subcategoryId)
+      if (subcategory && subcategory.videos) {
+        const index = subcategory.videos.findIndex(v => v.id === videoId)
+        if (index !== -1) {
+          subcategory.videos[index] = {
+            ...subcategory.videos[index],
+            ...videoData
+          }
+          this.saveToLocalStorage()
+          return true
+        }
+      }
+      return false
+    },
+    
+    // 删除视频
+    deleteVideo(subcategoryId, videoId) {
+      const subcategory = this.subcategories.find(s => s.id === subcategoryId)
+      if (subcategory && subcategory.videos) {
+        subcategory.videos = subcategory.videos.filter(v => v.id !== videoId)
+        this.saveToLocalStorage()
+        return true
+      }
+      return false
+    },
+    
+    // 增加视频浏览量
+    incrementVideoViews(subcategoryId, videoId) {
+      const subcategory = this.subcategories.find(s => s.id === subcategoryId)
+      if (subcategory && subcategory.videos) {
+        const video = subcategory.videos.find(v => v.id === videoId)
+        if (video) {
+          video.views = (video.views || 0) + 1
+          this.saveToLocalStorage()
+        }
+      }
+    },
+    
+    // 增加视频点赞
+    incrementVideoLikes(subcategoryId, videoId) {
+      const subcategory = this.subcategories.find(s => s.id === subcategoryId)
+      if (subcategory && subcategory.videos) {
+        const video = subcategory.videos.find(v => v.id === videoId)
+        if (video) {
+          video.likes = (video.likes || 0) + 1
+          this.saveToLocalStorage()
+        }
+      }
+    },
+    
+    // ===== 多媒体资源管理（课程资源）=====
+    
+    // 添加视频资源到课程
     addVideoResource(lessonId, videoFile) {
       const lesson = this.lessons.find(l => l.id === lessonId)
       if (lesson) {
@@ -322,7 +457,7 @@ export const useClassroomStore = defineStore('classroom', {
       return null
     },
     
-    // 删除视频资源
+    // 删除课程视频资源
     deleteVideoResource(lessonId, videoId) {
       const lesson = this.lessons.find(l => l.id === lessonId)
       if (lesson && lesson.resources) {
@@ -479,21 +614,84 @@ export const useClassroomStore = defineStore('classroom', {
       }
     },
     
+    // ===== 外部链接管理 =====
+    
+    // 添加外部链接
+    addExternalLink(link) {
+      const newId = Math.max(...this.externalLinks.map(l => l.id), 2000) + 1
+      this.externalLinks.push({
+        id: newId,
+        ...link,
+        views: 0,
+        likes: 0,
+        createTime: new Date().toISOString(),
+        status: 'active',
+        order: this.externalLinks.length + 1
+      })
+      this.saveToLocalStorage()
+      return newId
+    },
+    
+    // 更新外部链接
+    updateExternalLink(link) {
+      const index = this.externalLinks.findIndex(l => l.id === link.id)
+      if (index !== -1) {
+        this.externalLinks[index] = { ...link }
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 删除外部链接
+    deleteExternalLink(linkId) {
+      this.externalLinks = this.externalLinks.filter(l => l.id !== linkId)
+      this.saveToLocalStorage()
+    },
+    
+    // 增加链接浏览量
+    incrementLinkViews(linkId) {
+      const link = this.externalLinks.find(l => l.id === linkId)
+      if (link) {
+        link.views++
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 增加链接点赞
+    incrementLinkLikes(linkId) {
+      const link = this.externalLinks.find(l => l.id === linkId)
+      if (link) {
+        link.likes++
+        this.saveToLocalStorage()
+      }
+    },
+    
+    // 切换链接状态
+    toggleLinkStatus(linkId) {
+      const link = this.externalLinks.find(l => l.id === linkId)
+      if (link) {
+        link.status = link.status === 'active' ? 'inactive' : 'active'
+        this.saveToLocalStorage()
+      }
+    },
+    
     // ===== 数据持久化 =====
     saveToLocalStorage() {
       localStorage.setItem('classroom_categories', JSON.stringify(this.categories))
       localStorage.setItem('classroom_subcategories', JSON.stringify(this.subcategories))
       localStorage.setItem('classroom_lessons', JSON.stringify(this.lessons))
+      localStorage.setItem('classroom_external_links', JSON.stringify(this.externalLinks))
     },
     
     loadFromLocalStorage() {
       const categories = localStorage.getItem('classroom_categories')
       const subcategories = localStorage.getItem('classroom_subcategories')
       const lessons = localStorage.getItem('classroom_lessons')
+      const externalLinks = localStorage.getItem('classroom_external_links')
       
       if (categories) this.categories = JSON.parse(categories)
       if (subcategories) this.subcategories = JSON.parse(subcategories)
       if (lessons) this.lessons = JSON.parse(lessons)
+      if (externalLinks) this.externalLinks = JSON.parse(externalLinks)
     }
   }
 })

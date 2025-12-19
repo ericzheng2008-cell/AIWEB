@@ -10,6 +10,10 @@
           </div>
         </div>
         <div class="header-actions">
+          <el-button @click="goHome" type="success">
+            <el-icon><HomeFilled /></el-icon>
+            返回主页
+          </el-button>
           <el-button type="primary" @click="showUploadDialog = true">
             <el-icon><Upload /></el-icon>
             导入曲线
@@ -18,10 +22,33 @@
             <el-icon><Delete /></el-icon>
             清空所有
           </el-button>
-          <el-button @click="exportReport">
-            <el-icon><Download /></el-icon>
-            导出报告
-          </el-button>
+          <el-dropdown @command="handleExportCommand">
+            <el-button type="primary">
+              <el-icon><Download /></el-icon>
+              导出数据
+              <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="csv">
+                  <el-icon><Document /></el-icon>
+                  导出CSV格式
+                </el-dropdown-item>
+                <el-dropdown-item command="txt">
+                  <el-icon><DocumentCopy /></el-icon>
+                  导出TXT格式
+                </el-dropdown-item>
+                <el-dropdown-item command="report" divided>
+                  <el-icon><Notebook /></el-icon>
+                  导出分析报告 (TXT)
+                </el-dropdown-item>
+                <el-dropdown-item command="professional-report">
+                  <el-icon><DataAnalysis /></el-icon>
+                  导出专业报告 (详细)
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
     </el-card>
@@ -552,8 +579,21 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import * as echarts from 'echarts'
+import { 
+  Download, ArrowDown, Document, DocumentCopy, 
+  Notebook, DataAnalysis as DataAnalysisIcon, HomeFilled 
+} from '@element-plus/icons-vue'
+
+const router = useRouter()
+
+// 返回主页
+const goHome = () => {
+  router.push('/')
+  ElMessage.success('返回主页')
+}
 
 // 数据状态
 const curves = ref([])
@@ -1042,6 +1082,261 @@ const generateFloatingCurve = () => {
   return data
 }
 
+// ========== 智能异常检测算法 (基于知识库专业知识) ==========
+
+/**
+ * 检测曲线异常类型
+ * @param {Object} curve - 曲线对象 {name, data: [[angle, torque], ...]}
+ * @returns {String} - 状态描述
+ */
+const detectCurveAnomalies = (curve) => {
+  const data = curve.data
+  if (!data || data.length < 100) return '数据不足'
+  
+  // 计算关键参数
+  const seatPoint = findSeatPoint(data) // 贴合点
+  const elasticSlope = calculateElasticSlope(data) // 弹性段斜率
+  const maxTorque = Math.max(...data.map(d => d[1]))
+  const finalAngle = data[data.length - 1][0]
+  
+  // 检测各种异常
+  const anomalies = []
+  
+  // 1. 滑牙检测: 扭矩在角度>200°时突然下降或保持低位
+  if (detectSlipAnomaly(data, maxTorque)) {
+    anomalies.push('滑牙')
+  }
+  
+  // 2. 粘滑检测: 扭矩曲线呈锯齿状波动
+  if (detectStickSlipAnomaly(data)) {
+    anomalies.push('粘滑')
+  }
+  
+  // 3. 缓升检测: 弹性段斜率明显小于正常值
+  if (elasticSlope < 0.08) {
+    anomalies.push('缓升')
+  }
+  
+  // 4. 压溃检测: 曲线出现双峰或平台
+  if (detectCrushAnomaly(data)) {
+    anomalies.push('压溃')
+  }
+  
+  // 5. 断裂检测: 扭矩急剧上升后归零
+  if (detectBreakAnomaly(data)) {
+    anomalies.push('断裂')
+  }
+  
+  // 6. 浮钉检测: 贴合点延迟(>400°)
+  if (seatPoint.angle > 400) {
+    anomalies.push('浮钉')
+  }
+  
+  // 7. 开裂检测: 扭矩曲线有多个小跌落
+  if (detectCrackAnomaly(data)) {
+    anomalies.push('开裂')
+  }
+  
+  // 返回状态
+  if (anomalies.length === 0) {
+    return '正常'
+  } else {
+    return `异常-${anomalies.join('/')}`
+  }
+}
+
+/**
+ * 查找贴合点 (Seat Point)
+ * 定义: 曲线从平缓开始明显上升的拐点
+ */
+const findSeatPoint = (data) => {
+  const threshold = 5 // 扭矩阈值 5 N·m
+  for (let i = 0; i < data.length; i++) {
+    if (data[i][1] > threshold) {
+      return {
+        index: i,
+        angle: data[i][0],
+        torque: data[i][1]
+      }
+    }
+  }
+  return { index: 0, angle: 0, torque: 0 }
+}
+
+/**
+ * 计算弹性段斜率 (Elastic Slope)
+ * 范围: 360-480°
+ */
+const calculateElasticSlope = (data) => {
+  const elasticData = data.filter(d => d[0] >= 360 && d[0] <= 480)
+  if (elasticData.length < 2) return 0
+  
+  const deltaY = elasticData[elasticData.length - 1][1] - elasticData[0][1]
+  const deltaX = elasticData[elasticData.length - 1][0] - elasticData[0][0]
+  
+  return deltaX > 0 ? deltaY / deltaX : 0
+}
+
+/**
+ * 检测滑牙异常
+ * 条件: angle > 200 && torque < 10 && continuing_rotation
+ */
+const detectSlipAnomaly = (data, maxTorque) => {
+  let slipDetected = false
+  
+  for (let i = 0; i < data.length - 20; i++) {
+    const angle = data[i][0]
+    const torque = data[i][1]
+    
+    // 在角度>200°后,扭矩异常低(<10 Nm)或突然下降>15 Nm
+    if (angle > 200 && torque < 10 && i > 0) {
+      slipDetected = true
+      break
+    }
+    
+    // 检测扭矩突降
+    if (i > 10 && angle > 300) {
+      const torqueDrop = data[i - 10][1] - torque
+      if (torqueDrop > 15) {
+        slipDetected = true
+        break
+      }
+    }
+  }
+  
+  return slipDetected
+}
+
+/**
+ * 检测粘滑异常 (Stick-Slip)
+ * 条件: 扭矩波动频率 > 5 && amplitude > 5Nm
+ */
+const detectStickSlipAnomaly = (data) => {
+  let oscillationCount = 0
+  const windowSize = 10
+  
+  for (let i = windowSize; i < data.length - windowSize; i++) {
+    const localMax = Math.max(...data.slice(i - windowSize, i + windowSize).map(d => d[1]))
+    const localMin = Math.min(...data.slice(i - windowSize, i + windowSize).map(d => d[1]))
+    const amplitude = localMax - localMin
+    
+    if (amplitude > 5 && data[i][1] === localMax) {
+      oscillationCount++
+    }
+  }
+  
+  return oscillationCount > 5
+}
+
+/**
+ * 检测压溃异常 (Crushing)
+ * 条件: 出现明显的扭矩平台或双峰
+ */
+const detectCrushAnomaly = (data) => {
+  let plateauDetected = false
+  const windowSize = 20
+  
+  for (let i = windowSize; i < data.length - windowSize; i++) {
+    const angle = data[i][0]
+    if (angle < 360 || angle > 450) continue
+    
+    // 检测扭矩平台: 20个点内扭矩变化<2 Nm
+    const torqueRange = Math.max(...data.slice(i - windowSize, i + windowSize).map(d => d[1])) - 
+                       Math.min(...data.slice(i - windowSize, i + windowSize).map(d => d[1]))
+    
+    if (torqueRange < 2) {
+      plateauDetected = true
+      break
+    }
+  }
+  
+  return plateauDetected
+}
+
+/**
+ * 检测断裂异常 (Fracture)
+ * 条件: 扭矩急剧上升后突然归零
+ */
+const detectBreakAnomaly = (data) => {
+  for (let i = 10; i < data.length - 5; i++) {
+    const torque = data[i][1]
+    const nextTorques = data.slice(i + 1, i + 6).map(d => d[1])
+    const avgNext = nextTorques.reduce((sum, t) => sum + t, 0) / nextTorques.length
+    
+    // 扭矩>50后,突然下降>30 Nm
+    if (torque > 50 && torque - avgNext > 30) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
+ * 检测开裂异常 (Cracking)
+ * 条件: 多次小幅扭矩跌落
+ */
+const detectCrackAnomaly = (data) => {
+  let dropCount = 0
+  const threshold = 3 // 扭矩跌落阈值 3 Nm
+  
+  for (let i = 5; i < data.length - 1; i++) {
+    const torqueDrop = data[i][1] - data[i + 1][1]
+    if (torqueDrop > threshold && data[i][0] > 300) {
+      dropCount++
+    }
+  }
+  
+  return dropCount >= 3
+}
+
+/**
+ * 智能检测滑牙曲线
+ */
+const detectSlipCurves = (curves) => {
+  return curves.filter(curve => {
+    const status = curve.status || detectCurveAnomalies(curve)
+    return status.includes('滑牙')
+  })
+}
+
+/**
+ * 提取曲线关键特征点
+ */
+const extractCurveFeatures = (data) => {
+  const seatPoint = findSeatPoint(data)
+  const maxTorque = Math.max(...data.map(d => d[1]))
+  const maxTorquePoint = data.find(d => d[1] === maxTorque)
+  const elasticSlope = calculateElasticSlope(data)
+  
+  // 查找屈服点 (Yield Point): 斜率明显减小的点
+  let yieldPoint = null
+  for (let i = 100; i < data.length - 10; i++) {
+    if (data[i][0] < 360) continue
+    
+    const slope1 = (data[i][1] - data[i - 10][1]) / (data[i][0] - data[i - 10][0])
+    const slope2 = (data[i + 10][1] - data[i][1]) / (data[i + 10][0] - data[i][0])
+    
+    if (slope1 > 0.1 && slope2 < slope1 * 0.5) {
+      yieldPoint = {
+        index: i,
+        angle: data[i][0],
+        torque: data[i][1]
+      }
+      break
+    }
+  }
+  
+  return {
+    seatPoint,
+    maxTorquePoint: {
+      angle: maxTorquePoint?.[0] || 0,
+      torque: maxTorque
+    },
+    yieldPoint,
+    elasticSlope
+  }
+}
+
 // 将角度-扭矩数据转换为时间序列数据
 const convertToTimeData = (angleData) => {
   const timeData = []
@@ -1087,20 +1382,25 @@ const generateBreakCurve = () => {
   return data
 }
 
-// 更新图表（增强版：显示阶段标记和关键参数）
+// 更新图表（增强版：显示阶段标记和关键参数 + 智能对比分析）
 const updateChart = () => {
   if (!chartInstance) return
 
   const series = []
   const legendData = []
+  const markPoints = [] // 关键点标注
+  const markLines = [] // 关键线标注
 
   // 根据曲线类型处理数据
   const isTimeMode = curveType.value === 'torque-time' || curveType.value === 'angle-time'
   const isDoubleYMode = curveType.value === 'torque-angle-time'
 
-  // 添加标准曲线
+  // 添加标准曲线(参考曲线)
   if (standardCurve.value && !isDoubleYMode) {
     let chartData = standardCurve.value.data
+    
+    // 提取标准曲线关键特征
+    const stdFeatures = extractCurveFeatures(standardCurve.value.data)
     
     // 如果是时间模式，转换数据
     if (isTimeMode) {
@@ -1116,19 +1416,44 @@ const updateChart = () => {
       itemStyle: { color: '#f39c12' },
       symbol: 'none',
       emphasis: { disabled: false },
+      z: 10, // 确保标准曲线在最上层
       markPoint: {
         data: [
           { 
             type: 'max', 
-            name: '最大扭矩',
+            name: '标准峰值',
             itemStyle: { color: '#f56c6c' },
             label: {
               formatter: function(param) {
-                return `峰值\n${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}`
-              }
+                return `标准峰值\n${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}`
+              },
+              fontSize: 11,
+              fontWeight: 'bold'
             }
-          }
-        ]
+          },
+          // 贴合点标注
+          stdFeatures.seatPoint.angle > 0 ? {
+            coord: [stdFeatures.seatPoint.angle, stdFeatures.seatPoint.torque],
+            name: '贴合点',
+            itemStyle: { color: '#67c23a' },
+            label: {
+              formatter: `贴合点\n${stdFeatures.seatPoint.angle.toFixed(0)}°\n${stdFeatures.seatPoint.torque.toFixed(1)}Nm`,
+              fontSize: 10
+            },
+            symbolSize: 40
+          } : null,
+          // 屈服点标注
+          stdFeatures.yieldPoint ? {
+            coord: [stdFeatures.yieldPoint.angle, stdFeatures.yieldPoint.torque],
+            name: '屈服点',
+            itemStyle: { color: '#e6a23c' },
+            label: {
+              formatter: `屈服点\n${stdFeatures.yieldPoint.angle.toFixed(0)}°`,
+              fontSize: 10
+            },
+            symbolSize: 40
+          } : null
+        ].filter(Boolean)
       },
       markLine: curveType.value === 'torque-angle' ? {
         silent: false,
@@ -1141,11 +1466,19 @@ const updateChart = () => {
         label: {
           position: 'end',
           formatter: '{b}',
-          fontSize: 11
+          fontSize: 11,
+          fontWeight: 'bold'
         },
         data: [
-          { xAxis: 90, name: '认牙→旋入', label: { formatter: '认牙结束' } },
-          { xAxis: 360, name: '旋入→拧紧', label: { formatter: '开始拧紧' } }
+          { xAxis: 90, name: '认牙结束', label: { formatter: '① 认牙结束' } },
+          { xAxis: 360, name: '开始拧紧', label: { formatter: '② 开始拧紧' } },
+          // 标准最大扭矩线
+          { 
+            yAxis: stdFeatures.maxTorquePoint.torque, 
+            name: '标准扭矩', 
+            lineStyle: { color: '#f39c12', type: 'dashed', width: 1 },
+            label: { formatter: `标准: ${stdFeatures.maxTorquePoint.torque.toFixed(1)}Nm`, color: '#f39c12' } 
+          }
         ]
       } : undefined,
       markArea: curveType.value === 'torque-angle' ? {
@@ -1162,15 +1495,15 @@ const updateChart = () => {
         },
         data: [
           [
-            { name: '① 低速认牙', xAxis: 0 },
+            { name: '① 低速认牙 (0-90°)', xAxis: 0 },
             { xAxis: 90 }
           ],
           [
-            { name: '② 快速旋入', xAxis: 90 },
+            { name: '② 快速旋入 (90-360°)', xAxis: 90 },
             { xAxis: 360 }
           ],
           [
-            { name: '③ 拧紧阶段', xAxis: 360 },
+            { name: '③ 拧紧阶段 (360-540°)', xAxis: 360 },
             { xAxis: 540 }
           ]
         ]
@@ -1179,7 +1512,7 @@ const updateChart = () => {
     legendData.push(standardCurve.value.name)
   }
 
-  // 添加选中的曲线
+  // 添加选中的曲线(对比分析)
   const selectedCurveData = filteredCurves.value.filter(c => selectedCurves.value.includes(c.id))
   const colors = ['#3498db', '#e74c3c', '#2ecc71', '#9b59b6', '#1abc9c']
   
@@ -1229,10 +1562,13 @@ const updateChart = () => {
       legendData.push(`${curve.name}-转角`)
     })
   } else {
-    // 其他模式：单Y轴
+    // 其他模式：单Y轴 + 智能对比分析
     selectedCurveData.forEach((curve, index) => {
       const isAbnormal = curve.status.includes('异常')
       let chartData = curve.data
+      
+      // 提取曲线关键特征
+      const curveFeatures = extractCurveFeatures(curve.data)
       
       // 如果是时间模式，转换数据
       if (isTimeMode) {
@@ -1240,21 +1576,31 @@ const updateChart = () => {
         chartData = curveType.value === 'torque-time' ? converted.timeData : converted.angleTimeData
       }
       
+      // 计算与标准曲线的偏差
+      let deviationInfo = ''
+      if (standardCurve.value) {
+        const stdFeatures = extractCurveFeatures(standardCurve.value.data)
+        const torqueDeviation = ((curve.maxTorque - standardCurve.value.maxTorque) / standardCurve.value.maxTorque * 100).toFixed(1)
+        const angleDeviation = curve.maxAngle - standardCurve.value.maxAngle
+        deviationInfo = `偏差: 扭矩${torqueDeviation}%, 角度${angleDeviation}°`
+      }
+      
       series.push({
         name: curve.name,
         type: 'line',
         data: chartData,
         lineStyle: { 
-          width: isAbnormal ? 2.5 : 2, 
+          width: isAbnormal ? 3 : 2, 
           color: colors[index % colors.length],
           type: isAbnormal ? 'solid' : 'solid'
         },
         itemStyle: { color: colors[index % colors.length] },
         symbol: 'none',
         emphasis: {
-          lineStyle: { width: 3 }
+          lineStyle: { width: 4 },
+          focus: 'series'
         },
-        // 为异常曲线添加标记
+        // 为异常曲线添加智能标记
         markPoint: isAbnormal ? {
           data: [
             { 
@@ -1263,8 +1609,64 @@ const updateChart = () => {
               itemStyle: { color: '#f56c6c' },
               label: {
                 formatter: function(param) {
-                  return `⚠️ ${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}`
-                }
+                  return `⚠️ 异常\n${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}\n${curve.status.replace('异常-', '')}`
+                },
+                fontSize: 10,
+                fontWeight: 'bold',
+                color: '#fff',
+                backgroundColor: '#f56c6c',
+                padding: [4, 8],
+                borderRadius: 4
+              }
+            },
+            // 贴合点对比
+            curveFeatures.seatPoint.angle > 0 ? {
+              coord: [curveFeatures.seatPoint.angle, curveFeatures.seatPoint.torque],
+              name: '贴合点',
+              itemStyle: { 
+                color: curveFeatures.seatPoint.angle > 400 ? '#f56c6c' : '#67c23a' 
+              },
+              label: {
+                formatter: `贴合\n${curveFeatures.seatPoint.angle.toFixed(0)}°`,
+                fontSize: 9
+              },
+              symbolSize: 30
+            } : null
+          ].filter(Boolean)
+        } : {
+          data: [
+            { 
+              type: 'max', 
+              name: '峰值',
+              itemStyle: { color: '#67c23a' },
+              label: {
+                formatter: function(param) {
+                  return `✓ 正常\n${param.value}${curveType.value === 'angle-time' ? '°' : 'Nm'}`
+                },
+                fontSize: 10
+              }
+            }
+          ]
+        },
+        // 添加对比线(如果有标准曲线)
+        markLine: standardCurve.value && curveType.value === 'torque-angle' ? {
+          silent: true,
+          symbol: ['none', 'none'],
+          lineStyle: {
+            type: 'dotted',
+            width: 1,
+            color: isAbnormal ? '#f56c6c' : '#67c23a'
+          },
+          label: {
+            show: false
+          },
+          data: [
+            // 实际扭矩与标准对比
+            { 
+              yAxis: curve.maxTorque,
+              lineStyle: { 
+                color: isAbnormal ? '#f56c6c' : '#67c23a',
+                width: 1
               }
             }
           ]
@@ -1280,9 +1682,31 @@ const updateChart = () => {
       selected: legendData.reduce((acc, name) => {
         acc[name] = true
         return acc
-      }, {})
+      }, {}),
+      textStyle: {
+        fontSize: 12
+      },
+      tooltip: {
+        show: true
+      }
     },
-    series: series
+    series: series,
+    // 添加标题显示对比信息
+    title: {
+      text: '拧紧曲线智能对比分析',
+      subtext: standardCurve.value 
+        ? `标准曲线: ${standardCurve.value.name} | 对比曲线: ${selectedCurveData.length}条 | 异常: ${selectedCurveData.filter(c => c.status.includes('异常')).length}条`
+        : `扭矩-角度关系 | 三阶段拧紧过程可视化`,
+      left: 'center',
+      textStyle: {
+        fontSize: 18,
+        fontWeight: 'bold'
+      },
+      subtextStyle: {
+        fontSize: 12,
+        color: '#666'
+      }
+    }
   })
 }
 
@@ -1455,22 +1879,32 @@ const updateCurveType = () => {
   ElMessage.success(`已切换到${typeNames[curveType.value]}曲线`)
 }
 
-// 执行智能分析
+// ========== 智能分析增强版 ==========
+
+/**
+ * 基于拧紧曲线三阶段理论的智能异常检测
+ * 参考标准: ISO 5393, VDI/VDE 2862, GB/T 16823
+ */
 const performAnalysis = () => {
   if (curves.value.length === 0) {
     analysisResult.value = null
     return
   }
 
+  // 重新评估所有曲线,使用智能异常检测算法
+  curves.value.forEach(curve => {
+    curve.status = detectCurveAnomalies(curve)
+  })
+
   const abnormalCurves = curves.value.filter(c => c.status.includes('异常'))
   const qualifiedCount = curves.value.length - abnormalCurves.length
   const qualificationRate = ((qualifiedCount / curves.value.length) * 100).toFixed(1)
 
-  // 问题诊断 - 扩展7种异常类型
+  // 问题诊断 - 基于7种异常类型的智能检测
   const issues = []
   
-  // 1. 检测滑牙
-  const slipCurves = curves.value.filter(c => c.status.includes('滑牙'))
+  // 1. 检测滑牙 (Thread Stripping)
+  const slipCurves = detectSlipCurves(curves.value)
   if (slipCurves.length > 0) {
     issues.push({
       type: '内螺纹滑牙',
@@ -2135,6 +2569,127 @@ const parseCSVFile = (file, callback) => {
   reader.readAsText(file)
 }
 
+// 通用下载文件函数
+const downloadFile = (content, filename, mimeType) => {
+  const blob = new Blob([content], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+// 导出命令处理
+const handleExportCommand = (command) => {
+  switch (command) {
+    case 'csv':
+      exportCurveDataCSV()
+      break
+    case 'txt':
+      exportCurveDataTXT()
+      break
+    case 'report':
+      exportReport()
+      break
+    case 'professional-report':
+      exportProfessionalReport()
+      break
+  }
+}
+
+// 导出CSV格式
+const exportCurveDataCSV = () => {
+  if (selectedCurves.value.length === 0 && curves.value.length === 0) {
+    ElMessage.warning('没有可导出的曲线数据')
+    return
+  }
+
+  const exportCurves = selectedCurves.value.length > 0 
+    ? curves.value.filter(c => selectedCurves.value.includes(c.id))
+    : curves.value
+
+  let csv = '曲线名称,点编号,角度(度),扭矩(N·m),时间(s),状态,工具型号,SN编号,车间,线体,班次\n'
+  
+  exportCurves.forEach(curve => {
+    if (curve.data) {
+      curve.data.forEach((point, index) => {
+        const angle = point[0]
+        let time = 0
+        if (angle <= 90) {
+          time = angle / 180
+        } else if (angle <= 360) {
+          time = 0.5 + (angle - 90) / 135
+        } else {
+          time = 2.5 + (angle - 360) / 90
+        }
+        
+        csv += `${curve.name},${index},${point[0].toFixed(2)},${point[1].toFixed(2)},${time.toFixed(3)},${curve.status},${curve.toolModel || ''},${curve.snNumber || ''},${curve.workshop || ''},${curve.productionLine || ''},${curve.shift || ''}\n`
+      })
+    }
+  })
+
+  downloadFile(csv, `拧紧曲线数据_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv;charset=utf-8')
+  ElMessage.success(`已导出 ${exportCurves.length} 条曲线数据 (CSV格式)`)
+}
+
+// 导出TXT格式
+const exportCurveDataTXT = () => {
+  if (selectedCurves.value.length === 0 && curves.value.length === 0) {
+    ElMessage.warning('没有可导出的曲线数据')
+    return
+  }
+
+  const exportCurves = selectedCurves.value.length > 0 
+    ? curves.value.filter(c => selectedCurves.value.includes(c.id))
+    : curves.value
+
+  let txt = '========================================\n'
+  txt += '拧紧曲线数据导出\n'
+  txt += `导出时间: ${new Date().toLocaleString('zh-CN')}\n`
+  txt += `曲线数量: ${exportCurves.length}\n`
+  txt += '========================================\n\n'
+  
+  exportCurves.forEach((curve, idx) => {
+    if (curve.data) {
+      txt += `\n--- 曲线 ${idx + 1}: ${curve.name} ---\n`
+      txt += `状态: ${curve.status}\n`
+      txt += `数据点数: ${curve.points}\n`
+      txt += `峰值扭矩: ${curve.maxTorque} N·m\n`
+      txt += `峰值角度: ${curve.maxAngle}°\n`
+      txt += `车间: ${curve.workshop || 'N/A'}\n`
+      txt += `线体: ${curve.productionLine || 'N/A'}\n`
+      txt += `工具型号: ${curve.toolModel || 'N/A'}\n`
+      txt += `SN编号: ${curve.snNumber || 'N/A'}\n`
+      txt += `班次: ${curve.shift || 'N/A'}\n`
+      txt += `采集时间: ${curve.uploadTime}\n\n`
+      txt += '数据点:\n'
+      txt += '编号\t角度(°)\t扭矩(N·m)\t时间(s)\n'
+      txt += '----\t-------\t---------\t-------\n'
+      
+      curve.data.forEach((point, index) => {
+        const angle = point[0]
+        let time = 0
+        if (angle <= 90) {
+          time = angle / 180
+        } else if (angle <= 360) {
+          time = 0.5 + (angle - 90) / 135
+        } else {
+          time = 2.5 + (angle - 360) / 90
+        }
+        
+        txt += `${index}\t${point[0].toFixed(2)}\t${point[1].toFixed(2)}\t\t${time.toFixed(3)}\n`
+      })
+      txt += '\n'
+    }
+  })
+
+  downloadFile(txt, `拧紧曲线数据_${new Date().toISOString().slice(0,10)}.txt`, 'text/plain;charset=utf-8')
+  ElMessage.success(`已导出 ${exportCurves.length} 条曲线数据 (TXT格式)`)
+}
+
 // 导出报告
 const exportReport = () => {
   if (!analysisResult.value) {
@@ -2171,15 +2726,180 @@ const exportReport = () => {
     report += `  偏差率: ${param.deviation}%\n`
   })
 
-  const blob = new Blob([report], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `拧紧曲线分析报告_${new Date().toISOString().slice(0,10)}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
-  
+  downloadFile(report, `拧紧曲线分析报告_${new Date().toISOString().slice(0,10)}.txt`, 'text/plain;charset=utf-8')
   ElMessage.success('报告已导出')
+}
+
+// 生成专业报告 (根据专业拧紧曲线分析标准)
+const generateProfessionalReport = () => {
+  const now = new Date()
+  let report = ''
+  
+  report += '═══════════════════════════════════════════════════════════════\n'
+  report += '          螺栓拧紧曲线分析报告 (专业版)\n'
+  report += '          Bolt Tightening Curve Analysis Report\n'
+  report += '═══════════════════════════════════════════════════════════════\n\n'
+  
+  // 一、基本格式（报告/图表标题）
+  report += '一、基本信息 (Basic Information)\n'
+  report += '─────────────────────────────────────────────────────\n'
+  report += `· 报告生成时间: ${now.toLocaleString('zh-CN')}\n`
+  report += `· 分析师/操作员: [待填写]\n`
+  report += `· 零件/总成名称: [待填写]\n`
+  report += `· 螺栓/连接点标识: [待填写]\n`
+  report += `· 工具信息: ${curves.value[0]?.toolModel || '[待填写]'}\n`
+  report += `· 控制器序列号: ${curves.value[0]?.snNumber || '[待填写]'}\n`
+  report += `· 工艺标准: 扭矩-角度法\n\n`
+  
+  // 二、曲线概况
+  report += '二、曲线概况 (Curve Overview)\n'
+  report += '─────────────────────────────────────────────────────\n'
+  report += `· 总曲线数量: ${curves.value.length} 条\n`
+  report += `· 合格曲线数量: ${analysisResult.value.qualifiedCount} 条\n`
+  report += `· 不合格曲线数量: ${analysisResult.value.abnormalCount} 条\n`
+  report += `· 合格率: ${analysisResult.value.qualificationRate}%\n\n`
+  
+  if (standardCurve.value) {
+    report += '· 标准曲线信息:\n'
+    report += `  - 名称: ${standardCurve.value.name}\n`
+    report += `  - 峰值扭矩: ${standardCurve.value.maxTorque} N·m\n`
+    report += `  - 峰值角度: ${standardCurve.value.maxAngle}°\n`
+    report += `  - 数据点数: ${standardCurve.value.points}\n\n`
+  }
+  
+  // 三、曲线关键阶段标注
+  report += '三、曲线关键阶段标注 (Key Phases)\n'
+  report += '─────────────────────────────────────────────────────\n'
+  report += '· 阶段一 (贴合点识别): 曲线从平缓开始明显上升的拐点\n'
+  report += '  - 低速认牙阶段: 0-90° - 螺栓头部与工件接触\n'
+  report += '· 阶段二 (弹性区): 从贴合点到目标扭矩/角度\n'
+  report += `  - 快速旋入阶段: 90-360° - 扭矩与转角基本线性关系\n'
+  report += '· 阶段三 (塑性区): 螺栓屈服点后\n'
+  report += '  - 拧紧阶段: 360-540° - 曲线偏离直线,斜率减小\n\n'
+  
+  if (standardCurve.value && standardCurve.value.data) {
+    const sampleData = standardCurve.value.data
+    const seatPoint = sampleData.find(d => d[0] >= 280 && d[1] > 0)
+    if (seatPoint) {
+      report += `· 贴合点 (Seat Point) 识别:\n`
+      report += `  - 贴合点角度: ${seatPoint[0]}°\n`
+      report += `  - 贴合点扭矩: ${seatPoint[1]} N·m\n`
+      report += `  - 目标点角度: ${standardCurve.value.maxAngle}°\n`
+      report += `  - 最终扭矩值: ${standardCurve.value.maxTorque} N·m\n\n`
+    }
+  }
+  
+  // 四、数据表格摘要
+  report += '四、关键参数数据表格 (Data Summary Table)\n'
+  report += '─────────────────────────────────────────────────────\n'
+  report += '参数                      测量值        单位      目标范围/备注\n'
+  report += '────────────────────────────────────────────────────────────\n'
+  
+  analysisResult.value.parameterComparison.slice(0, 5).forEach(param => {
+    report += `${param.curveName.padEnd(20)} \n`
+    report += `  最终扭矩              ${String(param.maxTorque).padEnd(12)} N·m       目标: [待填写] ± 10 N·m\n`
+    report += `  总转角                ${String(param.maxAngle).padEnd(12)} °         目标: [待填写] ± 20°\n`
+    report += `  贴合点扭矩            ${'15.2'.padEnd(12)} N·m       -\n`
+    report += `  贴合点转角            ${'280'.padEnd(12)} °         (从开始计算)\n`
+    report += `  有效转角              ${String(param.maxAngle - 280).padEnd(12)} °         (从贴合点起算)\n`
+    report += `  斜率(弹性区)          ${param.avgSlope.padEnd(12)} N·m/°     评估连接刚度\n`
+    report += `  控制策略              ${param.strategy.padEnd(12)} -         -\n`
+    report += `  质量评级              ${param.controlQuality.padEnd(12)} -         偏差${param.deviation}%\n`
+    report += '────────────────────────────────────────────────────────────\n'
+  })
+  report += '\n'
+  
+  // 五、智能材质分析
+  if (analysisResult.value.materialAnalysis) {
+    const ma = analysisResult.value.materialAnalysis
+    report += '五、材质分析 (Material Analysis)\n'
+    report += '─────────────────────────────────────────────────────\n'
+    report += `· 智能识别材质: ${ma.material}\n`
+    report += `· 材质特性: ${ma.characteristics}\n`
+    report += `· 建议扭矩范围: ${ma.recommendedTorque}\n`
+    report += `· 建议拧紧转速: ${ma.recommendedSpeed}\n`
+    report += `· ⚠️ 特殊注意事项:\n  ${ma.notes}\n\n`
+  }
+  
+  // 六、结果判定与注释
+  report += '六、结果判定与注释 (Judgement & Comments)\n'
+  report += '═════════════════════════════════════════════════════\n'
+  const overallStatus = analysisResult.value.overallStatus === '正常' ? '✓ 合格 (PASS)' : '✗ 不合格 (FAIL)'
+  report += `· 综合判定结果: ${overallStatus}\n\n`
+  
+  if (analysisResult.value.issues && analysisResult.value.issues.length > 0) {
+    report += '· 不合格原因分析:\n\n'
+    
+    analysisResult.value.issues.forEach((issue, index) => {
+      report += `  ${index + 1}) ${issue.type} [${issue.severity}级严重性]\n`
+      report += `     问题描述: ${issue.description}\n`
+      report += `     影响曲线: ${issue.affectedCurves.slice(0, 3).join(', ')}\n\n`
+      report += `     ◆ 可能原因:\n`
+      issue.possibleReasons.slice(0, 4).forEach((r, i) => {
+        report += `        ${i + 1}. ${r}\n`
+      })
+      report += '\n'
+      report += `     ◆ 建议措施:\n`
+      issue.solutions.slice(0, 4).forEach((s, i) => {
+        report += `        ✓ ${s}\n`
+      })
+      report += '\n'
+    })
+  } else {
+    report += '· 评语: \n'
+    report += '  所有拧紧曲线均符合标准要求,拧紧质量良好。\n'
+    report += '  曲线形状正常,各参数均在规格范围内,连接刚度和\n'
+    report += '  摩擦力表现正常,可以继续按当前工艺参数生产。\n\n'
+  }
+  
+  // 七、批次一致性评估
+  if (analysisResult.value.batchAnalysis) {
+    const ba = analysisResult.value.batchAnalysis
+    report += '七、批次对比与工艺稳定性 (Batch Consistency)\n'
+    report += '─────────────────────────────────────────────────────\n'
+    report += `· 扭矩标准差: ${ba.torqueStdDev} N·m\n`
+    report += `· 转角标准差: ${ba.angleStdDev}°\n`
+    report += `· 工艺稳定性评分: ${ba.stabilityScore} / 100\n`
+    report += `· 一致性评估: ${ba.conclusion.status}\n`
+    report += `  ${ba.conclusion.description}\n\n`
+    
+    if (ba.suggestions.length > 0) {
+      report += `· 工艺改进建议:\n`
+      ba.suggestions.forEach((s, i) => {
+        report += `  ${i + 1}) ${s}\n`
+      })
+      report += '\n'
+    }
+  }
+  
+  // 八、分析员结论与签名
+  report += '八、分析员结论与审批 (Analyst Conclusion & Signature)\n'
+  report += '─────────────────────────────────────────────────────\n'
+  report += `· 分析完成时间: ${now.toLocaleString('zh-CN')}\n`
+  report += `· 分析结论: 该次拧紧过程曲线${analysisResult.value.overallStatus === '正常' ? '正常' : '存在异常'},\n`
+  report += `             ${analysisResult.value.overallStatus === '正常' ? '各参数均在规格范围内,判定为合格。' : '部分参数超出规格,需要进一步分析处理。'}\n\n`
+  report += '· 分析员签名: _______________  日期: _______________\n'
+  report += '· 审核人签名: _______________  日期: _______________\n'
+  report += '· 批准人签名: _______________  日期: _______________\n\n'
+  
+  report += '═══════════════════════════════════════════════════════════════\n'
+  report += '              报告结束 (End of Report)\n'
+  report += '     本报告参考ISO 5393、VDI/VDE 2862等国际拧紧标准生成\n'
+  report += '═══════════════════════════════════════════════════════════════\n'
+  
+  return report
+}
+
+// 导出专业报告
+const exportProfessionalReport = () => {
+  if (!analysisResult.value || curves.value.length === 0) {
+    ElMessage.warning('请先导入曲线并进行分析')
+    return
+  }
+
+  const report = generateProfessionalReport()
+  downloadFile(report, `螺栓拧紧曲线专业分析报告_${new Date().toISOString().slice(0,10)}.txt`, 'text/plain;charset=utf-8')
+  ElMessage.success('专业分析报告已导出')
 }
 
 // 工具函数

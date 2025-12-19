@@ -1,0 +1,74 @@
+{
+  "common": {
+    "home": "ホーム",
+    "products": "製品",
+    "solutions": "ケーススタディ",
+    "about": "会社概要",
+    "service": "サービス&サポート",
+    "contact": "お問い合わせ",
+    "divisions": "事業部門",
+    "search": "製品、ソリューションを検索...",
+    "readMore": "詳しく見る",
+    "viewDetails": "詳細を見る",
+    "contactUs": "お問い合わせ",
+    "consultSolution": "相談を依頼する"
+  },
+  "header": {
+    "hotline": "ホットライン",
+    "email": "メール",
+    "language": "日本語 / EN",
+    "companyName": "Mingsheng",
+    "slogan": "プロフェッショナル産業工具サプライヤー"
+  },
+  "footer": {
+    "companyInfo": "会社情報",
+    "quickLinks": "クイックリンク",
+    "contactInfo": "お問い合わせ",
+    "followUs": "フォローする",
+    "address": "住所",
+    "addressDetail": "中国広州市天河区",
+    "phone": "電話",
+    "copyright": "© 2024 広州明盛偉業機電有限公司 すべての権利を保有"
+  },
+  "aiChat": {
+    "title": "AIアシスタント",
+    "subtitle": "24時間365日オンライン",
+    "welcome": "こんにちは！私はあなたのAIアシスタントです。今日はどのようにお手伝いできますか？",
+    "placeholder": "メッセージを入力してください...",
+    "quickQuestions": "よくある質問",
+    "questions": {
+      "q1": "どのような製品を提供していますか？",
+      "q2": "見積もりを依頼するにはどうすればよいですか？",
+      "q3": "納期はどのくらいですか？",
+      "q4": "国際配送は可能ですか？",
+      "q5": "技術サポートはありますか？",
+      "q6": "販売代理店になるにはどうすればよいですか？"
+    }
+  },
+  "inquiry": {
+    "title": "お問い合わせフォーム",
+    "subtitle": "フォームに記入していただければ、すぐにご連絡いたします",
+    "name": "氏名",
+    "namePlaceholder": "お名前を入力してください",
+    "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "company": "会社名",
+    "companyPlaceholder": "会社名を入力してください",
+    "phone": "電話番号",
+    "phonePlaceholder": "電話番号を入力してください",
+    "country": "国",
+    "countryPlaceholder": "国を選択してください",
+    "product": "興味のある製品",
+    "productPlaceholder": "どの製品にご興味がありますか？",
+    "quantity": "概算数量",
+    "quantityPlaceholder": "必要な数量",
+    "message": "メッセージ",
+    "messagePlaceholder": "ご要件を説明してください",
+    "submit": "お問い合わせを送信",
+    "submitting": "送信中...",
+    "successTitle": "お問い合わせを送信しました！",
+    "successMessage": "お問い合わせありがとうございます。すぐにご連絡いたします。",
+    "errorTitle": "エラー",
+    "errorMessage": "お問い合わせを送信できませんでした。もう一度お試しください。"
+  }
+}

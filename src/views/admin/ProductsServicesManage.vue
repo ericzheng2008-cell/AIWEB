@@ -6,6 +6,66 @@
     </el-card>
 
     <el-tabs v-model="activeTab" class="content-tabs">
+      <!-- 导航栏配置管理 -->
+      <el-tab-pane label="🧭 导航栏配置" name="navbar">
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <span>产品与服务 - 导航栏子菜单配置</span>
+              <el-button type="primary" @click="saveNavbarConfig" :loading="saving">
+                <el-icon><Check /></el-icon> 保存配置
+              </el-button>
+            </div>
+          </template>
+
+          <div class="navbar-config-section">
+            <el-alert
+              title="提示"
+              type="info"
+              :closable="false"
+              style="margin-bottom: 20px;">
+              拖拽行可调整子菜单顺序，修改名称后点击"保存配置"生效。导航栏会自动同步这些分类。
+            </el-alert>
+
+            <el-table 
+              :data="navbarChildrenConfig" 
+              border 
+              stripe
+              row-key="id"
+              ref="navbarTableRef"
+              @row-drop="handleNavbarRowDrop">
+              <el-table-column label="拖拽" width="60">
+                <template #default>
+                  <el-icon class="drag-icon" style="cursor: grab;"><Rank /></el-icon>
+                </template>
+              </el-table-column>
+              <el-table-column prop="order" label="排序" width="80" />
+              <el-table-column label="中文名称" min-width="150">
+                <template #default="{ row }">
+                  <el-input v-model="row.name['zh-CN']" placeholder="请输入中文名称" />
+                </template>
+              </el-table-column>
+              <el-table-column label="英文名称" min-width="150">
+                <template #default="{ row }">
+                  <el-input v-model="row.name['en-US']" placeholder="Please enter English name" />
+                </template>
+              </el-table-column>
+              <el-table-column label="分类ID" width="100">
+                <template #default="{ row }">
+                  <el-tag v-if="row.categoryId" type="primary">{{ row.categoryId }}</el-tag>
+                  <el-tag v-else type="info">工具</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="可见" width="80">
+                <template #default="{ row }">
+                  <el-switch v-model="row.visible" />
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-card>
+      </el-tab-pane>
+
       <!-- 一级分类管理 -->
       <el-tab-pane label="📦 一级分类（6个子系统）" name="level1">
         <el-card>
@@ -92,6 +152,16 @@
                 {{ row.description['zh-CN'] }}
               </template>
             </el-table-column>
+            <el-table-column label="图片" width="120">
+              <template #default="{ row }">
+                <el-image 
+                  v-if="row.image" 
+                  :src="row.image" 
+                  fit="cover"
+                  class="table-image"
+                  :preview-src-list="[row.image]" />
+              </template>
+            </el-table-column>
             <el-table-column label="可见" width="80">
               <template #default="{ row }">
                 <el-tag :type="row.visible ? 'success' : 'info'">
@@ -144,6 +214,16 @@
             <el-table-column label="描述" min-width="200">
               <template #default="{ row }">
                 {{ row.description['zh-CN'] }}
+              </template>
+            </el-table-column>
+            <el-table-column label="图片" width="120">
+              <template #default="{ row }">
+                <el-image 
+                  v-if="row.image" 
+                  :src="row.image" 
+                  fit="cover"
+                  class="table-image"
+                  :preview-src-list="[row.image]" />
               </template>
             </el-table-column>
             <el-table-column label="可见" width="80">
@@ -293,8 +373,23 @@
         <el-form-item label="英文描述">
           <el-input v-model="level1Form.description['en-US']" type="textarea" :rows="3" />
         </el-form-item>
-        <el-form-item label="图片URL">
-          <el-input v-model="level1Form.image" placeholder="输入图片URL" />
+        <el-form-item label="分类图片">
+          <div class="upload-area">
+            <el-upload
+              drag
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="handleLevel1ImageChange"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip">支持 JPG、PNG、GIF、WebP 格式，大小不超过 2MB</div>
+            </el-upload>
+            <div v-if="level1Form.image" class="image-preview">
+              <el-image :src="level1Form.image" fit="cover" />
+              <el-button size="small" type="danger" @click="level1Form.image = ''">删除</el-button>
+            </div>
+          </div>
         </el-form-item>
         <el-form-item label="图标">
           <el-input v-model="level1Form.icon" placeholder="Element Plus图标名称" />
@@ -338,6 +433,24 @@
         </el-form-item>
         <el-form-item label="英文描述">
           <el-input v-model="level2Form.description['en-US']" type="textarea" :rows="3" />
+        </el-form-item>
+        <el-form-item label="分类图片">
+          <div class="upload-area">
+            <el-upload
+              drag
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="handleLevel2ImageChange"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip">支持 JPG、PNG、GIF、WebP 格式，大小不超过 2MB</div>
+            </el-upload>
+            <div v-if="level2Form.image" class="image-preview">
+              <el-image :src="level2Form.image" fit="cover" />
+              <el-button size="small" type="danger" @click="level2Form.image = ''">删除</el-button>
+            </div>
+          </div>
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="level2Form.order" :min="1" />
@@ -387,6 +500,24 @@
         </el-form-item>
         <el-form-item label="英文描述">
           <el-input v-model="level3Form.description['en-US']" type="textarea" :rows="3" />
+        </el-form-item>
+        <el-form-item label="分类图片">
+          <div class="upload-area">
+            <el-upload
+              drag
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="handleLevel3ImageChange"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip">支持 JPG、PNG、GIF、WebP 格式，大小不超过 2MB</div>
+            </el-upload>
+            <div v-if="level3Form.image" class="image-preview">
+              <el-image :src="level3Form.image" fit="cover" />
+              <el-button size="small" type="danger" @click="level3Form.image = ''">删除</el-button>
+            </div>
+          </div>
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="level3Form.order" :min="1" />
@@ -448,8 +579,32 @@
           <el-input v-model="productForm.description['en-US']" type="textarea" :rows="4" />
         </el-form-item>
         <el-form-item label="产品图片">
-          <el-input v-model="productForm.images[0]" placeholder="输入图片URL" />
-          <div class="form-tip">可以添加多张图片，用逗号分隔</div>
+          <div class="product-images-upload">
+            <el-upload
+              drag
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="handleProductImageChange"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip">支持 JPG、PNG、GIF、WebP 格式，大小不超过 2MB，支持多张</div>
+            </el-upload>
+            <div v-if="productForm.images && productForm.images.length > 0" class="product-images-grid">
+              <div 
+                v-for="(img, index) in productForm.images.filter(i => i)" 
+                :key="index" 
+                class="product-image-item">
+                <el-image :src="img" fit="cover" />
+                <div class="product-image-overlay">
+                  <span class="image-number">{{ index + 1 }}</span>
+                  <el-button size="small" type="danger" circle @click="removeProductImage(index)">
+                    <el-icon><Delete /></el-icon>
+                  </el-button>
+                </div>
+              </div>
+            </div>
+          </div>
         </el-form-item>
         <el-form-item label="规格参数">
           <el-input v-model="productForm.specifications" type="textarea" :rows="3" placeholder="请输入产品规格参数" />
@@ -464,19 +619,141 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useCmsAdvancedStore } from '../../store/cmsAdvanced'
+import { Plus, Edit, Delete, Check, Box, UploadFilled, Rank } from '@element-plus/icons-vue'
+import { useProductsServicesStore } from '../../store/productsServices'
+import { usePageContentStore } from '../../store/pageContent'
+import Sortable from 'sortablejs'
 
-const store = useCmsAdvancedStore()
+// 图片处理工具函数
+const convertImageToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => resolve(e.target.result)
+    reader.onerror = (error) => reject(error)
+    reader.readAsDataURL(file)
+  })
+}
 
-const activeTab = ref('level1')
+const validateImageFile = (file, maxSize = 2) => {
+  const isImage = /^image\/(jpeg|jpg|png|gif|webp)$/i.test(file.type)
+  const isLtMaxSize = file.size / 1024 / 1024 < maxSize
+  
+  if (!isImage) {
+    ElMessage.error('只支持JPG、PNG、GIF、WebP格式的图片!')
+    return false
+  }
+  if (!isLtMaxSize) {
+    ElMessage.error(`图片大小不能超过 ${maxSize}MB!`)
+    return false
+  }
+  return true
+}
+
+const store = useProductsServicesStore()
+const pageContentStore = usePageContentStore()
+
+const activeTab = ref('navbar')
 const saving = ref(false)
+const navbarTableRef = ref(null)
 
-// 数据 - 从 cmsAdvanced store 获取
-const level1Categories = computed(() => store.productCategories)
-const level2Categories = computed(() => store.productSubCategories)
-const level3Categories = computed(() => store.productThirdCategories)
+// 导航栏配置数据
+const navbarChildrenConfig = ref([])
+
+// 初始化导航栏配置
+const initNavbarConfig = () => {
+  const navItems = pageContentStore.navItems || []
+  const productsNav = navItems.find(item => item.id === 'products')
+  
+  if (productsNav && productsNav.children) {
+    // 深拷贝并添加categoryId字段
+    navbarChildrenConfig.value = productsNav.children.map(child => {
+      // 从path中提取category参数
+      const match = child.path.match(/category=(\d+)/)
+      return {
+        ...JSON.parse(JSON.stringify(child)),
+        categoryId: match ? parseInt(match[1]) : null
+      }
+    })
+  }
+}
+
+// 初始化拖拽排序功能
+const initNavbarSortable = () => {
+  nextTick(() => {
+    if (!navbarTableRef.value || !navbarTableRef.value.$el) return
+    
+    const tbody = navbarTableRef.value.$el.querySelector('.el-table__body-wrapper tbody')
+    if (!tbody) return
+    
+    Sortable.create(tbody, {
+      animation: 200,
+      handle: '.drag-icon',
+      onEnd: (evt) => {
+        const { oldIndex, newIndex } = evt
+        if (oldIndex === newIndex) return
+        
+        // 更新数组顺序
+        const movedItem = navbarChildrenConfig.value.splice(oldIndex, 1)[0]
+        navbarChildrenConfig.value.splice(newIndex, 0, movedItem)
+        
+        // 更新order值
+        navbarChildrenConfig.value.forEach((item, index) => {
+          item.order = index + 1
+        })
+        
+        ElMessage.success('顺序已调整，请点击"保存配置"生效')
+      }
+    })
+  })
+}
+
+// 保存导航栏配置
+const saveNavbarConfig = () => {
+  saving.value = true
+  
+  try {
+    // 更新store中的导航配置
+    const navItems = [...pageContentStore.navItems]
+    const productsNavIndex = navItems.findIndex(item => item.id === 'products')
+    
+    if (productsNavIndex !== -1) {
+      // 更新产品与服务的children
+      navItems[productsNavIndex].children = navbarChildrenConfig.value.map(child => ({
+        id: child.id,
+        name: { ...child.name },
+        path: child.categoryId 
+          ? `/products-services?category=${child.categoryId}`
+          : child.path,
+        order: child.order,
+        visible: child.visible
+      }))
+      
+      // 保存到localStorage
+      localStorage.setItem('navItems', JSON.stringify(navItems))
+      
+      // 更新版本号，强制刷新
+      const newVersion = `2.5.${Date.now()}`
+      localStorage.setItem('navConfigVersion', newVersion)
+      
+      // 重新加载导航栏
+      pageContentStore.loadNavItems()
+      
+      ElMessage.success('导航栏配置保存成功！刷新页面查看效果')
+    }
+  } catch (error) {
+    console.error('保存导航栏配置失败:', error)
+    ElMessage.error('保存失败，请重试')
+  } finally {
+    saving.value = false
+  }
+}
+
+// 数据 - 从 productsServices store 获取
+const level1Categories = computed(() => store.level1Categories)
+const level2Categories = computed(() => store.level2Categories)
+const level3Categories = computed(() => store.level3Categories)
 const products = computed(() => store.products)
 
 // 横幅设置
@@ -513,6 +790,7 @@ const level2Form = ref({
   parentId: null,
   name: { 'zh-CN': '', 'en-US': '' },
   description: { 'zh-CN': '', 'en-US': '' },
+  image: '',
   order: 1,
   visible: true
 })
@@ -525,6 +803,7 @@ const level3Form = ref({
   parentId: null,
   name: { 'zh-CN': '', 'en-US': '' },
   description: { 'zh-CN': '', 'en-US': '' },
+  image: '',
   order: 1,
   visible: true
 })
@@ -579,6 +858,56 @@ const getLevel1NameByLevel2 = (level2Id) => {
   return getLevel1Name(level2.parentId)
 }
 
+// 图片上传处理函数
+const handleLevel1ImageChange = async (file) => {
+  if (!validateImageFile(file.raw)) return
+  try {
+    const base64 = await convertImageToBase64(file.raw)
+    level1Form.value.image = base64
+    ElMessage.success('图片上传成功!')
+  } catch (error) {
+    ElMessage.error('图片转换失败!')
+  }
+}
+
+const handleLevel2ImageChange = async (file) => {
+  if (!validateImageFile(file.raw)) return
+  try {
+    const base64 = await convertImageToBase64(file.raw)
+    level2Form.value.image = base64
+    ElMessage.success('图片上传成功!')
+  } catch (error) {
+    ElMessage.error('图片转换失败!')
+  }
+}
+
+const handleLevel3ImageChange = async (file) => {
+  if (!validateImageFile(file.raw)) return
+  try {
+    const base64 = await convertImageToBase64(file.raw)
+    level3Form.value.image = base64
+    ElMessage.success('图片上传成功!')
+  } catch (error) {
+    ElMessage.error('图片转换失败!')
+  }
+}
+
+const handleProductImageChange = async (file) => {
+  if (!validateImageFile(file.raw)) return
+  try {
+    const base64 = await convertImageToBase64(file.raw)
+    if (!productForm.value.images) productForm.value.images = []
+    productForm.value.images.push(base64)
+    ElMessage.success('图片上传成功!')
+  } catch (error) {
+    ElMessage.error('图片转换失败!')
+  }
+}
+
+const removeProductImage = (index) => {
+  productForm.value.images.splice(index, 1)
+}
+
 // 一级分类操作
 const showAddLevel1Dialog = () => {
   level1Form.value = {
@@ -600,10 +929,10 @@ const editLevel1 = (row) => {
 
 const saveLevel1 = () => {
   if (level1Form.value.id) {
-    store.updateProductCategory(level1Form.value)
+    store.updateLevel1Category(level1Form.value)
     ElMessage.success('更新成功')
   } else {
-    store.addProductCategory(level1Form.value)
+    store.addLevel1Category(level1Form.value)
     ElMessage.success('添加成功')
   }
   level1DialogVisible.value = false
@@ -613,7 +942,7 @@ const deleteLevel1 = (id) => {
   ElMessageBox.confirm('删除一级分类将同时删除所有相关的二级、三级分类和产品，确定继续吗？', '警告', {
     type: 'warning'
   }).then(() => {
-    store.deleteProductCategory(id)
+    store.deleteLevel1Category(id)
     ElMessage.success('删除成功')
   }).catch(() => {})
 }
@@ -625,6 +954,7 @@ const showAddLevel2Dialog = () => {
     parentId: null,
     name: { 'zh-CN': '', 'en-US': '' },
     description: { 'zh-CN': '', 'en-US': '' },
+    image: '',
     order: 1,
     visible: true
   }
@@ -642,10 +972,10 @@ const saveLevel2 = () => {
     return
   }
   if (level2Form.value.id) {
-    store.updateProductSubCategory(level2Form.value)
+    store.updateLevel2Category(level2Form.value)
     ElMessage.success('更新成功')
   } else {
-    store.addProductSubCategory(level2Form.value)
+    store.addLevel2Category(level2Form.value)
     ElMessage.success('添加成功')
   }
   level2DialogVisible.value = false
@@ -655,7 +985,7 @@ const deleteLevel2 = (id) => {
   ElMessageBox.confirm('删除二级分类将同时删除所有相关的三级分类和产品，确定继续吗？', '警告', {
     type: 'warning'
   }).then(() => {
-    store.deleteProductSubCategory(id)
+    store.deleteLevel2Category(id)
     ElMessage.success('删除成功')
   }).catch(() => {})
 }
@@ -667,6 +997,7 @@ const showAddLevel3Dialog = () => {
     parentId: null,
     name: { 'zh-CN': '', 'en-US': '' },
     description: { 'zh-CN': '', 'en-US': '' },
+    image: '',
     order: 1,
     visible: true
   }
@@ -691,10 +1022,10 @@ const saveLevel3 = () => {
     return
   }
   if (level3Form.value.id) {
-    store.updateProductThirdCategory(level3Form.value)
+    store.updateLevel3Category(level3Form.value)
     ElMessage.success('更新成功')
   } else {
-    store.addProductThirdCategory(level3Form.value)
+    store.addLevel3Category(level3Form.value)
     ElMessage.success('添加成功')
   }
   level3DialogVisible.value = false
@@ -704,7 +1035,7 @@ const deleteLevel3 = (id) => {
   ElMessageBox.confirm('删除三级分类将同时删除所有相关的产品，确定继续吗？', '警告', {
     type: 'warning'
   }).then(() => {
-    store.deleteProductThirdCategory(id)
+    store.deleteLevel3Category(id)
     ElMessage.success('删除成功')
   }).catch(() => {})
 }
@@ -798,6 +1129,8 @@ const loadBanner = () => {
 
 onMounted(() => {
   loadBanner()
+  initNavbarConfig()
+  initNavbarSortable()
 })
 </script>
 
@@ -904,4 +1237,103 @@ onMounted(() => {
   color: #999;
   margin-top: 4px;
 }
+
+.upload-area {
+  width: 100%;
+}
+
+.upload-area :deep(.el-upload-dragger) {
+  width: 100%;
+  padding: 20px;
+}
+
+.image-preview {
+  margin-top: 16px;
+  position: relative;
+  width: 200px;
+}
+
+.image-preview .el-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  display: block;
+}
+
+.image-preview .el-button {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.product-images-upload {
+  width: 100%;
+}
+
+.product-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.product-image-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.product-image-item .el-image {
+  width: 100%;
+  height: 100%;
+}
+
+.product-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.product-image-item:hover .product-image-overlay {
+  opacity: 1;
+}
+
+.image-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 导航栏配置样式 */
+.navbar-config-section {
+  padding: 20px 0;
+}
+
+.drag-icon {
+  color: #667eea;
+  font-size: 20px;
+}
+
+.drag-icon:hover {
+  color: #764ba2;
+  transform: scale(1.1);
+}
+
+
+
 </style>

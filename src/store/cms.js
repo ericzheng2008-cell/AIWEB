@@ -15,6 +15,83 @@ export const useCmsStore = defineStore('cms', {
       }
     },
     
+    // 主题色配置
+    themeColors: JSON.parse(localStorage.getItem('themeColors') || JSON.stringify({
+      primary: '#1890ff',      // 主色调（蓝色）
+      primaryLight: '#40a9ff',  // 主色浅色
+      primaryDark: '#096dd9'    // 主色深色
+    })),
+    
+    // 首页Banner轮播图
+    homeBanners: JSON.parse(localStorage.getItem('homeBanners') || JSON.stringify([
+      {
+        id: 1,
+        title: { 'zh-CN': '广州市明升伟业机电有限公司', 'en-US': 'Guangzhou Mingsheng Industrial Co., Ltd.' },
+        subtitle: { 'zh-CN': '成立于1996年，总部位于珠江三角洲美丽的花城——广州', 'en-US': 'Established in 1996, headquartered in Guangzhou' },
+        image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920',
+        buttonText: { 'zh-CN': '了解更多', 'en-US': 'Learn More' },
+        buttonAction: 'about',
+        status: 'active',
+        order: 1
+      },
+      {
+        id: 2,
+        title: { 'zh-CN': '专业工业工具 · 智能装配方案', 'en-US': 'Professional Industrial Tools · Smart Assembly Solutions' },
+        subtitle: { 'zh-CN': '28年专注于高端工业工具供应与应用解决方案', 'en-US': '28 years of focus on high-end industrial tools and solutions' },
+        image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920',
+        buttonText: { 'zh-CN': '探索产品', 'en-US': 'Explore Products' },
+        buttonAction: 'products',
+        status: 'active',
+        order: 2
+      },
+      {
+        id: 3,
+        title: { 'zh-CN': '欧美高端工具 · 品质保证', 'en-US': 'European High-End Tools · Quality Assurance' },
+        subtitle: { 'zh-CN': '电动工具 · 气动工具 · 手动工具', 'en-US': 'Electric Tools · Pneumatic Tools · Manual Tools' },
+        image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1920',
+        buttonText: { 'zh-CN': '查看系列', 'en-US': 'View Series' },
+        buttonAction: 'products',
+        status: 'active',
+        order: 3
+      },
+      {
+        id: 4,
+        title: { 'zh-CN': 'IATF16949认证 · 汽车制造体系', 'en-US': 'IATF16949 Certified · Automotive Manufacturing' },
+        subtitle: { 'zh-CN': '为汽车行业提供高强度标准件与传感器', 'en-US': 'Providing high-strength fasteners and sensors for automotive' },
+        image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920',
+        buttonText: { 'zh-CN': '了解方案', 'en-US': 'Learn Solutions' },
+        buttonAction: 'solutions',
+        status: 'active',
+        order: 4
+      }
+    ])),
+    
+    // 明星产品展示
+    featuredProducts: JSON.parse(localStorage.getItem('featuredProducts') || JSON.stringify([
+      {
+        id: 1,
+        title: { 'zh-CN': 'Atlas Copco 油压脉冲工具', 'en-US': 'Atlas Copco Hydraulic Pulse Tool' },
+        description: { 'zh-CN': '高精度拧紧，无反力设计，适用于汽车装配线', 'en-US': 'High-precision tightening, no reaction force design' },
+        mediaType: 'video', // video / image / gif
+        mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800',
+        link: '/products',
+        status: 'active',
+        order: 1
+      },
+      {
+        id: 2,
+        title: { 'zh-CN': 'Bosch 智能电动工具', 'en-US': 'Bosch Smart Electric Tools' },
+        description: { 'zh-CN': '智能扭矩控制，蓝牙连接，数据实时采集', 'en-US': 'Smart torque control, Bluetooth connectivity' },
+        mediaType: 'image',
+        mediaUrl: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1200',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800',
+        link: '/products',
+        status: 'active',
+        order: 2
+      }
+    ])),
+    
     // 页面内容管理
     pageContents: JSON.parse(localStorage.getItem('pageContents') || '{}'),
     
@@ -130,6 +207,33 @@ export const useCmsStore = defineStore('cms', {
   }),
   
   actions: {
+    // 更新主题色
+    updateThemeColors(colors) {
+      this.themeColors = { ...this.themeColors, ...colors }
+      localStorage.setItem('themeColors', JSON.stringify(this.themeColors))
+      // 更新CSS变量
+      this.applyThemeColors()
+    },
+    
+    // 应用主题色到CSS变量
+    applyThemeColors() {
+      const root = document.documentElement
+      root.style.setProperty('--primary-color', this.themeColors.primary)
+      root.style.setProperty('--primary-light-color', this.themeColors.primaryLight)
+      root.style.setProperty('--primary-dark-color', this.themeColors.primaryDark)
+    },
+    
+    // 重置主题色为默认值
+    resetThemeColors() {
+      this.themeColors = {
+        primary: '#1890ff',
+        primaryLight: '#40a9ff',
+        primaryDark: '#096dd9'
+      }
+      localStorage.setItem('themeColors', JSON.stringify(this.themeColors))
+      this.applyThemeColors()
+    },
+    
     // 更新Logo
     updateLogo(logoUrl) {
       this.siteConfig.logo = logoUrl
@@ -205,6 +309,70 @@ export const useCmsStore = defineStore('cms', {
     deleteDivision(id) {
       this.divisions = this.divisions.filter(d => d.id !== id)
       this.updateDivisions(this.divisions)
+    },
+    
+    // ========== Banner管理 ==========
+    // 更新Banner列表
+    updateHomeBanners(banners) {
+      this.homeBanners = banners
+      localStorage.setItem('homeBanners', JSON.stringify(banners))
+    },
+    
+    // 添加Banner
+    addHomeBanner(banner) {
+      const maxId = Math.max(...this.homeBanners.map(b => b.id), 0)
+      const maxOrder = Math.max(...this.homeBanners.map(b => b.order), 0)
+      banner.id = maxId + 1
+      banner.order = maxOrder + 1
+      this.homeBanners.push(banner)
+      this.updateHomeBanners(this.homeBanners)
+    },
+    
+    // 更新单个Banner
+    updateBanner(id, updatedBanner) {
+      const index = this.homeBanners.findIndex(b => b.id === id)
+      if (index !== -1) {
+        this.homeBanners[index] = { ...this.homeBanners[index], ...updatedBanner }
+        this.updateHomeBanners(this.homeBanners)
+      }
+    },
+    
+    // 删除Banner
+    deleteHomeBanner(id) {
+      this.homeBanners = this.homeBanners.filter(b => b.id !== id)
+      this.updateHomeBanners(this.homeBanners)
+    },
+    
+    // ========== 明星产品管理 ==========
+    // 更新明星产品列表
+    updateFeaturedProducts(products) {
+      this.featuredProducts = products
+      localStorage.setItem('featuredProducts', JSON.stringify(products))
+    },
+    
+    // 添加明星产品
+    addFeaturedProduct(product) {
+      const maxId = Math.max(...this.featuredProducts.map(p => p.id), 0)
+      const maxOrder = Math.max(...this.featuredProducts.map(p => p.order), 0)
+      product.id = maxId + 1
+      product.order = maxOrder + 1
+      this.featuredProducts.push(product)
+      this.updateFeaturedProducts(this.featuredProducts)
+    },
+    
+    // 更新单个明星产品
+    updateFeaturedProduct(id, updatedProduct) {
+      const index = this.featuredProducts.findIndex(p => p.id === id)
+      if (index !== -1) {
+        this.featuredProducts[index] = { ...this.featuredProducts[index], ...updatedProduct }
+        this.updateFeaturedProducts(this.featuredProducts)
+      }
+    },
+    
+    // 删除明星产品
+    deleteFeaturedProduct(id) {
+      this.featuredProducts = this.featuredProducts.filter(p => p.id !== id)
+      this.updateFeaturedProducts(this.featuredProducts)
     }
   }
 })

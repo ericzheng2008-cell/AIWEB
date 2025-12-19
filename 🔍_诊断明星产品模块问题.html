@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诊断明星产品模块问题</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .diagnostic-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .diagnostic-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+        }
+        .step-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checklist li:before {
+            content: "☐";
+            font-size: 20px;
+            color: #999;
+        }
+        .checklist li.checked:before {
+            content: "✅";
+        }
+        .error-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 明星产品模块诊断工具</h1>
+        <p class="subtitle">系统性诊断后台明星产品模块显示问题</p>
+
+        <div class="diagnostic-section">
+            <div class="diagnostic-title">
+                📋 第一步：检查路由配置
+            </div>
+            <div class="step">
+                <div class="step-title">检查项：</div>
+                <ul class="checklist">
+                    <li>路由是否指向 ContentManage.vue</li>
+                    <li>路由路径是否为 /admin/cms</li>
+                    <li>组件是否正确导入</li>
+                </ul>
+                <div class="code-block">
+// 正确配置应该是：
+{
+  path: 'cms',
+  name: 'AdminCms',
+  component: () => import('../views/admin/ContentManage.vue')
+}
+                </div>
+            </div>
+        </div>
+
+        <div class="diagnostic-section">
+            <div class="diagnostic-title">
+                🔧 第二步：检查浏览器控制台
+            </div>
+            <div class="step">
+                <div class="step-title">操作步骤：</div>
+                <ol>
+                    <li>访问 <a href="http://localhost:3003/admin/cms" target="_blank">http://localhost:3003/admin/cms</a></li>
+                    <li>按 F12 打开开发者工具</li>
+                    <li>切换到 Console (控制台) 标签</li>
+                    <li>查看是否有红色错误信息</li>
+                </ol>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="openAdminCms()">🚀 打开后台CMS</button>
+                    <button class="btn btn-info" onclick="copyConsoleCommand()">📋 复制控制台检查命令</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagnostic-section">
+            <div class="diagnostic-title">
+                🧪 第三步：验证数据源
+            </div>
+            <div class="step">
+                <div class="step-title">在浏览器控制台执行以下命令：</div>
+                <div class="code-block" id="checkDataCommand">
+// 检查 featuredProducts 数据
+console.log('Featured Products:', JSON.parse(localStorage.getItem('featuredProducts')))
+
+// 检查 homeBanners 数据
+console.log('Home Banners:', JSON.parse(localStorage.getItem('homeBanners')))
+
+// 检查当前页面组件
+console.log('Current Component:', document.querySelector('.content-manage'))
+                </div>
+                <button class="btn btn-success" onclick="copyCheckDataCommand()">📋 复制检查命令</button>
+            </div>
+        </div>
+
+        <div class="diagnostic-section">
+            <div class="diagnostic-title">
+                ⚙️ 第四步：常见问题排查
+            </div>
+            <div class="step">
+                <ul class="checklist">
+                    <li>清除浏览器缓存 (Ctrl+Shift+Del)</li>
+                    <li>硬刷新页面 (Ctrl+F5)</li>
+                    <li>检查是否登录后台</li>
+                    <li>确认服务器正在运行 (端口3003)</li>
+                    <li>检查是否有JavaScript错误</li>
+                    <li>验证 Element Plus 组件库是否正常加载</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="diagnostic-section">
+            <div class="diagnostic-title">
+                🎯 第五步：手动验证页面元素
+            </div>
+            <div class="step">
+                <div class="step-title">在控制台执行检查：</div>
+                <div class="code-block" id="checkElementCommand">
+// 检查明星产品标签页是否存在
+const featuredTab = document.querySelector('[name="featured"]')
+console.log('明星产品标签页:', featuredTab)
+
+// 检查是否有明星产品数据
+const featuredItems = document.querySelectorAll('.featured-item')
+console.log('明星产品数量:', featuredItems.length)
+
+// 检查添加按钮
+const addButton = document.querySelector('[name="featured"] .el-button--primary')
+console.log('添加按钮:', addButton)
+                </div>
+                <button class="btn btn-success" onclick="copyCheckElementCommand()">📋 复制元素检查命令</button>
+            </div>
+        </div>
+
+        <div class="error-box">
+            <strong>⚠️ 如果页面完全空白：</strong>
+            <ol>
+                <li>可能是组件渲染错误，检查控制台错误信息</li>
+                <li>可能是 import 路径错误</li>
+                <li>可能是缺少必要的依赖</li>
+            </ol>
+        </div>
+
+        <div class="success-box">
+            <strong>✅ 如果看到Banner标签但没有明星产品标签：</strong>
+            <ol>
+                <li>检查 el-tab-pane 是否正确渲染</li>
+                <li>查看是否有 v-if 条件隐藏了标签</li>
+                <li>验证 activeTab 的初始值</li>
+            </ol>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="openAdminCms()">🚀 打开后台CMS测试</button>
+            <button class="btn btn-success" onclick="clearCacheAndReload()">🔄 清除缓存并刷新</button>
+            <button class="btn btn-info" onclick="viewDocumentation()">📖 查看修复文档</button>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee; color: #666; text-align: center;">
+            <p>💡 提示：请按照步骤逐一检查，并将控制台错误信息反馈</p>
+        </div>
+    </div>
+
+    <script>
+        function openAdminCms() {
+            window.open('http://localhost:3003/admin/cms', '_blank');
+            setTimeout(() => {
+                alert('请检查：\n\n1. 页面是否正常加载\n2. 是否看到"首页Banner"和"明星产品"两个标签\n3. 控制台是否有错误信息（红色）');
+            }, 1000);
+        }
+
+        function copyConsoleCommand() {
+            const command = `
+// 打开控制台 (F12)，然后执行：
+console.log('=== 页面检查 ===');
+console.log('当前URL:', window.location.href);
+console.log('页面标题:', document.title);
+console.log('错误数量:', document.querySelectorAll('.error, .warning').length);
+            `.trim();
+            
+            navigator.clipboard.writeText(command).then(() => {
+                alert('✅ 已复制检查命令！\n\n请在浏览器控制台 (F12) 粘贴执行');
+            });
+        }
+
+        function copyCheckDataCommand() {
+            const command = document.getElementById('checkDataCommand').textContent.trim();
+            navigator.clipboard.writeText(command).then(() => {
+                alert('✅ 已复制数据检查命令！\n\n请在浏览器控制台粘贴执行');
+            });
+        }
+
+        function copyCheckElementCommand() {
+            const command = document.getElementById('checkElementCommand').textContent.trim();
+            navigator.clipboard.writeText(command).then(() => {
+                alert('✅ 已复制元素检查命令！\n\n请在浏览器控制台粘贴执行');
+            });
+        }
+
+        function clearCacheAndReload() {
+            if (confirm('确定要清除缓存并刷新页面吗？\n\n这将：\n1. 清除浏览器缓存\n2. 重新加载所有资源\n3. 可能需要重新登录')) {
+                localStorage.setItem('clearCache', 'true');
+                window.open('http://localhost:3003/admin/cms?clearCache=true', '_blank');
+            }
+        }
+
+        function viewDocumentation() {
+            alert('查看以下文档了解详情：\n\n1. ✅_后台明星产品模块已修复_2025-12-16.md\n2. 📘_明星产品管理使用手册_2025-12-16.md');
+        }
+    </script>
+</body>
+</html>

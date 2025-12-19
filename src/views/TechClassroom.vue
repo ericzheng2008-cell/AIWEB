@@ -20,6 +20,12 @@
           涵盖协作机器人、AGV/AMR、PLC、拧紧工艺、视觉检测等多个技术领域<br />
           助力技术与销售人员快速提升专业能力
         </p>
+        <div class="hero-actions" data-aos="fade-up" data-aos-delay="400">
+          <el-button @click="goHome" type="success" size="large" round>
+            <el-icon><HomeFilled /></el-icon>
+            返回主页
+          </el-button>
+        </div>
       </div>
     </section>
 
@@ -132,6 +138,46 @@
           </div>
         </div>
 
+        <!-- 外部链接区域 -->
+        <div v-if="currentExternalLinks.length > 0" class="external-links-section">
+          <h4 class="section-title">
+            <el-icon><Link /></el-icon>
+            推荐学习资源 ({{ currentExternalLinks.length }})
+          </h4>
+          <div class="external-links-grid">
+            <div
+              v-for="link in currentExternalLinks"
+              :key="link.id"
+              class="external-link-card"
+              @click="openExternalLink(link)">
+              <div class="link-icon-wrapper">
+                <span class="link-icon">{{ link.icon }}</span>
+                <el-tag :type="getExternalLinkTypeColor(link.linkType)" size="small">
+                  {{ getExternalLinkTypeName(link.linkType) }}
+                </el-tag>
+              </div>
+              <div class="link-content">
+                <h5>{{ link.title }}</h5>
+                <p class="link-desc">{{ link.description }}</p>
+                <div class="link-meta">
+                  <el-tag size="small" type="info">{{ link.language === 'zh' ? '中文' : link.language === 'en' ? '英文' : '双语' }}</el-tag>
+                  <el-tag v-if="link.isPremium" size="small" type="warning">需要会员</el-tag>
+                  <div class="link-tags">
+                    <el-tag v-for="tag in link.tags.slice(0, 2)" :key="tag" size="small" effect="plain">{{ tag }}</el-tag>
+                  </div>
+                </div>
+                <div class="link-stats">
+                  <span><el-icon><View /></el-icon> {{ link.views }}</span>
+                  <span><el-icon><StarFilled /></el-icon> {{ link.likes }}</span>
+                </div>
+              </div>
+              <div class="link-action">
+                <el-icon><TopRight /></el-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 课程区域 -->
         <div class="courses-section">
           <h4 class="section-title">
@@ -166,6 +212,9 @@
                 </div>
                 <div class="lesson-tags">
                   <el-tag v-for="tag in lesson.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
+                  <el-tag v-if="lesson.externalUrl" size="small" type="success">
+                    <el-icon><Link /></el-icon> 相关链接
+                  </el-tag>
                 </div>
               </div>
             </div>
@@ -202,6 +251,12 @@
             <div class="action-buttons">
               <el-button type="primary" @click="likeLesson">
                 <el-icon><StarFilled /></el-icon> 点赞
+              </el-button>
+              <el-button 
+                v-if="currentLesson.externalUrl" 
+                type="success" 
+                @click="window.open(currentLesson.externalUrl, '_blank')">
+                <el-icon><Link /></el-icon> 查看相关链接
               </el-button>
             </div>
           </div>
@@ -280,7 +335,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Reading, Document, ArrowRight, User, Clock, View, StarFilled, VideoPlay, Calendar } from '@element-plus/icons-vue'
+import { Reading, Document, ArrowRight, User, Clock, View, StarFilled, VideoPlay, Calendar, Link, TopRight, HomeFilled } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
@@ -288,7 +344,14 @@ import { useClassroomStore } from '../store/classroom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
+const router = useRouter()
 const store = useClassroomStore()
+
+// 返回主页
+const goHome = () => {
+  router.push('/')
+  ElMessage.success('返回主页')
+}
 
 // 状态
 const selectedCategory = ref(null)
@@ -309,6 +372,11 @@ const currentLessons = computed(() => {
 const currentVideos = computed(() => {
   if (!selectedSubcategory.value) return []
   return store.getVideosBySubcategory(selectedSubcategory.value.id)
+})
+
+const currentExternalLinks = computed(() => {
+  if (!selectedSubcategory.value) return []
+  return store.getExternalLinksBySubcategory(selectedSubcategory.value.id)
 })
 
 // 方法
@@ -347,6 +415,32 @@ const likeVideo = () => {
     store.incrementVideoLikes(selectedSubcategory.value.id, currentVideo.value.id)
     ElMessage.success('视频点赞成功！')
   }
+}
+
+const openExternalLink = (link) => {
+  store.incrementLinkViews(link.id)
+  window.open(link.url, '_blank')
+  ElMessage.success('正在打开外部资源...')
+}
+
+const getExternalLinkTypeName = (type) => {
+  const types = {
+    'academy': '学院平台',
+    'docs': '技术文档',
+    'video': '视频教程',
+    'tool': '在线工具'
+  }
+  return types[type] || type
+}
+
+const getExternalLinkTypeColor = (type) => {
+  const colors = {
+    'academy': '',
+    'docs': 'success',
+    'video': 'warning',
+    'tool': 'info'
+  }
+  return colors[type] || ''
 }
 
 const getCategoryName = (categoryId) => {
@@ -809,7 +903,8 @@ onMounted(() => {
 
 /* 视频区域 */
 .videos-section,
-.courses-section {
+.courses-section,
+.external-links-section {
   margin-bottom: 32px;
 }
 
@@ -821,6 +916,127 @@ onMounted(() => {
   font-weight: 600;
   color: #1a1a1a;
   margin-bottom: 20px;
+}
+
+/* 外部链接区域 */
+.external-links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.external-link-card {
+  background: linear-gradient(135deg, #fff 0%, #f8f9ff 100%);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #e8ecff;
+  display: flex;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.external-link-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.external-link-card:hover::before {
+  transform: scaleX(1);
+}
+
+.external-link-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+.link-icon-wrapper {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.link-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.link-content {
+  flex: 1;
+}
+
+.link-content h5 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+}
+
+.link-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.link-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.link-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.link-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #999;
+}
+
+.link-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.link-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #f0f3ff;
+  border-radius: 50%;
+  color: #667eea;
+  transition: all 0.3s ease;
+}
+
+.external-link-card:hover .link-action {
+  background: #667eea;
+  color: #fff;
+  transform: rotate(45deg);
 }
 
 .videos-grid {

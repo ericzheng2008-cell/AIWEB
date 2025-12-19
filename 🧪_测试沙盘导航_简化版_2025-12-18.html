@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>沙盘导航测试 - 简化版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #1890ff;
+    }
+    
+    .menu {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+    
+    .menu-item {
+      padding: 10px 20px;
+      background: white;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .menu-item:hover {
+      background: #e6f7ff;
+      border-color: #1890ff;
+    }
+    
+    .menu-item.active {
+      background: #1890ff;
+      color: white;
+      border-color: #1890ff;
+    }
+    
+    .content-area {
+      min-height: 400px;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+    
+    .module {
+      display: none;
+    }
+    
+    .module.active {
+      display: block;
+    }
+    
+    .log-area {
+      margin-top: 20px;
+      padding: 15px;
+      background: #2d2d2d;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .log-line {
+      margin: 2px 0;
+    }
+    
+    .success { color: #52c41a; }
+    .warning { color: #faad14; }
+    .error { color: #ff4d4f; }
+    .info { color: #1890ff; }
+    
+    .test-result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🔍 沙盘导航功能测试 - 简化版</h1>
+    
+    <div class="test-info">
+      <h3>测试目的：</h3>
+      <p>验证 v-show 方式切换模块是否正常工作</p>
+    </div>
+    
+    <hr style="margin: 20px 0;">
+    
+    <!-- 菜单 -->
+    <div class="menu">
+      <div class="menu-item active" data-module="funnel" onclick="switchModule('funnel')">
+        销售漏斗
+      </div>
+      <div class="menu-item" data-module="customer360" onclick="switchModule('customer360')">
+        客户360°
+      </div>
+      <div class="menu-item" data-module="sandbox" onclick="switchModule('sandbox')">
+        客户沙盘 ⭐
+      </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-area">
+      <div id="funnel-module" class="module active">
+        <h2>📊 销售漏斗模块</h2>
+        <p>这是销售漏斗的内容</p>
+      </div>
+      
+      <div id="customer360-module" class="module">
+        <h2>👤 客户360° 模块</h2>
+        <p>这是客户360的内容</p>
+      </div>
+      
+      <div id="sandbox-module" class="module">
+        <h2>🎯 客户沙盘模块</h2>
+        <p>这是客户沙盘的内容</p>
+        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 4px;">
+          <h3>模拟 CustomerSandboxAdvanced 组件</h3>
+          <div id="sandbox-container" style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+            <div style="text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 10px;">🎨</div>
+              <div>3D 沙盘渲染区域</div>
+              <div style="margin-top: 10px; color: #666; font-size: 12px;">
+                容器尺寸: <span id="container-size">0 × 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 日志区域 -->
+    <div class="log-area" id="log-area">
+      <div class="log-line info">📝 控制台日志输出...</div>
+    </div>
+    
+    <!-- 测试结果 -->
+    <div class="test-result">
+      <h3>✅ 测试要点：</h3>
+      <ol>
+        <li>点击"客户沙盘"菜单项</li>
+        <li>观察是否立即切换显示</li>
+        <li>检查容器尺寸是否正确显示</li>
+        <li>查看日志输出是否正常</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script>
+    let currentModule = 'funnel';
+    const logArea = document.getElementById('log-area');
+    
+    // 添加日志
+    function addLog(message, type = 'info') {
+      const logLine = document.createElement('div');
+      logLine.className = `log-line ${type}`;
+      logLine.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logArea.appendChild(logLine);
+      logArea.scrollTop = logArea.scrollHeight;
+    }
+    
+    // 切换模块
+    function switchModule(moduleName) {
+      addLog(`🔄 切换模块: ${currentModule} → ${moduleName}`, 'info');
+      
+      // 更新菜单激活状态
+      document.querySelectorAll('.menu-item').forEach(item => {
+        if (item.dataset.module === moduleName) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      // 隐藏所有模块
+      document.querySelectorAll('.module').forEach(module => {
+        module.classList.remove('active');
+      });
+      
+      // 显示选中的模块
+      const targetModule = document.getElementById(`${moduleName}-module`);
+      if (targetModule) {
+        targetModule.classList.add('active');
+        addLog(`✅ ${moduleName} 模块已显示`, 'success');
+        
+        // 如果是沙盘模块，检查容器尺寸
+        if (moduleName === 'sandbox') {
+          setTimeout(() => {
+            checkSandboxContainer();
+          }, 100);
+        }
+      } else {
+        addLog(`❌ 未找到 ${moduleName} 模块`, 'error');
+      }
+      
+      currentModule = moduleName;
+    }
+    
+    // 检查沙盘容器
+    function checkSandboxContainer() {
+      const container = document.getElementById('sandbox-container');
+      if (container) {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const offsetParent = container.offsetParent;
+        
+        document.getElementById('container-size').textContent = `${width} × ${height}`;
+        
+        addLog(`📏 沙盘容器尺寸: ${width} × ${height}`, 'success');
+        addLog(`👁️ 容器可见性: ${offsetParent !== null ? '可见 ✅' : '隐藏 ❌'}`, offsetParent !== null ? 'success' : 'error');
+        
+        if (width > 0 && height > 0) {
+          addLog(`🎉 容器尺寸正常，可以初始化图表！`, 'success');
+        } else {
+          addLog(`⚠️ 容器尺寸为0，无法初始化图表`, 'warning');
+        }
+      } else {
+        addLog(`❌ 未找到沙盘容器`, 'error');
+      }
+    }
+    
+    // 页面加载完成
+    window.addEventListener('load', () => {
+      addLog(`🚀 测试页面加载完成`, 'success');
+      addLog(`📍 当前模块: ${currentModule}`, 'info');
+    });
+    
+    // 监听窗口大小变化
+    window.addEventListener('resize', () => {
+      if (currentModule === 'sandbox') {
+        checkSandboxContainer();
+      }
+    });
+  </script>
+</body>
+</html>

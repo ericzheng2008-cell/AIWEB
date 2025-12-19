@@ -1,0 +1,74 @@
+{
+  "common": {
+    "home": "Accueil",
+    "products": "Produits",
+    "solutions": "Études de Cas",
+    "about": "À Propos",
+    "service": "Service et Support",
+    "contact": "Contact",
+    "divisions": "Divisions d'Affaires",
+    "search": "Rechercher des produits, solutions...",
+    "readMore": "En Savoir Plus",
+    "viewDetails": "Voir les Détails",
+    "contactUs": "Contactez-nous",
+    "consultSolution": "Demander une Consultation"
+  },
+  "header": {
+    "hotline": "Ligne Directe",
+    "email": "E-mail",
+    "language": "FR / EN",
+    "companyName": "Mingsheng",
+    "slogan": "Fournisseur Professionnel d'Outils Industriels"
+  },
+  "footer": {
+    "companyInfo": "Informations sur l'Entreprise",
+    "quickLinks": "Liens Rapides",
+    "contactInfo": "Contact",
+    "followUs": "Suivez-nous",
+    "address": "Adresse",
+    "addressDetail": "District de Tianhe, Guangzhou, Chine",
+    "phone": "Téléphone",
+    "copyright": "© 2024 Guangzhou Mingsheng Weiye Electromechanical Co., Ltd. Tous Droits Réservés"
+  },
+  "aiChat": {
+    "title": "Assistant IA",
+    "subtitle": "En ligne 24/7",
+    "welcome": "Bonjour! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui?",
+    "placeholder": "Tapez votre message...",
+    "quickQuestions": "Questions Fréquentes",
+    "questions": {
+      "q1": "Quels produits proposez-vous?",
+      "q2": "Comment puis-je demander un devis?",
+      "q3": "Quel est votre délai de livraison?",
+      "q4": "Proposez-vous la livraison internationale?",
+      "q5": "Avez-vous un support technique?",
+      "q6": "Comment devenir distributeur?"
+    }
+  },
+  "inquiry": {
+    "title": "Formulaire de Demande",
+    "subtitle": "Remplissez le formulaire et nous vous contacterons bientôt",
+    "name": "Nom Complet",
+    "namePlaceholder": "Entrez votre nom",
+    "email": "E-mail",
+    "emailPlaceholder": "Entrez votre e-mail",
+    "company": "Entreprise",
+    "companyPlaceholder": "Nom de votre entreprise",
+    "phone": "Téléphone",
+    "phonePlaceholder": "Numéro de téléphone",
+    "country": "Pays",
+    "countryPlaceholder": "Sélectionnez votre pays",
+    "product": "Produit d'Intérêt",
+    "productPlaceholder": "Quel produit vous intéresse?",
+    "quantity": "Quantité Estimée",
+    "quantityPlaceholder": "Quantité nécessaire",
+    "message": "Message",
+    "messagePlaceholder": "Décrivez vos besoins",
+    "submit": "Envoyer la Demande",
+    "submitting": "Envoi en cours...",
+    "successTitle": "Demande Envoyée!",
+    "successMessage": "Merci pour votre intérêt. Nous vous contacterons bientôt.",
+    "errorTitle": "Erreur",
+    "errorMessage": "Impossible d'envoyer la demande. Veuillez réessayer."
+  }
+}

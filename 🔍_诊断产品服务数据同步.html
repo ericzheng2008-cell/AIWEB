@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品服务数据同步诊断</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #0047BB;
+    }
+    .section h2 {
+      color: #0047BB;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .data-box {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .status {
+      padding: 8px 16px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .status.ok {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .btn {
+      background: #0047BB;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .btn:hover {
+      background: #003399;
+    }
+    .btn.danger {
+      background: #dc3545;
+    }
+    .btn.danger:hover {
+      background: #c82333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    th {
+      background: #0047BB;
+      color: white;
+      font-weight: bold;
+    }
+    tr:hover {
+      background: #f1f3f5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 产品服务数据同步诊断工具</h1>
+    
+    <div class="section">
+      <h2>📊 LocalStorage 数据状态</h2>
+      <button class="btn" onclick="checkData()">刷新数据检查</button>
+      <button class="btn danger" onclick="clearAllData()">清除所有数据</button>
+      <button class="btn" onclick="loadDemoData()">加载演示数据</button>
+      <div id="storageStatus"></div>
+    </div>
+
+    <div class="section">
+      <h2>📁 一级分类数据</h2>
+      <div class="data-box" id="level1Data"></div>
+    </div>
+
+    <div class="section">
+      <h2>📁 二级分类数据</h2>
+      <div class="data-box" id="level2Data"></div>
+    </div>
+
+    <div class="section">
+      <h2>📁 三级分类数据</h2>
+      <div class="data-box" id="level3Data"></div>
+    </div>
+
+    <div class="section">
+      <h2>📦 产品数据</h2>
+      <div class="data-box" id="productsData"></div>
+    </div>
+
+    <div class="section">
+      <h2>🎯 测试操作</h2>
+      <button class="btn" onclick="addTestCategory()">添加测试一级分类</button>
+      <button class="btn" onclick="window.open('http://localhost:3002/#/admin/products-services', '_blank')">打开后台管理</button>
+      <button class="btn" onclick="window.open('http://localhost:3002/#/products-services', '_blank')">打开前台展示</button>
+      <div id="testResult" style="margin-top: 10px;"></div>
+    </div>
+  </div>
+
+  <script>
+    function checkData() {
+      // 检查所有localStorage键
+      const keys = ['productsLevel1', 'productsLevel2', 'productsLevel3', 'productsData']
+      const statusDiv = document.getElementById('storageStatus')
+      let html = '<table><tr><th>存储键</th><th>状态</th><th>数据量</th><th>操作</th></tr>'
+      
+      keys.forEach(key => {
+        const data = localStorage.getItem(key)
+        let status = '<span class="status error">不存在</span>'
+        let count = '0'
+        
+        if (data) {
+          try {
+            const parsed = JSON.parse(data)
+            count = Array.isArray(parsed) ? parsed.length : '1'
+            status = '<span class="status ok">正常</span>'
+          } catch (e) {
+            status = '<span class="status error">JSON格式错误</span>'
+          }
+        }
+        
+        html += `<tr>
+          <td><code>${key}</code></td>
+          <td>${status}</td>
+          <td>${count} 条</td>
+          <td><button class="btn" onclick="viewData('${key}')">查看</button></td>
+        </tr>`
+      })
+      
+      html += '</table>'
+      statusDiv.innerHTML = html
+      
+      // 显示详细数据
+      displayData('productsLevel1', 'level1Data')
+      displayData('productsLevel2', 'level2Data')
+      displayData('productsLevel3', 'level3Data')
+      displayData('productsData', 'productsData')
+    }
+    
+    function displayData(key, elementId) {
+      const element = document.getElementById(elementId)
+      const data = localStorage.getItem(key)
+      
+      if (!data) {
+        element.innerHTML = '<p class="status warning">暂无数据</p>'
+        return
+      }
+      
+      try {
+        const parsed = JSON.parse(data)
+        element.innerHTML = '<pre>' + JSON.stringify(parsed, null, 2) + '</pre>'
+      } catch (e) {
+        element.innerHTML = '<p class="status error">数据格式错误: ' + e.message + '</p>'
+      }
+    }
+    
+    function viewData(key) {
+      const data = localStorage.getItem(key)
+      if (!data) {
+        alert('数据不存在')
+        return
+      }
+      
+      const win = window.open('', '_blank', 'width=800,height=600')
+      win.document.write('<html><head><title>' + key + '</title>')
+      win.document.write('<style>body{font-family:monospace;padding:20px;background:#f5f5f5;}pre{background:white;padding:20px;border-radius:8px;}</style>')
+      win.document.write('</head><body>')
+      win.document.write('<h1>' + key + '</h1>')
+      win.document.write('<pre>' + JSON.stringify(JSON.parse(data), null, 2) + '</pre>')
+      win.document.write('</body></html>')
+    }
+    
+    function clearAllData() {
+      if (!confirm('确定要清除所有产品服务数据吗？此操作不可恢复！')) {
+        return
+      }
+      
+      const keys = ['productsLevel1', 'productsLevel2', 'productsLevel3', 'productsData', 'categoryBanners']
+      keys.forEach(key => localStorage.removeItem(key))
+      
+      alert('所有数据已清除！页面将刷新。')
+      location.reload()
+    }
+    
+    function loadDemoData() {
+      // 加载演示的一级分类
+      const level1 = [
+        {
+          id: 1,
+          name: { 'zh-CN': '测试分类1', 'en-US': 'Test Category 1' },
+          description: { 'zh-CN': '这是测试分类描述', 'en-US': 'This is test category description' },
+          image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600',
+          icon: 'Lightning',
+          order: 1,
+          visible: true
+        }
+      ]
+      
+      localStorage.setItem('productsLevel1', JSON.stringify(level1))
+      localStorage.setItem('productsLevel2', JSON.stringify([]))
+      localStorage.setItem('productsLevel3', JSON.stringify([]))
+      localStorage.setItem('productsData', JSON.stringify([]))
+      
+      alert('演示数据已加载！')
+      checkData()
+    }
+    
+    function addTestCategory() {
+      const level1Data = localStorage.getItem('productsLevel1')
+      let categories = level1Data ? JSON.parse(level1Data) : []
+      
+      const newCategory = {
+        id: Date.now(),
+        name: { 
+          'zh-CN': '测试分类_' + new Date().toLocaleTimeString(), 
+          'en-US': 'Test_' + new Date().toLocaleTimeString() 
+        },
+        description: { 
+          'zh-CN': '通过诊断工具添加的测试分类', 
+          'en-US': 'Test category added by diagnostic tool' 
+        },
+        image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600',
+        icon: 'Lightning',
+        order: categories.length + 1,
+        visible: true
+      }
+      
+      categories.push(newCategory)
+      localStorage.setItem('productsLevel1', JSON.stringify(categories))
+      
+      document.getElementById('testResult').innerHTML = 
+        '<p class="status ok">✅ 成功添加测试分类！分类ID: ' + newCategory.id + '</p>' +
+        '<p>请刷新前台页面查看效果: <a href="http://localhost:3002/#/products-services" target="_blank">打开前台</a></p>'
+      
+      checkData()
+    }
+    
+    // 页面加载时自动检查
+    window.onload = checkData
+    
+    // 监听storage变化
+    window.addEventListener('storage', function(e) {
+      if (e.key && e.key.startsWith('products')) {
+        console.log('检测到数据变化:', e.key)
+        checkData()
+      }
+    })
+  </script>
+</body>
+</html>

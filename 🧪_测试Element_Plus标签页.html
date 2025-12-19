@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Element Plus 标签页测试</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    h2 { color: #409eff; }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background: #f0f9ff;
+      border-left: 4px solid #409eff;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="test-container">
+      <h2>🧪 Element Plus 标签页功能测试</h2>
+      
+      <div class="status">
+        <strong>当前激活的标签:</strong> {{ activeTab }}
+      </div>
+
+      <el-tabs v-model="activeTab" @tab-click="handleTabClick">
+        <el-tab-pane label="标签1" name="tab1">
+          <h3>标签1的内容</h3>
+          <p>如果你能看到这个内容,说明标签1被激活了。</p>
+          <el-button type="primary" @click="testClick">测试按钮</el-button>
+        </el-tab-pane>
+        
+        <el-tab-pane label="标签2" name="tab2">
+          <h3>标签2的内容</h3>
+          <p>如果你能看到这个内容,说明标签2被激活了。</p>
+        </el-tab-pane>
+        
+        <el-tab-pane label="标签3" name="tab3">
+          <h3>标签3的内容</h3>
+          <p>如果你能看到这个内容,说明标签3被激活了。</p>
+        </el-tab-pane>
+        
+        <el-tab-pane label="标签4" name="tab4">
+          <h3>标签4的内容</h3>
+          <p>如果你能看到这个内容,说明标签4被激活了。</p>
+        </el-tab-pane>
+      </el-tabs>
+
+      <div style="margin-top: 20px;">
+        <h3>手动切换测试</h3>
+        <el-button @click="activeTab = 'tab1'">切换到标签1</el-button>
+        <el-button @click="activeTab = 'tab2'">切换到标签2</el-button>
+        <el-button @click="activeTab = 'tab3'">切换到标签3</el-button>
+        <el-button @click="activeTab = 'tab4'">切换到标签4</el-button>
+      </div>
+
+      <div class="status" style="margin-top: 20px;">
+        <strong>点击次数:</strong> {{ clickCount }}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+    const { ElMessage } = ElementPlus
+
+    createApp({
+      setup() {
+        const activeTab = ref('tab1')
+        const clickCount = ref(0)
+
+        const handleTabClick = (tab) => {
+          console.log('标签被点击:', tab)
+          ElMessage.success(`切换到: ${tab.props.label}`)
+        }
+
+        const testClick = () => {
+          clickCount.value++
+          ElMessage.info(`按钮被点击了 ${clickCount.value} 次`)
+        }
+
+        return {
+          activeTab,
+          clickCount,
+          handleTabClick,
+          testClick
+        }
+      }
+    }).use(ElementPlus).mount('#app')
+  </script>
+
+  <div style="max-width: 800px; margin: 20px auto; padding: 20px; background: #fff3cd; border-radius: 8px;">
+    <h3>📋 测试说明</h3>
+    <ol>
+      <li><strong>直接点击标签页标题</strong> - 应该能切换</li>
+      <li><strong>使用下面的按钮</strong> - 应该能切换</li>
+      <li><strong>观察"当前激活的标签"</strong> - 应该会变化</li>
+      <li><strong>点击"测试按钮"</strong> - 应该会显示点击次数</li>
+    </ol>
+    
+    <h3>🔍 如果这个测试页面正常,但监控页面不正常</h3>
+    <p>说明问题在于:</p>
+    <ul>
+      <li>监控页面的全局样式覆盖了标签页</li>
+      <li>或者有其他元素覆盖了标签页</li>
+      <li>或者 Vue Router 的路由守卫阻止了导航</li>
+    </ul>
+
+    <h3>🔍 如果这个测试页面也不正常</h3>
+    <p>说明问题在于:</p>
+    <ul>
+      <li>浏览器兼容性问题</li>
+      <li>Element Plus 版本问题</li>
+      <li>浏览器扩展阻止了交互</li>
+    </ul>
+  </div>
+</body>
+</html>

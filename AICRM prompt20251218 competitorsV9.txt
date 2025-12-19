@@ -1,0 +1,66 @@
+💡 日志工具已挂载到 window.__logger__
+logger.js? [sm]:30 使用 window.__logger__.exportLogs() 导出日志
+initDemoData.js? [sm]:152 🔧 开发模式：可通过 window.__demoData 访问数据管理功能
+initDemoData.js? [sm]:93 ✅ 演示数据已存在，版本: 1.0.0
+shared.mjs:8 [intlify] Not found 'inquiry.title' key in 'zh' locale messages.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Fall back to translate 'inquiry.title' key with 'en-US' locale.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Fall back to translate 'inquiry.title' key with 'en' locale.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Not found 'inquiry.title' key in 'en' locale messages.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Not found 'inquiry.title' key in 'zh' locale messages.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Fall back to translate 'inquiry.title' key with 'en-US' locale.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Fall back to translate 'inquiry.title' key with 'en' locale.
+warn @ shared.mjs:8
+shared.mjs:8 [intlify] Not found 'inquiry.title' key in 'en' locale messages.
+warn @ shared.mjs:8
+antomAI.js? [sm]:730 🚀 安彤智能体系统初始化中...
+logger.js? [sm]:30 🧠 安彤AI自主学习循环已启动
+antomAI.js? [sm]:687 🤔 安彤AI主动思考循环已启动
+logger.js? [sm]:30 🎯 安彤AI持续改善循环已启动
+logger.js? [sm]:30 ✅ 安彤智能体系统初始化完成
+select.vue:385 Missing required prop: "customerId" null at <Customer360View>
+at <MingShengAICRMV3>
+at <RouterView>
+at <App> Array(4)
+(anonymous) @ select.vue:385
+pinia.mjs:1239 [🍍]: A getter cannot have the same name as another state property. Rename one of them. Found with "topNokApplications" in store "tighteningData".
+(anonymous) @ pinia.mjs:1239
+select.vue:385 Invalid prop: type check failed for prop "value". Expected String | Number | Boolean | Object, got Null  null at <ElOption>
+at <ElOptions>
+at <ElScrollbar>
+at <ElSelectDropdown>
+at <ElFocusTrap>
+at <ElPopperContent>
+at <BaseTransition>
+at <Transition>
+at <Teleport>
+at <ElTooltipContent>
+at <ElPopper>
+at <ElTooltip>
+at <ElSelect>
+at <ProductMatrixAgent>
+at <MingShengAICRMV3>
+at <RouterView>
+at <App> Array(17)
+(anonymous) @ select.vue:385
+CustomerSandboxAdvanced.vue:226 🚀 CustomerSandboxAdvanced 组件开始初始化
+CustomerSandboxAdvanced.vue:889 📍 组件已挂载，检查可见性
+2CustomerSandboxAdvanced.vue:857 ⏳ 组件被隐藏，等待显示后初始化
+SalesGoalManagement.vue:828 📊 开始初始化所有图表
+SalesGoalManagement.vue:809 ⚠️ 趋势图: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:809 ⚠️ 雷达图: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:809 ⚠️ 个人历史图表: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:809 ⚠️ 产品饼图: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:809 ⚠️ 短期预测图: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:809 ⚠️ 中期预测图: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:809 ⚠️ 长期预测图: 容器被隐藏 (v-show)，跳过初始化
+SalesGoalManagement.vue:965 ✅ 所有图表初始化完成
+4CustomerSandboxAdvanced.vue:857 ⏳ 组件被隐藏，等待显示后初始化
+MingShengAICRM_V3.vue:1488 🔄 切换模块: funnel → customer360
+MingShengAICRM_V3.vue:1490 ✅ 当前模块: customer360
+5CustomerSandboxAdvanced.vue:857 ⏳ 组件被隐藏，等待显示后初始化

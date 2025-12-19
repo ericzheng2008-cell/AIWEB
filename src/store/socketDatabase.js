@@ -5,7 +5,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
     sockets: [
       {
         id: 1,
-        brand: '阿特拉斯',
+        brand: 'Atlascopco',
         toolType: '油压脉冲',
         squareSize: '3/8四方',
         toolModel: 'ETBP45-10',
@@ -13,8 +13,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
           shape: '标准',
           inputType: '外六角',
           inputSize: '15mm',
-          magnetic: '固定磁',
-          length: '标准'
+          magnetic: '固定磁'
         },
         features: {
           antiVibration: true,
@@ -39,7 +38,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
       },
       {
         id: 2,
-        brand: '阿特拉斯',
+        brand: 'Atlascopco',
         toolType: '油压脉冲',
         squareSize: '3/8四方',
         toolModel: 'HBP45-20',
@@ -47,8 +46,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
           shape: '标准',
           inputType: '外六角',
           inputSize: '17mm',
-          magnetic: '伸缩磁',
-          length: '标准'
+          magnetic: '伸缩磁'
         },
         features: {
           antiVibration: true,
@@ -74,7 +72,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
       },
       {
         id: 3,
-        brand: '阿特拉斯',
+        brand: 'Atlascopco',
         toolType: '油压脉冲',
         squareSize: '1/2四方',
         toolModel: 'PTS50-30',
@@ -82,8 +80,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
           shape: '加长',
           inputType: '内六角',
           inputSize: '10mm',
-          magnetic: '中空磁',
-          length: '加长'
+          magnetic: '中空磁'
         },
         features: {
           antiVibration: false,
@@ -108,7 +105,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
       },
       {
         id: 4,
-        brand: '阿特拉斯',
+        brand: 'Atlascopco',
         toolType: '其他',
         squareSize: '1/4快换',
         toolModel: 'ETBP25-05',
@@ -116,8 +113,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
           shape: '标准',
           inputType: 'Torx',
           inputSize: 'T25',
-          magnetic: '外置磁环',
-          length: '标准'
+          magnetic: '外置磁环'
         },
         features: {
           antiVibration: false,
@@ -150,8 +146,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
           shape: '接杆',
           inputType: '外六角',
           inputSize: '12mm',
-          magnetic: '固定磁',
-          length: '接杆'
+          magnetic: '固定磁'
         },
         features: {
           antiVibration: true,
@@ -263,7 +258,7 @@ export const useSocketDatabaseStore = defineStore('socketDatabase', {
         matches = matches.filter(s => s.socketType.inputType === criteria.inputType)
       }
 
-      // 输入端尺寸筛选
+      // 输出端对边尺寸筛选
       if (criteria.inputSize) {
         matches = matches.filter(s => s.socketType.inputSize === criteria.inputSize)
       }

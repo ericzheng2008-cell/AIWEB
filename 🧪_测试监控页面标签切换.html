@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>监控页面标签切换测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #409eff;
+      border-bottom: 3px solid #409eff;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #67c23a;
+    }
+    .error {
+      border-left-color: #f56c6c;
+    }
+    .warning {
+      border-left-color: #e6a23c;
+    }
+    button {
+      background: #409eff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #66b1ff;
+    }
+    code {
+      background: #ecf5ff;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+    pre {
+      background: #303133;
+      color: #67c23a;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    .step {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+    }
+    .checklist {
+      margin: 10px 0;
+    }
+    .checklist label {
+      display: block;
+      padding: 5px;
+      margin: 3px 0;
+    }
+    .checklist input {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 监控页面标签切换问题测试</h1>
+    
+    <div class="section warning">
+      <h3>🎯 问题描述</h3>
+      <p><strong>监控与优化页面可以访问,但四个标签页点击不动</strong></p>
+      <p>标签页包括:</p>
+      <ol>
+        <li>性能监控 (performance)</li>
+        <li>告警管理 (alerts)</li>
+        <li>优化建议 (optimization)</li>
+        <li>系统配置 (config)</li>
+      </ol>
+    </div>
+    
+    <div class="section">
+      <h3>📋 诊断步骤</h3>
+      
+      <div class="step">
+        <strong>步骤 1:</strong> 打开监控页面
+        <br>
+        <button onclick="openMonitoring()">📂 打开监控页面</button>
+      </div>
+      
+      <div class="step">
+        <strong>步骤 2:</strong> 按 <code>F12</code> 打开开发者工具
+      </div>
+      
+      <div class="step">
+        <strong>步骤 3:</strong> 尝试点击每个标签页,并在控制台中检查:
+        <div class="checklist">
+          <label><input type="checkbox"> 是否有 JavaScript 错误?</label>
+          <label><input type="checkbox"> 是否有 Vue 警告?</label>
+          <label><input type="checkbox"> 点击标签页时是否有任何输出?</label>
+          <label><input type="checkbox"> activeTab 的值是否改变?</label>
+        </div>
+      </div>
+      
+      <div class="step">
+        <strong>步骤 4:</strong> 在控制台执行以下代码检查:
+        <pre>// 检查 Vue 实例
+const app = document.querySelector('#app').__vue_app__
+console.log('App:', app)
+
+// 检查 activeTab
+console.log('Active Tab:', activeTab)</pre>
+      </div>
+    </div>
+    
+    <div class="section error">
+      <h3>🔍 可能的原因</h3>
+      <ol>
+        <li><strong>JavaScript 错误阻止交互</strong>
+          <ul>
+            <li>benchmarkData computed 属性有错误</li>
+            <li>某个函数调用失败</li>
+            <li>monitoringStore 数据结构问题</li>
+          </ul>
+        </li>
+        
+        <li><strong>Element Plus 组件问题</strong>
+          <ul>
+            <li>el-tabs 组件加载失败</li>
+            <li>v-model 绑定失败</li>
+            <li>CSS 覆盖导致点击区域不可用</li>
+          </ul>
+        </li>
+        
+        <li><strong>数据响应性问题</strong>
+          <ul>
+            <li>activeTab ref 没有正确初始化</li>
+            <li>monitoringStore 没有正确实例化</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+    
+    <div class="section">
+      <h3>🔧 临时修复方案</h3>
+      
+      <div class="step">
+        <strong>方案 1: 硬刷新页面</strong>
+        <br>
+        <button onclick="hardRefresh()">♻️ 提示硬刷新</button>
+      </div>
+      
+      <div class="step">
+        <strong>方案 2: 清除缓存</strong>
+        <br>
+        <button onclick="clearCache()">🗑️ 清除缓存</button>
+      </div>
+      
+      <div class="step">
+        <strong>方案 3: 在控制台强制切换标签</strong>
+        <br>
+        <button onclick="showForceSwitch()">🔀 显示强制切换代码</button>
+        <pre id="force-switch-code" style="display:none;">// 在监控页面控制台执行
+// 切换到告警管理
+activeTab.value = 'alerts'
+
+// 切换到优化建议
+activeTab.value = 'optimization'
+
+// 切换到系统配置
+activeTab.value = 'config'</pre>
+      </div>
+    </div>
+    
+    <div class="section warning">
+      <h3>📝 请告诉我:</h3>
+      <ol>
+        <li>点击标签页时,标签页是否有视觉反馈(高亮/下划线)?</li>
+        <li>浏览器控制台是否有错误或警告?</li>
+        <li>在 Elements 标签页中,标签页的 HTML 是否存在?</li>
+        <li>是否只有某一个标签页不能切换,还是全部都不能?</li>
+        <li>页面加载时默认显示的是哪个标签页的内容?</li>
+      </ol>
+    </div>
+    
+    <div class="section">
+      <h3>💡 高级诊断</h3>
+      <p>在控制台执行以下代码,查看详细信息:</p>
+      <pre>// 1. 检查 monitoringStore
+console.log('MonitoringStore:', monitoringStore)
+console.log('State:', monitoringStore.state)
+console.log('Benchmarks:', monitoringStore.state.benchmarks)
+
+// 2. 检查 activeTab
+console.log('ActiveTab Value:', activeTab.value)
+
+// 3. 检查 benchmarkData
+console.log('BenchmarkData:', benchmarkData.value)
+
+// 4. 尝试手动切换
+activeTab.value = 'alerts'
+console.log('切换后的 ActiveTab:', activeTab.value)</pre>
+    </div>
+  </div>
+  
+  <script>
+    function openMonitoring() {
+      window.open('http://localhost:3002/admin/monitoring-dashboard', '_blank');
+      setTimeout(() => {
+        alert('页面已打开!\n\n请:\n1. 按 F12 打开控制台\n2. 尝试点击标签页\n3. 查看控制台错误');
+      }, 1000);
+    }
+    
+    function hardRefresh() {
+      alert('请在监控页面按: Ctrl + Shift + R\n\n这将强制刷新并清除缓存');
+    }
+    
+    function clearCache() {
+      const code = `localStorage.clear();
+sessionStorage.clear();
+location.reload(true);`;
+      alert('请在监控页面的控制台中执行:\n\n' + code);
+    }
+    
+    function showForceSwitch() {
+      const el = document.getElementById('force-switch-code');
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

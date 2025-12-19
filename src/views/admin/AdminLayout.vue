@@ -24,6 +24,16 @@
           <span>产品与服务管理</span>
         </el-menu-item>
 
+        <el-menu-item index="/admin/home-layout">
+          <el-icon><Grid /></el-icon>
+          <span>首页布局管理</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/work-orders">
+          <el-icon><List /></el-icon>
+          <span>工单管理</span>
+        </el-menu-item>
+
         <el-menu-item index="/admin/tightening-data">
           <el-icon><DataAnalysis /></el-icon>
           <span>拧紧数据采集</span>
@@ -58,6 +68,49 @@
           <el-icon><Star /></el-icon>
           <span>AI智能体管理</span>
         </el-menu-item>
+
+        <el-menu-item index="/admin/marketing-hub">
+          <el-icon><TrendCharts /></el-icon>
+          <span>🚀 AI营销中台</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/training-data">
+          <el-icon><DataAnalysis /></el-icon>
+          <span>🎓 学习训练系统</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/mingsheng-aicrm">
+          <el-icon><User /></el-icon>
+          <span>💼 明升AICRM</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/product-matrix">
+          <el-icon><Grid /></el-icon>
+          <span>📊 企业产品矩阵</span>
+        </el-menu-item>
+
+        <el-sub-menu index="central-platform">
+          <template #title>
+            <el-icon><Platform /></el-icon>
+            <span>🎯 中央管理平台</span>
+          </template>
+          <el-menu-item index="/admin/agent-registry">
+            <el-icon><Connection /></el-icon>
+            <span>智能体注册中心</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/knowledge-base">
+            <el-icon><Notebook /></el-icon>
+            <span>知识库管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/learning-engine">
+            <el-icon><TrendCharts /></el-icon>
+            <span>主动学习引擎</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/monitoring">
+            <el-icon><Monitor /></el-icon>
+            <span>监控与优化</span>
+          </el-menu-item>
+        </el-sub-menu>
 
         <el-menu-item index="/admin/tool-database">
           <el-icon><Tools /></el-icon>
@@ -137,7 +190,8 @@ import { useUserStore } from '../../store'
 import { ElMessage } from 'element-plus'
 import { 
   Odometer, Setting, Tools, Collection, Box, Document, User, 
-  Expand, House, Position, Operation, DataAnalysis, Reading, FolderOpened, Star
+  Expand, House, Position, Operation, DataAnalysis, Reading, FolderOpened, Star,
+  Platform, Connection, Notebook, TrendCharts, Monitor
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -151,11 +205,20 @@ const currentPageTitle = computed(() => {
     '/admin/dashboard': '仪表盘',
     '/admin/cms': 'CMS内容管理',
     '/admin/products-services': '产品与服务管理',
+    '/admin/marketing-hub': 'AI营销中台管理',
+    '/admin/training-data': '学习训练系统资料管理',
+    '/admin/mingsheng-aicrm': '明升AICRM后台管理',
+    '/admin/product-matrix': '企业产品矩阵管理',
+    '/admin/customer360': '客户360画像与沙盘分析管理',
     '/admin/tightening-data': '拧紧数据采集分析',
     '/admin/classroom': '产品技术销售小课堂 - 分类与课程管理',
     '/admin/classroom-resources': '产品技术销售小课堂 - 多媒体资源管理',
     '/admin/production-line': '线体管理',
     '/admin/workstation': '工位管理',
+    '/admin/agent-registry': '中央管理平台 - 智能体注册中心',
+    '/admin/knowledge-base': '中央管理平台 - 知识库管理',
+    '/admin/learning-engine': '中央管理平台 - 主动学习引擎',
+    '/admin/monitoring': '中央管理平台 - 监控与优化',
     '/admin/tool-database': '工具数据库',
     '/admin/tool-brand-database': '品牌型号数据库',
     '/admin/socket-database': '套筒数据库',

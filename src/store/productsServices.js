@@ -103,7 +103,10 @@ export const useProductsServicesStore = defineStore('productsServices', {
     ])),
     
     // 具体产品
-    products: JSON.parse(localStorage.getItem('productsData') || JSON.stringify([]))
+    products: JSON.parse(localStorage.getItem('productsData') || JSON.stringify([])),
+    
+    // 分类横幅
+    categoryBanners: JSON.parse(localStorage.getItem('categoryBanners') || JSON.stringify([]))
   }),
   
   getters: {
@@ -262,6 +265,37 @@ export const useProductsServicesStore = defineStore('productsServices', {
     
     saveProducts() {
       localStorage.setItem('productsData', JSON.stringify(this.products))
+    },
+    
+    // ========== 横幅管理 ==========
+    addCategoryBanner(banner) {
+      const maxId = Math.max(...this.categoryBanners.map(b => b.id), 0)
+      banner.id = maxId + 1
+      this.categoryBanners.push(banner)
+      this.saveCategoryBanners()
+    },
+    
+    updateCategoryBanner(banner) {
+      const index = this.categoryBanners.findIndex(b => b.id === banner.id)
+      if (index !== -1) {
+        this.categoryBanners[index] = banner
+        this.saveCategoryBanners()
+      }
+    },
+    
+    deleteCategoryBanner(id) {
+      this.categoryBanners = this.categoryBanners.filter(b => b.id !== id)
+      this.saveCategoryBanners()
+    },
+    
+    saveCategoryBanners() {
+      localStorage.setItem('categoryBanners', JSON.stringify(this.categoryBanners))
+    },
+    
+    // ========== 加载数据 ==========
+    loadData() {
+      // 数据已在state中通过localStorage加载，这里可以做一些初始化工作
+      console.log('产品与服务数据已加载')
     }
   }
 })

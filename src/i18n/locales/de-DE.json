@@ -1,0 +1,74 @@
+{
+  "common": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "solutions": "Fallstudien",
+    "about": "Über Uns",
+    "service": "Service & Support",
+    "contact": "Kontakt",
+    "divisions": "Geschäftsbereiche",
+    "search": "Produkte, Lösungen suchen...",
+    "readMore": "Mehr Erfahren",
+    "viewDetails": "Details Anzeigen",
+    "contactUs": "Kontaktieren Sie Uns",
+    "consultSolution": "Beratung Anfordern"
+  },
+  "header": {
+    "hotline": "Hotline",
+    "email": "E-Mail",
+    "language": "DE / EN",
+    "companyName": "Mingsheng",
+    "slogan": "Professioneller Anbieter von Industriewerkzeugen"
+  },
+  "footer": {
+    "companyInfo": "Firmeninformationen",
+    "quickLinks": "Schnelllinks",
+    "contactInfo": "Kontakt",
+    "followUs": "Folgen Sie Uns",
+    "address": "Adresse",
+    "addressDetail": "Tianhe District, Guangzhou, China",
+    "phone": "Telefon",
+    "copyright": "© 2024 Guangzhou Mingsheng Weiye Electromechanical Co., Ltd. Alle Rechte Vorbehalten"
+  },
+  "aiChat": {
+    "title": "AI-Assistent",
+    "subtitle": "24/7 Online",
+    "welcome": "Hallo! Ich bin Ihr AI-Assistent. Wie kann ich Ihnen heute helfen?",
+    "placeholder": "Geben Sie Ihre Nachricht ein...",
+    "quickQuestions": "Häufig Gestellte Fragen",
+    "questions": {
+      "q1": "Welche Produkte bieten Sie an?",
+      "q2": "Wie kann ich ein Angebot anfordern?",
+      "q3": "Wie ist Ihre Lieferzeit?",
+      "q4": "Bieten Sie internationalen Versand an?",
+      "q5": "Haben Sie technischen Support?",
+      "q6": "Wie werde ich Händler?"
+    }
+  },
+  "inquiry": {
+    "title": "Anfrage-Formular",
+    "subtitle": "Füllen Sie das Formular aus und wir melden uns bald",
+    "name": "Vollständiger Name",
+    "namePlaceholder": "Geben Sie Ihren Namen ein",
+    "email": "E-Mail",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "company": "Firma",
+    "companyPlaceholder": "Name Ihrer Firma",
+    "phone": "Telefon",
+    "phonePlaceholder": "Telefonnummer",
+    "country": "Land",
+    "countryPlaceholder": "Wählen Sie Ihr Land",
+    "product": "Interessiertes Produkt",
+    "productPlaceholder": "An welchem Produkt sind Sie interessiert?",
+    "quantity": "Geschätzte Menge",
+    "quantityPlaceholder": "Benötigte Menge",
+    "message": "Nachricht",
+    "messagePlaceholder": "Beschreiben Sie Ihre Anforderungen",
+    "submit": "Anfrage Senden",
+    "submitting": "Wird Gesendet...",
+    "successTitle": "Anfrage Gesendet!",
+    "successMessage": "Vielen Dank für Ihr Interesse. Wir melden uns bald.",
+    "errorTitle": "Fehler",
+    "errorMessage": "Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+  }
+}

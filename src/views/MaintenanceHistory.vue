@@ -212,16 +212,26 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useFaultTrackingStore } from '../store/faultTracking'
-import { useDeviceStatusStore } from '../store/deviceStatus'
 import { ElMessage } from 'element-plus'
 import { Download, Clock, Document, CircleCheck, Timer, Money, Search } from '@element-plus/icons-vue'
 import WorkOrderDetail from '../components/WorkOrderDetail.vue'
 import * as echarts from 'echarts'
 
 const store = useFaultTrackingStore()
-const deviceStore = useDeviceStatusStore()
 
-const devices = deviceStore.devices
+const devices = computed(() => {
+  // 从工单中提取唯一设备列表
+  const deviceMap = new Map()
+  store.workOrders.forEach(order => {
+    if (!deviceMap.has(order.deviceId)) {
+      deviceMap.set(order.deviceId, {
+        id: order.deviceId,
+        name: order.deviceName
+      })
+    }
+  })
+  return Array.from(deviceMap.values())
+})
 
 // 统计数据
 const completionRate = computed(() => {

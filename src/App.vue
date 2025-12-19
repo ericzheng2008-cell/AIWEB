@@ -7,6 +7,8 @@
     <AiChat />
     <!-- 安彤AI监控中心 -->
     <AntomAIMonitor />
+    <!-- 询盘表单 -->
+    <InquiryForm />
   </div>
 </template>
 
@@ -15,6 +17,7 @@ import { ref, watch, onMounted, onErrorCaptured } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import AiChat from './components/AiChat.vue'
+import InquiryForm from './components/InquiryForm.vue'
 import ProductsServicesSidebar from './components/ProductsServicesSidebar.vue'
 import AntomAIMonitor from './components/AntomAIMonitor.vue'
 import { useAntomAIStore } from './store/antomAI'
@@ -83,13 +86,23 @@ onErrorCaptured((err, instance, info) => {
 #app {
   width: 100%;
   min-height: 100vh;
+  overflow-x: hidden; /* 防止横向滚动 */
 }
 
 .main-wrapper {
   transition: margin-left 0.3s;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .main-wrapper.with-sidebar {
   margin-left: 300px;
+}
+
+/* 移动端优化 - 侧边栏自动隐藏 */
+@media screen and (max-width: 1024px) {
+  .main-wrapper.with-sidebar {
+    margin-left: 0;
+  }
 }
 </style>

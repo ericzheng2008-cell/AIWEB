@@ -166,9 +166,23 @@ const routes = [
     component: () => import('../views/FaultTracking.vue')
   },
   {
+    path: '/work-order-query',
+    name: 'WorkOrderQuery',
+    component: () => import('../views/WorkOrderQuery.vue'),
+    meta: {
+      title: '工单查询系统',
+      description: '按工单号或手机号查询维修进度和配件物流状态'
+    }
+  },
+  {
     path: '/equipment-lifecycle',
     name: 'EquipmentLifecycle',
     component: () => import('../views/EquipmentLifecycle.vue')
+  },
+  {
+    path: '/intelligent-calculator',
+    name: 'IntelligentCalculator',
+    component: () => import('../views/IntelligentCalculator.vue')
   },
   {
     path: '/equipment-dashboard',
@@ -189,6 +203,61 @@ const routes = [
     path: '/cost-optimization',
     name: 'CostOptimization',
     component: () => import('../views/CostOptimization.vue')
+  },
+  {
+    path: '/ai-product-selector',
+    name: 'AiProductSelector',
+    component: () => import('../views/AiProductSelector.vue'),
+    meta: {
+      title: 'AI智能选型系统',
+      description: '智能推荐最适合您的产品'
+    }
+  },
+  {
+    path: '/resource-center',
+    name: 'ResourceCenter',
+    component: () => import('../views/ResourceCenter.vue'),
+    meta: {
+      title: '资源中心',
+      description: '下载白皮书、技术文档、案例研究'
+    }
+  },
+  {
+    path: '/email-marketing',
+    name: 'EmailMarketingSystem',
+    component: () => import('../views/EmailMarketingSystem.vue'),
+    meta: {
+      title: 'AI邮件营销系统',
+      description: '多语言EDM模板、A/B测试、效果追踪'
+    }
+  },
+  {
+    path: '/lead-nurturing',
+    name: 'LeadNurturingSystem',
+    component: () => import('../views/LeadNurturingSystem.vue'),
+    meta: {
+      title: '线索孵化系统',
+      description: '自动化nurturing、分级跟进策略'
+    }
+  },
+  {
+    path: '/marketing-data-hub',
+    name: 'MarketingDataHub',
+    component: () => import('../views/MarketingDataHub.vue'),
+    meta: {
+      title: '营销数据中台',
+      description: '多源数据整合、实时数仓、可视化看板'
+    }
+  },
+  {
+    path: '/mingsheng-aicrm',
+    name: 'MingShengAICRM',
+    component: () => import('../views/MingShengAICRM_V3.vue'),
+    meta: {
+      title: '明升AICRM v3.0 - AI赢率驱动智能营销平台',
+      description: 'Salesforce Einstein级 · AI赢率预测 · 商机管理 · 报价系统 · 竞品分析 · 组织影响力图谱',
+      category: 'AI营销中台'
+    }
   },
   // 管理后台路由
   {
@@ -211,12 +280,26 @@ const routes = [
       {
         path: 'cms',
         name: 'AdminCms',
-        component: () => import('../views/admin/CmsManage.vue')
+        component: () => import('../views/admin/ContentManage.vue')
       },
       {
         path: 'products-services',
         name: 'AdminProductsServices',
         component: () => import('../views/admin/ProductsServicesManage.vue')
+      },
+      {
+        path: 'home-layout',
+        name: 'AdminHomeLayout',
+        component: () => import('../views/admin/HomeLayoutManage.vue')
+      },
+      {
+        path: 'work-orders',
+        name: 'AdminWorkOrders',
+        component: () => import('../views/admin/WorkOrderManage.vue'),
+        meta: {
+          title: '工单管理',
+          description: '管理设备维修工单、配件状态和物流信息'
+        }
       },
       {
         path: 'tightening-data',
@@ -237,6 +320,35 @@ const routes = [
         path: 'ai-agents',
         name: 'AdminAiAgents',
         component: () => import('../views/admin/AiAgentManage.vue')
+      },
+      {
+        path: 'agent-registry',
+        name: 'AdminAgentRegistry',
+        component: () => import('../views/admin/AgentRegistry.vue')
+      },
+      {
+        path: 'knowledge-base',
+        name: 'AdminKnowledgeBase',
+        component: () => import('../views/admin/KnowledgeBase.vue')
+      },
+      {
+        path: 'learning-engine',
+        name: 'AdminLearningEngine',
+        component: () => import('../views/admin/LearningEngine.vue')
+      },
+      {
+        path: 'ai-learning-dashboard',
+        name: 'AiLearningDashboard',
+        component: () => import('../views/AiLearningDashboard.vue'),
+        meta: {
+          title: 'AI学习训练中心',
+          description: '查看用户反馈，优化AI回答质量'
+        }
+      },
+      {
+        path: 'monitoring',
+        name: 'AdminMonitoring',
+        component: () => import('../views/admin/MonitoringDashboard.vue')
       },
       {
         path: 'users',
@@ -282,6 +394,51 @@ const routes = [
         path: 'production-line',
         name: 'AdminProductionLine',
         component: () => import('../views/admin/ProductionLineManage.vue')
+      },
+      {
+        path: 'marketing-hub',
+        name: 'AdminMarketingHub',
+        component: () => import('../views/admin/MarketingHubManage.vue'),
+        meta: {
+          title: 'AI营销中台管理',
+          description: '配置Phase 2-4功能、AI模型训练、数据分析'
+        }
+      },
+      {
+        path: 'training-data',
+        name: 'AdminTrainingData',
+        component: () => import('../views/admin/TrainingDataManage.vue'),
+        meta: {
+          title: '学习训练系统资料管理',
+          description: '管理产品知识、技术技能、销售营销等训练数据'
+        }
+      },
+      {
+        path: 'mingsheng-aicrm',
+        name: 'AdminMingShengAICRM',
+        component: () => import('../views/admin/MingShengAICRMManage.vue'),
+        meta: {
+          title: '明升AICRM后台管理',
+          description: '配置智能看板、客户360°、商机管理、自动化流程'
+        }
+      },
+      {
+        path: 'product-matrix',
+        name: 'AdminProductMatrix',
+        component: () => import('../views/admin/ProductMatrixManage.vue'),
+        meta: {
+          title: '企业产品矩阵管理',
+          description: '产品收益-现金流分析、BCG矩阵、AI智能推荐、组合优化'
+        }
+      },
+      {
+        path: 'customer360',
+        name: 'AdminCustomer360',
+        component: () => import('../views/admin/Customer360Manage.vue'),
+        meta: {
+          title: '客户360画像与沙盘分析管理',
+          description: '客户画像配置、数据源整合、沙盘分析设置、AI预测配置'
+        }
       }
     ]
   }
