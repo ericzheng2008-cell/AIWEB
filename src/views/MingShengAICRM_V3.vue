@@ -41,6 +41,10 @@
           <el-icon><TrendCharts /></el-icon>
           <span>销售目标</span>
         </el-menu-item>
+        <el-menu-item index="aipm">
+          <el-icon><DataAnalysis /></el-icon>
+          <span>AIPM项目管理</span>
+        </el-menu-item>
         <el-menu-item index="biddingAI">
           <el-icon><Trophy /></el-icon>
           <span>投标预测</span>
@@ -951,11 +955,15 @@
       <!-- 销售目标管理视图 - 基于销售目标管理prompt -->
       <div v-show="activeTab === 'salesTarget'" class="sales-target-view">
         <div class="view-header">
-          <h2>🎯 销售目标管理</h2>
+          <h2>🎯 销售目标 & 回款管理</h2>
           <div class="header-actions">
             <el-button type="primary" @click="createTarget">
               <el-icon><Plus /></el-icon>
               新建目标
+            </el-button>
+            <el-button type="warning" @click="createPaymentContract">
+              <el-icon><DocumentAdd /></el-icon>
+              新建合同
             </el-button>
             <el-button type="success" @click="refreshTargets">
               <el-icon><Refresh /></el-icon>
@@ -1140,6 +1148,319 @@
               </template>
             </el-table-column>
           </el-table>
+        </el-card>
+
+        <!-- 回款管理模块 -->
+        <el-divider content-position="left">
+          <h3>💰 回款管理</h3>
+        </el-divider>
+
+        <!-- 回款预警卡片 -->
+        <el-row :gutter="20" class="payment-warning-cards">
+          <el-col :span="6">
+            <el-card class="warning-card" :body-style="{ padding: '20px' }">
+              <div class="warning-header">
+                <el-icon :size="32" color="#67C23A"><CircleCheck /></el-icon>
+                <span class="warning-title">正常</span>
+              </div>
+              <div class="warning-value">{{ normalPayments.length }}个</div>
+              <div class="warning-amount">¥{{ calculateTotalAmount(normalPayments) }}万</div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card class="warning-card" :body-style="{ padding: '20px' }">
+              <div class="warning-header">
+                <el-icon :size="32" color="#E6A23C"><Warning /></el-icon>
+                <span class="warning-title">即将到期(7天内)</span>
+              </div>
+              <div class="warning-value">{{ warningPayments.length }}个</div>
+              <div class="warning-amount">¥{{ calculateTotalAmount(warningPayments) }}万</div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card class="warning-card" :body-style="{ padding: '20px' }">
+              <div class="warning-header">
+                <el-icon :size="32" color="#F56C6C"><Bell /></el-icon>
+                <span class="warning-title">已逾期</span>
+              </div>
+              <div class="warning-value">{{ overduePayments.length }}个</div>
+              <div class="warning-amount">¥{{ calculateTotalAmount(overduePayments) }}万</div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card class="warning-card" :body-style="{ padding: '20px' }">
+              <div class="warning-header">
+                <el-icon :size="32" color="#409EFF"><Money /></el-icon>
+                <span class="warning-title">总待收款</span>
+              </div>
+              <div class="warning-value">{{ paymentContracts.length }}个</div>
+              <div class="warning-amount">¥{{ calculateTotalAmount(paymentContracts) }}万</div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <!-- 回款合同列表 -->
+        <el-card class="mt-4">
+          <template #header>
+            <div class="card-header">
+              <span>📄 回款合同列表</span>
+              <div>
+                <el-button-group>
+                  <el-button :type="paymentFilter === 'all' ? 'primary' : ''" @click="paymentFilter = 'all'">全部</el-button>
+                  <el-button :type="paymentFilter === 'normal' ? 'primary' : ''" @click="paymentFilter = 'normal'">正常</el-button>
+                  <el-button :type="paymentFilter === 'warning' ? 'primary' : ''" @click="paymentFilter = 'warning'">即将到期</el-button>
+                  <el-button :type="paymentFilter === 'overdue' ? 'primary' : ''" @click="paymentFilter = 'overdue'">已逾期</el-button>
+                </el-button-group>
+              </div>
+            </div>
+          </template>
+
+          <el-table :data="filteredPaymentContracts" stripe>
+            <el-table-column prop="contractNo" label="合同编号" width="150" />
+            <el-table-column prop="clientName" label="客户名称" width="150" />
+            <el-table-column prop="amount" label="金额(万)" width="100">
+              <template #default="{ row }">
+                <span style="font-weight: bold; color: #F56C6C;">¥{{ row.amount }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="paymentTerm" label="账期(天)" width="100" />
+            <el-table-column prop="dueDate" label="到期日期" width="120" />
+            <el-table-column label="剩余天数" width="100">
+              <template #default="{ row }">
+                <el-tag :type="getDaysLeftType(row.daysLeft)">
+                  {{ row.daysLeft > 0 ? `${row.daysLeft}天` : `逾期${Math.abs(row.daysLeft)}天` }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" width="100">
+              <template #default="{ row }">
+                <el-tag :type="getPaymentStatusType(row.status)">{{ row.status }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="financeOwner" label="财务负责人" width="100" />
+            <el-table-column prop="adminOwner" label="内勤负责人" width="100" />
+            <el-table-column prop="salesOwner" label="销售" width="100" />
+            <el-table-column prop="salesManager" label="销售经理" width="100" />
+            <el-table-column label="操作" width="250" fixed="right">
+              <template #default="{ row }">
+                <el-button size="small" @click="viewPaymentDetail(row)">详情</el-button>
+                <el-button size="small" type="warning" @click="sendPaymentReminder(row)" v-if="row.status !== '已收款'">催收</el-button>
+                <el-button size="small" type="success" @click="confirmPayment(row)" v-if="row.status !== '已收款'">确认收款</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+
+        <!-- 催收记录 -->
+        <el-card class="mt-4">
+          <template #header>
+            <span>📞 催收记录</span>
+          </template>
+          <el-timeline>
+            <el-timeline-item 
+              v-for="record in collectionRecords" 
+              :key="record.id"
+              :timestamp="record.timestamp"
+              :type="record.type"
+              :color="record.color"
+            >
+              <div class="collection-record">
+                <div class="record-header">
+                  <strong>{{ record.contractNo }}</strong> - {{ record.action }}
+                </div>
+                <div class="record-content">{{ record.content }}</div>
+                <div class="record-footer">
+                  <span>操作人：{{ record.operator }}</span>
+                  <span>客户反馈：{{ record.feedback }}</span>
+                </div>
+              </div>
+            </el-timeline-item>
+          </el-timeline>
+        </el-card>
+      </div>
+
+      <!-- AIPM项目管理视图 -->
+      <div v-show="activeTab === 'aipm'" class="aipm-view">
+        <div class="view-header">
+          <h2>🚀 AIPM 智能项目管理</h2>
+          <div class="header-actions">
+            <el-button type="primary" @click="createAIPMProject">
+              <el-icon><Plus /></el-icon>
+              新建项目
+            </el-button>
+            <el-button type="success" @click="show3DView = !show3DView">
+              <el-icon><View /></el-icon>
+              {{ show3DView ? '列表视图' : '3D视图' }}
+            </el-button>
+            <el-button @click="refreshAIPMData">
+              <el-icon><Refresh /></el-icon>
+              刷新
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 项目概览看板 -->
+        <el-row :gutter="20" class="aipm-kpi-cards">
+          <el-col :span="6" v-for="kpi in aipmKPIs" :key="kpi.id">
+            <el-card class="kpi-card" :body-style="{ padding: '20px' }">
+              <div class="kpi-header">
+                <el-icon :size="28" :color="kpi.color">
+                  <component :is="kpi.icon" />
+                </el-icon>
+                <span class="kpi-title">{{ kpi.title }}</span>
+              </div>
+              <div class="kpi-value">{{ kpi.value }}</div>
+              <div class="kpi-trend" :class="kpi.trend > 0 ? 'positive' : 'negative'">
+                <el-icon><component :is="kpi.trend > 0 ? 'CaretTop' : 'CaretBottom'" /></el-icon>
+                {{ Math.abs(kpi.trend) }}% {{ kpi.trendLabel }}
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <!-- 3D项目状态可视化 -->
+        <el-card class="mt-4" v-show="show3DView">
+          <template #header>
+            <span>🌐 3D项目全景</span>
+          </template>
+          <div id="aipm3DChart" style="height: 500px;"></div>
+        </el-card>
+
+        <!-- 项目甘特图 -->
+        <el-card class="mt-4" v-show="!show3DView">
+          <template #header>
+            <div class="card-header">
+              <span>📊 项目甘特图</span>
+              <el-button-group>
+                <el-button :type="ganttViewMode === 'day' ? 'primary' : ''" @click="ganttViewMode = 'day'">日</el-button>
+                <el-button :type="ganttViewMode === 'week' ? 'primary' : ''" @click="ganttViewMode = 'week'">周</el-button>
+                <el-button :type="ganttViewMode === 'month' ? 'primary' : ''" @click="ganttViewMode = 'month'">月</el-button>
+              </el-button-group>
+            </div>
+          </template>
+          <div id="aipmGanttChart" style="height: 600px; overflow: auto;"></div>
+        </el-card>
+
+        <!-- 项目列表 -->
+        <el-card class="mt-4">
+          <template #header>
+            <div class="card-header">
+              <span>📋 项目列表</span>
+              <el-button-group>
+                <el-button :type="projectFilter === 'all' ? 'primary' : ''" @click="projectFilter = 'all'">全部</el-button>
+                <el-button :type="projectFilter === 'ongoing' ? 'primary' : ''" @click="projectFilter = 'ongoing'">进行中</el-button>
+                <el-button :type="projectFilter === 'delayed' ? 'primary' : ''" @click="projectFilter = 'delayed'">延期风险</el-button>
+                <el-button :type="projectFilter === 'completed' ? 'primary' : ''" @click="projectFilter = 'completed'">已完成</el-button>
+              </el-button-group>
+            </div>
+          </template>
+
+          <el-table :data="filteredAIPMProjects" stripe>
+            <el-table-column type="expand">
+              <template #default="{ row }">
+                <div class="project-detail-panel">
+                  <el-descriptions :column="2" border>
+                    <el-descriptions-item label="项目经理">{{ row.pm }}</el-descriptions-item>
+                    <el-descriptions-item label="团队人数">{{ row.teamSize }}人</el-descriptions-item>
+                    <el-descriptions-item label="预算">¥{{ row.budget }}万</el-descriptions-item>
+                    <el-descriptions-item label="已投入">¥{{ row.spent }}万</el-descriptions-item>
+                    <el-descriptions-item label="关键路径">{{ row.criticalPath }}</el-descriptions-item>
+                    <el-descriptions-item label="风险等级">
+                      <el-tag :type="getRiskLevelType(row.riskLevel)">{{ row.riskLevel }}</el-tag>
+                    </el-descriptions-item>
+                  </el-descriptions>
+
+                  <h4 class="mt-3">📌 WBS任务</h4>
+                  <el-tree :data="row.wbs" :props="{ label: 'name', children: 'children' }" default-expand-all>
+                    <template #default="{ node, data }">
+                      <span class="wbs-node">
+                        <span>{{ data.name }}</span>
+                        <el-tag size="small" :type="getTaskStatusType(data.status)">{{ data.status }}</el-tag>
+                        <el-progress 
+                          :percentage="data.progress" 
+                          :stroke-width="8" 
+                          :color="getProgressColor(data.progress)"
+                          style="width: 200px; margin-left: 10px;"
+                        />
+                      </span>
+                    </template>
+                  </el-tree>
+
+                  <h4 class="mt-3">⚠️ 风险预警</h4>
+                  <el-alert
+                    v-for="risk in row.risks"
+                    :key="risk.id"
+                    :title="risk.title"
+                    :type="risk.type"
+                    :closable="false"
+                    class="mb-2"
+                  >
+                    {{ risk.description }}
+                  </el-alert>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="项目名称" width="200" />
+            <el-table-column prop="pm" label="项目经理" width="100" />
+            <el-table-column prop="startDate" label="开始日期" width="120" />
+            <el-table-column prop="endDate" label="计划完成" width="120" />
+            <el-table-column label="进度" width="150">
+              <template #default="{ row }">
+                <el-progress :percentage="row.progress" :color="getProgressColor(row.progress)" />
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" width="120">
+              <template #default="{ row }">
+                <el-tag :type="getProjectStatusType(row.status)">{{ row.status }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="AI预测完成率" width="130">
+              <template #default="{ row }">
+                <span :style="{ color: row.aiPrediction >= 80 ? '#67C23A' : '#F56C6C', fontWeight: 'bold' }">
+                  {{ row.aiPrediction }}%
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="200" fixed="right">
+              <template #default="{ row }">
+                <el-button size="small" @click="viewProjectDetail(row)">详情</el-button>
+                <el-button size="small" type="primary" @click="updateProjectProgress(row)">更新</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+
+        <!-- AI智能分析面板 -->
+        <el-card class="mt-4">
+          <template #header>
+            <span>🤖 AI项目管家分析</span>
+          </template>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <h4>📊 项目健康度分析</h4>
+              <div id="projectHealthChart" style="height: 300px;"></div>
+            </el-col>
+            <el-col :span="12">
+              <h4>⚡ 智能建议</h4>
+              <el-timeline>
+                <el-timeline-item
+                  v-for="suggestion in aipmSuggestions"
+                  :key="suggestion.id"
+                  :type="suggestion.type"
+                  :color="suggestion.color"
+                  :timestamp="suggestion.timestamp"
+                >
+                  <div class="suggestion-item">
+                    <strong>{{ suggestion.title }}</strong>
+                    <p>{{ suggestion.content }}</p>
+                    <el-button size="small" type="primary" @click="applySuggestion(suggestion)">
+                      采纳建议
+                    </el-button>
+                  </div>
+                </el-timeline-item>
+              </el-timeline>
+            </el-col>
+          </el-row>
         </el-card>
       </div>
 
@@ -3418,6 +3739,495 @@ const actionPlans = ref([
     status: '进行中'
   }
 ])
+
+// ========== 回款管理模块数据 ==========
+const paymentFilter = ref('all')
+const paymentContracts = ref([
+  {
+    id: 1,
+    contractNo: 'HT2025001',
+    clientName: '某汽车厂',
+    amount: 120,
+    paymentTerm: 90,
+    signDate: '2024-10-01',
+    dueDate: '2024-12-30',
+    daysLeft: 11,
+    status: '正常',
+    financeOwner: '张会计',
+    adminOwner: '李内勤',
+    salesOwner: '王销售',
+    salesManager: '赵经理'
+  },
+  {
+    id: 2,
+    contractNo: 'HT2025002',
+    clientName: '某电子厂',
+    amount: 85,
+    paymentTerm: 60,
+    signDate: '2024-11-01',
+    dueDate: '2024-12-25',
+    daysLeft: 6,
+    status: '即将到期',
+    financeOwner: '张会计',
+    adminOwner: '李内勤',
+    salesOwner: '刘销售',
+    salesManager: '赵经理'
+  },
+  {
+    id: 3,
+    contractNo: 'HT2025003',
+    clientName: '某机械厂',
+    amount: 200,
+    paymentTerm: 90,
+    signDate: '2024-08-01',
+    dueDate: '2024-12-10',
+    daysLeft: -9,
+    status: '已逾期',
+    financeOwner: '孙会计',
+    adminOwner: '周内勤',
+    salesOwner: '吴销售',
+    salesManager: '郑经理'
+  },
+  {
+    id: 4,
+    contractNo: 'HT2025004',
+    clientName: '某航空企业',
+    amount: 350,
+    paymentTerm: 120,
+    signDate: '2024-10-15',
+    dueDate: '2025-02-12',
+    daysLeft: 55,
+    status: '正常',
+    financeOwner: '张会计',
+    adminOwner: '李内勤',
+    salesOwner: '钱销售',
+    salesManager: '赵经理'
+  },
+  {
+    id: 5,
+    contractNo: 'HT2025005',
+    clientName: '某设备公司',
+    amount: 95,
+    paymentTerm: 30,
+    signDate: '2024-11-20',
+    dueDate: '2024-12-20',
+    daysLeft: 1,
+    status: '即将到期',
+    financeOwner: '孙会计',
+    adminOwner: '周内勤',
+    salesOwner: '陈销售',
+    salesManager: '郑经理'
+  }
+])
+
+const normalPayments = computed(() => paymentContracts.value.filter(p => p.daysLeft > 7))
+const warningPayments = computed(() => paymentContracts.value.filter(p => p.daysLeft > 0 && p.daysLeft <= 7))
+const overduePayments = computed(() => paymentContracts.value.filter(p => p.daysLeft < 0))
+
+const filteredPaymentContracts = computed(() => {
+  if (paymentFilter.value === 'all') return paymentContracts.value
+  if (paymentFilter.value === 'normal') return normalPayments.value
+  if (paymentFilter.value === 'warning') return warningPayments.value
+  if (paymentFilter.value === 'overdue') return overduePayments.value
+  return paymentContracts.value
+})
+
+const collectionRecords = ref([
+  {
+    id: 1,
+    contractNo: 'HT2025002',
+    action: '电话催收',
+    content: '联系客户财务部，确认付款进度。客户表示本周五前安排付款。',
+    operator: '李内勤',
+    feedback: '本周五安排付款',
+    timestamp: '2024-12-18 14:30',
+    type: 'primary',
+    color: '#409EFF'
+  },
+  {
+    id: 2,
+    contractNo: 'HT2025003',
+    action: '邮件催收',
+    content: '发送正式催款函，抄送客户采购经理和财务经理。',
+    operator: '张会计',
+    feedback: '已查阅，正在审批流程中',
+    timestamp: '2024-12-17 10:00',
+    type: 'warning',
+    color: '#E6A23C'
+  },
+  {
+    id: 3,
+    contractNo: 'HT2025003',
+    action: '上门拜访',
+    content: '销售经理携带财务负责人上门拜访，了解延期原因。客户表示资金紧张，请求延期15天。',
+    operator: '郑经理',
+    feedback: '请求延期15天',
+    timestamp: '2024-12-15 15:20',
+    type: 'danger',
+    color: '#F56C6C'
+  }
+])
+
+// 回款管理方法
+const calculateTotalAmount = (contracts) => {
+  return contracts.reduce((sum, c) => sum + c.amount, 0)
+}
+
+const getDaysLeftType = (days) => {
+  if (days < 0) return 'danger'
+  if (days <= 3) return 'danger'
+  if (days <= 7) return 'warning'
+  return 'success'
+}
+
+const getPaymentStatusType = (status) => {
+  const statusMap = {
+    '正常': 'success',
+    '即将到期': 'warning',
+    '已逾期': 'danger',
+    '已收款': 'info'
+  }
+  return statusMap[status] || ''
+}
+
+const createPaymentContract = () => {
+  ElMessage.info('打开新建合同对话框')
+}
+
+const viewPaymentDetail = (row) => {
+  ElMessage.info(`查看合同 ${row.contractNo} 详情`)
+}
+
+const sendPaymentReminder = (row) => {
+  ElMessageBox.confirm(
+    `确认向 ${row.clientName} 发送催收提醒？`,
+    '催收确认',
+    {
+      confirmButtonText: '确认发送',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    // 添加催收记录
+    collectionRecords.value.unshift({
+      id: Date.now(),
+      contractNo: row.contractNo,
+      action: '系统催收',
+      content: `系统自动发送催收提醒至客户财务、采购及内勤负责人。`,
+      operator: '系统自动',
+      feedback: '待回复',
+      timestamp: new Date().toLocaleString(),
+      type: 'warning',
+      color: '#E6A23C'
+    })
+    ElMessage.success('催收提醒已发送')
+  }).catch(() => {
+    ElMessage.info('已取消')
+  })
+}
+
+const confirmPayment = (row) => {
+  ElMessageBox.confirm(
+    `确认 ${row.clientName} 的合同 ${row.contractNo} 已收款 ¥${row.amount}万？`,
+    '确认收款',
+    {
+      confirmButtonText: '确认收款',
+      cancelButtonText: '取消',
+      type: 'success'
+    }
+  ).then(() => {
+    row.status = '已收款'
+    row.daysLeft = 0
+    ElMessage.success('收款确认成功')
+  }).catch(() => {
+    ElMessage.info('已取消')
+  })
+}
+
+// ========== AIPM项目管理模块数据 ==========
+const show3DView = ref(false)
+const ganttViewMode = ref('week')
+const projectFilter = ref('all')
+
+const aipmKPIs = ref([
+  { id: 1, title: '项目总数', value: '15个', trend: 20, trendLabel: '同比增长', icon: 'DataLine', color: '#409EFF' },
+  { id: 2, title: '进行中项目', value: '8个', trend: 0, trendLabel: '正常推进', icon: 'Timer', color: '#67C23A' },
+  { id: 3, title: '准时交付率', value: '92%', trend: 5, trendLabel: '环比提升', icon: 'CircleCheck', color: '#E6A23C' },
+  { id: 4, title: 'AI预测准确度', value: '88%', trend: 3, trendLabel: '持续优化', icon: 'TrendCharts', color: '#F56C6C' }
+])
+
+const aipmProjects = ref([
+  {
+    id: 1,
+    name: '明升智能拧紧系统V2.0',
+    pm: '张经理',
+    teamSize: 8,
+    startDate: '2024-10-01',
+    endDate: '2025-01-31',
+    progress: 65,
+    status: '进行中',
+    budget: 500,
+    spent: 280,
+    aiPrediction: 88,
+    riskLevel: '低',
+    criticalPath: '系统集成 -> 测试验证 -> 交付',
+    wbs: [
+      {
+        name: '需求分析',
+        status: '已完成',
+        progress: 100,
+        children: [
+          { name: '需求调研', status: '已完成', progress: 100 },
+          { name: '需求确认', status: '已完成', progress: 100 }
+        ]
+      },
+      {
+        name: '系统设计',
+        status: '已完成',
+        progress: 100,
+        children: [
+          { name: '架构设计', status: '已完成', progress: 100 },
+          { name: '接口设计', status: '已完成', progress: 100 }
+        ]
+      },
+      {
+        name: '开发实施',
+        status: '进行中',
+        progress: 70,
+        children: [
+          { name: '前端开发', status: '进行中', progress: 75 },
+          { name: '后端开发', status: '进行中', progress: 80 },
+          { name: '数据库设计', status: '已完成', progress: 100 }
+        ]
+      },
+      {
+        name: '测试验证',
+        status: '未开始',
+        progress: 0,
+        children: [
+          { name: '单元测试', status: '未开始', progress: 0 },
+          { name: '集成测试', status: '未开始', progress: 0 }
+        ]
+      }
+    ],
+    risks: [
+      {
+        id: 1,
+        title: '中等风险',
+        type: 'warning',
+        description: 'AI检测到：前端开发进度略有延迟，可能影响后续测试计划。建议增加资源投入。'
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: '某汽车厂生产线改造',
+    pm: '李经理',
+    teamSize: 12,
+    startDate: '2024-09-15',
+    endDate: '2024-12-30',
+    progress: 85,
+    status: '进行中',
+    budget: 1200,
+    spent: 950,
+    aiPrediction: 92,
+    riskLevel: '低',
+    criticalPath: '设备安装 -> 调试 -> 验收',
+    wbs: [
+      {
+        name: '现场勘察',
+        status: '已完成',
+        progress: 100
+      },
+      {
+        name: '方案设计',
+        status: '已完成',
+        progress: 100
+      },
+      {
+        name: '设备采购',
+        status: '已完成',
+        progress: 100
+      },
+      {
+        name: '现场施工',
+        status: '进行中',
+        progress: 90,
+        children: [
+          { name: '设备安装', status: '进行中', progress: 95 },
+          { name: '线路布置', status: '已完成', progress: 100 },
+          { name: '系统集成', status: '进行中', progress: 85 }
+        ]
+      },
+      {
+        name: '调试验收',
+        status: '未开始',
+        progress: 0
+      }
+    ],
+    risks: [
+      {
+        id: 1,
+        title: '低风险',
+        type: 'success',
+        description: 'AI分析显示项目进展顺利，预计可按期交付。'
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: '航空航天拧紧解决方案',
+    pm: '王总监',
+    teamSize: 15,
+    startDate: '2024-11-01',
+    endDate: '2025-03-31',
+    progress: 35,
+    status: '延期风险',
+    budget: 2000,
+    spent: 580,
+    aiPrediction: 68,
+    riskLevel: '高',
+    criticalPath: '技术攻关 -> 样机制造 -> 客户验证',
+    wbs: [
+      {
+        name: '技术调研',
+        status: '已完成',
+        progress: 100
+      },
+      {
+        name: '技术攻关',
+        status: '进行中',
+        progress: 45,
+        children: [
+          { name: '精度控制算法', status: '进行中', progress: 50 },
+          { name: '安全认证', status: '进行中', progress: 30 },
+          { name: '材料测试', status: '进行中', progress: 55 }
+        ]
+      },
+      {
+        name: '样机制造',
+        status: '未开始',
+        progress: 0
+      }
+    ],
+    risks: [
+      {
+        id: 1,
+        title: '高风险',
+        type: 'error',
+        description: 'AI预警：技术攻关进度落后15%，安全认证审批流程复杂。建议立即召开技术评审会，调整资源配置。'
+      },
+      {
+        id: 2,
+        title: '中等风险',
+        type: 'warning',
+        description: '关键资源（航空级材料）供应存在不确定性，建议提前备货。'
+      }
+    ]
+  }
+])
+
+const filteredAIPMProjects = computed(() => {
+  if (projectFilter.value === 'all') return aipmProjects.value
+  if (projectFilter.value === 'ongoing') return aipmProjects.value.filter(p => p.status === '进行中')
+  if (projectFilter.value === 'delayed') return aipmProjects.value.filter(p => p.status === '延期风险')
+  if (projectFilter.value === 'completed') return aipmProjects.value.filter(p => p.status === '已完成')
+  return aipmProjects.value
+})
+
+const aipmSuggestions = ref([
+  {
+    id: 1,
+    title: '资源优化建议',
+    content: '检测到"航空航天拧紧解决方案"项目进度滞后，建议从"明升智能拧紧系统V2.0"项目调配1名高级工程师支援技术攻关。',
+    type: 'warning',
+    color: '#E6A23C',
+    timestamp: '2小时前'
+  },
+  {
+    id: 2,
+    title: '进度预警',
+    content: '"某汽车厂生产线改造"项目临近交付期，建议提前安排验收准备工作，预留5天缓冲时间。',
+    type: 'primary',
+    color: '#409EFF',
+    timestamp: '5小时前'
+  },
+  {
+    id: 3,
+    title: '成本控制',
+    content: '3个在建项目累计成本占比82%，预测总成本可能超支8%。建议对"航空航天"项目启动成本审查。',
+    type: 'danger',
+    color: '#F56C6C',
+    timestamp: '1天前'
+  }
+])
+
+// AIPM方法
+const createAIPMProject = () => {
+  ElMessage.info('打开新建项目对话框')
+}
+
+const refreshAIPMData = () => {
+  ElMessage.success('数据已刷新')
+}
+
+const getRiskLevelType = (level) => {
+  const map = { '低': 'success', '中': 'warning', '高': 'danger' }
+  return map[level] || ''
+}
+
+const getProjectStatusType = (status) => {
+  const map = {
+    '进行中': 'primary',
+    '延期风险': 'warning',
+    '已完成': 'success',
+    '已暂停': 'info',
+    '已取消': 'danger'
+  }
+  return map[status] || ''
+}
+
+const viewProjectDetail = (row) => {
+  ElMessage.info(`查看项目 ${row.name} 详情`)
+}
+
+const updateProjectProgress = (row) => {
+  ElMessage.info(`更新项目 ${row.name} 进度`)
+}
+
+const applySuggestion = (suggestion) => {
+  ElMessageBox.confirm(
+    suggestion.content,
+    '采纳AI建议',
+    {
+      confirmButtonText: '确认采纳',
+      cancelButtonText: '暂不采纳',
+      type: 'info'
+    }
+  ).then(() => {
+    ElMessage.success('已采纳AI建议，系统将自动执行')
+    // 移除已采纳的建议
+    const index = aipmSuggestions.value.findIndex(s => s.id === suggestion.id)
+    if (index > -1) {
+      aipmSuggestions.value.splice(index, 1)
+    }
+  }).catch(() => {
+    ElMessage.info('已取消')
+  })
+}
+
+// 初始化AIPM图表（页面加载时调用）
+const initAIPMCharts = () => {
+  // 3D项目可视化
+  if (show3DView.value) {
+    // TODO: 使用ECharts-GL实现3D可视化
+    console.log('初始化3D项目可视化')
+  }
+  
+  // 项目健康度图表
+  // TODO: 使用ECharts实现雷达图
+  console.log('初始化项目健康度图表')
+}
 
 // ========== 联系人与关系图谱模块数据 ==========
 const contactSearch = ref('')
