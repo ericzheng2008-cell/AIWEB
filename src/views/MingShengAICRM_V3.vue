@@ -53,6 +53,10 @@
           <el-icon><MagicStick /></el-icon>
           <span>AI智能体</span>
         </el-menu-item>
+        <el-menu-item index="aimes">
+          <el-icon><Setting /></el-icon>
+          <span>AIMES智能制造</span>
+        </el-menu-item>
         <el-menu-item index="automation">
           <el-icon><Setting /></el-icon>
           <span>自动化流程</span>
@@ -240,6 +244,10 @@
         <div class="view-header">
           <h2>📊 销售漏斗分析</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-select v-model="funnelPeriod" style="width: 150px;">
               <el-option label="本月" value="month" />
               <el-option label="本季度" value="quarter" />
@@ -403,10 +411,16 @@
       <div v-show="activeTab === 'customer360'" class="customer360-view">
         <div class="view-header">
           <h2>👤 客户360°画像</h2>
-          <el-button type="primary" @click="createCustomer">
-            <el-icon><Plus /></el-icon>
-            新增客户
-          </el-button>
+          <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
+            <el-button type="primary" @click="createCustomer">
+              <el-icon><Plus /></el-icon>
+              新增客户
+            </el-button>
+          </div>
         </div>
 
         <el-row :gutter="20">
@@ -605,11 +619,15 @@
       <div v-show="activeTab === 'aiAgent'" class="ai-agent-view">
         <div class="view-header">
           <h2>🤖 AI智能体助手</h2>
+          <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+            <el-icon><HomeFilled /></el-icon>
+            返回主页
+          </el-button>
         </div>
 
         <el-row :gutter="20">
-          <el-col :span="8" v-for="agent in aiAgents" :key="agent.id">
-            <el-card class="agent-card" :body-style="{ padding: '24px' }">
+          <el-col :span="6" v-for="agent in aiAgents" :key="agent.id">
+            <el-card class="agent-card" :body-style="{ padding: '20px' }">
               <div class="agent-header">
                 <el-icon :size="48" :color="agent.color">
                   <component :is="agent.icon" />
@@ -747,6 +765,10 @@
         <div class="view-header">
           <h2>📊 企业产品矩阵管理</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-button type="primary" @click="openProductDataDialog">
               <el-icon><Plus /></el-icon>
               添加产品数据
@@ -957,6 +979,10 @@
         <div class="view-header">
           <h2>🎯 销售目标 & 回款管理</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-button type="primary" @click="createTarget">
               <el-icon><Plus /></el-icon>
               新建目标
@@ -1279,11 +1305,226 @@
         </el-card>
       </div>
 
+      <!-- AIMES智能制造助手视图 -->
+      <div v-show="activeTab === 'aimes'" class="aimes-view">
+        <div class="view-header">
+          <h2>🏭 AIMES 智能制造执行系统</h2>
+          <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
+            <el-button type="primary" @click="refreshAIMESData">
+              <el-icon><Refresh /></el-icon>
+              刷新数据
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 核心功能卡片网格 -->
+        <el-row :gutter="20" class="mb-4">
+          <el-col :span="8" v-for="module in aimesModules" :key="module.id">
+            <el-card class="aimes-module-card" shadow="hover" @click="openAIMESModule(module)">
+              <div class="module-header">
+                <el-icon :size="48" :color="module.color">
+                  <component :is="module.icon" />
+                </el-icon>
+                <h3>{{ module.name }}</h3>
+              </div>
+              <p class="module-desc">{{ module.description }}</p>
+              
+              <el-divider />
+              
+              <div class="module-stats">
+                <div class="stat-item" v-for="(stat, idx) in module.stats" :key="idx">
+                  <span class="label">{{ stat.label }}:</span>
+                  <span class="value" :class="stat.type">{{ stat.value }}</span>
+                </div>
+              </div>
+              
+              <div class="module-status">
+                <el-tag :type="module.status === 'running' ? 'success' : 'info'" size="small">
+                  {{ module.status === 'running' ? '运行中' : '待启动' }}
+                </el-tag>
+                <span class="update-time">更新: {{ module.updateTime }}</span>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <!-- 实时生产监控大屏 -->
+        <el-row :gutter="20" class="mb-4">
+          <el-col :span="16">
+            <el-card>
+              <template #header>
+                <div class="card-header">
+                  <span>📊 实时生产监控 - 产线状态</span>
+                  <el-tag type="success">实时</el-tag>
+                </div>
+              </template>
+              
+              <!-- 产线状态可视化 -->
+              <div class="production-lines">
+                <div class="line-item" v-for="line in productionLines" :key="line.id">
+                  <div class="line-header">
+                    <span class="line-name">{{ line.name }}</span>
+                    <el-tag :type="getLineStatusType(line.status)" size="small">
+                      {{ line.status }}
+                    </el-tag>
+                  </div>
+                  
+                  <div class="line-metrics">
+                    <div class="metric">
+                      <span class="label">OEE</span>
+                      <el-progress :percentage="line.oee" :color="getOEEColor(line.oee)" />
+                    </div>
+                    <div class="metric">
+                      <span class="label">产能利用率</span>
+                      <el-progress :percentage="line.utilization" />
+                    </div>
+                  </div>
+                  
+                  <div class="line-details">
+                    <span>当前工单: {{ line.currentWorkOrder }}</span>
+                    <span>进度: {{ line.progress }}%</span>
+                    <span>节拍: {{ line.cycleTime }}s</span>
+                  </div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          
+          <el-col :span="8">
+            <el-card>
+              <template #header>
+                <span>🚨 今日异常与预警</span>
+              </template>
+              
+              <el-timeline>
+                <el-timeline-item 
+                  v-for="alert in aimesAlerts" 
+                  :key="alert.id"
+                  :timestamp="alert.time"
+                  :type="alert.level === 'critical' ? 'danger' : alert.level === 'warning' ? 'warning' : 'primary'"
+                >
+                  <div class="alert-content">
+                    <h4>{{ alert.title }}</h4>
+                    <p>{{ alert.description }}</p>
+                    <el-tag :type="alert.level === 'critical' ? 'danger' : 'warning'" size="small">
+                      {{ alert.level === 'critical' ? '紧急' : '警告' }}
+                    </el-tag>
+                  </div>
+                </el-timeline-item>
+              </el-timeline>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <!-- AI智能体助手矩阵 -->
+        <el-card class="mb-4">
+          <template #header>
+            <span>🤖 AI智能体助手矩阵</span>
+          </template>
+          
+          <el-row :gutter="16">
+            <el-col :span="6" v-for="agent in aimesAgents" :key="agent.id">
+              <div class="agent-card" @click="activateAgent(agent)">
+                <div class="agent-icon">
+                  <el-icon :size="32" :color="agent.color">
+                    <component :is="agent.icon" />
+                  </el-icon>
+                </div>
+                <h4>{{ agent.name }}</h4>
+                <p>{{ agent.role }}</p>
+                <div class="agent-metrics">
+                  <div class="metric-item">
+                    <span class="label">准确率</span>
+                    <span class="value success">{{ agent.accuracy }}%</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="label">今日建议</span>
+                    <span class="value">{{ agent.suggestions }}</span>
+                  </div>
+                </div>
+                <el-button type="primary" size="small" class="mt-2">启动助手</el-button>
+              </div>
+            </el-col>
+          </el-row>
+        </el-card>
+
+        <!-- 设备健康监控 -->
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-card>
+              <template #header>
+                <span>🔧 设备健康指数 (EHI)</span>
+              </template>
+              
+              <div id="equipmentHealthChart" style="width: 100%; height: 300px;"></div>
+              
+              <el-table :data="criticalEquipment" size="small" class="mt-3">
+                <el-table-column prop="name" label="设备名称" />
+                <el-table-column prop="health" label="健康指数" width="120">
+                  <template #default="{ row }">
+                    <el-progress :percentage="row.health" :color="getHealthColor(row.health)" />
+                  </template>
+                </el-table-column>
+                <el-table-column prop="predictedFailure" label="预测故障时间" width="120" />
+                <el-table-column label="操作" width="100">
+                  <template #default="{ row }">
+                    <el-button size="small" type="warning" @click="scheduleMaintenance(row)">
+                      排PM
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-card>
+          </el-col>
+          
+          <el-col :span="12">
+            <el-card>
+              <template #header>
+                <span>📈 质量趋势分析</span>
+              </template>
+              
+              <div id="qualityTrendChart" style="width: 100%; height: 300px;"></div>
+              
+              <div class="quality-summary mt-3">
+                <el-row :gutter="16">
+                  <el-col :span="8">
+                    <div class="summary-item">
+                      <span class="label">今日合格率</span>
+                      <span class="value success">{{ todayYieldRate }}%</span>
+                    </div>
+                  </el-col>
+                  <el-col :span="8">
+                    <div class="summary-item">
+                      <span class="label">不良批次</span>
+                      <span class="value danger">{{ defectBatches }}</span>
+                    </div>
+                  </el-col>
+                  <el-col :span="8">
+                    <div class="summary-item">
+                      <span class="label">待溯源</span>
+                      <span class="value warning">{{ pendingTrace }}</span>
+                    </div>
+                  </el-col>
+                </el-row>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </div>
+
       <!-- AIPM项目管理视图 -->
       <div v-show="activeTab === 'aipm'" class="aipm-view">
         <div class="view-header">
           <h2>🚀 AIPM 智能项目管理</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-button type="primary" @click="createAIPMProject">
               <el-icon><Plus /></el-icon>
               新建项目
@@ -1453,7 +1694,7 @@
                   <div class="suggestion-item">
                     <strong>{{ suggestion.title }}</strong>
                     <p>{{ suggestion.content }}</p>
-                    <el-button size="small" type="primary" @click="applySuggestion(suggestion)">
+                    <el-button size="small" type="primary" @click="applyAIPMSuggestion(suggestion)">
                       采纳建议
                     </el-button>
                   </div>
@@ -1469,6 +1710,10 @@
         <div class="view-header">
           <h2>👥 客户联系人与关系图谱</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-button type="primary" @click="addContact">
               <el-icon><Plus /></el-icon>
               添加联系人
@@ -1687,9 +1932,17 @@
         <div class="view-header">
           <h2>📊 客户沙盘分析</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-button type="primary" @click="createScenario">
               <el-icon><Plus /></el-icon>
               新建场景
+            </el-button>
+            <el-button type="primary" @click="showNewPlanDialog = true">
+              <el-icon><Plus /></el-icon>
+              新建计划
             </el-button>
             <el-button type="success" @click="runSimulation">
               <el-icon><VideoPlay /></el-icon>
@@ -1887,6 +2140,10 @@
         <div class="view-header">
           <h2>🏆 三轮投标预测AI</h2>
           <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
             <el-button type="primary" @click="createBiddingProject">
               <el-icon><Plus /></el-icon>
               新建投标项目
@@ -2246,6 +2503,109 @@
       </template>
     </el-dialog>
 
+    <!-- 商机详情对话框 -->
+    <el-dialog v-model="showOpportunityDetailDialog" title="商机详情" width="900px">
+      <div v-if="currentOpportunity" class="opportunity-detail">
+        <!-- 基本信息 -->
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-descriptions title="基本信息" :column="1" border>
+              <el-descriptions-item label="商机名称">{{ currentOpportunity.name }}</el-descriptions-item>
+              <el-descriptions-item label="客户">{{ currentOpportunity.customer }}</el-descriptions-item>
+              <el-descriptions-item label="金额">¥{{ (currentOpportunity.amount / 10000).toFixed(1) }}万</el-descriptions-item>
+              <el-descriptions-item label="当前阶段">
+                <el-tag :type="getStageType(currentOpportunity.stage)">{{ currentOpportunity.stage }}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="赢率">
+                <el-progress :percentage="currentOpportunity.winRate" :color="getProgressColor(currentOpportunity.winRate)" />
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+          
+          <el-col :span="12">
+            <!-- 销售漏斗阶段 -->
+            <div class="funnel-stages-detail">
+              <h4>销售漏斗进度</h4>
+              <el-steps direction="vertical" :active="getFunnelStageIndex(currentOpportunity.stage)">
+                <el-step title="需求挖掘" description="初步接触客户"></el-step>
+                <el-step title="方案设计" description="提供解决方案"></el-step>
+                <el-step title="报价谈判" description="商务洽谈中"></el-step>
+                <el-step title="合同签订" description="即将成交"></el-step>
+              </el-steps>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-divider />
+
+        <!-- 标志事件与里程碑 -->
+        <div class="milestone-section">
+          <h4>📍 标志事件</h4>
+          <el-timeline>
+            <el-timeline-item timestamp="2025-01-10" placement="top">
+              <el-card>
+                <h4>客户初次接触</h4>
+                <p>通过展会认识,表达了明确的合作意向</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2025-01-15" placement="top">
+              <el-card>
+                <h4>需求确认</h4>
+                <p>完成技术交流,明确了产品规格和预算范围</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2025-01-20" placement="top" color="#67C23A">
+              <el-card>
+                <h4>方案提交</h4>
+                <p>已提交完整技术方案和报价书</p>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+
+        <el-divider />
+
+        <!-- 每一步分析与建议 -->
+        <div class="analysis-section">
+          <h4>🤖 AI分析与行动建议</h4>
+          <el-collapse>
+            <el-collapse-item title="阶段1:需求挖掘 - 已完成" name="1">
+              <div class="stage-analysis">
+                <p><strong>关键成果:</strong> 成功识别客户真实需求,获取决策链信息</p>
+                <p><strong>风险点:</strong> 竞争对手已接触客户</p>
+                <p><strong>建议:</strong> ✅ 已完成客户画像建立</p>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="阶段2:方案设计 - 进行中" name="2">
+              <div class="stage-analysis">
+                <p><strong>当前进度:</strong> 方案已提交,等待客户反馈</p>
+                <p><strong>AI建议:</strong></p>
+                <el-tag type="warning" class="mt-2 mr-2">48小时内电话跟进</el-tag>
+                <el-tag type="success" class="mt-2 mr-2">准备技术演示PPT</el-tag>
+                <el-tag type="info" class="mt-2">安排现场考察</el-tag>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="阶段3:报价谈判 - 待启动" name="3">
+              <div class="stage-analysis">
+                <p><strong>预测:</strong> 预计2周后进入该阶段</p>
+                <p><strong>建议准备:</strong> 成本底线分析、竞争对手价格调研、优惠政策方案</p>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="阶段4:合同签订 - 待启动" name="4">
+              <div class="stage-analysis">
+                <p><strong>预计时间:</strong> 30天后</p>
+                <p><strong>成交概率:</strong> {{ currentOpportunity.winRate }}%</p>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="showOpportunityDetailDialog = false">关闭</el-button>
+        <el-button type="primary" @click="followUp(currentOpportunity)">记录跟进</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 新增客户对话框 -->
     <el-dialog v-model="showCustomerDialog" title="新增客户" width="700px">
       <el-form :model="customerForm" label-width="120px">
@@ -2414,6 +2774,76 @@
       </template>
     </el-dialog>
 
+    <!-- 新建合同对话框 -->
+    <el-dialog v-model="showContractDialog" title="新建合同" width="600px">
+      <el-form :model="contractForm" label-width="100px">
+        <el-form-item label="合同编号" required>
+          <el-input v-model="contractForm.contractNo" placeholder="请输入合同编号" />
+        </el-form-item>
+        <el-form-item label="客户名称" required>
+          <el-input v-model="contractForm.clientName" placeholder="请输入客户名称" />
+        </el-form-item>
+        <el-form-item label="合同金额" required>
+          <el-input v-model="contractForm.amount" placeholder="请输入金额">
+            <template #append>万元</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="签订日期">
+          <el-date-picker v-model="contractForm.signDate" type="date" placeholder="选择日期" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="付款条款">
+          <el-select v-model="contractForm.paymentTerms" style="width: 100%">
+            <el-option label="30天" value="30天" />
+            <el-option label="60天" value="60天" />
+            <el-option label="90天" value="90天" />
+            <el-option label="账期内" value="账期内" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="contractForm.notes" type="textarea" :rows="3" placeholder="请输入备注" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showContractDialog = false">取消</el-button>
+        <el-button type="primary" @click="submitContract">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 新建计划对话框 -->
+    <el-dialog v-model="showNewPlanDialog" title="新建营销计划" width="600px">
+      <el-form :model="newPlanForm" label-width="100px">
+        <el-form-item label="计划名称" required>
+          <el-input v-model="newPlanForm.planName" placeholder="请输入计划名称" />
+        </el-form-item>
+        <el-form-item label="目标客群">
+          <el-select v-model="newPlanForm.targetSegment" placeholder="选择客户群" style="width: 100%">
+            <el-option label="高价值客户" value="high-value" />
+            <el-option label="流失风险客户" value="churn-risk" />
+            <el-option label="潜力客户" value="potential" />
+            <el-option label="全部客户" value="all" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="预算金额">
+          <el-input v-model="newPlanForm.budget" placeholder="请输入预算">
+            <template #append>万元</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="开始日期">
+          <el-date-picker v-model="newPlanForm.startDate" type="date" placeholder="选择日期" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="结束日期">
+          <el-date-picker v-model="newPlanForm.endDate" type="date" placeholder="选择日期" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="计划描述">
+          <el-input v-model="newPlanForm.description" type="textarea" :rows="3" placeholder="请输入计划描述" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showNewPlanDialog = false">取消</el-button>
+        <el-button type="primary" @click="submitNewPlan">确定</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 新建投标项目对话框 -->
     <el-dialog v-model="showBiddingDialog" title="新建投标项目" width="600px">
       <el-form :model="biddingForm" label-width="100px">
@@ -2454,6 +2884,111 @@
       <template #footer>
         <el-button @click="showBiddingDialog = false">取消</el-button>
         <el-button type="primary" @click="submitBiddingProject">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 新建AIPM项目对话框 -->
+    <el-dialog v-model="showAIPMProjectDialog" title="新建项目" width="700px">
+      <el-form :model="aipmProjectForm" label-width="120px">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="项目名称" required>
+              <el-input v-model="aipmProjectForm.name" placeholder="请输入项目名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目经理" required>
+              <el-input v-model="aipmProjectForm.pm" placeholder="请输入项目经理" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="开始日期" required>
+              <el-date-picker 
+                v-model="aipmProjectForm.startDate" 
+                type="date" 
+                placeholder="选择开始日期"
+                style="width: 100%"
+                value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计划完成日期" required>
+              <el-date-picker 
+                v-model="aipmProjectForm.endDate" 
+                type="date" 
+                placeholder="选择完成日期"
+                style="width: 100%"
+                value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="项目预算">
+              <el-input v-model="aipmProjectForm.budget" placeholder="请输入预算">
+                <template #append>万元</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="团队人数">
+              <el-input-number v-model="aipmProjectForm.teamSize" :min="1" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="关键路径">
+          <el-input v-model="aipmProjectForm.criticalPath" placeholder="例如：需求 -> 设计 -> 开发 -> 测试" />
+        </el-form-item>
+
+        <el-form-item label="项目描述">
+          <el-input v-model="aipmProjectForm.description" type="textarea" :rows="3" placeholder="请输入项目描述" />
+        </el-form-item>
+
+        <el-form-item label="WBS任务分解">
+          <div class="wbs-input-area">
+            <el-button size="small" type="primary" @click="addWBSTask" style="margin-bottom: 10px">
+              <el-icon><Plus /></el-icon>
+              添加任务
+            </el-button>
+            <el-table :data="aipmProjectForm.wbs" style="width: 100%" size="small">
+              <el-table-column label="任务名称" width="200">
+                <template #default="{ row, $index }">
+                  <el-input v-model="row.name" placeholder="任务名称" size="small" />
+                </template>
+              </el-table-column>
+              <el-table-column label="状态" width="120">
+                <template #default="{ row }">
+                  <el-select v-model="row.status" size="small">
+                    <el-option label="未开始" value="未开始" />
+                    <el-option label="进行中" value="进行中" />
+                    <el-option label="已完成" value="已完成" />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column label="进度(%)" width="120">
+                <template #default="{ row }">
+                  <el-input-number v-model="row.progress" :min="0" :max="100" size="small" style="width: 100%" />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="80">
+                <template #default="{ $index }">
+                  <el-button size="small" type="danger" @click="removeWBSTask($index)" link>删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showAIPMProjectDialog = false">取消</el-button>
+        <el-button type="primary" @click="submitAIPMProject">确定创建</el-button>
       </template>
     </el-dialog>
 
@@ -3089,8 +3624,271 @@ const aiAgents = ref([
     accuracy: 90,
     todayRecommendations: 15,
     adoptionRate: 95
+  },
+  { 
+    id: 4, 
+    name: 'AIMES 智能制造助手', 
+    description: 'AI MES助手 - 生产现场感知、智能排产、质量控制、设备管理',
+    icon: 'Setting',
+    color: '#9C27B0',
+    accuracy: 93,
+    todayRecommendations: 28,
+    adoptionRate: 97
   }
 ])
+
+// AIMES 智能制造系统数据
+const aimesModules = ref([
+  {
+    id: 1,
+    name: '生产现场感知',
+    description: '实时监控、异常预警、自动诊断',
+    icon: 'View',
+    color: '#409EFF',
+    status: 'running',
+    updateTime: '1分钟前',
+    stats: [
+      { label: '实时设备', value: '12台', type: 'success' },
+      { label: '今日异常', value: '3次', type: 'warning' },
+      { label: '识别准确率', value: '98%', type: 'success' }
+    ]
+  },
+  {
+    id: 2,
+    name: '智能排产与调度',
+    description: '自动排产、插单重排、瓶颈识别',
+    icon: 'Calendar',
+    color: '#67C23A',
+    status: 'running',
+    updateTime: '5分钟前',
+    stats: [
+      { label: '待排工单', value: '28单', type: 'info' },
+      { label: '交期风险', value: '2单', type: 'warning' },
+      { label: '产能利用率', value: '87%', type: 'success' }
+    ]
+  },
+  {
+    id: 3,
+    name: '质量预测与溯源',
+    description: '工艺监控、不良预警、原因分析',
+    icon: 'TrendCharts',
+    color: '#E6A23C',
+    status: 'running',
+    updateTime: '2分钟前',
+    stats: [
+      { label: '今日合格率', value: '99.2%', type: 'success' },
+      { label: '批次溯源', value: '15批', type: 'info' },
+      { label: '预警次数', value: '1次', type: 'warning' }
+    ]
+  },
+  {
+    id: 4,
+    name: '设备预测维护',
+    description: 'AI PM、故障预测、备件建议',
+    icon: 'Tools',
+    color: '#F56C6C',
+    status: 'running',
+    updateTime: '刚刚',
+    stats: [
+      { label: '设备健康指数', value: '92', type: 'success' },
+      { label: '预测维护', value: '3台', type: 'warning' },
+      { label: '备件预警', value: '1项', type: 'danger' }
+    ]
+  },
+  {
+    id: 5,
+    name: '运营洞察分析',
+    description: 'OEE分析、产能预测、成本优化',
+    icon: 'DataAnalysis',
+    color: '#9C27B0',
+    status: 'running',
+    updateTime: '10分钟前',
+    stats: [
+      { label: '本周OEE', value: '85%', type: 'success' },
+      { label: '产能浪费', value: '12%', type: 'warning' },
+      { label: '成本节约', value: '8.5万', type: 'success' }
+    ]
+  },
+  {
+    id: 6,
+    name: '执行闭环管理',
+    description: '任务自动下发、进度跟踪、闭环确认',
+    icon: 'CircleCheck',
+    color: '#00BCD4',
+    status: 'running',
+    updateTime: '3分钟前',
+    stats: [
+      { label: '待处理任务', value: '5个', type: 'warning' },
+      { label: '今日完成', value: '18个', type: 'success' },
+      { label: '闭环率', value: '95%', type: 'success' }
+    ]
+  }
+])
+
+// 产线实时状态
+const productionLines = ref([
+  {
+    id: 1,
+    name: '机加工产线1号',
+    status: '运行中',
+    oee: 85,
+    utilization: 92,
+    currentWorkOrder: 'WO-20250219-001',
+    progress: 68,
+    cycleTime: 45
+  },
+  {
+    id: 2,
+    name: '焊接产线2号',
+    status: '运行中',
+    oee: 78,
+    utilization: 88,
+    currentWorkOrder: 'WO-20250219-005',
+    progress: 45,
+    cycleTime: 52
+  },
+  {
+    id: 3,
+    name: '装配产线3号',
+    status: '微停',
+    oee: 62,
+    utilization: 75,
+    currentWorkOrder: 'WO-20250219-012',
+    progress: 32,
+    cycleTime: 38
+  }
+])
+
+// AIMES异常预警
+const aimesAlerts = ref([
+  {
+    id: 1,
+    level: 'critical',
+    title: '设备B02主轴振动异常',
+    description: '振动值超出正常范围20%，建议立即检查润滑系统',
+    time: '10:35'
+  },
+  {
+    id: 2,
+    level: 'warning',
+    title: '工单WO-001交期风险',
+    description: '当前进度落后计划8%，预计延迟1.5天交付',
+    time: '09:20'
+  },
+  {
+    id: 3,
+    level: 'info',
+    title: '批次B-2025-015质量偏移',
+    description: '检测到工艺参数轻微偏移，建议调整刀具补偿',
+    time: '08:45'
+  }
+])
+
+// AIMES AI智能体
+const aimesAgents = ref([
+  {
+    id: 1,
+    name: '排产智能体',
+    role: '自动排产、插单优化',
+    icon: 'Calendar',
+    color: '#409EFF',
+    accuracy: 92,
+    suggestions: 8
+  },
+  {
+    id: 2,
+    name: '质量智能体',
+    role: '缺陷预测、原因溯源',
+    icon: 'TrendCharts',
+    color: '#67C23A',
+    accuracy: 94,
+    suggestions: 12
+  },
+  {
+    id: 3,
+    name: '设备健康智能体',
+    role: '故障预测、寿命估算',
+    icon: 'Tools',
+    color: '#E6A23C',
+    accuracy: 91,
+    suggestions: 5
+  },
+  {
+    id: 4,
+    name: '运营洞察智能体',
+    role: 'OEE分析、周报生成',
+    icon: 'DataAnalysis',
+    color: '#9C27B0',
+    accuracy: 89,
+    suggestions: 15
+  }
+])
+
+// 关键设备健康状态
+const criticalEquipment = ref([
+  {
+    id: 1,
+    name: 'CNC-B02',
+    health: 68,
+    predictedFailure: '7天后'
+  },
+  {
+    id: 2,
+    name: '焊接机器人-W05',
+    health: 85,
+    predictedFailure: '30天后'
+  },
+  {
+    id: 3,
+    name: '冲压设备-P01',
+    health: 92,
+    predictedFailure: '60天后'
+  }
+])
+
+// 质量指标
+const todayYieldRate = ref(99.2)
+const defectBatches = ref(2)
+const pendingTrace = ref(3)
+
+// AIMES方法
+const refreshAIMESData = () => {
+  ElMessage.success('AIMES数据已刷新')
+}
+
+const openAIMESModule = (module) => {
+  ElMessage.info(`打开${module.name}模块`)
+}
+
+const getLineStatusType = (status) => {
+  const map = {
+    '运行中': 'success',
+    '微停': 'warning',
+    '停机': 'danger',
+    '待机': 'info'
+  }
+  return map[status] || 'info'
+}
+
+const getOEEColor = (oee) => {
+  if (oee >= 85) return '#67C23A'
+  if (oee >= 70) return '#E6A23C'
+  return '#F56C6C'
+}
+
+const getHealthColor = (health) => {
+  if (health >= 85) return '#67C23A'
+  if (health >= 70) return '#E6A23C'
+  return '#F56C6C'
+}
+
+const activateAgent = (agent) => {
+  ElMessage.success(`已启动${agent.name}`)
+}
+
+const scheduleMaintenance = (equipment) => {
+  ElMessage.info(`已创建${equipment.name}的预防性维护工单`)
+}
 
 // AI推荐任务
 const showAIDrawer = ref(false)
@@ -3219,6 +4017,26 @@ const submitOpportunity = () => {
   
   ElMessage.success('商机创建成功！')
   showOpportunityDialog.value = false
+}
+
+// 查看商机详情
+const showOpportunityDetailDialog = ref(false)
+const currentOpportunity = ref(null)
+
+const viewOpportunity = (opportunity) => {
+  currentOpportunity.value = opportunity
+  showOpportunityDetailDialog.value = true
+}
+
+// 跟进商机
+const followUp = (opportunity) => {
+  ElMessage.success(`已记录对${opportunity.customer}的跟进`)
+}
+
+// 获取漏斗阶段索引
+const getFunnelStageIndex = (stage) => {
+  const stages = ['qualification', 'proposal', 'negotiation', 'contract']
+  return stages.indexOf(stage) + 1
 }
 
 // 创建客户对话框状态
@@ -3891,7 +4709,15 @@ const getPaymentStatusType = (status) => {
 }
 
 const createPaymentContract = () => {
-  ElMessage.info('打开新建合同对话框')
+  showContractDialog.value = true
+  contractForm.value = {
+    contractNo: '',
+    clientName: '',
+    amount: '',
+    signDate: '',
+    paymentTerms: '30天',
+    notes: ''
+  }
 }
 
 const viewPaymentDetail = (row) => {
@@ -3945,10 +4771,6 @@ const confirmPayment = (row) => {
 }
 
 // ========== AIPM项目管理模块数据 ==========
-const show3DView = ref(false)
-const ganttViewMode = ref('week')
-const projectFilter = ref('all')
-
 const aipmKPIs = ref([
   { id: 1, title: '项目总数', value: '15个', trend: 20, trendLabel: '同比增长', icon: 'DataLine', color: '#409EFF' },
   { id: 2, title: '进行中项目', value: '8个', trend: 0, trendLabel: '正常推进', icon: 'Timer', color: '#67C23A' },
@@ -4162,13 +4984,568 @@ const aipmSuggestions = ref([
   }
 ])
 
+// AIPM相关数据
+const showAIPMProjectDialog = ref(false)
+const ganttViewMode = ref('week') // 甘特图视图模式：day/week/month
+const show3DView = ref(false) // 是否显示3D视图
+const projectFilter = ref('all') // 项目筛选
+
+const aipmProjectForm = ref({
+  name: '',
+  pm: '',
+  startDate: '',
+  endDate: '',
+  budget: '',
+  teamSize: 5,
+  criticalPath: '',
+  description: '',
+  wbs: []
+})
+
 // AIPM方法
 const createAIPMProject = () => {
-  ElMessage.info('打开新建项目对话框')
+  aipmProjectForm.value = {
+    name: '',
+    pm: '',
+    startDate: '',
+    endDate: '',
+    budget: '',
+    teamSize: 5,
+    criticalPath: '',
+    description: '',
+    wbs: []
+  }
+  showAIPMProjectDialog.value = true
 }
 
+const addWBSTask = () => {
+  aipmProjectForm.value.wbs.push({
+    name: '',
+    status: '未开始',
+    progress: 0
+  })
+}
+
+const removeWBSTask = (index) => {
+  aipmProjectForm.value.wbs.splice(index, 1)
+}
+
+const submitAIPMProject = () => {
+  // 验证必填项
+  if (!aipmProjectForm.value.name) {
+    ElMessage.warning('请输入项目名称')
+    return
+  }
+  if (!aipmProjectForm.value.pm) {
+    ElMessage.warning('请输入项目经理')
+    return
+  }
+  if (!aipmProjectForm.value.startDate || !aipmProjectForm.value.endDate) {
+    ElMessage.warning('请选择项目开始和结束日期')
+    return
+  }
+
+  // 创建新项目
+  const newProject = {
+    id: aipmProjects.value.length + 1,
+    name: aipmProjectForm.value.name,
+    pm: aipmProjectForm.value.pm,
+    teamSize: aipmProjectForm.value.teamSize,
+    startDate: aipmProjectForm.value.startDate,
+    endDate: aipmProjectForm.value.endDate,
+    progress: 0,
+    status: '进行中',
+    budget: parseFloat(aipmProjectForm.value.budget) || 0,
+    spent: 0,
+    aiPrediction: 85, // AI初始预测
+    riskLevel: '低',
+    criticalPath: aipmProjectForm.value.criticalPath || '待定义',
+    wbs: aipmProjectForm.value.wbs.map(task => ({
+      name: task.name || '未命名任务',
+      status: task.status,
+      progress: task.progress
+    })),
+    risks: []
+  }
+
+  aipmProjects.value.unshift(newProject)
+  ElMessage.success('项目创建成功！')
+  showAIPMProjectDialog.value = false
+  
+  // 刷新甘特图
+  nextTick(() => {
+    initGanttChart()
+  })
+}
+
+// ========== P2-1: 项目快照引擎 ==========
+const projectSnapshots = ref([]) // 历史快照存储
+
+// 生成项目快照
+const createProjectSnapshot = (project) => {
+  const now = new Date()
+  const startDate = new Date(project.startDate)
+  const endDate = new Date(project.endDate)
+  const totalDays = (endDate - startDate) / (1000 * 60 * 60 * 24)
+  const elapsedDays = (now - startDate) / (1000 * 60 * 60 * 24)
+  const remainingDays = (endDate - now) / (1000 * 60 * 60 * 24)
+  
+  // 计划进度 vs 实际进度
+  const plannedProgress = Math.min(100, (elapsedDays / totalDays) * 100)
+  const progressDeviation = project.progress - plannedProgress
+  
+  // SPI(进度绩效指数) = EV / PV
+  const ev = project.budget * (project.progress / 100) // 挣值
+  const pv = project.budget * (plannedProgress / 100) // 计划值
+  const ac = project.spent // 实际成本
+  const spi = pv > 0 ? ev / pv : 1
+  const cpi = ac > 0 ? ev / ac : 1 // CPI(成本绩效指数)
+  
+  const snapshot = {
+    id: `snapshot_${project.id}_${Date.now()}`,
+    projectId: project.id,
+    projectName: project.name,
+    snapshotTime: now.toISOString(),
+    
+    // 进度数据
+    progress: {
+      planned: parseFloat(plannedProgress.toFixed(2)),
+      actual: project.progress,
+      deviation: parseFloat(progressDeviation.toFixed(2)),
+      spi: parseFloat(spi.toFixed(3))
+    },
+    
+    // 成本数据
+    budget: {
+      total: project.budget,
+      spent: project.spent,
+      remaining: project.budget - project.spent,
+      cpi: parseFloat(cpi.toFixed(3)),
+      ev: parseFloat(ev.toFixed(2)),
+      pv: parseFloat(pv.toFixed(2)),
+      ac: ac
+    },
+    
+    // 时间数据
+    schedule: {
+      totalDays: Math.ceil(totalDays),
+      elapsedDays: Math.ceil(elapsedDays),
+      remainingDays: Math.ceil(remainingDays),
+      plannedEndDate: project.endDate,
+      predictedEndDate: null // 后续AI预测填充
+    },
+    
+    // 团队数据
+    team: {
+      size: project.teamSize,
+      velocity: project.wbs && project.wbs.length > 0
+        ? (project.wbs.filter(t => t.status === '已完成').length / Math.max(1, elapsedDays))
+        : 0
+    },
+    
+    // 风险数据
+    risks: project.risks || [],
+    riskScore: calculateRiskScore(project),
+    
+    // 质量数据
+    quality: {
+      defectRate: 0, // 待实现
+      taskCompletionRate: project.wbs && project.wbs.length > 0
+        ? (project.wbs.filter(t => t.status === '已完成').length / project.wbs.length * 100)
+        : 0
+    }
+  }
+  
+  return snapshot
+}
+
+// 计算风险分数
+const calculateRiskScore = (project) => {
+  const risks = project.risks || []
+  if (risks.length === 0) return 0
+  
+  const severityMap = { '低': 1, '中': 2, '高': 3 }
+  const totalScore = risks.reduce((sum, risk) => {
+    const severity = severityMap[risk.severity] || 1
+    return sum + severity
+  }, 0)
+  
+  return Math.min(100, (totalScore / risks.length / 3) * 100)
+}
+
+// ========== P2-2: 时序数据仓库 ==========
+const timeSeriesDB = ref({
+  daily: [],
+  weekly: [],
+  monthly: []
+})
+
+// 保存快照到时序数据库
+const saveToTimeSeriesDB = (snapshot) => {
+  // 保存到daily
+  timeSeriesDB.value.daily.push(snapshot)
+  
+  // 只保留最近30天
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  timeSeriesDB.value.daily = timeSeriesDB.value.daily.filter(s => 
+    new Date(s.snapshotTime) > thirtyDaysAgo
+  )
+  
+  // 每周汇总
+  const weekNumber = getWeekNumber(new Date(snapshot.snapshotTime))
+  const existingWeekly = timeSeriesDB.value.weekly.find(w => 
+    w.week === weekNumber && w.projectId === snapshot.projectId
+  )
+  
+  if (!existingWeekly) {
+    timeSeriesDB.value.weekly.push({
+      week: weekNumber,
+      projectId: snapshot.projectId,
+      projectName: snapshot.projectName,
+      avgProgress: snapshot.progress.actual,
+      avgSPI: snapshot.progress.spi,
+      avgCPI: snapshot.budget.cpi,
+      snapshotCount: 1
+    })
+  } else {
+    // 更新周汇总
+    existingWeekly.avgProgress = (existingWeekly.avgProgress * existingWeekly.snapshotCount + snapshot.progress.actual) / (existingWeekly.snapshotCount + 1)
+    existingWeekly.avgSPI = (existingWeekly.avgSPI * existingWeekly.snapshotCount + snapshot.progress.spi) / (existingWeekly.snapshotCount + 1)
+    existingWeekly.avgCPI = (existingWeekly.avgCPI * existingWeekly.snapshotCount + snapshot.budget.cpi) / (existingWeekly.snapshotCount + 1)
+    existingWeekly.snapshotCount++
+  }
+}
+
+// 获取周数
+const getWeekNumber = (date) => {
+  const onejan = new Date(date.getFullYear(), 0, 1)
+  return Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7)
+}
+
+// ========== P2-3: 核心指标计算引擎 ==========
+const calculateProjectMetrics = (project) => {
+  const snapshot = createProjectSnapshot(project)
+  
+  // OEE风格的综合效率 = 进度达成 × 成本控制 × 质量保证
+  const schedulePerformance = Math.min(1, snapshot.progress.spi)
+  const costPerformance = Math.min(1, snapshot.budget.cpi)
+  const qualityPerformance = 1 - (snapshot.quality.defectRate / 100)
+  
+  const oee = schedulePerformance * costPerformance * qualityPerformance * 100
+  
+  return {
+    oee: parseFloat(oee.toFixed(2)),
+    spi: snapshot.progress.spi,
+    cpi: snapshot.budget.cpi,
+    scheduleHealth: snapshot.progress.spi >= 1 ? '健康' : snapshot.progress.spi >= 0.9 ? '警告' : '危险',
+    costHealth: snapshot.budget.cpi >= 1 ? '健康' : snapshot.budget.cpi >= 0.9 ? '警告' : '危险',
+    overallHealth: oee >= 80 ? '优秀' : oee >= 60 ? '良好' : oee >= 40 ? '警告' : '危险'
+  }
+}
+
+// 刷新AIPM数据(增强版)
 const refreshAIPMData = () => {
-  ElMessage.success('数据已刷新')
+  // 为所有项目生成快照
+  aipmProjects.value.forEach(project => {
+    const snapshot = createProjectSnapshot(project)
+    saveToTimeSeriesDB(snapshot)
+    projectSnapshots.value.push(snapshot)
+  })
+  
+  // 只保留最近100个快照
+  if (projectSnapshots.value.length > 100) {
+    projectSnapshots.value = projectSnapshots.value.slice(-100)
+  }
+  
+  ElMessage.success(`数据已刷新，生成${aipmProjects.value.length}个项目快照`)
+  
+  // 刷新图表
+  nextTick(() => {
+    initGanttChart()
+    initProjectHealthChart()
+  })
+}
+
+// ========== P2-4: AI延误预测模型 ==========
+const predictProjectDelay = (project) => {
+  const snapshot = createProjectSnapshot(project)
+  
+  // 特征提取
+  const features = {
+    progressDeviation: snapshot.progress.deviation,
+    spi: snapshot.progress.spi,
+    cpi: snapshot.budget.cpi,
+    teamVelocity: snapshot.team.velocity,
+    riskScore: snapshot.riskScore,
+    remainingDays: snapshot.schedule.remainingDays,
+    taskCompletionRate: snapshot.quality.taskCompletionRate
+  }
+  
+  // 简化的延误预测算法
+  let delayProbability = 0
+  let predictedDelayDays = 0
+  
+  // 规则1: SPI < 0.9,高延误风险
+  if (features.spi < 0.9) {
+    delayProbability += 0.3
+    predictedDelayDays += Math.abs(features.progressDeviation) * 0.5
+  }
+  
+  // 规则2: 进度偏差大于10%
+  if (features.progressDeviation < -10) {
+    delayProbability += 0.2
+    predictedDelayDays += Math.abs(features.progressDeviation) * 0.3
+  }
+  
+  // 规则3: 风险分数高
+  if (features.riskScore > 60) {
+    delayProbability += 0.15
+    predictedDelayDays += features.remainingDays * 0.1
+  }
+  
+  // 规则4: 任务完成率低
+  if (features.taskCompletionRate < 50 && features.remainingDays < 30) {
+    delayProbability += 0.25
+    predictedDelayDays += 5
+  }
+  
+  // 规则5: 成本超支通常伴随延误
+  if (features.cpi < 0.8) {
+    delayProbability += 0.1
+    predictedDelayDays += 3
+  }
+  
+  delayProbability = Math.min(1, delayProbability)
+  predictedDelayDays = Math.ceil(predictedDelayDays)
+  
+  // 计算预测完成日期
+  const predictedEndDate = new Date(project.endDate)
+  predictedEndDate.setDate(predictedEndDate.getDate() + predictedDelayDays)
+  
+  // 生成关键因素
+  const criticalFactors = []
+  if (features.spi < 0.9) criticalFactors.push('进度绩效指数偏低')
+  if (features.progressDeviation < -10) criticalFactors.push('实际进度严重落后计划')
+  if (features.riskScore > 60) criticalFactors.push('项目风险等级较高')
+  if (features.taskCompletionRate < 50) criticalFactors.push('任务完成率不足')
+  if (features.cpi < 0.8) criticalFactors.push('成本绩效指数偏低')
+  
+  // 生成AI建议
+  const recommendations = []
+  if (delayProbability > 0.7) {
+    recommendations.push('建议增加2-3名团队成员加速开发')
+    recommendations.push('考虑精简非关键任务')
+    recommendations.push('与客户沟通调整交期')
+  } else if (delayProbability > 0.4) {
+    recommendations.push('密切监控关键路径任务')
+    recommendations.push('提前准备风险应对措施')
+  } else {
+    recommendations.push('当前进度健康,继续保持')
+  }
+  
+  return {
+    delayProbability: parseFloat(delayProbability.toFixed(2)),
+    predictedDelayDays,
+    predictedEndDate: predictedEndDate.toISOString().split('T')[0],
+    confidence: 0.75 + (features.spi > 0.9 ? 0.15 : 0), // 进度好的项目预测更准
+    riskLevel: delayProbability > 0.7 ? '高' : delayProbability > 0.4 ? '中' : '低',
+    criticalFactors,
+    recommendations,
+    metrics: features
+  }
+}
+
+// ========== P2-5: What-If场景模拟器 ==========
+const simulateScenario = (project, scenario, params) => {
+  const baseline = createProjectSnapshot(project)
+  const newProject = JSON.parse(JSON.stringify(project))
+  let changes = {}
+  let impact = {}
+  
+  switch(scenario) {
+    case 'ADD_TEAM_MEMBER': {
+      const count = params.count || 1
+      newProject.teamSize += count
+      
+      // 假设每增加1人,进度加快5%
+      const speedup = count * 0.05
+      const remainingDays = baseline.schedule.remainingDays
+      const newRemainingDays = Math.ceil(remainingDays * (1 - speedup))
+      
+      const newEndDate = new Date()
+      newEndDate.setDate(newEndDate.getDate() + newRemainingDays)
+      
+      newProject.endDate = newEndDate.toISOString().split('T')[0]
+      newProject.budget += count * 10 // 每人增加10万成本
+      
+      changes = {
+        teamSize: { old: project.teamSize, new: newProject.teamSize },
+        endDate: { old: project.endDate, new: newProject.endDate },
+        budget: { old: project.budget, new: newProject.budget }
+      }
+      
+      impact = {
+        schedule: `提前约${Math.max(0, remainingDays - newRemainingDays)}天完成`,
+        cost: `增加${count * 10}万预算`,
+        roi: newRemainingDays < remainingDays ? '正向' : '负向',
+        recommendation: newRemainingDays < remainingDays 
+          ? '✅ 建议采纳：能够有效加快进度' 
+          : '❌ 不建议：人员增加未能产生明显效果'
+      }
+      break
+    }
+    
+    case 'REMOVE_NON_CRITICAL': {
+      const nonCritical = newProject.wbs.filter(task => task.priority !== 'HIGH')
+      const removed = nonCritical.length
+      
+      newProject.wbs = newProject.wbs.filter(task => task.priority === 'HIGH')
+      
+      // 假设去掉30%工作量
+      const workReduction = removed / (removed + newProject.wbs.length)
+      const remainingDays = baseline.schedule.remainingDays
+      const newRemainingDays = Math.ceil(remainingDays * (1 - workReduction * 0.3))
+      
+      const newEndDate = new Date()
+      newEndDate.setDate(newEndDate.getDate() + newRemainingDays)
+      
+      newProject.endDate = newEndDate.toISOString().split('T')[0]
+      
+      changes = {
+        tasks: { old: project.wbs.length, new: newProject.wbs.length },
+        endDate: { old: project.endDate, new: newProject.endDate }
+      }
+      
+      impact = {
+        schedule: `提前约${Math.max(0, remainingDays - newRemainingDays)}天`,
+        scope: `减少${removed}个非关键任务`,
+        risk: '⚠️ 需重新评审需求范围',
+        recommendation: removed > 0 
+          ? '✅ 可以考虑：能够显著缩短工期' 
+          : '❌ 无法执行：没有可精简的任务'
+      }
+      break
+    }
+    
+    case 'EXTEND_DEADLINE': {
+      const days = params.days || 7
+      const newEndDate = new Date(project.endDate)
+      newEndDate.setDate(newEndDate.getDate() + days)
+      
+      newProject.endDate = newEndDate.toISOString().split('T')[0]
+      
+      // 假设可以优化质量或降低成本
+      const qualityImprovement = days * 2 // 每延长1天,质量提升2%
+      
+      changes = {
+        endDate: { old: project.endDate, new: newProject.endDate }
+      }
+      
+      impact = {
+        schedule: `延后${days}天交付`,
+        quality: `质量可提升约${Math.min(100, qualityImprovement)}%`,
+        cost: '✅ 无额外成本',
+        recommendation: '✅ 建议采纳：有利于提升项目质量'
+      }
+      break
+    }
+    
+    case 'INCREASE_BUDGET': {
+      const amount = params.amount || 20
+      newProject.budget += amount
+      
+      // 假设预算增加可以加快进度
+      const speedup = (amount / baseline.budget.total) * 0.3
+      const remainingDays = baseline.schedule.remainingDays
+      const newRemainingDays = Math.ceil(remainingDays * (1 - speedup))
+      
+      const newEndDate = new Date()
+      newEndDate.setDate(newEndDate.getDate() + newRemainingDays)
+      
+      newProject.endDate = newEndDate.toISOString().split('T')[0]
+      
+      changes = {
+        budget: { old: project.budget, new: newProject.budget },
+        endDate: { old: project.endDate, new: newProject.endDate }
+      }
+      
+      impact = {
+        schedule: `提前约${Math.max(0, remainingDays - newRemainingDays)}天`,
+        cost: `增加${amount}万预算`,
+        roi: `投入产出比 ${(amount / Math.max(1, remainingDays - newRemainingDays)).toFixed(1)}万/天`,
+        recommendation: remainingDays - newRemainingDays > 5 
+          ? '✅ 建议采纳：投资回报合理' 
+          : '❌ 不建议：收益不明显'
+      }
+      break
+    }
+    
+    default:
+      return null
+  }
+  
+  return {
+    scenario: getScenarioName(scenario),
+    baseline: {
+      teamSize: project.teamSize,
+      endDate: project.endDate,
+      budget: project.budget,
+      tasks: project.wbs.length
+    },
+    simulated: {
+      teamSize: newProject.teamSize,
+      endDate: newProject.endDate,
+      budget: newProject.budget,
+      tasks: newProject.wbs.length
+    },
+    changes,
+    impact,
+    feasibility: calculateFeasibility(scenario, params, baseline)
+  }
+}
+
+const getScenarioName = (scenario) => {
+  const names = {
+    'ADD_TEAM_MEMBER': '增加团队成员',
+    'REMOVE_NON_CRITICAL': '精简非关键任务',
+    'EXTEND_DEADLINE': '延长交期',
+    'INCREASE_BUDGET': '增加预算'
+  }
+  return names[scenario] || scenario
+}
+
+const calculateFeasibility = (scenario, params, baseline) => {
+  // 简化的可行性评分
+  let score = 50
+  
+  if (scenario === 'ADD_TEAM_MEMBER') {
+    // 团队规模不宜超过15人
+    if (baseline.team.size + (params.count || 0) > 15) score -= 30
+    // 剩余时间太短,加人效果不佳
+    if (baseline.schedule.remainingDays < 14) score -= 20
+  }
+  
+  if (scenario === 'REMOVE_NON_CRITICAL') {
+    // 如果任务本来就很少,不适合精简
+    if (baseline.quality.taskCompletionRate > 80) score -= 40
+  }
+  
+  if (scenario === 'EXTEND_DEADLINE') {
+    // 延期总是可行的,但要看客户接受度
+    score += 30
+  }
+  
+  if (scenario === 'INCREASE_BUDGET') {
+    // 预算增加超过50%不太现实
+    const increaseRatio = (params.amount || 0) / baseline.budget.total
+    if (increaseRatio > 0.5) score -= 40
+  }
+  
+  return {
+    score: Math.max(0, Math.min(100, score)),
+    level: score >= 70 ? '高' : score >= 40 ? '中' : '低'
+  }
 }
 
 const getRiskLevelType = (level) => {
@@ -4195,7 +5572,7 @@ const updateProjectProgress = (row) => {
   ElMessage.info(`更新项目 ${row.name} 进度`)
 }
 
-const applySuggestion = (suggestion) => {
+const applyAIPMSuggestion = (suggestion) => {
   ElMessageBox.confirm(
     suggestion.content,
     '采纳AI建议',
@@ -4218,16 +5595,277 @@ const applySuggestion = (suggestion) => {
 
 // 初始化AIPM图表（页面加载时调用）
 const initAIPMCharts = () => {
-  // 3D项目可视化
-  if (show3DView.value) {
-    // TODO: 使用ECharts-GL实现3D可视化
-    console.log('初始化3D项目可视化')
+  if (!show3DView.value) {
+    initGanttChart()
   }
-  
-  // 项目健康度图表
-  // TODO: 使用ECharts实现雷达图
-  console.log('初始化项目健康度图表')
+  initProjectHealthChart()
 }
+
+// 初始化甘特图
+const initGanttChart = () => {
+  nextTick(() => {
+    const chartDom = document.getElementById('aipmGanttChart')
+    if (!chartDom) return
+    
+    const myChart = echarts.init(chartDom)
+    
+    // 准备甘特图数据
+    const projects = aipmProjects.value
+    const categories = projects.map(p => p.name)
+    
+    // 计算时间范围
+    const allDates = projects.flatMap(p => [new Date(p.startDate), new Date(p.endDate)])
+    const minDate = new Date(Math.min(...allDates))
+    const maxDate = new Date(Math.max(...allDates))
+    
+    // 准备甘特图的series数据
+    const data = projects.map((project, index) => {
+      const startTime = new Date(project.startDate).getTime()
+      const endTime = new Date(project.endDate).getTime()
+      const duration = endTime - startTime
+      const currentTime = new Date().getTime()
+      const elapsed = Math.max(0, currentTime - startTime)
+      const actualProgress = Math.min(100, (elapsed / duration) * 100)
+      
+      return {
+        name: project.name,
+        value: [
+          index,
+          startTime,
+          endTime,
+          duration
+        ],
+        itemStyle: {
+          color: project.status === '延期风险' ? '#F56C6C' : 
+                 project.status === '已完成' ? '#67C23A' : '#409EFF'
+        },
+        progress: project.progress,
+        actualProgress: actualProgress,
+        pm: project.pm,
+        status: project.status
+      }
+    })
+    
+    const option = {
+      title: {
+        text: `项目甘特图 (${ganttViewMode.value === 'day' ? '日视图' : ganttViewMode.value === 'week' ? '周视图' : '月视图'})`,
+        left: 'center'
+      },
+      tooltip: {
+        formatter: function (params) {
+          const start = new Date(params.value[1]).toLocaleDateString()
+          const end = new Date(params.value[2]).toLocaleDateString()
+          const days = Math.ceil(params.value[3] / (1000 * 60 * 60 * 24))
+          return `<strong>${params.data.name}</strong><br/>
+                  项目经理: ${params.data.pm}<br/>
+                  状态: ${params.data.status}<br/>
+                  计划进度: ${params.data.progress}%<br/>
+                  实际进度: ${params.data.actualProgress.toFixed(1)}%<br/>
+                  开始日期: ${start}<br/>
+                  结束日期: ${end}<br/>
+                  总工期: ${days}天`
+        }
+      },
+      legend: {
+        data: ['计划进度', '实际进度'],
+        top: 40
+      },
+      grid: {
+        left: 150,
+        right: 100,
+        top: 80,
+        bottom: 50
+      },
+      xAxis: {
+        type: 'time',
+        min: minDate.getTime(),
+        max: maxDate.getTime(),
+        axisLabel: {
+          formatter: function (value) {
+            const date = new Date(value)
+            if (ganttViewMode.value === 'day') {
+              return `${date.getMonth() + 1}/${date.getDate()}`
+            } else if (ganttViewMode.value === 'week') {
+              return `${date.getMonth() + 1}月${Math.ceil(date.getDate() / 7)}周`
+            } else {
+              return `${date.getFullYear()}-${date.getMonth() + 1}`
+            }
+          }
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            type: 'dashed'
+          }
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: categories,
+        axisLabel: {
+          fontSize: 12,
+          width: 140,
+          overflow: 'truncate'
+        }
+      },
+      series: [
+        {
+          name: '项目时间轴',
+          type: 'custom',
+          renderItem: function (params, api) {
+            const categoryIndex = api.value(0)
+            const start = api.coord([api.value(1), categoryIndex])
+            const end = api.coord([api.value(2), categoryIndex])
+            const height = api.size([0, 1])[1] * 0.6
+            const progress = api.value(3)
+            
+            const rectShape = echarts.graphic.clipRectByRect(
+              {
+                x: start[0],
+                y: start[1] - height / 2,
+                width: end[0] - start[0],
+                height: height
+              },
+              {
+                x: params.coordSys.x,
+                y: params.coordSys.y,
+                width: params.coordSys.width,
+                height: params.coordSys.height
+              }
+            )
+            
+            return {
+              type: 'group',
+              children: [
+                {
+                  type: 'rect',
+                  shape: rectShape,
+                  style: api.style({
+                    fill: params.data.itemStyle.color,
+                    opacity: 0.8
+                  })
+                },
+                {
+                  type: 'rect',
+                  shape: {
+                    x: rectShape.x,
+                    y: rectShape.y,
+                    width: rectShape.width * (params.data.progress / 100),
+                    height: rectShape.height
+                  },
+                  style: {
+                    fill: params.data.itemStyle.color,
+                    opacity: 1
+                  }
+                },
+                {
+                  type: 'text',
+                  style: {
+                    x: rectShape.x + rectShape.width / 2,
+                    y: rectShape.y + rectShape.height / 2,
+                    text: `${params.data.progress}%`,
+                    fill: '#fff',
+                    font: 'bold 12px sans-serif',
+                    textAlign: 'center',
+                    textVerticalAlign: 'middle'
+                  }
+                }
+              ]
+            }
+          },
+          encode: {
+            x: [1, 2],
+            y: 0
+          },
+          data: data
+        },
+        {
+          name: '当前时间',
+          type: 'line',
+          markLine: {
+            symbol: 'none',
+            label: {
+              formatter: '今天',
+              position: 'insideEndTop'
+            },
+            lineStyle: {
+              color: '#F56C6C',
+              type: 'dashed',
+              width: 2
+            },
+            data: [
+              { xAxis: new Date().getTime() }
+            ]
+          }
+        }
+      ]
+    }
+    
+    myChart.setOption(option)
+    window.addEventListener('resize', () => myChart.resize())
+  })
+}
+
+// 初始化项目健康度图表
+const initProjectHealthChart = () => {
+  nextTick(() => {
+    const chartDom = document.getElementById('projectHealthChart')
+    if (!chartDom) return
+    
+    const myChart = echarts.init(chartDom)
+    
+    const option = {
+      title: {
+        text: '项目健康度评分',
+        left: 'center'
+      },
+      radar: {
+        indicator: [
+          { name: '进度达成', max: 100 },
+          { name: '质量评分', max: 100 },
+          { name: '成本控制', max: 100 },
+          { name: '团队协作', max: 100 },
+          { name: '风险管理', max: 100 }
+        ],
+        radius: 100
+      },
+      series: [
+        {
+          name: '健康度指标',
+          type: 'radar',
+          data: aipmProjects.value.slice(0, 3).map((project, index) => ({
+            value: [
+              project.progress,
+              85 + Math.random() * 10,
+              Math.min(100, (1 - project.spent / project.budget) * 100),
+              90 + Math.random() * 10,
+              project.riskLevel === '低' ? 95 : project.riskLevel === '中' ? 75 : 60
+            ],
+            name: project.name,
+            itemStyle: {
+              color: ['#409EFF', '#67C23A', '#E6A23C'][index]
+            }
+          }))
+        }
+      ]
+    }
+    
+    myChart.setOption(option)
+    window.addEventListener('resize', () => myChart.resize())
+  })
+}
+
+// 监听甘特图视图模式变化
+watch(ganttViewMode, () => {
+  initGanttChart()
+})
+
+// 监听3D视图切换
+watch(show3DView, (newVal) => {
+  if (!newVal) {
+    initGanttChart()
+  }
+})
 
 // ========== 联系人与关系图谱模块数据 ==========
 const contactSearch = ref('')
@@ -4524,6 +6162,28 @@ const targetForm = ref({
   responsible: ''
 })
 
+// 新建合同相关
+const showContractDialog = ref(false)
+const contractForm = ref({
+  contractNo: '',
+  clientName: '',
+  amount: '',
+  signDate: '',
+  paymentTerms: '30天',
+  notes: ''
+})
+
+// 新建计划相关
+const showNewPlanDialog = ref(false)
+const newPlanForm = ref({
+  planName: '',
+  targetSegment: '',
+  budget: '',
+  startDate: '',
+  endDate: '',
+  description: ''
+})
+
 const submitTarget = () => {
   if (!targetForm.value.name || !targetForm.value.target) {
     ElMessage.warning('请填写必填项：目标名称和目标值')
@@ -4542,6 +6202,28 @@ const submitTarget = () => {
   
   ElMessage.success('销售目标创建成功！')
   showTargetDialog.value = false
+}
+
+// 提交新建合同
+const submitContract = () => {
+  if (!contractForm.value.contractNo || !contractForm.value.clientName || !contractForm.value.amount) {
+    ElMessage.warning('请填写必填项:合同编号、客户名称、合同金额')
+    return
+  }
+  
+  ElMessage.success('合同创建成功！')
+  showContractDialog.value = false
+}
+
+// 提交新建计划
+const submitNewPlan = () => {
+  if (!newPlanForm.value.planName) {
+    ElMessage.warning('请填写计划名称')
+    return
+  }
+  
+  ElMessage.success('营销计划创建成功！')
+  showNewPlanDialog.value = false
 }
 
 const refreshTargets = () => {
@@ -5041,7 +6723,7 @@ const addInteraction = () => {
   ElMessage.info('添加新互动记录')
 }
 
-const followUp = (contact) => {
+const followUpContact = (contact) => {
   ElMessage.success(`已安排跟进：${contact.name}`)
 }
 
@@ -5091,6 +6773,115 @@ const submitScenario = () => {
 
 const runSimulation = () => {
   ElMessage.success('正在运行沙盘模拟...AI分析中')
+  
+  // 模拟演示:基于当前策略参数生成预测数据
+  const priceImpact = priceStrategy.value * 0.5
+  const discountImpact = discountLevel.value * -0.3
+  const channelImpact = selectedChannels.value.length * 5
+  const frequencyImpact = contactFrequency.value === 'high' ? 10 : contactFrequency.value === 'medium' ? 5 : 0
+  
+  // 更新预测转化率
+  predictedConversion.value = Math.max(10, Math.min(95, 
+    65 + priceImpact + discountImpact + channelImpact + frequencyImpact
+  ))
+  
+  // 更新收入变化
+  revenueChange.value = Math.round(priceImpact * 2 + channelImpact * 0.8)
+  
+  // 更新流失风险
+  churnRisk.value = Math.max(5, Math.min(80, 
+    35 - discountImpact + (priceStrategy.value > 10 ? 15 : 0)
+  ))
+  
+  // 更新预测收入
+  predictedRevenueSandbox.value = Math.round(520 * (1 + revenueChange.value / 100))
+  
+  // 生成收益-风险矩阵图演示数据
+  setTimeout(() => {
+    if (document.getElementById('revenueRiskMatrix')) {
+      const chart = echarts.init(document.getElementById('revenueRiskMatrix'))
+      chart.setOption({
+        title: { text: '收益-风险矩阵分析', left: 'center' },
+        tooltip: { 
+          trigger: 'item',
+          formatter: (params) => {
+            return `${params.data[2]}<br/>风险: ${params.data[0]}<br/>收益: ${params.data[1]}%`
+          }
+        },
+        grid: { left: '10%', right: '10%', bottom: '10%', top: '15%' },
+        xAxis: { 
+          name: '风险等级', 
+          min: 0, 
+          max: 1,
+          splitLine: { show: true }
+        },
+        yAxis: { 
+          name: '收益增长 (%)', 
+          splitLine: { show: true }
+        },
+        series: [{
+          name: '策略方案',
+          type: 'scatter',
+          symbolSize: (data) => Math.sqrt(data[1]) * 8,
+          data: [
+            [0.2, 18, '保守策略'],
+            [0.5, revenueChange.value, '当前策略'],
+            [0.7, 28, '激进策略'],
+            [0.35, 12, '稳健策略']
+          ],
+          itemStyle: {
+            color: (params) => {
+              return params.dataIndex === 1 ? '#67C23A' : '#409EFF'
+            }
+          },
+          label: {
+            show: true,
+            formatter: '{@[2]}',
+            position: 'top'
+          }
+        }]
+      })
+    }
+    
+    // 敏感性分析图演示
+    if (document.getElementById('sensitivityChart')) {
+      const chart = echarts.init(document.getElementById('sensitivityChart'))
+      chart.setOption({
+        title: { text: '策略参数敏感性分析', left: 'center' },
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['价格策略', '折扣力度', '触达频率'], top: 30 },
+        grid: { left: '10%', right: '10%', bottom: '10%', top: '20%' },
+        xAxis: {
+          type: 'category',
+          data: ['-30%', '-20%', '-10%', '基准', '+10%', '+20%', '+30%']
+        },
+        yAxis: {
+          type: 'value',
+          name: '转化率影响'
+        },
+        series: [
+          {
+            name: '价格策略',
+            type: 'line',
+            data: [-15, -10, -5, 0, 3, 8, 15],
+            smooth: true
+          },
+          {
+            name: '折扣力度',
+            type: 'line',
+            data: [0, 5, 10, 0, -8, -12, -18],
+            smooth: true
+          },
+          {
+            name: '触达频率',
+            type: 'line',
+            data: [-5, -3, -1, 0, 4, 8, 12],
+            smooth: true
+          }
+        ]
+      })
+    }
+  }, 500)
 }
 
 const applySandboxStrategy = () => {
@@ -5290,6 +7081,11 @@ watch(activeTab, (newTab) => {
     // 延迟100ms确保DOM渲染完成
     setTimeout(() => {
       initCharts()
+    }, 100)
+  } else if (newTab === 'aipm') {
+    // AIPM标签页，初始化甘特图和项目健康度图
+    setTimeout(() => {
+      initAIPMCharts()
     }, 100)
   }
 })
@@ -6545,6 +8341,238 @@ onMounted(() => {
         color: #606266;
         font-size: 13px;
         line-height: 1.6;
+      }
+    }
+  }
+
+  // AIMES智能制造样式
+  .aimes-view {
+    padding: 24px;
+
+    .aimes-module-card {
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .module-header {
+        text-align: center;
+        margin-bottom: 16px;
+
+        h3 {
+          margin: 12px 0 8px;
+          font-size: 18px;
+          color: #303133;
+        }
+      }
+
+      .module-desc {
+        color: #606266;
+        font-size: 13px;
+        text-align: center;
+        margin: 0 0 16px;
+      }
+
+      .module-stats {
+        .stat-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+
+          .label {
+            color: #909399;
+            font-size: 13px;
+          }
+
+          .value {
+            font-weight: 600;
+
+            &.success {
+              color: #67C23A;
+            }
+
+            &.warning {
+              color: #E6A23C;
+            }
+
+            &.danger {
+              color: #F56C6C;
+            }
+
+            &.info {
+              color: #409EFF;
+            }
+          }
+        }
+      }
+
+      .module-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #EBEEF5;
+
+        .update-time {
+          font-size: 12px;
+          color: #909399;
+        }
+      }
+    }
+
+    .production-lines {
+      .line-item {
+        padding: 16px;
+        margin-bottom: 16px;
+        background: #F5F7FA;
+        border-radius: 8px;
+        transition: all 0.3s;
+
+        &:hover {
+          background: #ECF5FF;
+        }
+
+        .line-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+
+          .line-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #303133;
+          }
+        }
+
+        .line-metrics {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin-bottom: 12px;
+
+          .metric {
+            .label {
+              display: block;
+              font-size: 12px;
+              color: #909399;
+              margin-bottom: 8px;
+            }
+          }
+        }
+
+        .line-details {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+          color: #606266;
+        }
+      }
+    }
+
+    .alert-content {
+      h4 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: #303133;
+      }
+
+      p {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        color: #606266;
+        line-height: 1.5;
+      }
+    }
+
+    .agent-card {
+      padding: 20px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2f1 100%);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .agent-icon {
+        margin-bottom: 12px;
+      }
+
+      h4 {
+        margin: 8px 0;
+        font-size: 16px;
+        color: #303133;
+      }
+
+      p {
+        margin: 0 0 16px;
+        font-size: 13px;
+        color: #606266;
+      }
+
+      .agent-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+
+        .metric-item {
+          .label {
+            display: block;
+            font-size: 12px;
+            color: #909399;
+            margin-bottom: 4px;
+          }
+
+          .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #409EFF;
+
+            &.success {
+              color: #67C23A;
+            }
+          }
+        }
+      }
+    }
+
+    .quality-summary {
+      .summary-item {
+        text-align: center;
+
+        .label {
+          display: block;
+          font-size: 13px;
+          color: #909399;
+          margin-bottom: 8px;
+        }
+
+        .value {
+          font-size: 24px;
+          font-weight: 600;
+
+          &.success {
+            color: #67C23A;
+          }
+
+          &.warning {
+            color: #E6A23C;
+          }
+
+          &.danger {
+            color: #F56C6C;
+          }
+        }
       }
     }
   }

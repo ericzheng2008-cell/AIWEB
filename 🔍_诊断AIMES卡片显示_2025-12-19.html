@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>诊断AIMES卡片显示问题</title>
+  <style>
+    body { font-family: 'Microsoft YaHei', Arial; padding: 20px; background: #f5f7fa; }
+    .diagnostic-panel { background: white; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    h2 { color: #409EFF; border-bottom: 2px solid #409EFF; padding-bottom: 10px; }
+    h3 { color: #67C23A; margin-top: 20px; }
+    .step { background: #ecf5ff; border-left: 4px solid #409EFF; padding: 15px; margin: 10px 0; }
+    .code-block { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 14px; margin: 10px 0; }
+    .warning { background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; margin: 10px 0; }
+    .success { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; margin: 10px 0; }
+    button { background: #409EFF; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin: 5px; }
+    button:hover { background: #66b1ff; }
+    .btn-check { background: #67C23A; }
+    .btn-check:hover { background: #85ce61; }
+    .btn-clear { background: #E6A23C; }
+    .btn-clear:hover { background: #ebb563; }
+    .result { margin: 15px 0; padding: 10px; background: #f0f9ff; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="diagnostic-panel">
+  <h2>🔍 AIMES智能体卡片显示诊断工具</h2>
+  <p>本工具帮助您诊断为什么AIMES卡片可能看不到</p>
+  
+  <div class="success">
+    <strong>✅ 代码验证通过：</strong>
+    <ul>
+      <li>AIMES数据存在于 aiAgents 数组（第4项）</li>
+      <li>布局已调整为 :span="6"（每行4个卡片）</li>
+      <li>无任何过滤或隐藏条件</li>
+    </ul>
+  </div>
+
+  <h3>🎯 可能的原因</h3>
+  
+  <div class="step">
+    <strong>原因1：浏览器缓存未更新</strong>
+    <p>最常见！修改代码后浏览器可能仍在使用旧版本</p>
+    <button class="btn-clear" onclick="clearCacheAndReload()">🔄 清除缓存并刷新</button>
+  </div>
+
+  <div class="step">
+    <strong>原因2：页面需要滚动</strong>
+    <p>如果窗口较小，第4个卡片可能在视口外</p>
+    <button class="btn-check" onclick="checkViewport()">📏 检查卡片位置</button>
+  </div>
+
+  <div class="step">
+    <strong>原因3：CSS样式问题</strong>
+    <p>卡片可能被隐藏或透明</p>
+    <button class="btn-check" onclick="checkStyles()">🎨 检查样式</button>
+  </div>
+
+  <div class="step">
+    <strong>原因4：开发服务器未重启</strong>
+    <p>某些修改需要重启服务器才能生效</p>
+    <button onclick="window.location.reload()">🔄 刷新页面</button>
+  </div>
+
+  <h3>📋 手动检查步骤</h3>
+  
+  <div class="code-block">
+// 步骤1: 打开 http://localhost:5173
+// 步骤2: 点击顶部导航 "AI智能体"
+// 步骤3: 按 F12 打开开发者工具
+// 步骤4: 在控制台粘贴以下代码：
+
+// 检查数据
+console.log('=== AIMES卡片诊断 ===');
+const app = document.querySelector('#app').__vueParentComponent;
+const aiAgents = app?.ctx?.aiAgents || [];
+console.log('智能体总数:', aiAgents.length);
+console.log('所有智能体:', aiAgents.map(a => a.name));
+console.log('AIMES存在?', aiAgents.some(a => a.name.includes('AIMES')));
+
+// 检查DOM
+const cards = document.querySelectorAll('.agent-card');
+console.log('渲染的卡片数:', cards.length);
+cards.forEach((card, i) => {
+  const title = card.querySelector('h3')?.textContent;
+  const rect = card.getBoundingClientRect();
+  console.log(`卡片${i+1}: ${title}`);
+  console.log(`  位置: top=${rect.top}, left=${rect.left}, 可见=${rect.top >= 0 && rect.left >= 0}`);
+});
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ 如果以上都不能解决：</strong>
+    <ol>
+      <li>确认访问的是正确的URL: <code>http://localhost:5173/#/aicrm?tab=aiAgent</code></li>
+      <li>检查控制台是否有JavaScript错误</li>
+      <li>尝试在无痕模式打开页面</li>
+      <li>检查 src/views/MingShengAICRM_V3.vue 文件是否保存成功</li>
+    </ol>
+  </div>
+
+  <div id="diagnosticResult" class="result" style="display:none;"></div>
+
+  <h3>🚀 快速操作</h3>
+  <button onclick="openAICRM()">📱 打开AI智能体页面</button>
+  <button class="btn-check" onclick="runFullDiagnostic()">🔬 运行完整诊断</button>
+</div>
+
+<script>
+function clearCacheAndReload() {
+  alert('即将清除缓存并刷新页面！\n\n请在新打开的页面中按 Ctrl+Shift+R 强制刷新');
+  setTimeout(() => {
+    window.open('http://localhost:5173/#/aicrm?tab=aiAgent', '_blank');
+  }, 1000);
+}
+
+function checkViewport() {
+  showResult('正在检查...\n请在AICRM页面按F12打开控制台，粘贴以下代码：\n\ndocument.querySelectorAll(\'.agent-card\').forEach((card, i) => {\n  const rect = card.getBoundingClientRect();\n  const title = card.querySelector(\'h3\')?.textContent;\n  console.log(`卡片${i+1} ${title}:`, rect.top >= 0 && rect.left >= 0 ? \'✅可见\' : \'❌不可见\');\n});');
+}
+
+function checkStyles() {
+  showResult('正在检查样式...\n请在AICRM页面按F12打开控制台，粘贴以下代码：\n\ndocument.querySelectorAll(\'.agent-card\').forEach(card => {\n  const styles = window.getComputedStyle(card);\n  console.log(\'display:\', styles.display);\n  console.log(\'visibility:\', styles.visibility);\n  console.log(\'opacity:\', styles.opacity);\n});');
+}
+
+function openAICRM() {
+  window.open('http://localhost:5173/#/aicrm?tab=aiAgent', '_blank');
+}
+
+function runFullDiagnostic() {
+  const diagnosticCode = `
+console.clear();
+console.log('%c🔍 AIMES卡片完整诊断', 'font-size:20px;color:#409EFF;font-weight:bold');
+console.log('');
+
+// 1. 检查Vue数据
+try {
+  const app = document.querySelector('#app').__vueParentComponent;
+  const data = app?.ctx;
+  console.log('%c1️⃣ Vue数据检查', 'font-size:16px;color:#67C23A;font-weight:bold');
+  console.log('aiAgents数组:', data?.aiAgents || '未找到');
+  console.log('智能体数量:', data?.aiAgents?.length || 0);
+  if (data?.aiAgents) {
+    data.aiAgents.forEach((agent, i) => {
+      console.log(\`  \${i+1}. \${agent.name} (ID:\${agent.id})\`);
+    });
+  }
+} catch(e) {
+  console.error('Vue数据访问失败:', e);
+}
+
+console.log('');
+
+// 2. 检查DOM渲染
+console.log('%c2️⃣ DOM渲染检查', 'font-size:16px;color:#E6A23C;font-weight:bold');
+const cards = document.querySelectorAll('.agent-card');
+console.log('渲染的卡片数量:', cards.length);
+cards.forEach((card, i) => {
+  const title = card.querySelector('h3')?.textContent || '无标题';
+  const rect = card.getBoundingClientRect();
+  const isVisible = rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
+  console.log(\`  卡片\${i+1}: \${title}\`);
+  console.log(\`    位置: (\${Math.round(rect.left)}, \${Math.round(rect.top)})\`);
+  console.log(\`    尺寸: \${Math.round(rect.width)}×\${Math.round(rect.height)}\`);
+  console.log(\`    状态: \${isVisible ? '✅完全可见' : '⚠️部分可见或不可见'}\`);
+});
+
+console.log('');
+
+// 3. 检查AIMES卡片
+console.log('%c3️⃣ AIMES卡片专项检查', 'font-size:16px;color:#9C27B0;font-weight:bold');
+const aimesCard = Array.from(cards).find(card => 
+  card.querySelector('h3')?.textContent?.includes('AIMES')
+);
+if (aimesCard) {
+  console.log('✅ AIMES卡片已找到！');
+  const rect = aimesCard.getBoundingClientRect();
+  console.log('位置:', rect);
+  console.log('样式:', {
+    display: window.getComputedStyle(aimesCard).display,
+    visibility: window.getComputedStyle(aimesCard).visibility,
+    opacity: window.getComputedStyle(aimesCard).opacity
+  });
+  // 高亮显示
+  aimesCard.style.outline = '3px solid red';
+  aimesCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  console.log('🎯 已滚动到AIMES卡片并用红框高亮');
+} else {
+  console.log('❌ AIMES卡片未找到！');
+}
+
+console.log('');
+console.log('%c诊断完成！', 'font-size:16px;color:#409EFF;font-weight:bold');
+`;
+
+  const blob = new Blob([diagnosticCode], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'aimes-diagnostic.js';
+  a.click();
+  
+  alert('诊断代码已下载！\n\n请执行以下步骤：\n1. 打开 http://localhost:5173/#/aicrm?tab=aiAgent\n2. 按F12打开开发者工具\n3. 切换到"控制台"选项卡\n4. 将下载的代码复制粘贴到控制台并回车');
+  
+  openAICRM();
+}
+
+function showResult(message) {
+  const resultDiv = document.getElementById('diagnosticResult');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<pre>' + message + '</pre>';
+}
+</script>
+
+</body>
+</html>

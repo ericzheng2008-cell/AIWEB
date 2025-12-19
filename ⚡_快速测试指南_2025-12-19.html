@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7项新功能快速测试指南</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+    
+    .content {
+      padding: 40px;
+    }
+    
+    .test-item {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+    }
+    
+    .test-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    
+    .test-item h3 {
+      color: #667eea;
+      font-size: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .test-item h3 .number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      margin-right: 12px;
+      font-size: 16px;
+    }
+    
+    .steps {
+      list-style: none;
+      margin-top: 16px;
+    }
+    
+    .steps li {
+      padding: 8px 0;
+      padding-left: 28px;
+      position: relative;
+    }
+    
+    .steps li:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #67C23A;
+      font-weight: bold;
+    }
+    
+    .expected {
+      background: #e7f4ff;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    
+    .expected strong {
+      color: #409EFF;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      justify-content: center;
+    }
+    
+    .btn {
+      padding: 12px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: #67C23A;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #5daf34;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(103, 194, 58, 0.4);
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-pending {
+      background: #E6A23C;
+    }
+    
+    .status-complete {
+      background: #67C23A;
+    }
+    
+    .footer {
+      background: #f8f9fa;
+      padding: 24px 40px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 7项新功能快速测试指南</h1>
+      <p>明升AICRM V3 | 2025-12-19</p>
+    </div>
+    
+    <div class="content">
+      <div class="test-item">
+        <h3>
+          <span class="number">1</span>
+          AIMES智能制造助手
+        </h3>
+        <ul class="steps">
+          <li>点击顶部导航栏"AIMES智能制造"</li>
+          <li>或进入"AI智能体"页面</li>
+          <li>查看第4个紫色卡片"AIMES 智能制造助手"</li>
+          <li>点击"启动智能体"按钮</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 卡片显示准确率93%,采纳率97%,今日推荐28条
+        </div>
+      </div>
+      
+      <div class="test-item">
+        <h3>
+          <span class="number">2</span>
+          销售目标新建合同
+        </h3>
+        <ul class="steps">
+          <li>进入"销售目标"页面</li>
+          <li>点击"新建合同"按钮(黄色)</li>
+          <li>填写合同编号、客户名称、金额</li>
+          <li>选择付款条款(30天/60天/90天)</li>
+          <li>点击"确定"提交</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 弹出对话框,表单验证正确,提交成功显示提示
+        </div>
+      </div>
+      
+      <div class="test-item">
+        <h3>
+          <span class="number">3</span>
+          客户沙盘新建计划
+        </h3>
+        <ul class="steps">
+          <li>进入"客户沙盘"页面</li>
+          <li>点击"新建计划"按钮</li>
+          <li>填写计划名称和目标客群</li>
+          <li>设置预算和日期范围</li>
+          <li>提交营销计划</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 计划创建成功,支持高价值/流失风险/潜力客户选择
+        </div>
+      </div>
+      
+      <div class="test-item">
+        <h3>
+          <span class="number">4</span>
+          沙盘模拟演示 ⭐
+        </h3>
+        <ul class="steps">
+          <li>在"客户沙盘"页面调整策略参数:</li>
+          <li>  - 价格策略: 拖动到+10%</li>
+          <li>  - 折扣力度: 调整到20%</li>
+          <li>  - 营销渠道: 选择2-3个渠道</li>
+          <li>  - 触达频率: 选择"高频"</li>
+          <li>点击"运行模拟"按钮</li>
+          <li>查看收益-风险矩阵图(散点图)</li>
+          <li>查看敏感性分析图(折线图)</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 预测转化率动态计算,图表显示4种策略方案,当前策略绿色高亮
+        </div>
+      </div>
+      
+      <div class="test-item">
+        <h3>
+          <span class="number">5</span>
+          销售商机详情 ⭐
+        </h3>
+        <ul class="steps">
+          <li>进入"销售漏斗"页面</li>
+          <li>在商机列表中点击任意商机的"查看"按钮</li>
+          <li>查看完整商机详情对话框</li>
+          <li>检查销售漏斗4阶段步骤条</li>
+          <li>查看标志事件时间轴</li>
+          <li>展开"阶段2:方案设计"折叠面板</li>
+          <li>查看AI建议标签</li>
+          <li>点击"记录跟进"按钮</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 显示完整漏斗+时间轴+AI建议,建议标签包括"48小时内跟进"等
+        </div>
+      </div>
+      
+      <div class="test-item">
+        <h3>
+          <span class="number">6</span>
+          AI机器人可拖动 ⭐
+        </h3>
+        <ul class="steps">
+          <li>点击右下角AI人形助手打开聊天窗口</li>
+          <li>鼠标按住聊天窗口头部(紫色区域)</li>
+          <li>拖动到屏幕其他位置</li>
+          <li>释放鼠标</li>
+          <li>尝试拖动到屏幕边缘(测试边界限制)</li>
+          <li>点击最小化/关闭按钮(不应触发拖动)</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 窗口流畅跟随鼠标移动,不会超出屏幕,按钮点击正常
+        </div>
+      </div>
+      
+      <div class="test-item">
+        <h3>
+          <span class="number">7</span>
+          返回主页按键
+        </h3>
+        <ul class="steps">
+          <li>依次进入以下10个页面:</li>
+          <li>  销售漏斗 / 客户360° / 客户沙盘</li>
+          <li>  联系人与关系 / 产品矩阵 / 销售目标</li>
+          <li>  AIPM项目管理 / 投标预测AI / AI智能体</li>
+          <li>检查每个页面右上角是否有"返回主页"按钮</li>
+          <li>点击按钮测试跳转</li>
+        </ul>
+        <div class="expected">
+          <strong>预期结果:</strong> 10个页面均有返回按钮,点击后返回首页
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <a href="http://localhost:5173/mingsheng-aicrm-v3" class="btn btn-primary" target="_blank">
+          🚀 立即测试
+        </a>
+        <a href="📖_7项新功能使用指南_2025-12-19.md" class="btn btn-success">
+          📖 查看详细文档
+        </a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p><span class="status-indicator status-complete"></span> 开发完成: 2025-12-19</p>
+      <p><span class="status-indicator status-complete"></span> Linter检查: 0错误 0警告</p>
+      <p><span class="status-indicator status-pending"></span> 测试状态: 待验收</p>
+    </div>
+  </div>
+</body>
+</html>

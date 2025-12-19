@@ -10,8 +10,7 @@
           <!-- 多语言切换器 -->
           <el-dropdown @command="changeLanguage" trigger="click" class="lang-dropdown">
             <span class="lang-switch">
-              <el-icon><Globe /></el-icon>
-              <span>{{ currentLanguage.name }}</span>
+              <span>🌐 {{ currentLanguage.name }}</span>
               <el-icon class="arrow"><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
@@ -160,7 +159,7 @@ import { supportedLanguages } from '../i18n'
 import { useCmsAdvancedStore } from '../store/cmsAdvanced'
 import { usePageContentStore } from '../store/pageContent'
 import { 
-  Phone, Message, Globe, ArrowDown, Check, Search, Menu, Close 
+  Phone, Message, ArrowDown, Check, Search, Menu, Close 
 } from '@element-plus/icons-vue'
 
 const router = useRouter()

@@ -75,9 +75,18 @@
 
     <!-- 聊天窗口 -->
     <transition name="slide-up">
-      <div class="chat-window" v-if="chatStore.chatVisible && !isMinimized" @click.stop>
-        <!-- 头部 -->
-        <div class="chat-header">
+      <div 
+        class="chat-window" 
+        v-if="chatStore.chatVisible && !isMinimized" 
+        @click.stop
+        :style="{ top: windowPosition.y + 'px', right: windowPosition.x + 'px' }"
+      >
+        <!-- 头部 - 可拖动 -->
+        <div 
+          class="chat-header draggable-header" 
+          @mousedown="startDrag"
+          @touchstart="startDrag"
+        >
           <div class="header-left">
             <el-icon :size="24" color="#fff"><Service /></el-icon>
             <div class="header-info">
@@ -227,6 +236,57 @@ const inputMessage = ref('')
 const messagesContainer = ref(null)
 const hasUnread = ref(false)
 const isMinimized = ref(false)
+
+// 拖动功能相关状态
+const windowPosition = ref({ x: 20, y: 20 })
+const isDragging = ref(false)
+const dragStart = ref({ x: 0, y: 0 })
+
+// 拖动开始
+const startDrag = (e) => {
+  if (e.target.closest('.action-icon')) return // 不在图标按钮上触发拖动
+  
+  isDragging.value = true
+  const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
+  
+  dragStart.value = {
+    x: clientX - windowPosition.value.x,
+    y: clientY - windowPosition.value.y
+  }
+  
+  document.addEventListener('mousemove', onDrag)
+  document.addEventListener('mouseup', stopDrag)
+  document.addEventListener('touchmove', onDrag)
+  document.addEventListener('touchend', stopDrag)
+}
+
+// 拖动中
+const onDrag = (e) => {
+  if (!isDragging.value) return
+  
+  e.preventDefault()
+  const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
+  
+  // 计算新位置(右侧定位)
+  const newX = Math.max(0, Math.min(window.innerWidth - 400, clientX - dragStart.value.x))
+  const newY = Math.max(0, Math.min(window.innerHeight - 600, clientY - dragStart.value.y))
+  
+  windowPosition.value = {
+    x: window.innerWidth - newX - 400, // 转换为right定位
+    y: newY
+  }
+}
+
+// 拖动结束
+const stopDrag = () => {
+  isDragging.value = false
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('touchmove', onDrag)
+  document.removeEventListener('touchend', stopDrag)
+}
 
 // 组件挂载时加载反馈数据
 onMounted(() => {
@@ -854,9 +914,14 @@ watch(() => chatStore.messages.length, () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: relative;
+  position: fixed;
   z-index: 10000;
   border: 1px solid rgba(102, 126, 234, 0.1);
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 24px 72px rgba(102, 126, 234, 0.3), 0 12px 36px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .chat-header {
@@ -868,6 +933,11 @@ watch(() => chatStore.messages.length, () => {
   align-items: center;
   position: relative;
   overflow: hidden;
+  
+  &.draggable-header {
+    cursor: move;
+    user-select: none;
+  }
 }
 
 /* 头部装饰背景 */
