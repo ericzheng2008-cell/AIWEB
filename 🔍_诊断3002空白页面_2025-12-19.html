@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>诊断3002端口空白页面</title>
+  <style>
+    body { font-family: 'Microsoft YaHei'; padding: 20px; background: #f5f7fa; }
+    .panel { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    h2 { color: #409EFF; border-bottom: 2px solid #409EFF; padding-bottom: 10px; }
+    .code-block { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: 'Consolas', monospace; margin: 10px 0; }
+    .warning { background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; margin: 10px 0; }
+    .success { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; margin: 10px 0; }
+    .error { background: #ffebee; border-left: 4px solid #f44336; padding: 15px; margin: 10px 0; }
+    button { background: #409EFF; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin: 5px; }
+    button:hover { background: #66b1ff; }
+    .btn-danger { background: #f44336; }
+    .btn-danger:hover { background: #e57373; }
+    .btn-success { background: #4caf50; }
+    .btn-success:hover { background: #66bb6a; }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <h2>🔍 3002端口空白页面诊断工具</h2>
+  
+  <div class="warning">
+    <strong>⚠️ 问题现象:</strong> 访问 http://localhost:3002 显示空白页面
+  </div>
+
+  <h3>📋 可能的原因</h3>
+  
+  <div class="panel">
+    <h4>原因1: CSS全局样式影响根元素</h4>
+    <p>刚才添加的卡片优化样式可能影响了根元素的显示</p>
+    <div class="code-block">
+/* 检查是否误伤了根元素 */
+.el-card { transform: scale(0.85); }
+
+/* 可能影响 */
+#app, body, html { transform: scale(0.85); }
+    </div>
+  </div>
+
+  <div class="panel">
+    <h4>原因2: JavaScript编译错误</h4>
+    <p>代码修改后可能有语法错误导致页面无法渲染</p>
+  </div>
+
+  <div class="panel">
+    <h4>原因3: 路由配置问题</h4>
+    <p>访问了不存在的路由或路由配置错误</p>
+  </div>
+
+  <div class="panel">
+    <h4>原因4: 浏览器缓存</h4>
+    <p>浏览器加载了旧的空白页面缓存</p>
+  </div>
+
+  <h3>🔧 诊断步骤</h3>
+  
+  <div class="code-block">
+诊断代码 - 在浏览器控制台执行:
+
+// 1. 检查页面DOM结构
+console.log('=== DOM结构检查 ===');
+console.log('HTML:', document.documentElement);
+console.log('Body:', document.body);
+console.log('#app:', document.querySelector('#app'));
+console.log('#app内容:', document.querySelector('#app')?.innerHTML);
+
+// 2. 检查Vue实例
+console.log('=== Vue实例检查 ===');
+const app = document.querySelector('#app').__vueParentComponent;
+console.log('Vue App:', app);
+
+// 3. 检查样式问题
+console.log('=== 样式检查 ===');
+const bodyStyle = window.getComputedStyle(document.body);
+console.log('Body display:', bodyStyle.display);
+console.log('Body visibility:', bodyStyle.visibility);
+console.log('Body opacity:', bodyStyle.opacity);
+console.log('Body transform:', bodyStyle.transform);
+
+const appStyle = window.getComputedStyle(document.querySelector('#app'));
+console.log('#app display:', appStyle.display);
+console.log('#app visibility:', appStyle.visibility);
+console.log('#app opacity:', appStyle.opacity);
+console.log('#app transform:', appStyle.transform);
+
+// 4. 检查错误
+console.log('=== 错误检查 ===');
+console.log('查看Network标签页，检查资源加载失败');
+console.log('查看Console标签页，检查JavaScript错误');
+  </div>
+
+  <h3>🚀 快速解决方案</h3>
+  
+  <button class="btn-danger" onclick="clearCache()">方案1: 清除缓存并刷新</button>
+  <button class="btn-success" onclick="openDevTools()">方案2: 打开3002并查看控制台</button>
+  <button onclick="checkCSS()">方案3: 回滚CSS修改</button>
+  <button onclick="restartServer()">方案4: 重启开发服务器</button>
+
+  <div id="result" style="margin-top: 20px;"></div>
+
+  <h3>📝 手动解决步骤</h3>
+  
+  <div class="success">
+    <strong>✅ 推荐方案（最可能解决问题）:</strong>
+    <ol style="margin-top: 10px; line-height: 2;">
+      <li>打开 http://localhost:3002</li>
+      <li>按 <strong>F12</strong> 打开开发者工具</li>
+      <li>切换到 <strong>Console</strong> 标签</li>
+      <li>查看是否有红色错误信息</li>
+      <li>按 <strong>Ctrl + Shift + R</strong> 强制刷新</li>
+    </ol>
+  </div>
+
+  <div class="warning">
+    <strong>🔄 如果CSS样式是问题:</strong>
+    <p>App.vue中的全局样式可能影响了根元素，需要修复CSS选择器的优先级</p>
+    <div class="code-block">
+/* 确保不影响根元素 */
+#app {
+  transform: none !important;
+}
+
+body, html {
+  transform: none !important;
+}
+    </div>
+  </div>
+</div>
+
+<script>
+function clearCache() {
+  alert('即将打开3002端口并清除缓存！\n\n请在打开的页面中按 Ctrl+Shift+R 强制刷新');
+  setTimeout(() => {
+    window.open('http://localhost:3002', '_blank');
+  }, 1000);
+}
+
+function openDevTools() {
+  alert('即将打开3002端口！\n\n打开后请:\n1. 按F12打开开发者工具\n2. 查看Console标签的错误信息\n3. 查看Network标签的资源加载情况');
+  setTimeout(() => {
+    window.open('http://localhost:3002', '_blank');
+  }, 1000);
+}
+
+function checkCSS() {
+  const result = document.getElementById('result');
+  result.innerHTML = `
+    <div class="warning">
+      <h4>🔍 CSS问题排查</h4>
+      <p><strong>问题文件:</strong> src/App.vue</p>
+      <p><strong>可能的问题:</strong> 全局卡片样式影响了根元素</p>
+      <p><strong>解决方案:</strong> 添加排除规则，确保 #app、body、html 不受缩放影响</p>
+      <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;">
+/* 在 App.vue 的 style 中添加 */
+#app,
+body,
+html {
+  transform: none !important;
+}
+      </pre>
+      <p>正在为您准备修复脚本...</p>
+    </div>
+  `;
+}
+
+function restartServer() {
+  alert('需要重启开发服务器！\n\n步骤:\n1. 关闭当前终端中的npm run dev\n2. 重新运行: npm run dev\n3. 等待编译完成\n4. 访问 http://localhost:3002');
+}
+
+// 自动诊断
+window.onload = function() {
+  const result = document.getElementById('result');
+  result.innerHTML = `
+    <div class="success">
+      <strong>✅ 诊断工具已就绪</strong>
+      <p>点击上方按钮开始诊断，或直接访问 <a href="http://localhost:3002" target="_blank">http://localhost:3002</a> 查看</p>
+    </div>
+  `;
+};
+</script>
+
+</body>
+</html>

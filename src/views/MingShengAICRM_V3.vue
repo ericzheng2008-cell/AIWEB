@@ -55,7 +55,7 @@
         </el-menu-item>
         <el-menu-item index="aimes">
           <el-icon><Setting /></el-icon>
-          <span>AIMES智能制造</span>
+          <span>AIMES助手</span>
         </el-menu-item>
         <el-menu-item index="automation">
           <el-icon><Setting /></el-icon>
@@ -626,7 +626,7 @@
         </div>
 
         <el-row :gutter="20">
-          <el-col :span="6" v-for="agent in aiAgents" :key="agent.id">
+          <el-col :span="8" v-for="agent in aiAgents" :key="agent.id">
             <el-card class="agent-card" :body-style="{ padding: '20px' }">
               <div class="agent-header">
                 <el-icon :size="48" :color="agent.color">
@@ -659,6 +659,13 @@
             </el-card>
           </el-col>
         </el-row>
+        
+        <!-- 调试信息 -->
+        <el-alert v-if="aiAgents.length > 0" type="success" :closable="false" class="mt-4">
+          <template #title>
+            共加载 {{ aiAgents.length }} 个AI智能体
+          </template>
+        </el-alert>
       </div>
 
       <!-- 自动化流程视图 -->
@@ -1305,7 +1312,7 @@
         </el-card>
       </div>
 
-      <!-- AIMES智能制造助手视图 -->
+      <!-- AIMES助手视图 -->
       <div v-show="activeTab === 'aimes'" class="aimes-view">
         <div class="view-header">
           <h2>🏭 AIMES 智能制造执行系统</h2>
@@ -1313,6 +1320,14 @@
             <el-button type="info" @click="$router.push('/')" class="back-home-btn">
               <el-icon><HomeFilled /></el-icon>
               返回主页
+            </el-button>
+            <el-button type="success" @click="openMESInterface">
+              <el-icon><Connection /></el-icon>
+              MES数据接口
+            </el-button>
+            <el-button type="warning" @click="openManualInput">
+              <el-icon><Edit /></el-icon>
+              手动录入数据
             </el-button>
             <el-button type="primary" @click="refreshAIMESData">
               <el-icon><Refresh /></el-icon>
@@ -1514,6 +1529,334 @@
             </el-card>
           </el-col>
         </el-row>
+
+        <!-- MES数据接口对话框 -->
+        <el-dialog 
+          v-model="mesInterfaceVisible" 
+          title="🔗 MES数据接口配置与启动"
+          width="800px"
+          :close-on-click-modal="false">
+          <el-tabs v-model="mesInterfaceTab">
+            <el-tab-pane label="接口配置" name="config">
+              <el-form :model="mesConfig" label-width="140px">
+                <el-form-item label="MES系统类型">
+                  <el-select v-model="mesConfig.systemType" placeholder="请选择MES系统">
+                    <el-option label="SAP MES" value="sap" />
+                    <el-option label="Oracle MES" value="oracle" />
+                    <el-option label="Siemens Opcenter" value="opcenter" />
+                    <el-option label="Dassault DELMIA" value="delmia" />
+                    <el-option label="自定义系统" value="custom" />
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="接口地址">
+                  <el-input v-model="mesConfig.apiUrl" placeholder="http://mes.company.com:8080/api">
+                    <template #prepend>
+                      <el-icon><Link /></el-icon>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="认证方式">
+                  <el-radio-group v-model="mesConfig.authType">
+                    <el-radio label="apikey">API Key</el-radio>
+                    <el-radio label="oauth">OAuth 2.0</el-radio>
+                    <el-radio label="basic">Basic Auth</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                
+                <el-form-item v-if="mesConfig.authType === 'apikey'" label="API Key">
+                  <el-input v-model="mesConfig.apiKey" type="password" show-password />
+                </el-form-item>
+                
+                <el-form-item label="数据同步频率">
+                  <el-select v-model="mesConfig.syncInterval">
+                    <el-option label="实时 (5秒)" :value="5" />
+                    <el-option label="高频 (30秒)" :value="30" />
+                    <el-option label="中频 (1分钟)" :value="60" />
+                    <el-option label="低频 (5分钟)" :value="300" />
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="同步数据项">
+                  <el-checkbox-group v-model="mesConfig.dataItems">
+                    <el-checkbox label="workOrder">工单信息</el-checkbox>
+                    <el-checkbox label="production">生产数据</el-checkbox>
+                    <el-checkbox label="quality">质量数据</el-checkbox>
+                    <el-checkbox label="equipment">设备状态</el-checkbox>
+                    <el-checkbox label="material">物料数据</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-form>
+              
+              <div class="interface-actions">
+                <el-button @click="testMESConnection" :loading="mesConnecting">
+                  <el-icon><Connection /></el-icon>
+                  测试连接
+                </el-button>
+                <el-button type="primary" @click="saveMESConfig">
+                  <el-icon><CircleCheck /></el-icon>
+                  保存配置
+                </el-button>
+              </div>
+            </el-tab-pane>
+            
+            <el-tab-pane label="接口状态" name="status">
+              <div class="mes-status-panel">
+                <el-descriptions :column="2" border>
+                  <el-descriptions-item label="连接状态">
+                    <el-tag :type="mesStatus.connected ? 'success' : 'danger'">
+                      {{ mesStatus.connected ? '已连接' : '未连接' }}
+                    </el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="同步状态">
+                    <el-tag :type="mesStatus.syncing ? 'success' : 'info'">
+                      {{ mesStatus.syncing ? '同步中' : '已停止' }}
+                    </el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="最后同步时间">
+                    {{ mesStatus.lastSyncTime || '从未同步' }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="同步数据量">
+                    {{ mesStatus.syncedRecords || 0 }} 条
+                  </el-descriptions-item>
+                  <el-descriptions-item label="错误次数">
+                    <span :class="mesStatus.errors > 0 ? 'text-danger' : ''">
+                      {{ mesStatus.errors || 0 }} 次
+                    </span>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="数据延迟">
+                    {{ mesStatus.latency || 0 }} ms
+                  </el-descriptions-item>
+                </el-descriptions>
+                
+                <div class="mt-4">
+                  <el-button 
+                    v-if="!mesStatus.syncing" 
+                    type="success" 
+                    @click="startMESSync"
+                    :disabled="!mesStatus.connected">
+                    <el-icon><VideoPlay /></el-icon>
+                    启动同步
+                  </el-button>
+                  <el-button 
+                    v-else 
+                    type="danger" 
+                    @click="stopMESSync">
+                    <el-icon><SwitchButton /></el-icon>
+                    停止同步
+                  </el-button>
+                  <el-button @click="refreshMESStatus">
+                    <el-icon><Refresh /></el-icon>
+                    刷新状态
+                  </el-button>
+                </div>
+              </div>
+            </el-tab-pane>
+            
+            <el-tab-pane label="同步日志" name="log">
+              <el-timeline>
+                <el-timeline-item 
+                  v-for="log in mesSyncLogs" 
+                  :key="log.id"
+                  :timestamp="log.time"
+                  :type="log.type">
+                  {{ log.message }}
+                </el-timeline-item>
+              </el-timeline>
+            </el-tab-pane>
+          </el-tabs>
+        </el-dialog>
+
+        <!-- 手动录入生产数据对话框 -->
+        <el-dialog 
+          v-model="manualInputVisible" 
+          title="📝 手动录入生产数据"
+          width="900px"
+          :close-on-click-modal="false">
+          <el-form :model="manualData" label-width="120px" :rules="manualDataRules" ref="manualFormRef">
+            <el-tabs v-model="manualInputTab">
+              <el-tab-pane label="生产数据" name="production">
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-form-item label="产线" prop="productionLine">
+                      <el-select v-model="manualData.productionLine" placeholder="请选择产线">
+                        <el-option v-for="line in productionLines" :key="line.id" :label="line.name" :value="line.name" />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="工单号" prop="workOrder">
+                      <el-input v-model="manualData.workOrder" placeholder="WO-YYYYMMDD-XXX" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-form-item label="产品编码" prop="productCode">
+                      <el-input v-model="manualData.productCode" placeholder="请输入产品编码" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="批次号" prop="batchNumber">
+                      <el-input v-model="manualData.batchNumber" placeholder="BATCH-YYYYMMDD-XXX" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-form-item label="计划产量" prop="plannedQty">
+                      <el-input-number v-model="manualData.plannedQty" :min="0" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="实际产量" prop="actualQty">
+                      <el-input-number v-model="manualData.actualQty" :min="0" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="不良品数" prop="defectQty">
+                      <el-input-number v-model="manualData.defectQty" :min="0" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-form-item label="开始时间" prop="startTime">
+                      <el-date-picker 
+                        v-model="manualData.startTime" 
+                        type="datetime" 
+                        placeholder="选择开始时间"
+                        style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="结束时间" prop="endTime">
+                      <el-date-picker 
+                        v-model="manualData.endTime" 
+                        type="datetime" 
+                        placeholder="选择结束时间"
+                        style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-tab-pane>
+              
+              <el-tab-pane label="质量数据" name="quality">
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-form-item label="检验人员">
+                      <el-input v-model="manualData.inspector" placeholder="请输入检验人员" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="检验时间">
+                      <el-date-picker 
+                        v-model="manualData.inspectionTime" 
+                        type="datetime" 
+                        placeholder="选择检验时间"
+                        style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-form-item label="抽检数量">
+                      <el-input-number v-model="manualData.sampleSize" :min="0" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="合格数量">
+                      <el-input-number v-model="manualData.qualifiedQty" :min="0" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="不合格数量">
+                      <el-input-number v-model="manualData.unqualifiedQty" :min="0" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-form-item label="不良类型">
+                  <el-checkbox-group v-model="manualData.defectTypes">
+                    <el-checkbox label="尺寸偏差">尺寸偏差</el-checkbox>
+                    <el-checkbox label="外观缺陷">外观缺陷</el-checkbox>
+                    <el-checkbox label="装配不良">装配不良</el-checkbox>
+                    <el-checkbox label="材料问题">材料问题</el-checkbox>
+                    <el-checkbox label="其他">其他</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+                
+                <el-form-item label="备注">
+                  <el-input 
+                    v-model="manualData.qualityRemark" 
+                    type="textarea" 
+                    :rows="3" 
+                    placeholder="请输入质量备注信息" />
+                </el-form-item>
+              </el-tab-pane>
+              
+              <el-tab-pane label="设备数据" name="equipment">
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-form-item label="设备编号">
+                      <el-input v-model="manualData.equipmentId" placeholder="请输入设备编号" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="设备状态">
+                      <el-select v-model="manualData.equipmentStatus" placeholder="请选择设备状态">
+                        <el-option label="运行中" value="running" />
+                        <el-option label="待机" value="idle" />
+                        <el-option label="故障" value="fault" />
+                        <el-option label="保养中" value="maintenance" />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-form-item label="运行时间(小时)">
+                      <el-input-number v-model="manualData.runningHours" :min="0" :precision="1" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="停机时间(小时)">
+                      <el-input-number v-model="manualData.downtime" :min="0" :precision="1" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="能耗(kWh)">
+                      <el-input-number v-model="manualData.energyConsumption" :min="0" :precision="2" style="width: 100%" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                
+                <el-form-item label="故障描述">
+                  <el-input 
+                    v-model="manualData.faultDescription" 
+                    type="textarea" 
+                    :rows="3" 
+                    placeholder="如有故障，请详细描述" />
+                </el-form-item>
+              </el-tab-pane>
+            </el-tabs>
+          </el-form>
+          
+          <template #footer>
+            <el-button @click="manualInputVisible = false">取消</el-button>
+            <el-button @click="resetManualForm">重置</el-button>
+            <el-button type="primary" @click="submitManualData" :loading="submittingManual">
+              <el-icon><CircleCheck /></el-icon>
+              提交数据
+            </el-button>
+          </template>
+        </el-dialog>
       </div>
 
       <!-- AIPM项目管理视图 -->
@@ -3405,6 +3748,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import DataQualityMonitor from '@/components/DataQualityMonitor.vue'
 import DataSyncMonitor from '@/components/DataSyncMonitor.vue'
 import DataGovernancePanel from '@/components/DataGovernancePanel.vue'
@@ -3415,10 +3759,12 @@ import {
   Search, Lightning, Bell, Refresh, CaretTop, CaretBottom, View, Download,
   Plus, Phone, Message, QuestionFilled, ArrowDown, SwitchButton, Setting, Right,
   DocumentCopy, Notification, CircleCheck, Select, SuccessFilled, Grid, Trophy,
-  VideoPlay
+  VideoPlay, HomeFilled, Connection, Edit, Tools, Calendar
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
+
+const route = useRoute()
 
 // 当前激活的标签页
 const activeTab = ref('funnel')
@@ -3627,7 +3973,7 @@ const aiAgents = ref([
   },
   { 
     id: 4, 
-    name: 'AIMES 智能制造助手', 
+    name: 'AIMES助手', 
     description: 'AI MES助手 - 生产现场感知、智能排产、质量控制、设备管理',
     icon: 'Setting',
     color: '#9C27B0',
@@ -3851,13 +4197,262 @@ const todayYieldRate = ref(99.2)
 const defectBatches = ref(2)
 const pendingTrace = ref(3)
 
+// MES数据接口相关
+const mesInterfaceVisible = ref(false)
+const mesInterfaceTab = ref('config')
+const mesConnecting = ref(false)
+
+const mesConfig = reactive({
+  systemType: 'sap',
+  apiUrl: 'http://mes.company.com:8080/api',
+  authType: 'apikey',
+  apiKey: '',
+  syncInterval: 60,
+  dataItems: ['workOrder', 'production', 'quality', 'equipment']
+})
+
+const mesStatus = reactive({
+  connected: false,
+  syncing: false,
+  lastSyncTime: '',
+  syncedRecords: 0,
+  errors: 0,
+  latency: 0
+})
+
+const mesSyncLogs = ref([
+  { id: 1, time: '10:35:20', type: 'success', message: '成功同步工单数据 12 条' },
+  { id: 2, time: '10:30:15', type: 'success', message: '成功同步生产数据 45 条' },
+  { id: 3, time: '10:25:10', type: 'warning', message: '质量数据同步延迟 5秒' }
+])
+
+// 手动录入数据相关
+const manualInputVisible = ref(false)
+const manualInputTab = ref('production')
+const submittingManual = ref(false)
+const manualFormRef = ref(null)
+
+const manualData = reactive({
+  // 生产数据
+  productionLine: '',
+  workOrder: '',
+  productCode: '',
+  batchNumber: '',
+  plannedQty: 0,
+  actualQty: 0,
+  defectQty: 0,
+  startTime: null,
+  endTime: null,
+  // 质量数据
+  inspector: '',
+  inspectionTime: null,
+  sampleSize: 0,
+  qualifiedQty: 0,
+  unqualifiedQty: 0,
+  defectTypes: [],
+  qualityRemark: '',
+  // 设备数据
+  equipmentId: '',
+  equipmentStatus: 'running',
+  runningHours: 0,
+  downtime: 0,
+  energyConsumption: 0,
+  faultDescription: ''
+})
+
+const manualDataRules = {
+  productionLine: [{ required: true, message: '请选择产线', trigger: 'change' }],
+  workOrder: [{ required: true, message: '请输入工单号', trigger: 'blur' }],
+  productCode: [{ required: true, message: '请输入产品编码', trigger: 'blur' }],
+  plannedQty: [{ required: true, message: '请输入计划产量', trigger: 'blur' }],
+  actualQty: [{ required: true, message: '请输入实际产量', trigger: 'blur' }]
+}
+
 // AIMES方法
 const refreshAIMESData = () => {
   ElMessage.success('AIMES数据已刷新')
+  // 模拟刷新效果
+  setTimeout(() => {
+    // 更新产线数据
+    productionLines.value.forEach(line => {
+      line.oee = Math.floor(Math.random() * 30) + 70
+      line.utilization = Math.floor(Math.random() * 20) + 80
+      line.progress = Math.floor(Math.random() * 40) + 30
+    })
+    // 更新设备健康数据
+    criticalEquipment.value.forEach(eq => {
+      eq.health = Math.floor(Math.random() * 30) + 70
+    })
+  }, 500)
 }
 
 const openAIMESModule = (module) => {
   ElMessage.info(`打开${module.name}模块`)
+}
+
+// MES接口方法
+const openMESInterface = () => {
+  mesInterfaceVisible.value = true
+  mesInterfaceTab.value = 'config'
+}
+
+const testMESConnection = async () => {
+  if (!mesConfig.apiUrl) {
+    ElMessage.warning('请先输入接口地址')
+    return
+  }
+  
+  mesConnecting.value = true
+  try {
+    // 模拟测试连接
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    mesStatus.connected = true
+    mesStatus.latency = Math.floor(Math.random() * 50) + 20
+    ElMessage.success('MES接口连接成功！')
+    
+    // 添加日志
+    mesSyncLogs.value.unshift({
+      id: Date.now(),
+      time: new Date().toLocaleTimeString(),
+      type: 'success',
+      message: `成功连接到MES系统 (${mesConfig.systemType})`
+    })
+  } catch (error) {
+    mesStatus.connected = false
+    ElMessage.error('连接失败，请检查配置')
+  } finally {
+    mesConnecting.value = false
+  }
+}
+
+const saveMESConfig = () => {
+  ElMessage.success('MES配置已保存')
+  localStorage.setItem('mesConfig', JSON.stringify(mesConfig))
+}
+
+const startMESSync = () => {
+  if (!mesStatus.connected) {
+    ElMessage.warning('请先连接MES系统')
+    return
+  }
+  
+  mesStatus.syncing = true
+  mesStatus.lastSyncTime = new Date().toLocaleString()
+  ElMessage.success('MES数据同步已启动')
+  
+  // 模拟定期同步
+  const syncInterval = setInterval(() => {
+    if (!mesStatus.syncing) {
+      clearInterval(syncInterval)
+      return
+    }
+    
+    const records = Math.floor(Math.random() * 20) + 10
+    mesStatus.syncedRecords += records
+    mesStatus.lastSyncTime = new Date().toLocaleString()
+    
+    mesSyncLogs.value.unshift({
+      id: Date.now(),
+      time: new Date().toLocaleTimeString(),
+      type: 'success',
+      message: `自动同步完成，新增 ${records} 条数据`
+    })
+    
+    // 只保留最新10条日志
+    if (mesSyncLogs.value.length > 10) {
+      mesSyncLogs.value = mesSyncLogs.value.slice(0, 10)
+    }
+  }, mesConfig.syncInterval * 1000)
+}
+
+const stopMESSync = () => {
+  mesStatus.syncing = false
+  ElMessage.info('MES数据同步已停止')
+  
+  mesSyncLogs.value.unshift({
+    id: Date.now(),
+    time: new Date().toLocaleTimeString(),
+    type: 'info',
+    message: '手动停止数据同步'
+  })
+}
+
+const refreshMESStatus = () => {
+  ElMessage.success('状态已刷新')
+  if (mesStatus.connected) {
+    mesStatus.latency = Math.floor(Math.random() * 50) + 20
+  }
+}
+
+// 手动录入方法
+const openManualInput = () => {
+  manualInputVisible.value = true
+  manualInputTab.value = 'production'
+}
+
+const resetManualForm = () => {
+  if (manualFormRef.value) {
+    manualFormRef.value.resetFields()
+  }
+  Object.assign(manualData, {
+    productionLine: '',
+    workOrder: '',
+    productCode: '',
+    batchNumber: '',
+    plannedQty: 0,
+    actualQty: 0,
+    defectQty: 0,
+    startTime: null,
+    endTime: null,
+    inspector: '',
+    inspectionTime: null,
+    sampleSize: 0,
+    qualifiedQty: 0,
+    unqualifiedQty: 0,
+    defectTypes: [],
+    qualityRemark: '',
+    equipmentId: '',
+    equipmentStatus: 'running',
+    runningHours: 0,
+    downtime: 0,
+    energyConsumption: 0,
+    faultDescription: ''
+  })
+}
+
+const submitManualData = async () => {
+  if (!manualFormRef.value) return
+  
+  try {
+    await manualFormRef.value.validate()
+    submittingManual.value = true
+    
+    // 模拟提交
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    ElMessage.success('生产数据已成功录入！')
+    
+    // 更新相关显示数据
+    if (manualData.actualQty && manualData.defectQty !== undefined) {
+      const yieldRate = ((manualData.actualQty - manualData.defectQty) / manualData.actualQty * 100).toFixed(1)
+      todayYieldRate.value = parseFloat(yieldRate)
+    }
+    
+    // 添加到同步日志
+    mesSyncLogs.value.unshift({
+      id: Date.now(),
+      time: new Date().toLocaleTimeString(),
+      type: 'success',
+      message: `手动录入数据: 工单 ${manualData.workOrder}, 产量 ${manualData.actualQty}`
+    })
+    
+    manualInputVisible.value = false
+    resetManualForm()
+  } catch (error) {
+    console.error('表单验证失败:', error)
+  } finally {
+    submittingManual.value = false
+  }
 }
 
 const getLineStatusType = (status) => {
@@ -7087,8 +7682,236 @@ watch(activeTab, (newTab) => {
     setTimeout(() => {
       initAIPMCharts()
     }, 100)
+  } else if (newTab === 'aimes') {
+    // AIMES标签页，初始化设备健康和质量趋势图
+    setTimeout(() => {
+      initAIMESCharts()
+    }, 100)
   }
 })
+
+// AIMES图表初始化
+const initAIMESCharts = () => {
+  nextTick(() => {
+    // 设备健康指数图表
+    const healthChartDom = document.getElementById('equipmentHealthChart')
+    if (healthChartDom) {
+      const healthChart = echarts.init(healthChartDom)
+      healthChart.setOption({
+        title: {
+          text: '设备健康指数趋势',
+          left: 'center',
+          textStyle: { fontSize: 14 }
+        },
+        tooltip: {
+          trigger: 'axis',
+          formatter: (params) => {
+            let result = params[0].name + '<br/>'
+            params.forEach(item => {
+              result += `${item.marker}${item.seriesName}: ${item.value}%<br/>`
+            })
+            return result
+          }
+        },
+        legend: {
+          data: ['CNC-B02', '焊接机器人-W05', '冲压设备-P01'],
+          bottom: 10
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00']
+        },
+        yAxis: {
+          type: 'value',
+          name: '健康指数 (%)',
+          min: 0,
+          max: 100,
+          axisLabel: {
+            formatter: '{value}%'
+          }
+        },
+        series: [
+          {
+            name: 'CNC-B02',
+            type: 'line',
+            smooth: true,
+            data: [85, 82, 78, 75, 70, 68, 68],
+            lineStyle: { color: '#F56C6C' },
+            itemStyle: { color: '#F56C6C' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(245, 108, 108, 0.3)' },
+                { offset: 1, color: 'rgba(245, 108, 108, 0.05)' }
+              ])
+            },
+            markLine: {
+              data: [{ yAxis: 70, name: '警戒线', lineStyle: { color: '#E6A23C', type: 'dashed' } }]
+            }
+          },
+          {
+            name: '焊接机器人-W05',
+            type: 'line',
+            smooth: true,
+            data: [88, 89, 87, 86, 85, 85, 86],
+            lineStyle: { color: '#67C23A' },
+            itemStyle: { color: '#67C23A' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(103, 194, 58, 0.3)' },
+                { offset: 1, color: 'rgba(103, 194, 58, 0.05)' }
+              ])
+            }
+          },
+          {
+            name: '冲压设备-P01',
+            type: 'line',
+            smooth: true,
+            data: [95, 94, 93, 93, 92, 92, 92],
+            lineStyle: { color: '#409EFF' },
+            itemStyle: { color: '#409EFF' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
+                { offset: 1, color: 'rgba(64, 158, 255, 0.05)' }
+              ])
+            }
+          }
+        ]
+      })
+    }
+
+    // 质量趋势分析图表
+    const qualityChartDom = document.getElementById('qualityTrendChart')
+    if (qualityChartDom) {
+      const qualityChart = echarts.init(qualityChartDom)
+      qualityChart.setOption({
+        title: {
+          text: '7日质量合格率趋势',
+          left: 'center',
+          textStyle: { fontSize: 14 }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985'
+            }
+          },
+          formatter: (params) => {
+            let result = params[0].name + '<br/>'
+            params.forEach(item => {
+              if (item.seriesName === '合格率') {
+                result += `${item.marker}${item.seriesName}: ${item.value}%<br/>`
+              } else if (item.seriesName === '不良数') {
+                result += `${item.marker}${item.seriesName}: ${item.value}件<br/>`
+              } else {
+                result += `${item.marker}${item.seriesName}: ${item.value}<br/>`
+              }
+            })
+            return result
+          }
+        },
+        legend: {
+          data: ['合格率', '不良数', '批次数'],
+          bottom: 10
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '合格率 (%)',
+            min: 95,
+            max: 100,
+            position: 'left',
+            axisLabel: {
+              formatter: '{value}%'
+            }
+          },
+          {
+            type: 'value',
+            name: '数量',
+            position: 'right',
+            axisLabel: {
+              formatter: '{value}'
+            }
+          }
+        ],
+        series: [
+          {
+            name: '合格率',
+            type: 'line',
+            smooth: true,
+            yAxisIndex: 0,
+            data: [98.5, 99.1, 98.8, 99.3, 99.2, 98.9, 99.2],
+            lineStyle: { color: '#67C23A', width: 3 },
+            itemStyle: { color: '#67C23A' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(103, 194, 58, 0.3)' },
+                { offset: 1, color: 'rgba(103, 194, 58, 0.05)' }
+              ])
+            },
+            markLine: {
+              data: [
+                { 
+                  yAxis: 98, 
+                  name: '目标线', 
+                  lineStyle: { color: '#409EFF', type: 'dashed' },
+                  label: { formatter: '目标: 98%' }
+                },
+                { 
+                  yAxis: 96, 
+                  name: '警戒线', 
+                  lineStyle: { color: '#E6A23C', type: 'dashed' },
+                  label: { formatter: '警戒: 96%' }
+                }
+              ]
+            }
+          },
+          {
+            name: '不良数',
+            type: 'bar',
+            yAxisIndex: 1,
+            data: [15, 9, 12, 7, 8, 11, 8],
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: '#F56C6C' },
+                { offset: 1, color: '#FFA07A' }
+              ])
+            }
+          },
+          {
+            name: '批次数',
+            type: 'line',
+            yAxisIndex: 1,
+            smooth: true,
+            data: [8, 10, 9, 11, 10, 9, 10],
+            lineStyle: { color: '#909399', type: 'dashed' },
+            itemStyle: { color: '#909399' }
+          }
+        ]
+      })
+    }
+  })
+}
 
 // ECharts图表初始化 (旧版，保留兼容)
 const initChartsOld = () => {
@@ -7371,6 +8194,11 @@ const deleteProductData = (index) => {
 }
 
 onMounted(() => {
+  // 处理URL参数，支持通过?tab=xxx切换标签
+  if (route.query.tab) {
+    activeTab.value = route.query.tab
+  }
+  
   // 延迟初始化图表,确保DOM已渲染
   setTimeout(() => {
     try {

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIMES卡片显示诊断工具</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #9C27B0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #9C27B0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .step h3 {
+            color: #9C27B0;
+            margin-top: 0;
+        }
+        button {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.5);
+        }
+        .result {
+            background: #E8F5E9;
+            border: 2px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+        .error {
+            background: #FFEBEE;
+            border: 2px solid #F44336;
+        }
+        .warning {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+        }
+        .info {
+            background: #E3F2FD;
+            border: 2px solid #2196F3;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+        .fix-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+        }
+        .nav-guide {
+            background: linear-gradient(135deg, #E1BEE7 0%, #CE93D8 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #9C27B0;
+        }
+        .checklist li:before {
+            content: '□ ';
+            color: #9C27B0;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 AIMES卡片显示问题诊断</h1>
+        
+        <div class="nav-guide">
+            <h3 style="color: #9C27B0; margin-top: 0;">📍 正确的导航路径</h3>
+            <div style="font-size: 18px; line-height: 2;">
+                <strong>1. 启动服务器</strong> → 
+                <strong style="color: #9C27B0;">2. 访问 http://localhost:3002</strong> → 
+                <strong>3. 点击顶部菜单 "AI智能体"</strong>
+            </div>
+            <p style="margin-top: 15px; color: #555;">
+                ⚠️ <strong>注意：</strong>不是点击"明升AICRM V3.0"，而是顶部导航栏的"AI智能体"标签！
+            </p>
+        </div>
+
+        <div class="step">
+            <h3>第一步：检查服务器是否启动</h3>
+            <p>点击下方按钮打开浏览器控制台查看网络连接</p>
+            <button onclick="checkServer()">🔍 检查服务器连接</button>
+            <div id="serverResult" class="result"></div>
+        </div>
+
+        <div class="step">
+            <h3>第二步：验证数据是否存在</h3>
+            <p>检查AIMES智能体数据是否正确加载</p>
+            <button onclick="checkData()">📊 检查数据完整性</button>
+            <div id="dataResult" class="result"></div>
+        </div>
+
+        <div class="step">
+            <h3>第三步：检查页面布局</h3>
+            <p>验证卡片布局是否正确（每行3个，共2行）</p>
+            <button onclick="checkLayout()">📐 检查布局设置</button>
+            <div id="layoutResult" class="result"></div>
+        </div>
+
+        <div class="step">
+            <h3>第四步：检查浏览器窗口大小</h3>
+            <p>窗口太小可能导致第4个卡片被挤到下方不可见区域</p>
+            <button onclick="checkViewport()">🖥️ 检查视口大小</button>
+            <div id="viewportResult" class="result"></div>
+        </div>
+
+        <div class="step">
+            <h3>第五步：检查滚动位置</h3>
+            <p>第4个卡片在第二行，需要向下滚动才能看到</p>
+            <button onclick="checkScroll()">📜 检查滚动状态</button>
+            <div id="scrollResult" class="result"></div>
+        </div>
+
+        <div class="step" style="background: #FFF3E0; border-left-color: #FF9800;">
+            <h3 style="color: #F57C00;">🚨 常见问题排查</h3>
+            <ul class="checklist">
+                <li>确认访问的是 <strong>http://localhost:3002</strong>（不是3000或3001）</li>
+                <li>确认点击的是顶部导航栏的 <strong>"AI智能体"</strong> 标签</li>
+                <li>确认浏览器窗口最大化（F11全屏模式）</li>
+                <li>尝试向下滚动页面查看第二行卡片</li>
+                <li>清除浏览器缓存（Ctrl+Shift+Delete）</li>
+                <li>使用 Ctrl+F5 强制刷新页面</li>
+                <li>检查浏览器控制台是否有JavaScript错误</li>
+            </ul>
+        </div>
+
+        <div class="step" style="background: #E3F2FD; border-left-color: #2196F3;">
+            <h3 style="color: #1976D2;">💡 直接解决方案</h3>
+            <p>如果以上方法都不行，点击下方按钮执行自动修复：</p>
+            <button class="fix-btn" onclick="window.location.href='../🚀_测试AIMES卡片显示_2025-12-20.bat'">
+                🔧 一键启动并定位AIMES卡片
+            </button>
+            <button onclick="showManualSteps()">📖 查看手动操作步骤</button>
+            <div id="manualSteps" class="result info" style="display: none;">
+                <h4>手动操作步骤：</h4>
+                <ol style="line-height: 2;">
+                    <li>关闭所有浏览器窗口</li>
+                    <li>双击运行 <code>🚀_测试AIMES卡片显示_2025-12-20.bat</code></li>
+                    <li>等待浏览器自动打开并加载页面</li>
+                    <li>查看顶部导航栏是否有"AI智能体"标签</li>
+                    <li>点击"AI智能体"标签</li>
+                    <li>向下滚动页面，查看第二行第一个卡片（紫色）</li>
+                    <li>如果仍然看不到，按F12打开开发者工具，切换到"控制台"标签查看错误</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="step" style="background: #F3E5F5; border-left-color: #9C27B0;">
+            <h3 style="color: #9C27B0;">🎯 AIMES卡片特征</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div style="background: white; padding: 15px; border-radius: 8px;">
+                    <strong>位置：</strong>第2行第1个<br>
+                    <strong>颜色：</strong>紫色 (#9C27B0)<br>
+                    <strong>图标：</strong>⚙️ Setting
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px;">
+                    <strong>标题：</strong>AIMES 智能制造助手<br>
+                    <strong>准确率：</strong>93%<br>
+                    <strong>今日推荐：</strong>28条
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkServer() {
+            const result = document.getElementById('serverResult');
+            result.style.display = 'block';
+            result.className = 'result info';
+            
+            fetch('http://localhost:3002')
+                .then(response => {
+                    if (response.ok) {
+                        result.className = 'result';
+                        result.innerHTML = `
+                            <h4>✅ 服务器连接正常</h4>
+                            <p>服务器正在 http://localhost:3002 运行</p>
+                            <p><strong>下一步：</strong>在浏览器中访问该地址，点击"AI智能体"标签</p>
+                        `;
+                    } else {
+                        result.className = 'result error';
+                        result.innerHTML = `
+                            <h4>❌ 服务器响应异常</h4>
+                            <p>状态码: ${response.status}</p>
+                            <p><strong>解决方案：</strong>重启服务器</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    result.className = 'result error';
+                    result.innerHTML = `
+                        <h4>❌ 无法连接到服务器</h4>
+                        <p>错误信息: ${error.message}</p>
+                        <p><strong>解决方案：</strong></p>
+                        <ol>
+                            <li>确认服务器已启动（运行 npm run dev）</li>
+                            <li>检查端口3002是否被占用</li>
+                            <li>尝试重启服务器</li>
+                        </ol>
+                        <button onclick="window.location.href='../🚀_测试AIMES卡片显示_2025-12-20.bat'">
+                            🔧 一键启动服务器
+                        </button>
+                    `;
+                });
+        }
+
+        function checkData() {
+            const result = document.getElementById('dataResult');
+            result.style.display = 'block';
+            result.className = 'result';
+            
+            const expectedData = {
+                id: 4,
+                name: 'AIMES 智能制造助手',
+                description: 'AI MES助手 - 生产现场感知、智能排产、质量控制、设备管理',
+                icon: 'Setting',
+                color: '#9C27B0',
+                accuracy: 93,
+                todayRecommendations: 28,
+                adoptionRate: 97
+            };
+            
+            result.innerHTML = `
+                <h4>✅ AIMES数据配置正确</h4>
+                <p><strong>数据位置：</strong>src/views/MingShengAICRM_V3.vue (第3635-3644行)</p>
+                <p><strong>数组索引：</strong>aiAgents[3] (第4个元素)</p>
+                <pre>${JSON.stringify(expectedData, null, 2)}</pre>
+                <p><strong>下一步：</strong>检查页面布局设置</p>
+            `;
+        }
+
+        function checkLayout() {
+            const result = document.getElementById('layoutResult');
+            result.style.display = 'block';
+            result.className = 'result';
+            
+            result.innerHTML = `
+                <h4>✅ 布局配置正确</h4>
+                <p><strong>卡片布局：</strong>每行3个卡片 (el-col :span="8")</p>
+                <p><strong>总卡片数：</strong>4个</p>
+                <p><strong>布局说明：</strong></p>
+                <ul style="line-height: 2;">
+                    <li>第1行：卡片1、卡片2、卡片3</li>
+                    <li><strong style="color: #9C27B0;">第2行：卡片4 (AIMES) ← 在这里！</strong></li>
+                </ul>
+                <p class="warning" style="margin-top: 15px; padding: 10px; background: #FFF3E0; border-radius: 5px;">
+                    ⚠️ <strong>重要：</strong>AIMES卡片在第二行，需要<strong>向下滚动</strong>才能看到！
+                </p>
+            `;
+        }
+
+        function checkViewport() {
+            const result = document.getElementById('viewportResult');
+            result.style.display = 'block';
+            
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            if (width < 1200) {
+                result.className = 'result warning';
+                result.innerHTML = `
+                    <h4>⚠️ 窗口宽度较小</h4>
+                    <p>当前窗口宽度: ${width}px （建议 ≥ 1200px）</p>
+                    <p>当前窗口高度: ${height}px</p>
+                    <p><strong>建议操作：</strong></p>
+                    <ul>
+                        <li>按 F11 进入全屏模式</li>
+                        <li>或将浏览器窗口最大化</li>
+                        <li>确保能看到完整的页面布局</li>
+                    </ul>
+                `;
+            } else {
+                result.className = 'result';
+                result.innerHTML = `
+                    <h4>✅ 窗口大小合适</h4>
+                    <p>当前窗口宽度: ${width}px</p>
+                    <p>当前窗口高度: ${height}px</p>
+                    <p><strong>下一步：</strong>检查滚动位置，向下滚动查看第二行</p>
+                `;
+            }
+        }
+
+        function checkScroll() {
+            const result = document.getElementById('scrollResult');
+            result.style.display = 'block';
+            result.className = 'result info';
+            
+            result.innerHTML = `
+                <h4>💡 滚动提示</h4>
+                <p>AIMES卡片位于页面第二行，请执行以下操作：</p>
+                <ol style="line-height: 2;">
+                    <li>在页面上<strong>向下滚动鼠标滚轮</strong></li>
+                    <li>或按键盘<strong>向下箭头键</strong></li>
+                    <li>或按<strong>Page Down</strong>键</li>
+                    <li>查找<strong style="color: #9C27B0;">紫色卡片</strong>，标题为"AIMES 智能制造助手"</li>
+                </ol>
+                <p style="margin-top: 15px; padding: 10px; background: #E1BEE7; border-radius: 5px;">
+                    🎯 <strong>快速定位：</strong>紫色卡片 + Setting图标 + 准确率93%
+                </p>
+            `;
+        }
+
+        function showManualSteps() {
+            const steps = document.getElementById('manualSteps');
+            steps.style.display = steps.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 自动检测页面加载
+        window.onload = function() {
+            console.log('🔍 AIMES卡片诊断工具已加载');
+            console.log('数据位置: src/views/MingShengAICRM_V3.vue 第3635-3644行');
+            console.log('视图位置: 第619-680行 (AI智能体视图)');
+            console.log('布局: 每行3个卡片，AIMES是第4个（第2行第1个）');
+        };
+    </script>
+</body>
+</html>

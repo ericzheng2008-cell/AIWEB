@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
 import contentRoutes from './routes/content.js'
 import userRoutes from './routes/user.js'
+import tighteningRoutes from './routes/tightening.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

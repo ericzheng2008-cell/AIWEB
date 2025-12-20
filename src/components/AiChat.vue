@@ -10,7 +10,19 @@
     </transition>
 
     <!-- 聊天按钮 - AI人形助手 -->
-    <div class="chat-button ai-assistant" @click="toggleChat" v-if="!chatStore.chatVisible">
+    <el-tooltip 
+      content="点击打开 AI 助手 (快捷键: Ctrl+K) | 长按可拖拽" 
+      placement="left"
+      :show-after="500"
+    >
+      <div 
+        class="chat-button ai-assistant" 
+        :class="{ dragging: isButtonDragging }"
+        @click="!isButtonDragging && toggleChat()" 
+        @mousedown="startButtonDrag"
+        @touchstart="startButtonDrag"
+        :style="{ bottom: buttonPosition.y + 'px', right: buttonPosition.x + 'px' }"
+        v-if="!chatStore.chatVisible">
       <!-- AI头像容器 -->
       <div class="ai-avatar">
         <!-- 头部 -->
@@ -59,6 +71,7 @@
       
       <div class="chat-badge" v-if="hasUnread">1</div>
     </div>
+    </el-tooltip>
 
     <!-- 最小化聊天窗口 -->
     <transition name="slide-up">
@@ -220,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, watch, onMounted } from 'vue'
+import { ref, computed, nextTick, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAiChatStore } from '../store/aiChat'
 import { useClassroomStore } from '../store/classroom'
@@ -239,7 +252,9 @@ const isMinimized = ref(false)
 
 // 拖动功能相关状态
 const windowPosition = ref({ x: 20, y: 20 })
+const buttonPosition = ref({ x: 30, y: 30 }) // 聊天按钮位置
 const isDragging = ref(false)
+const isButtonDragging = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 
 // 拖动开始
@@ -288,9 +303,75 @@ const stopDrag = () => {
   document.removeEventListener('touchend', stopDrag)
 }
 
-// 组件挂载时加载反馈数据
+// 聊天按钮拖动开始
+const startButtonDrag = (e) => {
+  e.stopPropagation() // 阻止触发toggleChat
+  isButtonDragging.value = true
+  
+  const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
+  
+  dragStart.value = {
+    x: clientX - (window.innerWidth - buttonPosition.value.x - 90),
+    y: clientY - (window.innerHeight - buttonPosition.value.y - 100)
+  }
+  
+  document.addEventListener('mousemove', onButtonDrag)
+  document.addEventListener('mouseup', stopButtonDrag)
+  document.addEventListener('touchmove', onButtonDrag)
+  document.addEventListener('touchend', stopButtonDrag)
+}
+
+// 聊天按钮拖动中
+const onButtonDrag = (e) => {
+  if (!isButtonDragging.value) return
+  
+  e.preventDefault()
+  const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
+  
+  const newRight = window.innerWidth - clientX + dragStart.value.x
+  const newBottom = window.innerHeight - clientY + dragStart.value.y
+  
+  buttonPosition.value = {
+    x: Math.max(10, Math.min(window.innerWidth - 100, newRight)),
+    y: Math.max(10, Math.min(window.innerHeight - 110, newBottom))
+  }
+}
+
+// 聊天按钮拖动结束
+const stopButtonDrag = (e) => {
+  if (isButtonDragging.value) {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+  
+  isButtonDragging.value = false
+  document.removeEventListener('mousemove', onButtonDrag)
+  document.removeEventListener('mouseup', stopButtonDrag)
+  document.removeEventListener('touchmove', onButtonDrag)
+  document.removeEventListener('touchend', stopButtonDrag)
+}
+
+// 快捷键处理：Ctrl+K 隐藏/唤醒应答机器人
+const handleKeyboardShortcut = (e) => {
+  // Ctrl+K 或 Cmd+K（Mac）
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault()
+    toggleChat()
+  }
+}
+
+// 组件挂载时加载反馈数据和绑定快捷键
 onMounted(() => {
   learningStore.loadFeedbacks()
+  // 绑定全局快捷键
+  document.addEventListener('keydown', handleKeyboardShortcut)
+})
+
+// 组件卸载时移除监听器
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyboardShortcut)
 })
 
 const quickQuestions = computed(() => ({
@@ -412,8 +493,6 @@ watch(() => chatStore.messages.length, () => {
 <style scoped>
 .ai-chat-container {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
   z-index: 9999;
 }
 
@@ -449,11 +528,18 @@ watch(() => chatStore.messages.length, () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: move;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
+  position: fixed;
   overflow: visible;
   filter: drop-shadow(0 8px 24px rgba(0, 200, 255, 0.3));
+  user-select: none;
+}
+
+.chat-button.ai-assistant.dragging {
+  cursor: grabbing;
+  animation: none !important;
+  filter: drop-shadow(0 12px 32px rgba(0, 200, 255, 0.6));
 }
 
 /* AI头像容器 */

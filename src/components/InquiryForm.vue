@@ -2,7 +2,14 @@
   <div class="inquiry-form-container">
     <!-- 浮动询盘按钮 -->
     <transition name="bounce">
-      <div class="inquiry-button" @click="showForm = true" v-if="!showForm">
+      <div 
+        class="inquiry-button" 
+        :class="{ dragging: isButtonDragging }"
+        @click="!isButtonDragging && (showForm = true)" 
+        @mousedown="startButtonDrag"
+        @touchstart="startButtonDrag"
+        :style="{ bottom: buttonPosition.y + 'px', right: buttonPosition.x + 'px' }"
+        v-if="!showForm">
         <el-icon :size="24"><ChatLineSquare /></el-icon>
         <span>{{ t('inquiry.title') }}</span>
       </div>
@@ -136,6 +143,11 @@ const showForm = ref(false)
 const submitting = ref(false)
 const formRef = ref(null)
 
+// 拖拽功能相关状态
+const buttonPosition = ref({ x: 30, y: 120 }) // 询盘按钮位置
+const isButtonDragging = ref(false)
+const dragStart = ref({ x: 0, y: 0 })
+
 // 表单数据
 const formData = reactive({
   name: '',
@@ -238,14 +250,62 @@ const submitInquiry = async () => {
     }
   })
 }
+
+// 询盘按钮拖动开始
+const startButtonDrag = (e) => {
+  e.stopPropagation()
+  isButtonDragging.value = true
+  
+  const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
+  
+  dragStart.value = {
+    x: clientX - (window.innerWidth - buttonPosition.value.x - 100),
+    y: clientY - (window.innerHeight - buttonPosition.value.y - 60)
+  }
+  
+  document.addEventListener('mousemove', onButtonDrag)
+  document.addEventListener('mouseup', stopButtonDrag)
+  document.addEventListener('touchmove', onButtonDrag)
+  document.addEventListener('touchend', stopButtonDrag)
+}
+
+// 询盘按钮拖动中
+const onButtonDrag = (e) => {
+  if (!isButtonDragging.value) return
+  
+  e.preventDefault()
+  const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
+  
+  const newRight = window.innerWidth - clientX + dragStart.value.x
+  const newBottom = window.innerHeight - clientY + dragStart.value.y
+  
+  buttonPosition.value = {
+    x: Math.max(10, Math.min(window.innerWidth - 110, newRight)),
+    y: Math.max(10, Math.min(window.innerHeight - 70, newBottom))
+  }
+}
+
+// 询盘按钮拖动结束
+const stopButtonDrag = (e) => {
+  if (isButtonDragging.value) {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+  
+  isButtonDragging.value = false
+  document.removeEventListener('mousemove', onButtonDrag)
+  document.removeEventListener('mouseup', stopButtonDrag)
+  document.removeEventListener('touchmove', onButtonDrag)
+  document.removeEventListener('touchend', stopButtonDrag)
+}
 </script>
 
 <style scoped>
 /* 浮动询盘按钮 */
 .inquiry-button {
   position: fixed;
-  bottom: 120px;
-  right: 30px;
   z-index: 9998;
   display: flex;
   align-items: center;
@@ -255,15 +315,26 @@ const submitInquiry = async () => {
   color: #fff;
   border-radius: 50px;
   box-shadow: 0 8px 24px rgba(245, 87, 108, 0.4);
-  cursor: pointer;
+  cursor: move;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   font-size: 15px;
   font-weight: 500;
+  user-select: none;
+}
+
+.inquiry-button.dragging {
+  cursor: grabbing;
+  box-shadow: 0 12px 32px rgba(245, 87, 108, 0.6);
+  transform: scale(1.05);
 }
 
 .inquiry-button:hover {
   transform: translateY(-5px) scale(1.05);
   box-shadow: 0 12px 32px rgba(245, 87, 108, 0.5);
+}
+
+.inquiry-button.dragging:hover {
+  transform: scale(1.05);
 }
 
 /* 弹跳动画 */
@@ -329,13 +400,6 @@ const submitInquiry = async () => {
 
 /* 移动端响应式 */
 @media (max-width: 768px) {
-  .inquiry-button {
-    bottom: 100px;
-    right: 15px;
-    padding: 10px 16px;
-    font-size: 13px;
-  }
-
   .inquiry-button span {
     display: none;
   }

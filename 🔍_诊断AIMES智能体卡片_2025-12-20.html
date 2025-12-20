@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIMES智能体卡片诊断</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #409EFF;
+            border-bottom: 3px solid #409EFF;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+        .step {
+            background: #f0f9ff;
+            border-left: 4px solid #409EFF;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        button {
+            background: #409EFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #66b1ff;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 AIMES智能体卡片显示诊断工具</h1>
+        
+        <div class="warning">
+            <strong>⚠️ 问题现象：</strong>AIMES智能体卡片看不见
+        </div>
+
+        <h2>📋 诊断步骤</h2>
+
+        <div class="step">
+            <h3>步骤1：打开明升AICRM页面</h3>
+            <p>1. 访问 <code>http://localhost:3002/#/mingsheng-aicrm-v3</code></p>
+            <p>2. 点击左侧菜单"AI智能体"</p>
+            <button onclick="window.open('http://localhost:3002/#/mingsheng-aicrm-v3', '_blank')">打开AICRM页面</button>
+        </div>
+
+        <div class="step">
+            <h3>步骤2：打开浏览器开发者工具</h3>
+            <p>按 <strong>F12</strong> 或 右键 → 检查</p>
+            <p>切换到 <strong>Console</strong> 标签页</p>
+        </div>
+
+        <div class="step">
+            <h3>步骤3：复制并执行以下诊断代码</h3>
+            <p>在Console中粘贴下面的代码并回车：</p>
+            
+            <div class="code" id="diagnosticCode">// AIMES智能体卡片诊断
+console.log('========== AIMES 卡片诊断开始 ==========');
+
+// 1. 检查页面是否存在
+const page = document.querySelector('.ai-agent-view');
+console.log('1. AI智能体视图存在:', !!page);
+
+// 2. 检查卡片容器
+const cardContainer = document.querySelector('.ai-agent-view .el-row');
+console.log('2. 卡片容器存在:', !!cardContainer);
+
+// 3. 检查所有卡片
+const allCards = document.querySelectorAll('.ai-agent-view .agent-card');
+console.log('3. 总卡片数量:', allCards.length);
+
+// 4. 列出所有卡片标题
+allCards.forEach((card, index) => {
+    const title = card.querySelector('h3');
+    console.log(`   卡片${index + 1}:`, title ? title.textContent : '无标题');
+});
+
+// 5. 检查AIMES卡片
+const aimesCard = Array.from(allCards).find(card => {
+    const title = card.querySelector('h3');
+    return title && title.textContent.includes('AIMES');
+});
+console.log('5. AIMES卡片存在:', !!aimesCard);
+
+// 6. 如果找到AIMES卡片，检查其样式
+if (aimesCard) {
+    const styles = window.getComputedStyle(aimesCard);
+    console.log('6. AIMES卡片样式:');
+    console.log('   - display:', styles.display);
+    console.log('   - visibility:', styles.visibility);
+    console.log('   - opacity:', styles.opacity);
+    console.log('   - position:', styles.position);
+    console.log('   - width:', styles.width);
+    console.log('   - height:', styles.height);
+    
+    const colParent = aimesCard.closest('.el-col');
+    if (colParent) {
+        const colStyles = window.getComputedStyle(colParent);
+        console.log('   - 父容器display:', colStyles.display);
+        console.log('   - 父容器width:', colStyles.width);
+    }
+} else {
+    console.error('❌ AIMES卡片未找到！');
+}
+
+// 7. 检查activeTab状态
+const vueApp = document.querySelector('#app').__vue_app__;
+if (vueApp) {
+    console.log('7. 检查Vue应用状态...');
+} else {
+    console.warn('7. 无法访问Vue应用实例');
+}
+
+// 8. 检查v-for渲染数据
+console.log('8. 检查Vue数据源...');
+console.log('   提示：请在Vue DevTools中查看aiAgents数据');
+
+console.log('========== 诊断完成 ==========');
+console.log('');
+console.log('📊 诊断结果汇总:');
+console.log(`- 视图存在: ${!!page ? '✅' : '❌'}`);
+console.log(`- 容器存在: ${!!cardContainer ? '✅' : '❌'}`);
+console.log(`- 卡片总数: ${allCards.length}个`);
+console.log(`- AIMES卡片: ${!!aimesCard ? '✅存在' : '❌不存在'}`);
+</div>
+            <button onclick="copyCode()">📋 复制诊断代码</button>
+        </div>
+
+        <div class="step">
+            <h3>步骤4：查看诊断结果</h3>
+            <p>在Console中查看输出结果，重点关注：</p>
+            <ul>
+                <li>✅ 视图存在 - 确认页面已正确渲染</li>
+                <li>✅ 容器存在 - 确认卡片容器存在</li>
+                <li>✅ 卡片总数 - 应该是4个（包含AIMES）</li>
+                <li>✅ AIMES卡片 - 应该找到AIMES卡片</li>
+            </ul>
+        </div>
+
+        <h2>🔧 可能的问题和解决方案</h2>
+
+        <div class="error">
+            <h3>问题1：卡片总数少于4个</h3>
+            <p><strong>原因：</strong>aiAgents数据源问题</p>
+            <p><strong>解决：</strong></p>
+            <ol>
+                <li>检查MingShengAICRM_V3.vue第3597-3638行</li>
+                <li>确认aiAgents数组包含4个对象</li>
+                <li>确认第4个对象name包含"AIMES"</li>
+            </ol>
+        </div>
+
+        <div class="error">
+            <h3>问题2：AIMES卡片display:none</h3>
+            <p><strong>原因：</strong>CSS样式隐藏了卡片</p>
+            <p><strong>解决：</strong></p>
+            <ol>
+                <li>检查.agent-card样式</li>
+                <li>检查.el-col样式</li>
+                <li>移除可能的display:none</li>
+            </ol>
+        </div>
+
+        <div class="error">
+            <h3>问题3：v-for未渲染第4个元素</h3>
+            <p><strong>原因：</strong>Vue响应式数据问题</p>
+            <p><strong>解决：</strong></p>
+            <ol>
+                <li>强制刷新页面（Ctrl+Shift+R）</li>
+                <li>清除浏览器缓存</li>
+                <li>检查v-for语法和key属性</li>
+            </ol>
+        </div>
+
+        <h2>🚀 快速修复</h2>
+
+        <div class="success">
+            <h3>方案1：检查代码</h3>
+            <p>打开 <code>src/views/MingShengAICRM_V3.vue</code></p>
+            <p>找到第3597行，确认aiAgents包含4个元素</p>
+            <p>找到第629行，确认v-for正确渲染</p>
+        </div>
+
+        <div class="success">
+            <h3>方案2：强制刷新</h3>
+            <button onclick="location.reload(true)">🔄 强制刷新页面</button>
+            <p>或按 <strong>Ctrl + Shift + R</strong></p>
+        </div>
+
+        <div class="success">
+            <h3>方案3：清除缓存</h3>
+            <ol>
+                <li>打开开发者工具（F12）</li>
+                <li>右键刷新按钮</li>
+                <li>选择"清空缓存并硬性重新加载"</li>
+            </ol>
+        </div>
+
+        <h2>📞 需要帮助？</h2>
+        <p>如果问题依然存在，请提供Console中的诊断结果输出。</p>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('diagnosticCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ 诊断代码已复制到剪贴板！\n\n请在浏览器Console中粘贴并执行。');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('❌ 复制失败，请手动复制代码');
+            });
+        }
+    </script>
+</body>
+</html>

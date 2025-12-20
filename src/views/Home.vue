@@ -618,6 +618,16 @@ const aiAgents = ref([
     path: '/mingsheng-aicrm',
     badge: 'AI营销',
     category: 'marketing'
+  },
+  { 
+    id: 10, 
+    name: 'AIMES助手', 
+    description: 'AI MES系统 - 生产现场感知、智能排产、质量控制、设备智能运维', 
+    icon: 'Setting',
+    tags: ['智能制造', 'MES系统', 'AI排产'],
+    path: '/mingsheng-aicrm?tab=aimes',
+    badge: '新功能',
+    category: 'manufacturing'
   }
 ])
 
@@ -1065,7 +1075,7 @@ onMounted(() => {
 
 .series-image {
   width: 100%;
-  height: 240px;
+  height: 168px; /* 减小30%: 240 → 168 */
   overflow: hidden;
 }
 
@@ -1081,26 +1091,26 @@ onMounted(() => {
 }
 
 .series-info {
-  padding: 28px;
+  padding: 20px; /* 减小30%: 28 → 20 */
 }
 
 .series-info h3 {
-  font-size: 22px;
+  font-size: 15px; /* 减小30%: 22 → 15 */
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 12px;
+  margin-bottom: 8px; /* 减小30%: 12 → 8 */
 }
 
 .series-info p {
   color: #666;
-  font-size: 14px;
+  font-size: 10px; /* 减小30%: 14 → 10 */
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-bottom: 14px; /* 减小30%: 20 → 14 */
 }
 
 .series-link {
   color: #1890ff;
-  font-size: 14px;
+  font-size: 10px; /* 减小30%: 14 → 10 */
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -1618,7 +1628,7 @@ onMounted(() => {
 
 .product-media {
   width: 100%;
-  height: 400px;
+  height: 280px; /* 减小30%: 400 → 280 */
   background: #000;
   position: relative;
 }
@@ -1646,27 +1656,27 @@ onMounted(() => {
 }
 
 .product-info {
-  padding: 32px;
+  padding: 22px; /* 减小30%: 32 → 22 */
   text-align: center;
 }
 
 .product-info h3 {
-  font-size: 24px;
+  font-size: 17px; /* 减小30%: 24 → 17 */
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 16px;
+  margin-bottom: 11px; /* 减小30%: 16 → 11 */
 }
 
 .product-info p {
-  font-size: 15px;
+  font-size: 11px; /* 减小30%: 15 → 11 */
   color: #666;
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin-bottom: 17px; /* 减小30%: 24 → 17 */
 }
 
 .product-info .el-button {
-  font-size: 16px;
-  padding: 12px 32px;
+  font-size: 11px; /* 减小30%: 16 → 11 */
+  padding: 8px 22px; /* 减小30%: 12→8, 32→22 */
 }
 
 /* ========== 新增媒体类型样式 ========== */
@@ -1727,19 +1737,19 @@ onMounted(() => {
 /* 响应式优化 */
 @media (max-width: 768px) {
   .product-media {
-    height: 250px;
+    height: 175px; /* 减小30%: 250 → 175 */
   }
   
   .product-info {
-    padding: 20px;
+    padding: 14px; /* 减小30%: 20 → 14 */
   }
   
   .product-info h3 {
-    font-size: 18px;
+    font-size: 13px; /* 减小30%: 18 → 13 */
   }
   
   .product-info p {
-    font-size: 14px;
+    font-size: 10px; /* 减小30%: 14 → 10 */
   }
 }
 

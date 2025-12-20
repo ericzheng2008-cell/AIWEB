@@ -230,6 +230,36 @@
                 <span class="kpi-label">{{ step.kpi.label }}</span>
                 <span class="kpi-value">{{ step.kpi.value }}</span>
               </div>
+              <!-- KPI优化模块显示详细计算过程 -->
+              <div v-if="step.name === 'KPI优化'" class="kpi-details">
+                <el-divider content-position="left">详细计算过程</el-divider>
+                <div class="calculation-process">
+                  <div class="calc-item">
+                    <strong>成本优化：</strong>
+                    <p>维修成本: ¥427万 → ¥358万 (-16%)</p>
+                    <p>备件成本: ¥189万 → ¥142万 (-25%)</p>
+                    <p>停线损失: ¥215万 → ¥149万 (-31%)</p>
+                  </div>
+                  <div class="calc-item">
+                    <strong>风险降低：</strong>
+                    <p>计划外停线: 23次 → 7次 (-70%)</p>
+                    <p>紧急采购: 18次 → 5次 (-72%)</p>
+                    <p>质量问题: 12起 → 2起 (-83%)</p>
+                  </div>
+                  <div class="calc-item">
+                    <strong>ROI计算：</strong>
+                    <p>年度降本总额: ¥682万</p>
+                    <p>系统投入成本: ¥128万</p>
+                    <p>投资回报率: 533% (2.3个月回本)</p>
+                  </div>
+                  <div class="calc-summary">
+                    <el-tag type="success" size="large">
+                      <el-icon><TrendCharts /></el-icon>
+                      综合效益提升 47%
+                    </el-tag>
+                  </div>
+                </div>
+              </div>
             </div>
             <el-icon 
               v-if="index < dataLoopSteps.length - 1"
@@ -1436,19 +1466,137 @@ const openHandleDetail = (index) => {
 }
 
 const enterModule = (moduleId) => {
-  ElMessage.info(`进入${moduleId}模块...`)
+  ElMessage({
+    message: `正在进入 ${moduleId} 模块...`,
+    type: 'success',
+    duration: 2000
+  })
+  
+  // 根据模块ID显示不同的详细功能
+  setTimeout(() => {
+    const moduleDetails = {
+      'equipment-health': '设备健康度检测功能已激活，正在采集实时数据...',
+      'shutdown-risk': '停线风险预测模型已加载，分析历史故障数据中...',
+      'lifespan-assessment': '延寿评估模块已启动，计算成本对比方案中...',
+      'localization': '国产化替代方案生成中，匹配合适供应商...',
+      'maintenance-budget': '维修预算优化算法运行中，预测未来12月支出...',
+      'kpi-optimization': 'KPI优化引擎已激活，分析成本、风险、ROI指标...'
+    }
+    
+    ElMessage({
+      message: moduleDetails[moduleId] || '模块功能加载中...',
+      type: 'info',
+      duration: 3000
+    })
+  }, 500)
 }
 
 const viewModuleCase = (moduleId) => {
-  ElMessage.info(`查看${moduleId}案例...`)
+  ElMessage({
+    message: `正在打开 ${moduleId} 模块的实战案例...`,
+    type: 'info',
+    duration: 2000
+  })
+  
+  setTimeout(() => {
+    ElMessage({
+      message: '案例详情已加载，包含完整的决策流程、成本对比和实施方案',
+      type: 'success',
+      duration: 3000
+    })
+  }, 800)
 }
 
 const getDecisionForQuestion = (index) => {
-  ElMessage.success('正在调用AI决策引擎...')
+  const questions = [
+    '这台设备还能撑多久？',
+    '修好还是买新的划算？',
+    '进口件能不能用国产的替代？',
+    '明年维修预算得准备多少钱？',
+    '怎么证明我们的设备管理做得好？'
+  ]
+  
+  ElMessage({
+    message: `正在为"${questions[index]}"调用AI决策引擎...`,
+    type: 'info',
+    duration: 2000
+  })
+  
+  setTimeout(() => {
+    ElMessage({
+      message: '✅ AI决策已生成！包含详细分析、成本对比和推荐方案',
+      type: 'success',
+      duration: 4000,
+      dangerouslyUseHTMLString: true,
+      showClose: true
+    })
+  }, 1500)
 }
 </script>
 
 <style scoped>
+/* ========================================
+   设备全生命周期管理 - 布局优化
+   优化4个区域实现一屏浏览
+   ======================================== */
+
+/* 六层垂直决策架构 - 网格布局优化 */
+.arch-layer .layer-content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.arch-layer .layer-content:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* 智能决策模块矩阵卡片 - 优化 */
+.module-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  z-index: 10;
+}
+
+/* 延寿卡片 - 保持优化 */
+.retrofit-card {
+  transform: scale(0.8);
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.retrofit-card:hover {
+  transform: scale(1.0);
+  z-index: 10;
+}
+
+/* 其他卡片统一缩小20% */
+.case-card,
+.loop-step-card,
+.intelligence-card,
+.pricing-card,
+.hexagon,
+.equipment-card,
+.el-card {
+  transform: scale(0.8);
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover时恢复原尺寸 */
+.case-card:hover,
+.loop-step-card:hover,
+.intelligence-card:hover,
+.pricing-card:hover,
+.hexagon:hover,
+.equipment-card:hover,
+.el-card:hover {
+  transform: scale(1.0);
+  z-index: 10;
+}
+
 .equipment-lifecycle {
   min-height: 100vh;
   background: #f0f2f5;
@@ -1576,31 +1724,35 @@ const getDecisionForQuestion = (index) => {
   margin-bottom: 32px;
 }
 
+/* 六层决策架构 - 改为2行3列网格布局，一屏显示 */
 .architecture-flow {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 16px;
+  max-height: 60vh;
 }
 
 .arch-layer {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .layer-number {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 700;
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .layer-content {
@@ -1617,69 +1769,70 @@ const getDecisionForQuestion = (index) => {
 }
 
 .layer-header {
-  padding: 16px 24px;
+  padding: 10px 16px;
   color: #fff;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .layer-header h3 {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   margin: 0;
 }
 
 .layer-body {
-  padding: 24px;
+  padding: 12px 16px;
   background: #fafafa;
 }
 
 .layer-desc {
-  font-size: 15px;
+  font-size: 12px;
   color: #666;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .layer-metrics {
   display: flex;
-  gap: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .metric-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .metric-label {
-  font-size: 13px;
+  font-size: 11px;
   color: #999;
 }
 
 .metric-value {
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 700;
   color: #667eea;
 }
 
 .flow-arrow {
-  align-self: center;
-  color: #1890ff;
-  margin: -8px 0;
+  display: none; /* 网格布局不需要箭头 */
 }
 
-/* 5大抓手 */
+/* 5大抓手 - 一行显示5个，紧凑布局 */
 .handles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  max-height: 50vh;
 }
 
 .handle-card {
   border: 2px solid #e8e8e8;
-  border-radius: 16px;
-  padding: 28px;
+  border-radius: 12px;
+  padding: 16px;
   cursor: pointer;
   transition: all 0.3s;
   position: relative;
@@ -1738,80 +1891,86 @@ const getDecisionForQuestion = (index) => {
 }
 
 .handle-card h3 {
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #1a1a1a;
+  line-height: 1.3;
 }
 
 .handle-slogan {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 .handle-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .stat-box {
   text-align: center;
-  padding: 12px;
+  padding: 8px;
   background: #f5f7fa;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .stat-box .stat-value {
-  font-size: 22px;
+  font-size: 14px;
   font-weight: 700;
   color: #667eea;
-  margin-bottom: 4px;
 }
 
 .stat-box .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #999;
+  margin-top: 2px;
 }
 
 .handle-action {
   width: 100%;
   justify-content: center;
+  font-size: 12px;
+  padding: 6px 12px;
 }
 
-/* 决策模块矩阵 */
+/* 决策模块矩阵 - 超紧凑布局 */
 .matrix-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
 }
 
 .module-card {
   border: 1px solid #e8e8e8;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   transition: all 0.3s;
 }
 
 .module-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
 .module-header {
-  padding: 20px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   background: #fafafa;
 }
 
 .module-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1820,145 +1979,152 @@ const getDecisionForQuestion = (index) => {
 }
 
 .module-title h3 {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
   color: #1a1a1a;
 }
 
 .module-subtitle {
-  font-size: 13px;
+  font-size: 10px;
   color: #999;
 }
 
 .module-body {
-  padding: 24px;
+  padding: 10px 12px;
 }
 
 .core-function,
 .value-statement,
 .decision-output {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .core-function strong,
 .value-statement strong {
   color: #1a1a1a;
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
+  font-size: 11px;
 }
 
 .core-function p,
 .value-statement p {
-  font-size: 14px;
+  font-size: 11px;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.4;
   margin: 0;
 }
 
 .output-text {
-  font-size: 14px;
+  font-size: 10px;
   color: #667eea;
   font-style: italic;
-  margin: 8px 0 0 0;
-  padding: 12px;
+  margin: 4px 0 0 0;
+  padding: 6px;
   background: #f0f5ff;
-  border-radius: 8px;
+  border-radius: 4px;
+  line-height: 1.3;
 }
 
 .module-footer {
-  padding: 16px 24px;
+  padding: 8px 12px;
   background: #fafafa;
   display: flex;
-  gap: 12px;
+  gap: 6px;
   border-top: 1px solid #e8e8e8;
 }
 
-/* 客户痛点 */
+/* 客户痛点 - 超紧凑布局 */
 .pain-points-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 
 .pain-point-card {
   border: 2px solid #e8e8e8;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 8px;
+  padding: 12px;
   transition: all 0.3s;
 }
 
 .pain-point-card:hover {
   border-color: #f5222d;
-  box-shadow: 0 8px 24px rgba(245, 34, 45, 0.15);
+  box-shadow: 0 6px 18px rgba(245, 34, 45, 0.15);
 }
 
 .question-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .question-header h3 {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 700;
   color: #f5222d;
   margin: 0;
 }
 
 .question-text {
-  font-size: 16px;
+  font-size: 12px;
   color: #1a1a1a;
   font-weight: 600;
-  margin-bottom: 12px;
-  line-height: 1.6;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .stakeholders {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .ai-answer {
   background: #f6ffed;
   border: 1px solid #b7eb8f;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .answer-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 4px;
+  margin-bottom: 6px;
   color: #52c41a;
+  font-size: 11px;
 }
 
 .answer-text {
-  font-size: 15px;
+  font-size: 11px;
   color: #333;
-  line-height: 1.7;
-  margin-bottom: 16px;
+  line-height: 1.5;
+  margin-bottom: 8px;
 }
 
 .answer-confidence {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
 }
 
 .answer-confidence span {
-  font-size: 13px;
+  font-size: 10px;
   color: #666;
-  min-width: 80px;
+  min-width: 50px;
 }
 
 .get-decision-btn {
   width: 100%;
+  font-size: 11px;
+  padding: 6px 10px;
 }
 
 /* 数据闭环 */
@@ -1987,6 +2153,53 @@ const getDecisionForQuestion = (index) => {
   border-color: #1890ff;
   box-shadow: 0 4px 16px rgba(24, 144, 255, 0.2);
   transform: scale(1.05);
+}
+
+/* KPI详细计算过程样式 */
+.kpi-details {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.calculation-process {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calc-item {
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid #1890ff;
+}
+
+.calc-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.calc-item p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.calc-summary {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.calc-summary .el-tag {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .step-number {

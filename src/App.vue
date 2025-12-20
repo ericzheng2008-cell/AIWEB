@@ -83,6 +83,17 @@ onErrorCaptured((err, instance, info) => {
 </script>
 
 <style>
+/* ========================================
+   根元素样式 - 确保不受全局优化影响
+   ======================================== */
+html,
+body,
+#app {
+  transform: none !important;
+  margin: 0;
+  padding: 0;
+}
+
 #app {
   width: 100%;
   min-height: 100vh;
@@ -93,6 +104,7 @@ onErrorCaptured((err, instance, info) => {
   transition: margin-left 0.3s;
   width: 100%;
   overflow-x: hidden;
+  transform: none !important; /* 确保主容器不受缩放影响 */
 }
 
 .main-wrapper.with-sidebar {
@@ -103,6 +115,150 @@ onErrorCaptured((err, instance, info) => {
 @media screen and (max-width: 1024px) {
   .main-wrapper.with-sidebar {
     margin-left: 0;
+  }
+}
+
+/* ========================================
+   全局卡片尺寸优化 - 2025-12-19
+   默认尺寸减小85%，hover时恢复100%并轻微放大
+   ======================================== */
+
+/* Element Plus 卡片统一优化 */
+.el-card {
+  transform: scale(0.85);
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 8px;
+}
+
+.el-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  z-index: 10;
+}
+
+/* 自定义卡片类优化 */
+.agent-card,
+.product-card,
+.feature-card,
+.service-card,
+.solution-card,
+.category-card,
+.form-card,
+.result-card,
+.config-card,
+.timeline-card,
+.parts-card,
+.query-card,
+.promotion-card,
+.method-card {
+  transform: scale(0.85);
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 8px;
+}
+
+.agent-card:hover,
+.product-card:hover,
+.feature-card:hover,
+.service-card:hover,
+.solution-card:hover,
+.category-card:hover,
+.form-card:hover,
+.result-card:hover,
+.config-card:hover,
+.timeline-card:hover,
+.parts-card:hover,
+.query-card:hover,
+.promotion-card:hover,
+.method-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  z-index: 10;
+}
+
+/* Grid/Row 容器优化，防止卡片间距过大 */
+.el-row {
+  margin: -8px !important;
+}
+
+.el-col {
+  padding: 8px !important;
+}
+
+/* 统计卡片特殊处理 */
+.el-statistic {
+  transform: scale(0.9);
+  transition: transform 0.3s;
+}
+
+.el-statistic:hover {
+  transform: scale(1);
+}
+
+/* AICRM视图卡片优化 */
+.aicrm-enhanced .el-card,
+.aicrm-enhanced .agent-card,
+.aicrm-enhanced .kpi-card,
+.aicrm-enhanced .opportunity-card,
+.aicrm-enhanced .customer-card {
+  transform: scale(0.85);
+  margin: 6px;
+}
+
+.aicrm-enhanced .el-card:hover,
+.aicrm-enhanced .agent-card:hover,
+.aicrm-enhanced .kpi-card:hover,
+.aicrm-enhanced .opportunity-card:hover,
+.aicrm-enhanced .customer-card:hover {
+  transform: scale(1.02);
+}
+
+/* 保持表格、表单等内部元素正常尺寸 */
+.el-table,
+.el-form,
+.el-dialog,
+.el-drawer,
+.el-menu {
+  transform: none !important;
+}
+
+/* 响应式调整 - 小屏幕取消缩放 */
+@media screen and (max-width: 768px) {
+  .el-card,
+  .agent-card,
+  .product-card,
+  .feature-card,
+  .service-card,
+  .solution-card,
+  .category-card,
+  .form-card,
+  .result-card,
+  .config-card,
+  .timeline-card,
+  .parts-card,
+  .query-card,
+  .promotion-card,
+  .method-card {
+    transform: scale(0.95);
+  }
+  
+  .el-card:hover,
+  .agent-card:hover,
+  .product-card:hover,
+  .feature-card:hover,
+  .service-card:hover,
+  .solution-card:hover,
+  .category-card:hover,
+  .form-card:hover,
+  .result-card:hover,
+  .config-card:hover,
+  .timeline-card:hover,
+  .parts-card:hover,
+  .query-card:hover,
+  .promotion-card:hover,
+  .method-card:hover {
+    transform: scale(1);
   }
 }
 </style>

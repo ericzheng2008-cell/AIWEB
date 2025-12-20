@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 500错误完整诊断工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .status.checking {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .result-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        .error-detail {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .solution-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .api-test {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .api-test h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 500错误完整诊断工具</h1>
+            <p>自动检测后端服务器、API接口、前端配置</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 诊断控制台</h2>
+            <button class="btn" onclick="runFullDiagnosis()">🚀 运行完整诊断</button>
+            <button class="btn" onclick="testBackendServer()">🔧 仅测试后端</button>
+            <button class="btn" onclick="testAllAPIs()">📡 测试所有API</button>
+            <button class="btn" onclick="checkFrontendConfig()">⚙️ 检查前端配置</button>
+            <button class="btn" onclick="location.reload()">🔄 重新开始</button>
+            
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 诊断结果</h2>
+            <div id="results"></div>
+        </div>
+
+        <div class="section">
+            <h2>💡 解决方案</h2>
+            <div id="solutions"></div>
+        </div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        const solutions = document.getElementById('solutions');
+        const progressBar = document.getElementById('progressBar');
+        
+        let totalSteps = 0;
+        let completedSteps = 0;
+        let issues = [];
+
+        function updateProgress() {
+            const percent = (completedSteps / totalSteps) * 100;
+            progressBar.style.width = percent + '%';
+        }
+
+        function addResult(type, icon, message) {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `<span class="icon">${icon}</span><span>${message}</span>`;
+            results.appendChild(div);
+            completedSteps++;
+            updateProgress();
+        }
+
+        function addSolution(title, steps) {
+            const div = document.createElement('div');
+            div.className = 'solution-box';
+            div.innerHTML = `<h3>✅ ${title}</h3>` + steps;
+            solutions.appendChild(div);
+        }
+
+        function addErrorDetail(error, api) {
+            const div = document.createElement('div');
+            div.className = 'error-detail';
+            div.innerHTML = `
+                <h4>❌ API错误详情</h4>
+                <p><strong>接口:</strong> ${api}</p>
+                <p><strong>错误:</strong> ${error}</p>
+            `;
+            results.appendChild(div);
+        }
+
+        async function runFullDiagnosis() {
+            results.innerHTML = '';
+            solutions.innerHTML = '';
+            issues = [];
+            completedSteps = 0;
+            totalSteps = 10;
+            progressBar.style.width = '0%';
+
+            addResult('checking', '⏳', '开始完整诊断...');
+
+            // Step 1: 检查后端服务器 (端口5000)
+            await testBackendServer();
+
+            // Step 2: 检查前端服务器 (端口3002/5173)
+            await testFrontendServer();
+
+            // Step 3: 测试所有API接口
+            await testAllAPIs();
+
+            // Step 4: 检查浏览器控制台
+            checkBrowserConsole();
+
+            // Step 5: 生成解决方案
+            generateSolutions();
+
+            addResult('success', '✅', '诊断完成！');
+        }
+
+        async function testBackendServer() {
+            addResult('checking', '🔍', '检查后端服务器 (端口5000)...');
+
+            const ports = [5000, 3001, 3000];
+            let backendRunning = false;
+            let runningPort = null;
+
+            for (const port of ports) {
+                try {
+                    const response = await fetch(`http://localhost:${port}/api`, {
+                        method: 'GET',
+                        timeout: 3000
+                    });
+                    
+                    backendRunning = true;
+                    runningPort = port;
+                    addResult('success', '✅', `后端服务器运行中 (端口${port})`);
+                    break;
+                } catch (error) {
+                    console.log(`端口${port}检测失败:`, error.message);
+                }
+            }
+
+            if (!backendRunning) {
+                addResult('error', '❌', '后端服务器未运行！');
+                issues.push({
+                    type: 'backend_not_running',
+                    message: '后端服务器未启动',
+                    solution: 'start_backend'
+                });
+            }
+
+            return { running: backendRunning, port: runningPort };
+        }
+
+        async function testFrontendServer() {
+            addResult('checking', '🔍', '检查前端服务器...');
+
+            const currentPort = window.location.port || '80';
+            const currentHost = window.location.hostname;
+
+            if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+                addResult('success', '✅', `前端服务器运行中 (端口${currentPort})`);
+            } else {
+                addResult('warning', '⚠️', `运行在非本地环境: ${currentHost}`);
+            }
+        }
+
+        async function testAllAPIs() {
+            addResult('checking', '🔍', '测试所有API接口...');
+
+            const apiTests = [
+                { name: '认证API', url: '/api/auth/register', method: 'POST', data: {} },
+                { name: '产品API', url: '/api/products', method: 'GET' },
+                { name: '内容API', url: '/api/content', method: 'GET' },
+                { name: '用户API', url: '/api/user/info', method: 'GET' },
+                { name: '拧紧数据API', url: '/api/tightening/results', method: 'GET' },
+                { name: '文件上传API', url: '/api/upload', method: 'POST' }
+            ];
+
+            const baseUrls = ['http://localhost:5000', 'http://localhost:3001'];
+            let workingBaseUrl = null;
+
+            // 找到工作的base URL
+            for (const baseUrl of baseUrls) {
+                try {
+                    const response = await fetch(`${baseUrl}/api`);
+                    workingBaseUrl = baseUrl;
+                    break;
+                } catch (e) {
+                    continue;
+                }
+            }
+
+            if (!workingBaseUrl) {
+                addResult('error', '❌', '无法连接到任何后端服务器');
+                issues.push({
+                    type: 'no_backend',
+                    message: '所有后端端口(5000, 3001)都无法连接',
+                    solution: 'start_backend'
+                });
+                return;
+            }
+
+            let apiErrors = [];
+
+            for (const test of apiTests) {
+                try {
+                    const options = {
+                        method: test.method,
+                        headers: { 'Content-Type': 'application/json' }
+                    };
+
+                    if (test.method === 'POST' && test.data) {
+                        options.body = JSON.stringify(test.data);
+                    }
+
+                    const response = await fetch(workingBaseUrl + test.url, options);
+                    
+                    if (response.status === 500) {
+                        addResult('error', '❌', `${test.name}: 500错误`);
+                        apiErrors.push({ api: test.url, status: 500 });
+                        
+                        try {
+                            const errorData = await response.json();
+                            addErrorDetail(errorData.message || '未知错误', test.url);
+                        } catch (e) {
+                            addErrorDetail('无法解析错误响应', test.url);
+                        }
+                        
+                        issues.push({
+                            type: 'api_500_error',
+                            message: `${test.name}返回500错误`,
+                            api: test.url,
+                            solution: 'check_backend_logs'
+                        });
+                    } else if (response.status === 404) {
+                        addResult('warning', '⚠️', `${test.name}: 404 (可能需要认证)`);
+                    } else if (response.status === 401 || response.status === 403) {
+                        addResult('success', '✅', `${test.name}: 需要认证 (服务器正常)`);
+                    } else {
+                        addResult('success', '✅', `${test.name}: 正常 (${response.status})`);
+                    }
+                } catch (error) {
+                    addResult('error', '❌', `${test.name}: 连接失败 - ${error.message}`);
+                    apiErrors.push({ api: test.url, error: error.message });
+                }
+            }
+
+            if (apiErrors.length > 0) {
+                const div = document.createElement('div');
+                div.className = 'result-box';
+                div.innerHTML = `
+                    <h4>🔴 发现 ${apiErrors.length} 个API错误</h4>
+                    <pre>${JSON.stringify(apiErrors, null, 2)}</pre>
+                `;
+                results.appendChild(div);
+            }
+        }
+
+        function checkBrowserConsole() {
+            addResult('checking', '🔍', '检查浏览器控制台...');
+
+            const consoleErrors = [];
+            const originalError = console.error;
+            
+            console.error = function(...args) {
+                consoleErrors.push(args.join(' '));
+                originalError.apply(console, args);
+            };
+
+            setTimeout(() => {
+                if (consoleErrors.length > 0) {
+                    addResult('warning', '⚠️', `发现 ${consoleErrors.length} 个控制台错误`);
+                    const div = document.createElement('div');
+                    div.className = 'result-box';
+                    div.innerHTML = `<h4>控制台错误:</h4><pre>${consoleErrors.join('\n')}</pre>`;
+                    results.appendChild(div);
+                } else {
+                    addResult('success', '✅', '控制台无错误');
+                }
+            }, 1000);
+        }
+
+        function checkFrontendConfig() {
+            addResult('checking', '🔍', '检查前端配置...');
+
+            // 检查API base URL配置
+            const configs = [
+                { key: 'VITE_API_BASE_URL', expected: 'http://localhost:5000' },
+                { key: 'VITE_APP_TITLE', expected: '明升AIWEB' }
+            ];
+
+            const div = document.createElement('div');
+            div.className = 'result-box';
+            div.innerHTML = `
+                <h4>环境变量检查:</h4>
+                <p><strong>当前URL:</strong> ${window.location.href}</p>
+                <p><strong>API调用应指向:</strong> http://localhost:5000/api</p>
+            `;
+            results.appendChild(div);
+
+            addResult('success', '✅', '前端配置检查完成');
+        }
+
+        function generateSolutions() {
+            if (issues.length === 0) {
+                addSolution('系统运行正常', '<p>未发现问题，所有组件正常运行。</p>');
+                return;
+            }
+
+            // 后端未运行
+            if (issues.some(i => i.type === 'backend_not_running' || i.type === 'no_backend')) {
+                addSolution('启动后端服务器', `
+                    <ol>
+                        <li>运行启动脚本: <code>🔧_启动后端服务器_2025-12-19.bat</code></li>
+                        <li>或手动启动: <code>cd server && node index.js</code></li>
+                        <li>等待看到: "服务器运行在 http://localhost:5000"</li>
+                        <li>重新测试此页面</li>
+                    </ol>
+                `);
+            }
+
+            // API 500错误
+            if (issues.some(i => i.type === 'api_500_error')) {
+                const errorApis = issues.filter(i => i.type === 'api_500_error').map(i => i.api);
+                addSolution('修复API 500错误', `
+                    <p><strong>出错的API:</strong></p>
+                    <ul>${errorApis.map(api => `<li><code>${api}</code></li>`).join('')}</ul>
+                    <p><strong>解决步骤:</strong></p>
+                    <ol>
+                        <li>检查后端服务器窗口的错误日志</li>
+                        <li>确认数据库连接正常</li>
+                        <li>检查 <code>server/index.js</code> 的路由配置</li>
+                        <li>确认所有路由文件已正确导入</li>
+                        <li>重启后端服务器: <code>Ctrl+C</code> 然后重新运行</li>
+                    </ol>
+                `);
+            }
+
+            // 常规建议
+            addSolution('通用排查步骤', `
+                <ol>
+                    <li><strong>清除缓存:</strong> Ctrl+Shift+R 强制刷新</li>
+                    <li><strong>检查端口:</strong> 确保5000端口未被占用</li>
+                    <li><strong>查看日志:</strong> 检查后端服务器控制台输出</li>
+                    <li><strong>重启系统:</strong> 先关闭所有服务器，再重新启动</li>
+                    <li><strong>检查防火墙:</strong> 确保防火墙允许本地端口访问</li>
+                </ol>
+            `);
+        }
+
+        // 页面加载时显示欢迎信息
+        window.onload = function() {
+            addResult('success', '👋', '诊断工具已就绪，点击上方按钮开始诊断');
+        };
+    </script>
+</body>
+</html>
