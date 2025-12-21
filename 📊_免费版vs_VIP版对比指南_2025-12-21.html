@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cpolar 免费版 vs VIP版 - 完整对比</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .comparison-table {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        th:first-child {
+            text-align: left;
+            border-radius: 10px 0 0 0;
+        }
+        
+        th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+        
+        td {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+        }
+        
+        td:first-child {
+            font-weight: bold;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .check {
+            color: #4CAF50;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .cross {
+            color: #f44336;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .highlight-vip {
+            background: linear-gradient(135deg, #fff5e1 0%, #ffe4b5 100%);
+            font-weight: bold;
+            color: #ff6b35;
+        }
+        
+        .recommendation {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+        
+        .recommendation h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-align: center;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card.free {
+            border-color: #2196F3;
+        }
+        
+        .card.vip {
+            border-color: #ff6b35;
+            background: linear-gradient(135deg, #fff5e1 0%, #ffe4b5 100%);
+        }
+        
+        .card h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card.free h3 {
+            color: #2196F3;
+        }
+        
+        .card.vip h3 {
+            color: #ff6b35;
+        }
+        
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .card li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .card li:last-child {
+            border-bottom: none;
+        }
+        
+        .price-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+        
+        .price-section h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-align: center;
+        }
+        
+        .price-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .price-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+        
+        .price-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .price-card .price {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .price-card .price small {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+        
+        .price-card .features {
+            list-style: none;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .price-card .features li {
+            padding: 8px 0;
+            opacity: 0.9;
+        }
+        
+        .price-card.recommended {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .price-card.recommended::after {
+            content: '推荐';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: #ff6b35;
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-weight: bold;
+        }
+        
+        .cta-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 60px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+        
+        .cta-button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+        }
+        
+        .cta-button.secondary:hover {
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.6);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            th, td {
+                padding: 15px 10px;
+                font-size: 14px;
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .price-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💎 cpolar 免费版 vs VIP版</h1>
+            <p>选择最适合您的内网穿透方案</p>
+        </div>
+        
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>功能特性</th>
+                        <th>免费版</th>
+                        <th>VIP版</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>💰 价格</td>
+                        <td style="text-align: center; font-size: 20px; color: #4CAF50; font-weight: bold;">完全免费</td>
+                        <td style="text-align: center; font-size: 20px; color: #ff6b35; font-weight: bold;">¥10/月起</td>
+                    </tr>
+                    <tr>
+                        <td>🌐 域名</td>
+                        <td style="text-align: center;">随机生成<br><small style="color: #f44336;">每次启动会变化</small></td>
+                        <td class="highlight-vip" style="text-align: center;">永久固定 ✨<br><small>自定义子域名</small></td>
+                    </tr>
+                    <tr>
+                        <td>⏰ 时长限制</td>
+                        <td style="text-align: center; color: #f44336;">4小时自动断开<br><small>需要重启</small></td>
+                        <td class="highlight-vip" style="text-align: center;">无限制 ✨<br><small>7×24小时运行</small></td>
+                    </tr>
+                    <tr>
+                        <td>🚀 访问节点</td>
+                        <td style="text-align: center;">普通节点<br><small>共享带宽</small></td>
+                        <td class="highlight-vip" style="text-align: center;">VIP专线 ✨<br><small>速度提升50%+</small></td>
+                    </tr>
+                    <tr>
+                        <td>🔧 隧道数量</td>
+                        <td style="text-align: center;">2条</td>
+                        <td class="highlight-vip" style="text-align: center;">3-10条 ✨<br><small>根据套餐</small></td>
+                    </tr>
+                    <tr>
+                        <td>🎨 自定义域名</td>
+                        <td style="text-align: center;"><span class="cross">✗</span></td>
+                        <td class="highlight-vip" style="text-align: center;"><span class="check">✓</span> 支持 ✨</td>
+                    </tr>
+                    <tr>
+                        <td>🔒 IP白名单</td>
+                        <td style="text-align: center;"><span class="cross">✗</span></td>
+                        <td class="highlight-vip" style="text-align: center;"><span class="check">✓</span> 企业版 ✨</td>
+                    </tr>
+                    <tr>
+                        <td>📊 流量限制</td>
+                        <td style="text-align: center;"><span class="check">✓</span> 无限制</td>
+                        <td style="text-align: center;"><span class="check">✓</span> 无限制</td>
+                    </tr>
+                    <tr>
+                        <td>🛡️ HTTPS加密</td>
+                        <td style="text-align: center;"><span class="check">✓</span> 支持</td>
+                        <td style="text-align: center;"><span class="check">✓</span> 支持</td>
+                    </tr>
+                    <tr>
+                        <td>💬 技术支持</td>
+                        <td style="text-align: center;">社区支持</td>
+                        <td class="highlight-vip" style="text-align: center;">优先支持 ✨<br><small>专属客服</small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="recommendation">
+            <h2>📋 使用场景推荐</h2>
+            <div class="cards">
+                <div class="card free">
+                    <h3>🆓 免费版适合</h3>
+                    <ul>
+                        <li>✅ 临时测试（1天内）</li>
+                        <li>✅ 个人学习和实验</li>
+                        <li>✅ 偶尔使用</li>
+                        <li>✅ 快速演示（几小时）</li>
+                        <li>✅ 预算有限</li>
+                        <li>✅ 功能验证</li>
+                    </ul>
+                </div>
+                
+                <div class="card vip">
+                    <h3>💎 VIP版适合</h3>
+                    <ul>
+                        <li>✅ 长期内测（超过3天）</li>
+                        <li>✅ 企业正式部署</li>
+                        <li>✅ 需要固定地址</li>
+                        <li>✅ 分享给多人使用</li>
+                        <li>✅ 添加到企业文档</li>
+                        <li>✅ 7×24小时稳定运行</li>
+                        <li>✅ 需要品牌展示</li>
+                        <li>✅ 高并发访问</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="price-section">
+            <h2>💰 VIP套餐价格</h2>
+            <div class="price-cards">
+                <div class="price-card">
+                    <h3>月付套餐</h3>
+                    <div class="price">¥10<small>/月</small></div>
+                    <ul class="features">
+                        <li>✅ 3条固定隧道</li>
+                        <li>✅ 自定义子域名</li>
+                        <li>✅ VIP专线节点</li>
+                        <li>✅ 无时间限制</li>
+                        <li>✅ 无限流量</li>
+                    </ul>
+                    <p style="margin-top: 20px; opacity: 0.9;">适合短期测试（1-3个月）</p>
+                </div>
+                
+                <div class="price-card recommended">
+                    <h3>年付套餐</h3>
+                    <div class="price">¥100<small>/年</small></div>
+                    <ul class="features">
+                        <li>✅ 5条固定隧道</li>
+                        <li>✅ 自定义子域名</li>
+                        <li>✅ VIP专线节点</li>
+                        <li>✅ 无时间限制</li>
+                        <li>✅ 无限流量</li>
+                        <li>✅ <strong>节省20%</strong></li>
+                    </ul>
+                    <p style="margin-top: 20px; opacity: 0.9;">适合长期部署（推荐）</p>
+                </div>
+                
+                <div class="price-card">
+                    <h3>企业套餐</h3>
+                    <div class="price">¥300<small>/年</small></div>
+                    <ul class="features">
+                        <li>✅ 10条固定隧道</li>
+                        <li>✅ 自定义子域名</li>
+                        <li>✅ VIP专线节点</li>
+                        <li>✅ 无时间限制</li>
+                        <li>✅ 无限流量</li>
+                        <li>✅ <strong>IP白名单</strong></li>
+                        <li>✅ <strong>专属客服</strong></li>
+                    </ul>
+                    <p style="margin-top: 20px; opacity: 0.9;">适合企业级部署</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 32px;">🚀 立即开始使用</h2>
+            <p style="font-size: 18px; margin-bottom: 30px; color: #666;">根据您的需求选择合适的方案</p>
+            
+            <a href="#" class="cta-button" onclick="alert('请运行：🌐_一键生成cpolar链接_2025-12-21.bat'); return false;">
+                🆓 开始使用免费版
+            </a>
+            
+            <a href="https://dashboard.cpolar.com/vip" class="cta-button secondary" target="_blank">
+                💎 升级VIP版本
+            </a>
+            
+            <div style="margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 15px;">
+                <h3 style="color: #333; margin-bottom: 20px;">📖 快速入门指南</h3>
+                <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                    <p style="margin-bottom: 15px; color: #666; line-height: 1.8;">
+                        <strong>免费版用户：</strong><br>
+                        1. 双击运行：<code style="background: white; padding: 3px 8px; border-radius: 3px;">🌐_一键生成cpolar链接_2025-12-21.bat</code><br>
+                        2. 获取临时访问地址<br>
+                        3. 开始测试
+                    </p>
+                    <p style="color: #666; line-height: 1.8;">
+                        <strong>VIP版用户：</strong><br>
+                        1. 访问官网升级：<a href="https://dashboard.cpolar.com/vip" target="_blank" style="color: #667eea;">dashboard.cpolar.com/vip</a><br>
+                        2. 双击运行：<code style="background: white; padding: 3px 8px; border-radius: 3px;">💎_VIP版本固定域名配置_2025-12-21.bat</code><br>
+                        3. 按向导完成配置<br>
+                        4. 获取永久固定地址
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

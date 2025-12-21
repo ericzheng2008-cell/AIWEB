@@ -14,6 +14,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // 允许局域网访问
     port: 5173,
+    // 允许来自 cpolar 和所有域名的访问
+    allowedHosts: [
+      '.cpolar.top',
+      '.cpolar.cn',
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0'
+    ],
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
