@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>移动端APP和小程序部署完整方案</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">移动端APP和小程序部署完整方案</h1>
+</header>
+<h1 id="移动端app和小程序部署完整方案">📘
+移动端APP和小程序部署完整方案</h1>
+<p><strong>版本：</strong> v2.5.0<br />
+<strong>日期：</strong> 2025-12-20<br />
+<strong>文档类型：</strong> 移动端部署技术指南</p>
+<hr />
+<h2 id="目录">📋 目录</h2>
+<ol type="1">
+<li><a href="#移动端方案概述">移动端方案概述</a></li>
+<li><a href="#微信小程序部署">微信小程序部署</a></li>
+<li><a href="#原生app开发">原生APP开发</a></li>
+<li><a href="#混合app方案">混合APP方案</a></li>
+<li><a href="#快应用部署">快应用部署</a></li>
+<li><a href="#费用对比">费用对比</a></li>
+</ol>
+<hr />
+<h2 id="移动端方案概述">1. 移动端方案概述</h2>
+<h3 id="方案对比">1.1 方案对比</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 16%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr>
+<th>方案</th>
+<th>开发成本</th>
+<th>用户体验</th>
+<th>维护成本</th>
+<th>推荐度</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>微信小程序</strong></td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>企业客户为主</td>
+</tr>
+<tr>
+<td><strong>原生APP</strong></td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>大型企业</td>
+</tr>
+<tr>
+<td><strong>混合APP</strong></td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>中小企业</td>
+</tr>
+<tr>
+<td><strong>H5网页</strong></td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>快速上线</td>
+</tr>
+<tr>
+<td><strong>快应用</strong></td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>安卓用户</td>
+</tr>
+</tbody>
+</table>
+<h3 id="技术栈选择">1.2 技术栈选择</h3>
+<h4 id="方案一微信小程序推荐">方案一：微信小程序（推荐）</h4>
+<pre><code>技术栈：
+- 前端：原生WXML/WXSS/JS
+- 框架：uni-app / Taro（可选）
+- 后端：复用现有Node.js API
+- 数据库：复用现有SQLite/MySQL
+
+优势：
+✅ 无需下载，扫码即用
+✅ 微信生态，传播快
+✅ 开发成本低
+✅ 审核快速（3-7天）
+
+劣势：
+❌ 受微信限制
+❌ 包大小限制（主包2MB）
+❌ 功能受限</code></pre>
+<h4 id="方案二混合appuni-app">方案二：混合APP（uni-app）</h4>
+<pre><code>技术栈：
+- 框架：uni-app
+- 语言：Vue 3
+- 打包：HBuilderX / CLI
+- 支持平台：iOS + Android + 小程序
+
+优势：
+✅ 一套代码，多端运行
+✅ 复用现有Vue代码
+✅ 原生性能接近
+✅ 插件生态丰富
+
+劣势：
+❌ 需要原生打包
+❌ 某些原生功能受限</code></pre>
+<h4 id="方案三原生app">方案三：原生APP</h4>
+<pre><code>技术栈：
+- iOS：Swift / SwiftUI
+- Android：Kotlin / Jetpack Compose
+- 后端：复用现有API
+
+优势：
+✅ 性能最佳
+✅ 功能完整
+✅ 用户体验最好
+
+劣势：
+❌ 开发成本高
+❌ 维护成本高
+❌ 需要两套代码</code></pre>
+<hr />
+<h2 id="微信小程序部署">2. 微信小程序部署</h2>
+<h3 id="前期准备">2.1 前期准备</h3>
+<h4 id="注册小程序账号">注册小程序账号</h4>
+<pre><code>步骤1：访问微信公众平台
+https://mp.weixin.qq.com
+
+步骤2：注册小程序
+- 选择&quot;小程序&quot;类型
+- 企业主体需要：
+  ✓ 营业执照
+  ✓ 对公账户
+  ✓ 管理员身份证
+  ✓ 对公账户打款验证（1-3天）
+
+费用：
+- 个人：免费
+- 企业：¥300/年（认证费）</code></pre>
+<h4 id="获取appid">获取AppID</h4>
+<pre><code>登录小程序后台
+设置 → 开发设置 → AppID
+复制保存：wx1234567890abcdef</code></pre>
+<h3 id="开发环境搭建">2.2 开发环境搭建</h3>
+<h4 id="安装微信开发者工具">安装微信开发者工具</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 下载地址</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择稳定版</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Windows</span> 64位</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">macOS</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Linux</span></span></code></pre></div>
+<h4 id="创建uni-app项目推荐">创建uni-app项目（推荐）</h4>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 全局安装Vue CLI</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> @vue/cli</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建uni-app项目</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> degit dcloudio/uni-preset-vue#vite-ts aiweb-miniapp</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> aiweb-miniapp</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装依赖</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装uni-app插件</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install @dcloudio/vite-plugin-uni</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 启动开发服务器</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev:mp-weixin</span></code></pre></div>
+<h3 id="代码改造">2.3 代码改造</h3>
+<h4 id="项目结构">项目结构</h4>
+<pre><code>aiweb-miniapp/
+├── pages/                  # 页面目录
+│   ├── index/             # 首页
+│   │   ├── index.vue
+│   │   └── index.scss
+│   ├── agents/            # 智能体列表
+│   │   └── index.vue
+│   ├── aicrm/             # AICRM模块
+│   │   ├── customer360.vue
+│   │   ├── sandbox.vue
+│   │   └── contacts.vue
+│   ├── aimes/             # AIMES模块
+│   │   ├── production.vue
+│   │   ├── quality.vue
+│   │   └── workorder.vue
+│   ├── equipment/         # 设备管理
+│   │   ├── lifecycle.vue
+│   │   ├── maintenance.vue
+│   │   └── calculator.vue
+│   └── selector/          # 产品选型
+│       └── index.vue
+├── components/            # 组件
+│   ├── AgentCard.vue
+│   ├── ProductCard.vue
+│   └── ChartWrapper.vue
+├── utils/                 # 工具
+│   ├── request.js        # 请求封装
+│   └── auth.js           # 认证
+├── static/               # 静态资源
+├── App.vue              # 根组件
+├── main.js              # 入口文件
+├── manifest.json        # 应用配置
+└── pages.json           # 页面配置</code></pre>
+<h4 id="配置manifest.json">配置manifest.json</h4>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;明升AIWEB&quot;</span><span class="fu">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;appid&quot;</span><span class="fu">:</span> <span class="st">&quot;wx1234567890abcdef&quot;</span><span class="fu">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;智能制造与工业自动化解决方案&quot;</span><span class="fu">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;versionName&quot;</span><span class="fu">:</span> <span class="st">&quot;2.5.0&quot;</span><span class="fu">,</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;versionCode&quot;</span><span class="fu">:</span> <span class="dv">250</span><span class="fu">,</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;transformPx&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;mp-weixin&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;appid&quot;</span><span class="fu">:</span> <span class="st">&quot;wx1234567890abcdef&quot;</span><span class="fu">,</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;setting&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;urlCheck&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;es6&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;postcss&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;minified&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;permission&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;scope.userLocation&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;desc&quot;</span><span class="fu">:</span> <span class="st">&quot;用于显示设备位置&quot;</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;h5&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;router&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;mode&quot;</span><span class="fu">:</span> <span class="st">&quot;hash&quot;</span><span class="fu">,</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;base&quot;</span><span class="fu">:</span> <span class="st">&quot;/h5/&quot;</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="配置pages.json">配置pages.json</h4>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;pages&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/index/index&quot;</span><span class="fu">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;style&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;navigationBarTitleText&quot;</span><span class="fu">:</span> <span class="st">&quot;明升AIWEB&quot;</span><span class="fu">,</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;enablePullDownRefresh&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/agents/index&quot;</span><span class="fu">,</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;style&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;navigationBarTitleText&quot;</span><span class="fu">:</span> <span class="st">&quot;安彤智能体&quot;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/aicrm/customer360&quot;</span><span class="fu">,</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;style&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;navigationBarTitleText&quot;</span><span class="fu">:</span> <span class="st">&quot;客户360°画像&quot;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/equipment/lifecycle&quot;</span><span class="fu">,</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;style&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;navigationBarTitleText&quot;</span><span class="fu">:</span> <span class="st">&quot;设备全生命周期&quot;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;globalStyle&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;navigationBarTextStyle&quot;</span><span class="fu">:</span> <span class="st">&quot;black&quot;</span><span class="fu">,</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;navigationBarTitleText&quot;</span><span class="fu">:</span> <span class="st">&quot;明升AIWEB&quot;</span><span class="fu">,</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;navigationBarBackgroundColor&quot;</span><span class="fu">:</span> <span class="st">&quot;#FFFFFF&quot;</span><span class="fu">,</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;backgroundColor&quot;</span><span class="fu">:</span> <span class="st">&quot;#F8F8F8&quot;</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tabBar&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;color&quot;</span><span class="fu">:</span> <span class="st">&quot;#7A7E83&quot;</span><span class="fu">,</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;selectedColor&quot;</span><span class="fu">:</span> <span class="st">&quot;#1890FF&quot;</span><span class="fu">,</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;borderStyle&quot;</span><span class="fu">:</span> <span class="st">&quot;black&quot;</span><span class="fu">,</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;backgroundColor&quot;</span><span class="fu">:</span> <span class="st">&quot;#FFFFFF&quot;</span><span class="fu">,</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;list&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;pagePath&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/index/index&quot;</span><span class="fu">,</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;iconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/home.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;selectedIconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/home-active.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;首页&quot;</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;pagePath&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/agents/index&quot;</span><span class="fu">,</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;iconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/agents.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;selectedIconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/agents-active.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;智能体&quot;</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;pagePath&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/aicrm/index&quot;</span><span class="fu">,</span></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;iconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/aicrm.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;selectedIconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/aicrm-active.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;AICRM&quot;</span></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;pagePath&quot;</span><span class="fu">:</span> <span class="st">&quot;pages/equipment/index&quot;</span><span class="fu">,</span></span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;iconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/equipment.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;selectedIconPath&quot;</span><span class="fu">:</span> <span class="st">&quot;static/tabbar/equipment-active.png&quot;</span><span class="fu">,</span></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;设备&quot;</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="封装api请求">封装API请求</h4>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// utils/request.js</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> BASE_URL <span class="op">=</span> <span class="st">&#39;https://your-domain.com/api&#39;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">request</span>(options) {</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">new</span> <span class="bu">Promise</span>((resolve<span class="op">,</span> reject) <span class="kw">=&gt;</span> {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    uni<span class="op">.</span><span class="fu">request</span>({</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">url</span><span class="op">:</span> BASE_URL <span class="op">+</span> options<span class="op">.</span><span class="at">url</span><span class="op">,</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">method</span><span class="op">:</span> options<span class="op">.</span><span class="at">method</span> <span class="op">||</span> <span class="st">&#39;GET&#39;</span><span class="op">,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">data</span><span class="op">:</span> options<span class="op">.</span><span class="at">data</span> <span class="op">||</span> {}<span class="op">,</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">header</span><span class="op">:</span> {</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Content-Type&#39;</span><span class="op">:</span> <span class="st">&#39;application/json&#39;</span><span class="op">,</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Authorization&#39;</span><span class="op">:</span> <span class="st">&#39;Bearer &#39;</span> <span class="op">+</span> uni<span class="op">.</span><span class="fu">getStorageSync</span>(<span class="st">&#39;token&#39;</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">success</span><span class="op">:</span> (res) <span class="kw">=&gt;</span> {</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (res<span class="op">.</span><span class="at">statusCode</span> <span class="op">===</span> <span class="dv">200</span>) {</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>          <span class="fu">resolve</span>(res<span class="op">.</span><span class="at">data</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>          <span class="fu">reject</span>(res<span class="op">.</span><span class="at">data</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">fail</span><span class="op">:</span> (err) <span class="kw">=&gt;</span> {</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">reject</span>(err)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co">// 具体API</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">getCustomerList</span>() {</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">request</span>({</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">url</span><span class="op">:</span> <span class="st">&#39;/customers&#39;</span><span class="op">,</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&#39;GET&#39;</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">getEquipmentList</span>() {</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">request</span>({</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="dt">url</span><span class="op">:</span> <span class="st">&#39;/equipment&#39;</span><span class="op">,</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&#39;GET&#39;</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h4 id="示例页面客户360">示例页面：客户360°</h4>
+<pre class="vue"><code>&lt;!-- pages/aicrm/customer360.vue --&gt;
+&lt;template&gt;
+  &lt;view class=&quot;customer360&quot;&gt;
+    &lt;view class=&quot;header&quot;&gt;
+      &lt;text class=&quot;title&quot;&gt;客户360°画像&lt;/text&gt;
+    &lt;/view&gt;
+    
+    &lt;!-- 客户列表 --&gt;
+    &lt;scroll-view scroll-y class=&quot;customer-list&quot;&gt;
+      &lt;view 
+        v-for=&quot;customer in customers&quot; 
+        :key=&quot;customer.id&quot;
+        class=&quot;customer-item&quot;
+        @click=&quot;selectCustomer(customer)&quot;
+      &gt;
+        &lt;text class=&quot;name&quot;&gt;{{ customer.name }}&lt;/text&gt;
+        &lt;text class=&quot;industry&quot;&gt;{{ customer.industry }}&lt;/text&gt;
+      &lt;/view&gt;
+    &lt;/scroll-view&gt;
+    
+    &lt;!-- 客户详情 --&gt;
+    &lt;view v-if=&quot;selectedCustomer&quot; class=&quot;customer-detail&quot;&gt;
+      &lt;view class=&quot;info-card&quot;&gt;
+        &lt;text class=&quot;label&quot;&gt;公司名称&lt;/text&gt;
+        &lt;text class=&quot;value&quot;&gt;{{ selectedCustomer.name }}&lt;/text&gt;
+      &lt;/view&gt;
+      
+      &lt;!-- 雷达图 --&gt;
+      &lt;view class=&quot;radar-chart&quot;&gt;
+        &lt;canvas 
+          canvas-id=&quot;radarCanvas&quot; 
+          class=&quot;canvas&quot;
+          @touchstart=&quot;touchHandler&quot;
+        &gt;&lt;/canvas&gt;
+      &lt;/view&gt;
+      
+      &lt;button @click=&quot;openSandbox&quot;&gt;进入客户沙盘&lt;/button&gt;
+    &lt;/view&gt;
+  &lt;/view&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref, onMounted } from &#39;vue&#39;
+import { getCustomerList } from &#39;@/utils/request&#39;
+
+const customers = ref([])
+const selectedCustomer = ref(null)
+
+onMounted(async () =&gt; {
+  const res = await getCustomerList()
+  customers.value = res.data
+})
+
+function selectCustomer(customer) {
+  selectedCustomer.value = customer
+  // 绘制雷达图
+  drawRadarChart()
+}
+
+function drawRadarChart() {
+  const ctx = uni.createCanvasContext(&#39;radarCanvas&#39;)
+  // 绘制雷达图逻辑
+  // ...
+  ctx.draw()
+}
+
+function openSandbox() {
+  uni.navigateTo({
+    url: &#39;/pages/aicrm/sandbox?id=&#39; + selectedCustomer.value.id
+  })
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+.customer360 {
+  padding: 20rpx;
+  
+  .header {
+    margin-bottom: 20rpx;
+    
+    .title {
+      font-size: 36rpx;
+      font-weight: bold;
+    }
+  }
+  
+  .customer-list {
+    height: 400rpx;
+    
+    .customer-item {
+      padding: 20rpx;
+      background: #fff;
+      margin-bottom: 10rpx;
+      border-radius: 8rpx;
+      
+      .name {
+        font-size: 28rpx;
+        font-weight: bold;
+      }
+      
+      .industry {
+        font-size: 24rpx;
+        color: #666;
+        margin-left: 20rpx;
+      }
+    }
+  }
+  
+  .customer-detail {
+    margin-top: 20rpx;
+    
+    .info-card {
+      padding: 20rpx;
+      background: #fff;
+      border-radius: 8rpx;
+      margin-bottom: 10rpx;
+      
+      .label {
+        font-size: 24rpx;
+        color: #999;
+      }
+      
+      .value {
+        font-size: 28rpx;
+        font-weight: bold;
+        margin-left: 20rpx;
+      }
+    }
+    
+    .radar-chart {
+      height: 400rpx;
+      background: #fff;
+      border-radius: 8rpx;
+      
+      .canvas {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+&lt;/style&gt;</code></pre>
+<h3 id="编译与上传">2.4 编译与上传</h3>
+<h4 id="编译小程序">编译小程序</h4>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 开发环境</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev:mp-weixin</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 生产环境</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build:mp-weixin</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 输出目录</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">dist/dev/mp-weixin/</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="ex">dist/build/mp-weixin/</span></span></code></pre></div>
+<h4 id="微信开发者工具导入">微信开发者工具导入</h4>
+<pre><code>1. 打开微信开发者工具
+2. 选择&quot;小程序&quot;
+3. 点击&quot;导入项目&quot;
+4. 选择 dist/build/mp-weixin 目录
+5. 填写 AppID
+6. 点击&quot;导入&quot;</code></pre>
+<h4 id="上传审核">上传审核</h4>
+<pre><code>步骤1：开发者工具中点击&quot;上传&quot;
+- 输入版本号：2.5.0
+- 输入项目备注：新增AICRM功能
+
+步骤2：登录小程序后台
+https://mp.weixin.qq.com
+- 版本管理 → 开发版本
+- 选择刚上传的版本
+- 点击&quot;提交审核&quot;
+
+步骤3：填写审核信息
+- 功能页面：选择核心页面截图
+- 测试账号：提供测试账号密码
+- 备注说明：功能说明
+
+审核时间：3-7个工作日
+
+步骤4：审核通过后发布
+- 点击&quot;发布&quot;
+- 全量发布或灰度发布</code></pre>
+<h3 id="小程序优化">2.5 小程序优化</h3>
+<h4 id="性能优化">性能优化</h4>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. 分包加载</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">// pages.json</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;subPackages&quot;</span><span class="op">:</span> [</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;root&quot;</span><span class="op">:</span> <span class="st">&quot;packages/aicrm&quot;</span><span class="op">,</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;pages&quot;</span><span class="op">:</span> [</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;customer360/index&quot;</span><span class="op">,</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;sandbox/index&quot;</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>      ]</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;root&quot;</span><span class="op">:</span> <span class="st">&quot;packages/equipment&quot;</span><span class="op">,</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;pages&quot;</span><span class="op">:</span> [</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;lifecycle/index&quot;</span><span class="op">,</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;maintenance/index&quot;</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>      ]</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  ]<span class="op">,</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;preloadRule&quot;</span><span class="op">:</span> {</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;pages/index/index&quot;</span><span class="op">:</span> {</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;network&quot;</span><span class="op">:</span> <span class="st">&quot;all&quot;</span><span class="op">,</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;packages&quot;</span><span class="op">:</span> [<span class="st">&quot;packages/aicrm&quot;</span>]</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. 图片懒加载</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>image </span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>  src<span class="op">=</span><span class="st">&quot;{{item.image}}&quot;</span> </span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>  lazy<span class="op">-</span>load</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>  mode<span class="op">=</span><span class="st">&quot;aspectFill&quot;</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="op">/&gt;</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. 数据预加载</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="fu">onLoad</span>() {</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>  <span class="co">// 预加载下一页数据</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">this</span><span class="op">.</span><span class="fu">preloadNextPage</span>()</span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="co">// 4. 使用computed缓存</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>computed<span class="op">:</span> {</span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filteredList</span>() {</span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="at">list</span><span class="op">.</span><span class="fu">filter</span>(item <span class="kw">=&gt;</span> item<span class="op">.</span><span class="at">status</span> <span class="op">===</span> <span class="st">&#39;active&#39;</span>)</span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h4 id="体验优化">体验优化</h4>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. 骨架屏</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>view v<span class="op">-</span><span class="cf">if</span><span class="op">=</span><span class="st">&quot;loading&quot;</span> <span class="kw">class</span><span class="op">=</span><span class="st">&quot;skeleton&quot;</span><span class="op">&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>view <span class="kw">class</span><span class="op">=</span><span class="st">&quot;skeleton-item&quot;</span><span class="op">&gt;&lt;/</span>view<span class="op">&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>view <span class="kw">class</span><span class="op">=</span><span class="st">&quot;skeleton-item&quot;</span><span class="op">&gt;&lt;/</span>view<span class="op">&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;/</span>view<span class="op">&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. 下拉刷新</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">onPullDownRefresh</span>() {</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">this</span><span class="op">.</span><span class="fu">loadData</span>()<span class="op">.</span><span class="fu">then</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    uni<span class="op">.</span><span class="fu">stopPullDownRefresh</span>()</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. 触底加载</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="fu">onReachBottom</span>() {</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">hasMore</span>) {</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">loadMore</span>()</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="co">// 4. 分享功能</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="fu">onShareAppMessage</span>() {</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">title</span><span class="op">:</span> <span class="st">&#39;明升AIWEB - 智能制造解决方案&#39;</span><span class="op">,</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">path</span><span class="op">:</span> <span class="st">&#39;/pages/index/index&#39;</span><span class="op">,</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">imageUrl</span><span class="op">:</span> <span class="st">&#39;/static/share.png&#39;</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<hr />
+<h2 id="原生app开发">3. 原生APP开发</h2>
+<h3 id="ios应用开发">3.1 iOS应用开发</h3>
+<h4 id="开发环境">开发环境</h4>
+<pre><code>硬件要求：
+- Mac电脑（Macbook / iMac / Mac Mini）
+- 至少8GB内存，推荐16GB
+
+软件要求：
+- macOS 13.0+
+- Xcode 15.0+
+- CocoaPods
+
+费用：
+- 个人开发者：$99/年
+- 企业开发者：$299/年</code></pre>
+<h4 id="创建项目">创建项目</h4>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode swift"><code class="sourceCode swift"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. 打开Xcode</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. Create a new Xcode project</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. 选择 iOS → App</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">// 4. 填写项目信息</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Product Name: AIWEB</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Team: 选择开发者账号</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Organization Identifier: com.mingsheng</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Interface: SwiftUI</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Language: Swift</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">// 5. 项目结构</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>AIWEB<span class="op">/</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>├── AIWEBApp<span class="op">.</span>swift          <span class="co">// 入口文件</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>├── ContentView<span class="op">.</span>swift       <span class="co">// 主视图</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>├── Views<span class="op">/</span>                  <span class="co">// 视图</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>│   ├── HomeView<span class="op">.</span>swift</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>│   ├── AgentsView<span class="op">.</span>swift</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>│   ├── AICRMView<span class="op">.</span>swift</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>│   └── EquipmentView<span class="op">.</span>swift</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>├── Models<span class="op">/</span>                 <span class="co">// 数据模型</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>│   ├── Customer<span class="op">.</span>swift</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>│   ├── Equipment<span class="op">.</span>swift</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>│   └── Agent<span class="op">.</span>swift</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>├── Services<span class="op">/</span>               <span class="co">// 服务</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>│   ├── APIService<span class="op">.</span>swift</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>│   └── AuthService<span class="op">.</span>swift</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>├── Utils<span class="op">/</span>                  <span class="co">// 工具</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>│   └── Extensions<span class="op">.</span>swift</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>└── Assets<span class="op">.</span>xcassets        <span class="co">// 资源</span></span></code></pre></div>
+<h4 id="示例代码客户360">示例代码：客户360°</h4>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode swift"><code class="sourceCode swift"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Models/Customer.swift</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">Foundation</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Customer<span class="op">:</span> <span class="dt">Identifiable</span><span class="op">,</span> <span class="dt">Codable</span> <span class="op">{</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">id</span><span class="op">:</span> String</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">name</span><span class="op">:</span> String</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">industry</span><span class="op">:</span> String</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">scale</span><span class="op">:</span> String</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">radarData</span><span class="op">:</span> RadarData</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> RadarData<span class="op">:</span> <span class="dt">Codable</span> <span class="op">{</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">demand</span><span class="op">:</span> Double</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">budget</span><span class="op">:</span> Double</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">authority</span><span class="op">:</span> Double</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">urgency</span><span class="op">:</span> Double</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co">// Services/APIService.swift</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">Foundation</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> APIService <span class="op">{</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">static</span> <span class="kw">let</span> <span class="va">shared</span> <span class="op">=</span> APIService<span class="op">()</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">let</span> <span class="va">baseURL</span> <span class="op">=</span> <span class="st">&quot;https://your-domain.com/api&quot;</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> <span class="fu">fetchCustomers</span><span class="op">()</span> <span class="fu">async</span> <span class="kw">throws</span> -&gt; [<span class="fu">Customer</span>] <span class="op">{</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">guard</span> <span class="kw">let</span> <span class="va">url</span> <span class="op">=</span> URL<span class="op">(</span>string<span class="op">:</span> <span class="st">&quot;</span><span class="er">\(</span><span class="st">baseURL)/customers&quot;</span><span class="op">)</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>            <span class="kw">throw</span> URLError<span class="op">(.</span>badURL<span class="op">)</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>        <span class="kw">var</span> <span class="va">request</span> <span class="op">=</span> URLRequest<span class="op">(</span>url<span class="op">:</span> url<span class="op">)</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>        request<span class="op">.</span>setValue<span class="op">(</span><span class="st">&quot;Bearer </span><span class="er">\(</span><span class="st">getToken())&quot;</span><span class="op">,</span> forHTTPHeaderField<span class="op">:</span> <span class="st">&quot;Authorization&quot;</span><span class="op">)</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> (<span class="va">data</span><span class="op">,</span> _<span class="op">)</span> <span class="op">=</span> <span class="cf">try</span> <span class="cf">await</span> URLSession<span class="op">.</span>shared<span class="op">.</span>data<span class="op">(</span><span class="cf">for</span><span class="op">:</span> request<span class="op">)</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">customers</span> <span class="op">=</span> <span class="cf">try</span> JSONDecoder<span class="op">().</span>decode<span class="op">([</span>Customer<span class="op">].</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> data<span class="op">)</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> customers</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">func</span> <span class="fu">getToken</span><span class="op">()</span> -&gt; <span class="fu">String</span> <span class="op">{</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>        <span class="co">// 从Keychain获取token</span></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> UserDefaults<span class="op">.</span>standard<span class="op">.</span>string<span class="op">(</span>forKey<span class="op">:</span> <span class="st">&quot;authToken&quot;</span><span class="op">)</span> <span class="op">??</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a><span class="co">// Views/Customer360View.swift</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">SwiftUI</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Customer360View<span class="op">:</span> <span class="dt">View</span> <span class="op">{</span></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">@State</span> <span class="kw">private</span> <span class="kw">var</span> <span class="va">customers</span><span class="op">:</span> <span class="op">[</span>Customer<span class="op">]</span> <span class="op">=</span> <span class="op">[]</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">@State</span> <span class="kw">private</span> <span class="kw">var</span> <span class="va">selectedCustomer</span><span class="op">:</span> Customer<span class="op">?</span></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">@State</span> <span class="kw">private</span> <span class="kw">var</span> <span class="va">isLoading</span> <span class="op">=</span> <span class="kw">true</span></span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">body</span><span class="op">:</span> some View <span class="op">{</span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>        NavigationView <span class="op">{</span></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>            VStack <span class="op">{</span></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> isLoading <span class="op">{</span></span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>                    ProgressView<span class="op">(</span><span class="st">&quot;加载中...&quot;</span><span class="op">)</span></span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>                    List<span class="op">(</span>customers<span class="op">)</span> <span class="op">{</span> customer <span class="cf">in</span></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a>                        CustomerRow<span class="op">(</span>customer<span class="op">:</span> customer<span class="op">)</span></span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>                            <span class="op">.</span>onTapGesture <span class="op">{</span></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>                                selectedCustomer <span class="op">=</span> customer</span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>                            <span class="op">}</span></span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>navigationTitle<span class="op">(</span><span class="st">&quot;客户360°&quot;</span><span class="op">)</span></span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>task <span class="op">{</span></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>                <span class="cf">await</span> loadCustomers<span class="op">()</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>sheet<span class="op">(</span>item<span class="op">:</span> $selectedCustomer<span class="op">)</span> <span class="op">{</span> customer <span class="cf">in</span></span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>                CustomerDetailView<span class="op">(</span>customer<span class="op">:</span> customer<span class="op">)</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> <span class="fu">loadCustomers</span><span class="op">()</span> <span class="fu">async</span> <span class="op">{</span></span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>        <span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>            customers <span class="op">=</span> <span class="cf">try</span> <span class="cf">await</span> APIService<span class="op">.</span>shared<span class="op">.</span>fetchCustomers<span class="op">()</span></span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>            isLoading <span class="op">=</span> <span class="kw">false</span></span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">catch</span> <span class="op">{</span></span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>            print<span class="op">(</span><span class="st">&quot;Error loading customers: </span><span class="er">\(</span><span class="st">error)&quot;</span><span class="op">)</span></span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> CustomerRow<span class="op">:</span> <span class="dt">View</span> <span class="op">{</span></span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">customer</span><span class="op">:</span> Customer</span>
+<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">body</span><span class="op">:</span> some View <span class="op">{</span></span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a>        HStack <span class="op">{</span></span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a>            VStack<span class="op">(</span>alignment<span class="op">:</span> <span class="op">.</span>leading<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a>                Text<span class="op">(</span>customer<span class="op">.</span>name<span class="op">)</span></span>
+<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a>                    <span class="op">.</span>font<span class="op">(.</span>headline<span class="op">)</span></span>
+<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a>                Text<span class="op">(</span>customer<span class="op">.</span>industry<span class="op">)</span></span>
+<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a>                    <span class="op">.</span>font<span class="op">(.</span>subheadline<span class="op">)</span></span>
+<span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a>                    <span class="op">.</span>foregroundColor<span class="op">(.</span>secondary<span class="op">)</span></span>
+<span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a>            Spacer<span class="op">()</span></span>
+<span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a>            Image<span class="op">(</span>systemName<span class="op">:</span> <span class="st">&quot;chevron.right&quot;</span><span class="op">)</span></span>
+<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a>                <span class="op">.</span>foregroundColor<span class="op">(.</span>secondary<span class="op">)</span></span>
+<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>padding<span class="op">(.</span>vertical<span class="op">,</span> <span class="dv">8</span><span class="op">)</span></span>
+<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a><span class="co">// 雷达图</span></span>
+<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> RadarChartView<span class="op">:</span> <span class="dt">View</span> <span class="op">{</span></span>
+<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">data</span><span class="op">:</span> Customer<span class="op">.</span>RadarData</span>
+<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">body</span><span class="op">:</span> some View <span class="op">{</span></span>
+<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a>        Canvas <span class="op">{</span> context<span class="op">,</span> size <span class="cf">in</span></span>
+<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">center</span> <span class="op">=</span> CGPoint<span class="op">(</span>x<span class="op">:</span> size<span class="op">.</span>width <span class="op">/</span> <span class="dv">2</span><span class="op">,</span> y<span class="op">:</span> size<span class="op">.</span>height <span class="op">/</span> <span class="dv">2</span><span class="op">)</span></span>
+<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">radius</span> <span class="op">=</span> min<span class="op">(</span>size<span class="op">.</span>width<span class="op">,</span> size<span class="op">.</span>height<span class="op">)</span> <span class="op">/</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">20</span></span>
+<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a>            <span class="co">// 绘制背景网格</span></span>
+<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a>            drawGrid<span class="op">(</span>context<span class="op">:</span> context<span class="op">,</span> center<span class="op">:</span> center<span class="op">,</span> radius<span class="op">:</span> radius<span class="op">)</span></span>
+<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a>            <span class="co">// 绘制数据</span></span>
+<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a>            drawData<span class="op">(</span>context<span class="op">:</span> context<span class="op">,</span> center<span class="op">:</span> center<span class="op">,</span> radius<span class="op">:</span> radius<span class="op">)</span></span>
+<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>frame<span class="op">(</span>height<span class="op">:</span> <span class="dv">300</span><span class="op">)</span></span>
+<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> <span class="fu">drawGrid</span><span class="op">(</span><span class="va">context</span><span class="op">:</span> <span class="dt">GraphicsContext</span><span class="op">,</span> <span class="va">center</span><span class="op">:</span> <span class="dt">CGPoint</span><span class="op">,</span> <span class="va">radius</span><span class="op">:</span> <span class="dt">CGFloat</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a>        <span class="co">// 绘制5个同心圆</span></span>
+<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="cf">in</span> <span class="fl">1.</span><span class="op">.</span><span class="fl">.5</span> <span class="op">{</span></span>
+<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">r</span> <span class="op">=</span> radius <span class="op">*</span> CGFloat<span class="op">(</span>i<span class="op">)</span> <span class="op">/</span> <span class="dv">5</span></span>
+<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a>            context<span class="op">.</span>stroke<span class="op">(</span></span>
+<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a>                Circle<span class="op">().</span>path<span class="op">(</span><span class="cf">in</span><span class="op">:</span> CGRect<span class="op">(</span>x<span class="op">:</span> center<span class="op">.</span>x <span class="op">-</span> r<span class="op">,</span> y<span class="op">:</span> center<span class="op">.</span>y <span class="op">-</span> r<span class="op">,</span> width<span class="op">:</span> r <span class="op">*</span> <span class="dv">2</span><span class="op">,</span> height<span class="op">:</span> r <span class="op">*</span> <span class="dv">2</span><span class="op">)),</span></span>
+<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a>                with<span class="op">:</span> <span class="op">.</span>color<span class="op">(.</span>gray<span class="op">.</span>opacity<span class="op">(</span><span class="fl">0.3</span><span class="op">))</span></span>
+<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a>            <span class="op">)</span></span>
+<span id="cb20-133"><a href="#cb20-133" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a>        <span class="co">// 绘制4条轴线</span></span>
+<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">angles</span><span class="op">:</span> <span class="op">[</span>CGFloat<span class="op">]</span> <span class="op">=</span> <span class="op">[</span><span class="dv">0</span><span class="op">,</span> <span class="op">.</span>pi<span class="op">/</span><span class="dv">2</span><span class="op">,</span> <span class="op">.</span>pi<span class="op">,</span> <span class="op">.</span>pi<span class="op">*</span><span class="dv">3</span><span class="op">/</span><span class="dv">2</span><span class="op">]</span></span>
+<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> angle <span class="cf">in</span> angles <span class="op">{</span></span>
+<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">endX</span> <span class="op">=</span> center<span class="op">.</span>x <span class="op">+</span> radius <span class="op">*</span> cos<span class="op">(</span>angle<span class="op">)</span></span>
+<span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">endY</span> <span class="op">=</span> center<span class="op">.</span>y <span class="op">+</span> radius <span class="op">*</span> sin<span class="op">(</span>angle<span class="op">)</span></span>
+<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a>            context<span class="op">.</span>stroke<span class="op">(</span></span>
+<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a>                Path <span class="op">{</span> path <span class="cf">in</span></span>
+<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a>                    path<span class="op">.</span>move<span class="op">(</span>to<span class="op">:</span> center<span class="op">)</span></span>
+<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a>                    path<span class="op">.</span>addLine<span class="op">(</span>to<span class="op">:</span> CGPoint<span class="op">(</span>x<span class="op">:</span> endX<span class="op">,</span> y<span class="op">:</span> endY<span class="op">))</span></span>
+<span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a>                <span class="op">},</span></span>
+<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a>                with<span class="op">:</span> <span class="op">.</span>color<span class="op">(.</span>gray<span class="op">.</span>opacity<span class="op">(</span><span class="fl">0.3</span><span class="op">))</span></span>
+<span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a>            <span class="op">)</span></span>
+<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a>    <span class="kw">func</span> <span class="fu">drawData</span><span class="op">(</span><span class="va">context</span><span class="op">:</span> <span class="dt">GraphicsContext</span><span class="op">,</span> <span class="va">center</span><span class="op">:</span> <span class="dt">CGPoint</span><span class="op">,</span> <span class="va">radius</span><span class="op">:</span> <span class="dt">CGFloat</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-151"><a href="#cb20-151" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">values</span> <span class="op">=</span> <span class="op">[</span>data<span class="op">.</span>demand<span class="op">,</span> data<span class="op">.</span>budget<span class="op">,</span> data<span class="op">.</span>authority<span class="op">,</span> data<span class="op">.</span>urgency<span class="op">]</span></span>
+<span id="cb20-152"><a href="#cb20-152" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">angles</span><span class="op">:</span> <span class="op">[</span>CGFloat<span class="op">]</span> <span class="op">=</span> <span class="op">[</span><span class="dv">0</span><span class="op">,</span> <span class="op">.</span>pi<span class="op">/</span><span class="dv">2</span><span class="op">,</span> <span class="op">.</span>pi<span class="op">,</span> <span class="op">.</span>pi<span class="op">*</span><span class="dv">3</span><span class="op">/</span><span class="dv">2</span><span class="op">]</span></span>
+<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a>        <span class="kw">var</span> <span class="va">path</span> <span class="op">=</span> Path<span class="op">()</span></span>
+<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>index<span class="op">,</span> value<span class="op">)</span> <span class="cf">in</span> values<span class="op">.</span>enumerated<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">r</span> <span class="op">=</span> radius <span class="op">*</span> value</span>
+<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">x</span> <span class="op">=</span> center<span class="op">.</span>x <span class="op">+</span> r <span class="op">*</span> cos<span class="op">(</span>angles<span class="op">[</span>index<span class="op">])</span></span>
+<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">y</span> <span class="op">=</span> center<span class="op">.</span>y <span class="op">+</span> r <span class="op">*</span> sin<span class="op">(</span>angles<span class="op">[</span>index<span class="op">])</span></span>
+<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> index <span class="op">==</span> <span class="dv">0</span> <span class="op">{</span></span>
+<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>                path<span class="op">.</span>move<span class="op">(</span>to<span class="op">:</span> CGPoint<span class="op">(</span>x<span class="op">:</span> x<span class="op">,</span> y<span class="op">:</span> y<span class="op">))</span></span>
+<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>                path<span class="op">.</span>addLine<span class="op">(</span>to<span class="op">:</span> CGPoint<span class="op">(</span>x<span class="op">:</span> x<span class="op">,</span> y<span class="op">:</span> y<span class="op">))</span></span>
+<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>        path<span class="op">.</span>closeSubpath<span class="op">()</span></span>
+<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a>        context<span class="op">.</span>fill<span class="op">(</span>path<span class="op">,</span> with<span class="op">:</span> <span class="op">.</span>color<span class="op">(.</span>blue<span class="op">.</span>opacity<span class="op">(</span><span class="fl">0.3</span><span class="op">)))</span></span>
+<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a>        context<span class="op">.</span>stroke<span class="op">(</span>path<span class="op">,</span> with<span class="op">:</span> <span class="op">.</span>color<span class="op">(.</span>blue<span class="op">),</span> lineWidth<span class="op">:</span> <span class="dv">2</span><span class="op">)</span></span>
+<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h4 id="打包发布">打包发布</h4>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 设置版本号</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Xcode → Target → General</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Version: 2.5.0</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build: 1</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 配置签名</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Signing &amp; Capabilities</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Team: 选择开发者团队</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Bundle Identifier: com.mingsheng.aiweb</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Archive</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Product → Archive</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 上传App Store</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Organizer → Upload to App Store</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. App Store Connect审核</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="co"># https://appstoreconnect.apple.com</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 填写应用信息、截图、描述</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 提交审核（1-3天）</span></span></code></pre></div>
+<h3 id="android应用开发">3.2 Android应用开发</h3>
+<h4 id="开发环境-1">开发环境</h4>
+<pre><code>软件要求：
+- Android Studio 2023.1.1+
+- JDK 17+
+- Android SDK 34+
+
+费用：
+- Google Play开发者：$25（一次性）</code></pre>
+<h4 id="创建项目-1">创建项目</h4>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. 打开Android Studio</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. New Project → Empty Activity</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. 填写项目信息</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Name: AIWEB</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Package name: com.mingsheng.aiweb</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Language: Kotlin</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co">//    - Minimum SDK: API 24 (Android 7.0)</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co">// 项目结构</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>app<span class="op">/</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>├── src<span class="op">/</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>│   ├── main<span class="op">/</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>│   │   ├── java<span class="op">/</span>com<span class="op">/</span>mingsheng<span class="op">/</span>aiweb<span class="op">/</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>│   │   │   ├── MainActivity<span class="op">.</span>kt</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>│   │   │   ├── ui<span class="op">/</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>│   │   │   │   ├── home<span class="op">/</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>│   │   │   │   ├── aicrm<span class="op">/</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>│   │   │   │   └── equipment<span class="op">/</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>│   │   │   ├── <span class="kw">data</span><span class="op">/</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>│   │   │   │   ├── model<span class="op">/</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>│   │   │   │   └── repository<span class="op">/</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>│   │   │   └── network<span class="op">/</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>│   │   │       └── ApiService<span class="op">.</span>kt</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>│   │   ├── res<span class="op">/</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>│   │   │   ├── layout<span class="op">/</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>│   │   │   ├── drawable<span class="op">/</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>│   │   │   └── values<span class="op">/</span></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>│   │   └── AndroidManifest<span class="op">.</span>xml</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>│   └── build<span class="op">.</span>gradle</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>└── build<span class="op">.</span>gradle</span></code></pre></div>
+<h4 id="示例代码">示例代码</h4>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">// data/model/Customer.kt</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="kw">class</span> Customer<span class="op">(</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">id</span><span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">name</span><span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">industry</span><span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">scale</span><span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">radarData</span><span class="op">:</span> <span class="dt">RadarData</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">data</span> <span class="kw">class</span> RadarData<span class="op">(</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">val</span> <span class="va">demand</span><span class="op">:</span> <span class="dt">Double</span><span class="op">,</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">val</span> <span class="va">budget</span><span class="op">:</span> <span class="dt">Double</span><span class="op">,</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">val</span> <span class="va">authority</span><span class="op">:</span> <span class="dt">Double</span><span class="op">,</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">val</span> <span class="va">urgency</span><span class="op">:</span> <span class="dt">Double</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co">// network/ApiService.kt</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> retrofit2.Retrofit</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> retrofit2.converter.gson.GsonConverterFactory</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> retrofit2.http.GET</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> retrofit2.http.Header</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> ApiService <span class="op">{</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">@GET</span><span class="op">(</span><span class="st">&quot;customers&quot;</span><span class="op">)</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    suspend <span class="kw">fun</span> <span class="fu">getCustomers</span><span class="op">(</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>        @<span class="va">Header</span>(&quot;<span class="va">Authorization</span>&quot;<span class="op">)</span> <span class="fu">token</span><span class="op">:</span> <span class="dt">String</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    )<span class="op">:</span> <span class="dt">List</span><span class="op">&lt;</span><span class="dt">Customer</span><span class="op">&gt;</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">companion</span> <span class="kw">object</span> <span class="op">{</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>        <span class="kw">private</span> <span class="kw">const</span> <span class="kw">val</span> <span class="va">BASE_URL</span> <span class="op">=</span> <span class="st">&quot;https://your-domain.com/api/&quot;</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>        <span class="kw">fun</span> <span class="fu">create</span><span class="op">():</span> <span class="dt">ApiService</span> <span class="op">{</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>            <span class="kw">val</span> <span class="va">retrofit</span> <span class="op">=</span> Retrofit<span class="op">.</span>Builder<span class="op">()</span></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>                <span class="op">.</span>baseURL<span class="op">(</span>BASE_URL<span class="op">)</span></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>                <span class="op">.</span>addConverterFactory<span class="op">(</span>GsonConverterFactory<span class="op">.</span>create<span class="op">())</span></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>                <span class="op">.</span>build<span class="op">()</span></span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>            <span class="kw">return</span> retrofit<span class="op">.</span>create<span class="op">(</span>ApiService<span class="op">::</span><span class="kw">class</span>.java)</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a><span class="co">// ui/aicrm/Customer360ViewModel.kt</span></span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> androidx.lifecycle.ViewModel</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> androidx.lifecycle.viewModelScope</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> kotlinx.coroutines.flow.MutableStateFlow</span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> kotlinx.coroutines.flow.StateFlow</span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> kotlinx.coroutines.launch</span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Customer360ViewModel <span class="op">:</span> <span class="dt">ViewModel</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">val</span> <span class="va">_customers</span> <span class="op">=</span> MutableStateFlow<span class="op">&lt;</span>List<span class="op">&lt;</span>Customer<span class="op">&gt;&gt;(</span>emptyList<span class="op">())</span></span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">customers</span><span class="op">:</span> StateFlow<span class="op">&lt;</span>List<span class="op">&lt;</span>Customer<span class="op">&gt;&gt;</span> <span class="op">=</span> _customers</span>
+<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">val</span> <span class="va">_isLoading</span> <span class="op">=</span> MutableStateFlow<span class="op">(</span><span class="kw">true</span><span class="op">)</span></span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">isLoading</span><span class="op">:</span> StateFlow<span class="op">&lt;</span><span class="kw">Boolean</span><span class="op">&gt;</span> <span class="op">=</span> _isLoading</span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">val</span> <span class="va">apiService</span> <span class="op">=</span> ApiService<span class="op">.</span>create<span class="op">()</span></span>
+<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a>    <span class="kw">fun</span> <span class="fu">loadCustomers</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a>        viewModelScope<span class="op">.</span>launch <span class="op">{</span></span>
+<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a>                <span class="kw">val</span> <span class="va">token</span> <span class="op">=</span> getToken<span class="op">()</span></span>
+<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a>                _customers<span class="op">.</span>value <span class="op">=</span> apiService<span class="op">.</span>getCustomers<span class="op">(</span><span class="st">&quot;Bearer </span><span class="ss">$token</span><span class="st">&quot;</span><span class="op">)</span></span>
+<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a>                _isLoading<span class="op">.</span>value <span class="op">=</span> <span class="kw">false</span></span>
+<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span>e<span class="op">:</span> Exception<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Handle error</span></span>
+<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a>                _isLoading<span class="op">.</span>value <span class="op">=</span> <span class="kw">false</span></span>
+<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="kw">fun</span> <span class="fu">getToken</span><span class="op">():</span> <span class="dt">String</span> <span class="op">{</span></span>
+<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a>        <span class="co">// 从SharedPreferences获取token</span></span>
+<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-77"><a href="#cb24-77" aria-hidden="true" tabindex="-1"></a><span class="co">// ui/aicrm/Customer360Activity.kt</span></span>
+<span id="cb24-78"><a href="#cb24-78" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">activity</span><span class="op">.</span><span class="im">ComponentActivity</span></span>
+<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">activity</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">setContent</span></span>
+<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">foundation</span><span class="op">.</span><span class="im">layout</span><span class="op">.*</span></span>
+<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">foundation</span><span class="op">.</span><span class="im">lazy</span><span class="op">.</span><span class="im">LazyColumn</span></span>
+<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">foundation</span><span class="op">.</span><span class="im">lazy</span><span class="op">.</span><span class="im">items</span></span>
+<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">material3</span><span class="op">.*</span></span>
+<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">runtime</span><span class="op">.*</span></span>
+<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">ui</span><span class="op">.</span><span class="im">Modifier</span></span>
+<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">androidx</span><span class="op">.</span><span class="im">compose</span><span class="op">.</span><span class="im">ui</span><span class="op">.</span><span class="im">unit</span><span class="op">.</span><span class="im">dp</span></span>
+<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Customer360Activity <span class="op">:</span> <span class="dt">ComponentActivity</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a>    <span class="kw">override</span> <span class="kw">fun</span> <span class="fu">onCreate</span><span class="op">(</span><span class="va">savedInstanceState</span><span class="op">:</span> <span class="dt">Bundle</span><span class="op">?)</span> <span class="op">{</span></span>
+<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a>        <span class="kw">super</span><span class="op">.</span>onCreate<span class="op">(</span>savedInstanceState<span class="op">)</span></span>
+<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a>        setContent <span class="op">{</span></span>
+<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a>            AIWEBTheme <span class="op">{</span></span>
+<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a>                Customer360Screen<span class="op">()</span></span>
+<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-96"><a href="#cb24-96" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-97"><a href="#cb24-97" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a><span class="at">@Composable</span></span>
+<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a><span class="kw">fun</span> <span class="fu">Customer360Screen</span><span class="op">(</span></span>
+<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a>    <span class="va">viewModel</span><span class="op">:</span> <span class="dt">Customer360ViewModel</span> <span class="op">=</span> viewModel<span class="op">()</span></span>
+<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">customers</span> <span class="kw">by</span> viewModel<span class="op">.</span>customers<span class="op">.</span>collectAsState<span class="op">()</span></span>
+<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a>    <span class="kw">val</span> <span class="va">isLoading</span> <span class="kw">by</span> viewModel<span class="op">.</span>isLoading<span class="op">.</span>collectAsState<span class="op">()</span></span>
+<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a>    LaunchedEffect<span class="op">(</span><span class="kw">Unit</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a>        viewModel<span class="op">.</span>loadCustomers<span class="op">()</span></span>
+<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-109"><a href="#cb24-109" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-110"><a href="#cb24-110" aria-hidden="true" tabindex="-1"></a>    Scaffold<span class="op">(</span></span>
+<span id="cb24-111"><a href="#cb24-111" aria-hidden="true" tabindex="-1"></a>        topBar <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb24-112"><a href="#cb24-112" aria-hidden="true" tabindex="-1"></a>            TopAppBar<span class="op">(</span>title <span class="op">=</span> <span class="op">{</span> Text<span class="op">(</span><span class="st">&quot;客户360°&quot;</span><span class="op">)</span> <span class="op">})</span></span>
+<span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-114"><a href="#cb24-114" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span> <span class="op">{</span> padding <span class="op">-&gt;</span></span>
+<span id="cb24-115"><a href="#cb24-115" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>isLoading<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-116"><a href="#cb24-116" aria-hidden="true" tabindex="-1"></a>            Box<span class="op">(</span></span>
+<span id="cb24-117"><a href="#cb24-117" aria-hidden="true" tabindex="-1"></a>                modifier <span class="op">=</span> Modifier<span class="op">.</span>fillMaxSize<span class="op">(),</span></span>
+<span id="cb24-118"><a href="#cb24-118" aria-hidden="true" tabindex="-1"></a>                contentAlignment <span class="op">=</span> Alignment<span class="op">.</span>Center</span>
+<span id="cb24-119"><a href="#cb24-119" aria-hidden="true" tabindex="-1"></a>            <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-120"><a href="#cb24-120" aria-hidden="true" tabindex="-1"></a>                CircularProgressIndicator<span class="op">()</span></span>
+<span id="cb24-121"><a href="#cb24-121" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb24-122"><a href="#cb24-122" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb24-123"><a href="#cb24-123" aria-hidden="true" tabindex="-1"></a>            LazyColumn<span class="op">(</span></span>
+<span id="cb24-124"><a href="#cb24-124" aria-hidden="true" tabindex="-1"></a>                modifier <span class="op">=</span> Modifier</span>
+<span id="cb24-125"><a href="#cb24-125" aria-hidden="true" tabindex="-1"></a>                    <span class="op">.</span>fillMaxSize<span class="op">()</span></span>
+<span id="cb24-126"><a href="#cb24-126" aria-hidden="true" tabindex="-1"></a>                    <span class="op">.</span>padding<span class="op">(</span>padding<span class="op">)</span></span>
+<span id="cb24-127"><a href="#cb24-127" aria-hidden="true" tabindex="-1"></a>            <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-128"><a href="#cb24-128" aria-hidden="true" tabindex="-1"></a>                items<span class="op">(</span>customers<span class="op">)</span> <span class="op">{</span> customer <span class="op">-&gt;</span></span>
+<span id="cb24-129"><a href="#cb24-129" aria-hidden="true" tabindex="-1"></a>                    CustomerCard<span class="op">(</span>customer <span class="op">=</span> customer<span class="op">)</span></span>
+<span id="cb24-130"><a href="#cb24-130" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb24-131"><a href="#cb24-131" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb24-132"><a href="#cb24-132" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-133"><a href="#cb24-133" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-134"><a href="#cb24-134" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb24-135"><a href="#cb24-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-136"><a href="#cb24-136" aria-hidden="true" tabindex="-1"></a><span class="at">@Composable</span></span>
+<span id="cb24-137"><a href="#cb24-137" aria-hidden="true" tabindex="-1"></a><span class="kw">fun</span> <span class="fu">CustomerCard</span><span class="op">(</span><span class="va">customer</span><span class="op">:</span> <span class="dt">Customer</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-138"><a href="#cb24-138" aria-hidden="true" tabindex="-1"></a>    Card<span class="op">(</span></span>
+<span id="cb24-139"><a href="#cb24-139" aria-hidden="true" tabindex="-1"></a>        modifier <span class="op">=</span> Modifier</span>
+<span id="cb24-140"><a href="#cb24-140" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>fillMaxWidth<span class="op">()</span></span>
+<span id="cb24-141"><a href="#cb24-141" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span>padding<span class="op">(</span><span class="fl">8.</span>dp<span class="op">)</span></span>
+<span id="cb24-142"><a href="#cb24-142" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-143"><a href="#cb24-143" aria-hidden="true" tabindex="-1"></a>        Column<span class="op">(</span>modifier <span class="op">=</span> Modifier<span class="op">.</span>padding<span class="op">(</span><span class="fl">16.</span>dp<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb24-144"><a href="#cb24-144" aria-hidden="true" tabindex="-1"></a>            Text<span class="op">(</span></span>
+<span id="cb24-145"><a href="#cb24-145" aria-hidden="true" tabindex="-1"></a>                text <span class="op">=</span> customer<span class="op">.</span>name<span class="op">,</span></span>
+<span id="cb24-146"><a href="#cb24-146" aria-hidden="true" tabindex="-1"></a>                style <span class="op">=</span> MaterialTheme<span class="op">.</span>typography<span class="op">.</span>titleMedium</span>
+<span id="cb24-147"><a href="#cb24-147" aria-hidden="true" tabindex="-1"></a>            <span class="op">)</span></span>
+<span id="cb24-148"><a href="#cb24-148" aria-hidden="true" tabindex="-1"></a>            Text<span class="op">(</span></span>
+<span id="cb24-149"><a href="#cb24-149" aria-hidden="true" tabindex="-1"></a>                text <span class="op">=</span> customer<span class="op">.</span>industry<span class="op">,</span></span>
+<span id="cb24-150"><a href="#cb24-150" aria-hidden="true" tabindex="-1"></a>                style <span class="op">=</span> MaterialTheme<span class="op">.</span>typography<span class="op">.</span>bodyMedium<span class="op">,</span></span>
+<span id="cb24-151"><a href="#cb24-151" aria-hidden="true" tabindex="-1"></a>                color <span class="op">=</span> MaterialTheme<span class="op">.</span>colorScheme<span class="op">.</span>secondary</span>
+<span id="cb24-152"><a href="#cb24-152" aria-hidden="true" tabindex="-1"></a>            <span class="op">)</span></span>
+<span id="cb24-153"><a href="#cb24-153" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-154"><a href="#cb24-154" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-155"><a href="#cb24-155" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h4 id="打包发布-1">打包发布</h4>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 生成签名密钥</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ex">keytool</span> <span class="at">-genkey</span> <span class="at">-v</span> <span class="at">-keystore</span> aiweb-release.keystore <span class="dt">\</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-alias</span> aiweb <span class="at">-keyalg</span> RSA <span class="at">-keysize</span> 2048 <span class="at">-validity</span> 10000</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 配置签名（app/build.gradle）</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="ex">android</span> {</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">signingConfigs</span> {</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>        <span class="ex">release</span> {</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>            <span class="ex">storeFile</span> file<span class="er">(</span><span class="st">&quot;../aiweb-release.keystore&quot;</span><span class="kw">)</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>            <span class="ex">storePassword</span> <span class="st">&quot;your-password&quot;</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>            <span class="ex">keyAlias</span> <span class="st">&quot;aiweb&quot;</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>            <span class="ex">keyPassword</span> <span class="st">&quot;your-password&quot;</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>        <span class="er">}</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="er">}</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="ex">buildTypes</span> {</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>        <span class="ex">release</span> {</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>            <span class="ex">signingConfig</span> signingConfigs.release</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>            <span class="ex">minifyEnabled</span> true</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>            <span class="ex">proguardFiles</span> getDefaultProguardFile<span class="er">(</span><span class="st">&#39;proguard-android.txt&#39;</span><span class="kw">)</span><span class="ex">,</span> <span class="st">&#39;proguard-rules.pro&#39;</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>        <span class="er">}</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    <span class="er">}</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 构建Release APK</span></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="ex">./gradlew</span> assembleRelease</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 输出：app/build/outputs/apk/release/app-release.apk</span></span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 上传Google Play</span></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a><span class="co"># https://play.google.com/console</span></span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建应用 → 上传APK → 填写商店详情 → 提交审核</span></span></code></pre></div>
+<hr />
+<h2 id="混合app方案uni-app">4. 混合APP方案（uni-app）</h2>
+<h3 id="一键打包">4.1 一键打包</h3>
+<h4 id="hbuilderx云打包">HBuilderX云打包</h4>
+<pre><code>步骤1：打开HBuilderX
+步骤2：打开项目
+步骤3：发行 → 原生App-云打包
+
+iOS配置：
+- AppID: 苹果开发者账号
+- 证书: .p12文件
+- 描述文件: .mobileprovision
+
+Android配置：
+- 包名: com.mingsheng.aiweb
+- 证书别名: aiweb
+- 证书私钥密码: ****
+- 证书文件: .keystore
+
+打包类型：
+[√] 正式版
+[ ] 测试版
+
+提交打包...</code></pre>
+<h4 id="离线打包">离线打包</h4>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 下载离线SDK</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">https://nativesupport.dcloud.net.cn/AppDocs/download/android</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="ex">https://nativesupport.dcloud.net.cn/AppDocs/download/ios</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Android离线打包</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="ex">1.</span> 解压SDK</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="ex">2.</span> 用Android Studio打开</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="ex">3.</span> 替换HBuilder-Hello/src/main/assets/apps/__UNI__xxx</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="ex">4.</span> 修改应用信息</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="ex">5.</span> Build → Generate Signed Bundle / APK</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># iOS离线打包</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="ex">1.</span> 解压SDK</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="ex">2.</span> 用Xcode打开</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="ex">3.</span> 替换HBuilder-Hello/Pandora/apps/__UNI__xxx</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="ex">4.</span> 修改应用信息</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="ex">5.</span> Product → Archive</span></code></pre></div>
+<h3 id="原生插件">4.2 原生插件</h3>
+<h4 id="安装原生插件">安装原生插件</h4>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 市场地址</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">https://ext.dcloud.net.cn</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 常用插件</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> uni-im: 即时通讯</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> uni-push: 消息推送</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> uni-pay: 支付SDK</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> uni-map: 地图定位</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用插件</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;nativePlugins&quot;</span><span class="ex">:</span> [</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">{</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;type&quot;</span><span class="ex">:</span> <span class="st">&quot;module&quot;</span>,</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;name&quot;</span><span class="ex">:</span> <span class="st">&quot;uni-push&quot;</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;class&quot;</span><span class="ex">:</span> <span class="st">&quot;io.dcloud.push.PushModule&quot;</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>  <span class="ex">]</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<hr />
+<h2 id="快应用部署">5. 快应用部署</h2>
+<h3 id="快应用简介">5.1 快应用简介</h3>
+<pre><code>快应用是一种基于手机硬件平台的新型应用形态
+特点：
+- 无需安装
+- 即点即用
+- 覆盖10+手机厂商
+- 12亿+设备
+
+支持厂商：
+华为、小米、OPPO、vivo、魅族、联想、金立、
+努比亚、一加、海信、中兴等</code></pre>
+<h3 id="开发快应用">5.2 开发快应用</h3>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装脚手架</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> hap-toolkit</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建项目</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="ex">hap</span> init aiweb-quickapp</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> aiweb-quickapp</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装依赖</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 开发</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run watch</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 预览</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run server</span></code></pre></div>
+<hr />
+<h2 id="费用对比">6. 费用对比</h2>
+<h3 id="开发成本">6.1 开发成本</h3>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>人员</th>
+<th>工期</th>
+<th>人力成本</th>
+<th>工具成本</th>
+<th>总成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>微信小程序</strong></td>
+<td>1前端</td>
+<td>2周</td>
+<td>¥20,000</td>
+<td>¥300</td>
+<td>¥20,300</td>
+</tr>
+<tr>
+<td><strong>uni-app多端</strong></td>
+<td>1前端</td>
+<td>3周</td>
+<td>¥30,000</td>
+<td>¥0</td>
+<td>¥30,000</td>
+</tr>
+<tr>
+<td><strong>原生iOS</strong></td>
+<td>1iOS工程师</td>
+<td>4周</td>
+<td>¥40,000</td>
+<td>¥99</td>
+<td>¥40,099</td>
+</tr>
+<tr>
+<td><strong>原生Android</strong></td>
+<td>1Android工程师</td>
+<td>4周</td>
+<td>¥35,000</td>
+<td>¥25</td>
+<td>¥35,025</td>
+</tr>
+<tr>
+<td><strong>iOS+Android</strong></td>
+<td>2人</td>
+<td>5周</td>
+<td>¥75,000</td>
+<td>¥124</td>
+<td>¥75,124</td>
+</tr>
+</tbody>
+</table>
+<h3 id="年度运营成本">6.2 年度运营成本</h3>
+<table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr>
+<th>项目</th>
+<th>小程序</th>
+<th>uni-app</th>
+<th>原生iOS</th>
+<th>原生Android</th>
+<th>合计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>账号费用</strong></td>
+<td>¥300</td>
+<td>-</td>
+<td>¥688</td>
+<td>¥172</td>
+<td>¥1,160</td>
+</tr>
+<tr>
+<td><strong>服务器</strong></td>
+<td>¥3,000</td>
+<td>¥3,000</td>
+<td>¥3,000</td>
+<td>¥3,000</td>
+<td>¥3,000</td>
+</tr>
+<tr>
+<td><strong>CDN流量</strong></td>
+<td>¥1,200</td>
+<td>¥1,200</td>
+<td>¥1,200</td>
+<td>¥1,200</td>
+<td>¥1,200</td>
+</tr>
+<tr>
+<td><strong>推送服务</strong></td>
+<td>¥0</td>
+<td>¥600</td>
+<td>¥600</td>
+<td>¥600</td>
+<td>¥600</td>
+</tr>
+<tr>
+<td><strong>维护成本</strong></td>
+<td>¥12,000</td>
+<td>¥18,000</td>
+<td>¥24,000</td>
+<td>¥24,000</td>
+<td>¥24,000</td>
+</tr>
+<tr>
+<td><strong>总计</strong></td>
+<td><strong>¥16,500</strong></td>
+<td><strong>¥22,800</strong></td>
+<td><strong>¥29,488</strong></td>
+<td><strong>¥28,972</strong></td>
+<td><strong>¥29,960</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="推荐方案">📋 推荐方案</h2>
+<h3
+id="方案一快速上线推荐初创企业">方案一：快速上线（推荐初创企业）</h3>
+<pre><code>阶段1：微信小程序（2周）
+- 开发成本：¥20,300
+- 年运营成本：¥16,500
+- 优势：快速验证市场
+
+阶段2：H5网页（1周）
+- 开发成本：¥8,000
+- 年运营成本：¥0
+- 优势：分享传播
+
+总投入：¥44,800/年</code></pre>
+<h3
+id="方案二全平台覆盖推荐中型企业">方案二：全平台覆盖（推荐中型企业）</h3>
+<pre><code>uni-app一键多端
+- 开发成本：¥30,000
+- 支持平台：小程序 + iOS + Android + H5
+- 年运营成本：¥22,800
+
+总投入：¥52,800/年</code></pre>
+<h3
+id="方案三极致体验推荐大型企业">方案三：极致体验（推荐大型企业）</h3>
+<pre><code>原生iOS + 原生Android
+- 开发成本：¥75,124
+- 年运营成本：¥29,960
+- 优势：性能最佳，体验最优
+
+总投入：¥105,084/年</code></pre>
+<hr />
+<p><strong>文档版本</strong>：v2.5.0<br />
+<strong>最后更新</strong>：2025-12-20<br />
+<strong>技术支持</strong>：support@mingsheng.com</p>
+</body>
+</html>

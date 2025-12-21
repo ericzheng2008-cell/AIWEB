@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>🔍 工作流节点抖动诊断工具</title>
+  <style>
+    body {
+      font-family: 'Consolas', monospace;
+      padding: 20px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+    h1 { color: #4fc3f7; }
+    h2 { color: #81c784; margin-top: 30px; }
+    .step {
+      background: #2d2d30;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #4fc3f7;
+      border-radius: 4px;
+    }
+    .code {
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      overflow-x: auto;
+      color: #ce9178;
+    }
+    .warn { color: #ffa500; }
+    .error { color: #f48771; }
+    .success { color: #4ec9b0; }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #1177bb; }
+  </style>
+</head>
+<body>
+  <h1>🔍 工作流节点抖动诊断工具</h1>
+  <p>请按以下步骤进行诊断（<span class="warn">预计耗时5-10分钟</span>）</p>
+
+  <h2>第一步：打开浏览器 DevTools Performance</h2>
+  <div class="step">
+    <strong>操作步骤：</strong>
+    <ol>
+      <li>按 <code>F12</code> 打开开发者工具</li>
+      <li>切换到 <span class="success">Performance</span> 标签</li>
+      <li>点击 <span class="success">录制按钮⏺️</span></li>
+      <li>在工作流画布上 <span class="warn">点击一个节点</span>（触发抖动）</li>
+      <li>等待2-3秒后点击 <span class="success">停止按钮⏹️</span></li>
+    </ol>
+    <strong class="warn">⚠️ 需要检查的指标：</strong>
+    <ul>
+      <li class="error">❌ Layout Thrashing（布局抖动）</li>
+      <li class="error">❌ Forced Reflow（强制重排）</li>
+      <li class="error">❌ Recalculate Style（样式重算）</li>
+      <li class="error">❌ ResizeObserver loop（尺寸监听循环）</li>
+    </ul>
+  </div>
+
+  <h2>第二步：检查控制台错误</h2>
+  <div class="step">
+    <button onclick="checkConsoleErrors()">🔍 一键检测控制台错误</button>
+    <div id="consoleResult" style="margin-top:10px;"></div>
+    <strong class="warn">常见错误模式：</strong>
+    <div class="code">
+ResizeObserver loop limit exceeded
+Maximum update depth exceeded (Vue警告)
+Uncaught TypeError: Cannot read property 'position' of undefined
+    </div>
+  </div>
+
+  <h2>第三步：临时禁用右侧编辑面板</h2>
+  <div class="step">
+    <strong>目的：</strong>验证是否是编辑器展开/收缩导致的布局冲突<br>
+    <strong>操作：</strong>
+    <ol>
+      <li>在 DevTools → Elements 中找到 <code>.n8n-panel</code></li>
+      <li>右键 → Edit as HTML</li>
+      <li>在最外层添加 <code>style="display:none"</code></li>
+      <li>点击节点，观察是否还抖动</li>
+    </ol>
+    <button onclick="togglePanel()">🔧 临时隐藏右侧面板</button>
+    <p class="success" id="panelResult"></p>
+  </div>
+
+  <h2>第四步：暂时关闭画布自动布局</h2>
+  <div class="step">
+    <strong>在浏览器控制台执行以下代码：</strong>
+    <div class="code">
+// 禁用所有自动布局相关功能
+window.__disableAutoLayout = true;
+
+// 监听节点选中事件
+document.addEventListener('click', (e) => {
+  const node = e.target.closest('.canvas-node');
+  if (node) {
+    console.log('节点点击', {
+      position: node.style.left + ', ' + node.style.top,
+      transform: window.getComputedStyle(node).transform,
+      offsetParent: node.offsetParent.className
+    });
+  }
+});
+    </div>
+    <button onclick="copyCode()">📋 复制代码到控制台</button>
+  </div>
+
+  <h2>第五步：检查节点拖拽事件循环</h2>
+  <div class="step">
+    <strong>执行诊断脚本：</strong>
+    <div class="code">
+// 检测拖拽事件循环
+let dragCount = 0;
+let lastPos = null;
+
+document.addEventListener('mousemove', (e) => {
+  if (e.buttons === 1) { // 左键拖拽
+    dragCount++;
+    const currentPos = { x: e.clientX, y: e.clientY };
+    
+    if (lastPos) {
+      const delta = Math.sqrt(
+        Math.pow(currentPos.x - lastPos.x, 2) + 
+        Math.pow(currentPos.y - lastPos.y, 2)
+      );
+      
+      if (delta > 50) {
+        console.warn('⚠️ 检测到大幅跳跃:', delta + 'px');
+      }
+    }
+    
+    lastPos = currentPos;
+    
+    if (dragCount % 100 === 0) {
+      console.log('拖拽事件计数:', dragCount);
+    }
+  }
+});
+    </div>
+    <button onclick="copyDragCode()">📋 复制拖拽诊断代码</button>
+  </div>
+
+  <h2>诊断报告</h2>
+  <div class="step">
+    <h3>根据您的检查结果，选择对应的修复方案：</h3>
+    <table border="1" cellpadding="10" style="width:100%; border-collapse:collapse; color:#d4d4d4;">
+      <tr style="background:#2d2d30;">
+        <th>症状</th>
+        <th>根本原因</th>
+        <th>修复方案</th>
+      </tr>
+      <tr>
+        <td class="error">❌ Performance录制中出现大量 Layout</td>
+        <td>布局循环（.n8n-panel展开收缩触发）</td>
+        <td class="success">✅ 固定右侧面板宽度（不使用flex自适应）</td>
+      </tr>
+      <tr>
+        <td class="error">❌ 控制台显示 ResizeObserver loop</td>
+        <td>ResizeObserver监听循环</td>
+        <td class="success">✅ 使用throttle包裹resize事件</td>
+      </tr>
+      <tr>
+        <td class="error">❌ 节点位置反复跳动（鼠标移动时）</td>
+        <td>position坐标被重复写入</td>
+        <td class="success">✅ 拖拽时使用debounce更新状态</td>
+      </tr>
+      <tr>
+        <td class="error">❌ 隐藏右侧面板后不抖动</td>
+        <td>画布区域宽度变化触发重新渲染</td>
+        <td class="success">✅ 使用固定宽度布局（flex: 1; min-width: 0）</td>
+      </tr>
+      <tr>
+        <td class="error">❌ 选中节点后立即闪动</td>
+        <td>onSelect触发了fitView/autoLayout</td>
+        <td class="success">✅ 移除selectNode中的自动适配逻辑</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>立即应用修复</h2>
+  <div class="step">
+    <p>根据诊断结果，我将在代码中应用以下修复：</p>
+    <ul class="success">
+      <li>✅ 禁用节点选中后的自动fitView</li>
+      <li>✅ 固定右侧面板宽度为400px</li>
+      <li>✅ 画布区域使用 flex: 1; min-width: 0</li>
+      <li>✅ 拖拽位置更新使用requestAnimationFrame节流</li>
+      <li>✅ 移除所有transform相关属性</li>
+    </ul>
+    <button onclick="applyFix()">🚀 应用企业级修复方案</button>
+  </div>
+
+  <script>
+    function checkConsoleErrors() {
+      const result = document.getElementById('consoleResult');
+      result.innerHTML = '<p class="warn">⏳ 请在浏览器控制台查看错误信息...</p><p>如果看到以下任一错误，请复制粘贴到我这里：</p><ul><li>ResizeObserver loop limit exceeded</li><li>Maximum update depth exceeded</li><li>Cannot read property position</li></ul>';
+    }
+
+    function togglePanel() {
+      const panel = document.querySelector('.n8n-panel');
+      if (panel) {
+        panel.style.display = panel.style.display === 'none' ? '' : 'none';
+        document.getElementById('panelResult').textContent = 
+          panel.style.display === 'none' ? '✅ 面板已隐藏，请点击节点测试' : '✅ 面板已恢复';
+      } else {
+        document.getElementById('panelResult').textContent = '❌ 未找到面板元素，请刷新页面';
+      }
+    }
+
+    function copyCode() {
+      const code = `window.__disableAutoLayout = true;
+document.addEventListener('click', (e) => {
+  const node = e.target.closest('.canvas-node');
+  if (node) {
+    console.log('节点点击', {
+      position: node.style.left + ', ' + node.style.top,
+      transform: window.getComputedStyle(node).transform
+    });
+  }
+});`;
+      navigator.clipboard.writeText(code);
+      alert('✅ 代码已复制！请粘贴到浏览器控制台执行');
+    }
+
+    function copyDragCode() {
+      const code = `let dragCount = 0, lastPos = null;
+document.addEventListener('mousemove', (e) => {
+  if (e.buttons === 1) {
+    dragCount++;
+    const currentPos = { x: e.clientX, y: e.clientY };
+    if (lastPos) {
+      const delta = Math.sqrt(Math.pow(currentPos.x - lastPos.x, 2) + Math.pow(currentPos.y - lastPos.y, 2));
+      if (delta > 50) console.warn('⚠️ 检测到跳跃:', delta + 'px');
+    }
+    lastPos = currentPos;
+  }
+});`;
+      navigator.clipboard.writeText(code);
+      alert('✅ 拖拽诊断代码已复制！');
+    }
+
+    function applyFix() {
+      alert('🚀 将在下一步应用企业级修复方案！\n\n包含：\n1. 固定布局（禁用flex自适应）\n2. 节流拖拽更新\n3. 移除自动fitView\n4. 禁用ResizeObserver\n5. 简化事件绑定');
+    }
+  </script>
+</body>
+</html>

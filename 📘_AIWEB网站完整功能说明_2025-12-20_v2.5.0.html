@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>AIWEB网站完整功能说明</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">AIWEB网站完整功能说明</h1>
+</header>
+<h1 id="aiweb网站完整功能说明文档">AIWEB网站完整功能说明文档</h1>
+<p><strong>版本</strong>: v2.5.0<br />
+<strong>日期</strong>: 2025-12-20<br />
+<strong>文档类型</strong>: 完整功能截图说明PDF</p>
+<hr />
+<h2 id="目录">📋 目录</h2>
+<ol type="1">
+<li><a href="#网站概述">网站概述</a></li>
+<li><a href="#首页板块">首页板块</a></li>
+<li><a href="#ai智能体板块">AI智能体板块</a></li>
+<li><a href="#产品与服务板块">产品与服务板块</a></li>
+<li><a href="#解决方案板块">解决方案板块</a></li>
+<li><a href="#后台管理板块">后台管理板块</a></li>
+<li><a href="#附录所有功能清单">附录：所有功能清单</a></li>
+</ol>
+<hr />
+<h2 id="网站概述">网站概述</h2>
+<h3 id="网站定位">网站定位</h3>
+<p>AIWEB是一个集成了智能制造、AI营销、设备全生命周期管理等多功能的企业级Web平台。</p>
+<h3 id="核心技术栈">核心技术栈</h3>
+<ul>
+<li><strong>前端</strong>: Vue 3 + Element Plus + ECharts</li>
+<li><strong>后端</strong>: Node.js + Express + SQLite</li>
+<li><strong>部署</strong>: 支持云端/内网双模式</li>
+</ul>
+<h3 id="访问方式">访问方式</h3>
+<ul>
+<li><strong>开发环境</strong>: http://localhost:3002</li>
+<li><strong>生产环境</strong>: http://localhost:3000</li>
+</ul>
+<hr />
+<h2 id="首页板块">首页板块</h2>
+<h3 id="顶部导航栏">1. 顶部导航栏</h3>
+<figure>
+<img src="导航栏" alt="顶部导航栏截图位置" />
+<figcaption aria-hidden="true">顶部导航栏截图位置</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>中英文切换</strong>:
+支持简体中文/English双语切换 - <strong>导航菜单</strong>:
+首页、AI智能体、产品与服务、解决方案、关于我们 -
+<strong>二级菜单</strong>: - AI智能体 →
+明升AICRM、AIMES助手、设备管理、拧紧数据分析等 - 产品与服务 →
+产品系列、安彤工单系统、学习培训</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>位置: 页面顶部固定栏
+路径: src/components/Header.vue
+功能卡片: 
+  ┌─────────────────────────────────────────────┐
+  │ [Logo] 首页 AI智能体▼ 产品与服务▼ 解决方案 │
+  │                           关于我们  [EN/中] │
+  └─────────────────────────────────────────────┘</code></pre>
+<hr />
+<h3 id="banner轮播图">2. Banner轮播图</h3>
+<figure>
+<img src="首页顶部" alt="Banner轮播截图位置" />
+<figcaption aria-hidden="true">Banner轮播截图位置</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>自动播放</strong>:
+5秒自动切换，支持手动切换 - <strong>朦胧特效</strong>:
+可调节背景模糊度（0-100%） - <strong>响应式</strong>:
+自适应PC/移动端</p>
+<p><strong>后台管理</strong>: - 位置: 后台管理 → 首页布局管理 →
+Banner管理 - 支持: 上传图片、设置标题、描述、链接</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>功能卡片:
+  ┌──────────────────────────────────────┐
+  │  [大图背景 + 朦胧效果]               │
+  │                                      │
+  │  主标题: 智能制造 引领未来           │
+  │  副标题: AI驱动的工业4.0解决方案     │
+  │  [了解更多] 按钮                     │
+  │                                      │
+  │  [● ○ ○] 轮播指示器                 │
+  └──────────────────────────────────────┘</code></pre>
+<hr />
+<h3 id="ai智能体展示区">3. AI智能体展示区</h3>
+<figure>
+<img src="首页中部" alt="AI智能体卡片截图" />
+<figcaption aria-hidden="true">AI智能体卡片截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>10个智能体</strong>: 1.
+明升AICRM - 智能客户关系管理 2. AIMES助手 - 智能制造执行系统 3.
+设备运营大脑 - 设备全生命周期管理 4. 拧紧数据分析 - 拧紧工艺智能分析 5.
+套筒工具选型 - 智能工具推荐 6. 工艺改进验证 - 拧紧工艺优化 7.
+安彤智能学习 - AI自动学习引擎 8. 产品技术小课堂 - 多媒体培训系统 9.
+智能算账系统 - 成本收益分析 10. AI国际营销中台 - 全球营销自动化</p>
+<p><strong>卡片尺寸</strong>: 标准尺寸（已从之前的尺寸缩小20%）</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>布局: 4列网格
+卡片结构:
+  ┌────────────────┐
+  │  [图标] 名称   │
+  │  功能描述      │
+  │  [标签1][标签2]│
+  │  [新功能] 徽章 │
+  │  [了解更多] 按钮│
+  └────────────────┘</code></pre>
+<p><strong>交互功能</strong>: - <strong>悬停效果</strong>: 卡片上浮 +
+阴影加深 - <strong>点击跳转</strong>: 跳转到对应智能体详情页 -
+<strong>徽章标识</strong>: “新功能”、“热门”、“推荐”等</p>
+<hr />
+<h3 id="明星产品展示区-已缩小30">4. 明星产品展示区 ⭐
+<strong>(已缩小30%)</strong></h3>
+<figure>
+<img src="首页中下部" alt="明星产品卡片截图" />
+<figcaption aria-hidden="true">明星产品卡片截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>多媒体支持</strong>:
+视频、图片、GIF动画、网页链接 - <strong>3个展位</strong>:
+可配置3个明星产品 - <strong>自动播放</strong>: 视频自动循环播放</p>
+<p><strong>卡片尺寸</strong> (已优化): - <strong>桌面端</strong>: -
+媒体高度: 280px（原400px缩小30%） - 内边距: 22px（原32px缩小30%） -
+标题字号: 17px（原24px缩小30%） - 描述字号: 11px（原15px缩小30%） -
+<strong>移动端</strong>: - 媒体高度: 175px（原250px缩小30%）</p>
+<p><strong>后台管理</strong>: - 位置: 后台管理 → 首页布局管理 →
+明星产品管理 - 功能: - 上传图片/视频/GIF - 设置产品名称、描述、链接 -
+调整显示顺序 - 设置主题色（浅色/深色）</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>卡片结构:
+  ┌──────────────────┐
+  │ [视频/图片媒体]  │  ← 280px高度
+  │                  │
+  ├──────────────────┤
+  │ 产品名称         │  ← 17px字号
+  │ 产品描述...      │  ← 11px字号
+  │ [查看详情] 按钮  │
+  └──────────────────┘</code></pre>
+<hr />
+<h3 id="产品与服务展示区-已缩小30">5. 产品与服务展示区 ⭐
+<strong>(已缩小30%)</strong></h3>
+<figure>
+<img src="首页底部" alt="产品服务卡片截图" />
+<figcaption aria-hidden="true">产品服务卡片截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>产品系列</strong>:
+显示所有产品分类（最多6个） - <strong>可拖拽排序</strong>:
+支持前台拖拽重新排列（需开启拖拽模式） - <strong>点击跳转</strong>:
+跳转到产品详情页</p>
+<p><strong>卡片尺寸</strong> (已优化): - <strong>图片高度</strong>:
+168px（原240px缩小30%） - <strong>内边距</strong>: 20px（原28px缩小30%）
+- <strong>标题字号</strong>: 15px（原22px缩小30%） -
+<strong>描述字号</strong>: 10px（原14px缩小30%）</p>
+<p><strong>拖拽功能</strong>: - <strong>开启方式</strong>: 1. 快捷键
+<code>Ctrl+Shift+D</code> 开启拖拽模式 2. 点击右下角”拖拽排序”按钮 -
+<strong>操作方式</strong>: 拖拽卡片到目标位置松开 -
+<strong>保存位置</strong>: 自动保存到localStorage</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>3列网格布局:
+  ┌──────┐ ┌──────┐ ┌──────┐
+  │ [图] │ │ [图] │ │ [图] │  ← 168px高度
+  ├──────┤ ├──────┤ ├──────┤
+  │名称  │ │名称  │ │名称  │  ← 15px字号
+  │描述  │ │描述  │ │描述  │  ← 10px字号
+  │[链接]│ │[链接]│ │[链接]│
+  └──────┘ └──────┘ └──────┘</code></pre>
+<hr />
+<h3 id="询盘按钮-可拖拽">6. 询盘按钮 (可拖拽)</h3>
+<figure>
+<img src="右下角悬浮" alt="询盘按钮截图" />
+<figcaption aria-hidden="true">询盘按钮截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>悬浮位置</strong>:
+默认右下角固定 - <strong>可拖拽</strong>: 可自由拖动到任意位置 -
+<strong>持久化</strong>: 位置保存到localStorage</p>
+<p><strong>操作方式</strong>: - <strong>开启拖拽</strong>:
+<code>Ctrl+Shift+I</code> 或点击按钮右上角拖动图标 -
+<strong>拖动</strong>: 按住鼠标拖动到目标位置 - <strong>锁定</strong>:
+松开鼠标自动锁定位置</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>悬浮按钮:
+  ┌────────────┐
+  │ [信封图标] │
+  │  在线询盘  │
+  └────────────┘
+  可拖拽到屏幕任意位置</code></pre>
+<hr />
+<h2 id="ai智能体板块">AI智能体板块</h2>
+<h3 id="明升aicrm---智能客户关系管理">1. 明升AICRM -
+智能客户关系管理</h3>
+<h4 id="客户360画像">1.1 客户360画像</h4>
+<figure>
+<img src="AICRM%20→%20客户管理" alt="客户360画像截图" />
+<figcaption aria-hidden="true">客户360画像截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>基本信息</strong>:
+客户名称、行业、规模、地区 - <strong>交互历史</strong>:
+通话记录、邮件往来、会议记录 - <strong>购买历史</strong>:
+历史订单、产品偏好、购买周期 - <strong>财务信息</strong>:
+信用额度、回款记录、欠款情况 - <strong>关系网络</strong>:
+联系人关系图谱、决策链分析</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>页面布局:
+  ┌─────────────────────────────────────┐
+  │ 客户名称: XX公司      [编辑] [导出]│
+  ├─────────────┬───────────────────────┤
+  │ 基本信息卡片│  交互时间线           │
+  │ - 行业      │  ├─ 2025-12-15 通话  │
+  │ - 规模      │  ├─ 2025-12-10 邮件  │
+  │ - 地区      │  └─ 2025-12-05 会议  │
+  ├─────────────┼───────────────────────┤
+  │ 购买历史    │  财务信息             │
+  │ [柱状图]    │  [饼图]               │
+  └─────────────┴───────────────────────┘</code></pre>
+<hr />
+<h4 id="客户联系人管理">1.2 客户联系人管理</h4>
+<figure>
+<img src="AICRM%20→%20联系人管理" alt="联系人管理截图" />
+<figcaption aria-hidden="true">联系人管理截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>联系人列表</strong>:
+所有联系人信息（姓名、职位、电话、邮箱） - <strong>关系图谱</strong>:
+可视化展示决策链和影响力 - <strong>批量操作</strong>:
+导入/导出、批量编辑、批量发送邮件 - <strong>智能标签</strong>:
+自动标记”决策者”、“影响者”、“使用者”</p>
+<p><strong>关系图谱</strong>: - <strong>节点颜色</strong>: - 红色 =
+决策者 - 蓝色 = 影响者 - 绿色 = 使用者 - <strong>节点大小</strong>:
+根据影响力权重调整 - <strong>连线</strong>: 表示汇报关系和协作关系</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>双栏布局:
+  ┌──────────────┬──────────────────────┐
+  │ 联系人列表   │  关系图谱            │
+  │ ┌──────────┐│  [力导向图]          │
+  │ │姓名 职位 ││    ●(决策者)         │
+  │ │电话 邮箱 ││   / \                │
+  │ └──────────┘│  ●   ●(影响者)       │
+  │ [新增联系人]│                      │
+  └──────────────┴──────────────────────┘</code></pre>
+<hr />
+<h4 id="客户沙盘分析">1.3 客户沙盘分析</h4>
+<figure>
+<img src="AICRM%20→%20沙盘分析" alt="客户沙盘截图" />
+<figcaption aria-hidden="true">客户沙盘截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>客户分布地图</strong>:
+3D地球展示全球客户分布 - <strong>行业分析</strong>:
+按行业统计客户数量和销售额 - <strong>客户价值矩阵</strong>:
+按购买频次和金额分类客户 - <strong>流失风险预警</strong>:
+AI预测高风险流失客户 - <strong>策略推荐</strong>:
+针对不同客户群体推荐营销策略</p>
+<p><strong>沙盘组件</strong>: 1. <strong>客户分布</strong>: 3D地球 +
+标记点 2. <strong>行业分布</strong>: 饼图 3. <strong>价值矩阵</strong>:
+散点图（X轴=频次，Y轴=金额） 4. <strong>风险预警</strong>: 列表 +
+风险等级</p>
+<p><strong>策略推荐示例</strong>: - <strong>高价值客户</strong>:
+定期拜访、专属服务、VIP活动 - <strong>潜力客户</strong>:
+产品演示、试用优惠、技术交流 - <strong>流失风险</strong>:
+挽留优惠、问题调研、关怀回访</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>四象限布局:
+  ┌──────────────┬──────────────┐
+  │ 客户分布地图 │  行业分布    │
+  │ [3D地球]     │  [饼图]      │
+  ├──────────────┼──────────────┤
+  │ 客户价值矩阵 │  风险预警    │
+  │ [散点图]     │  [列表]      │
+  └──────────────┴──────────────┘
+  [导出PDF] [策略推荐]</code></pre>
+<hr />
+<h4 id="销售漏斗与目标管理">1.4 销售漏斗与目标管理</h4>
+<figure>
+<img src="AICRM%20→%20销售管理" alt="销售漏斗截图" />
+<figcaption aria-hidden="true">销售漏斗截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>销售漏斗</strong>:
+可视化展示线索→商机→报价→成交全流程 - <strong>目标设置</strong>:
+设置月度/季度/年度销售目标 - <strong>进度追踪</strong>:
+实时监控目标完成率 - <strong>AI预测</strong>:
+基于历史数据预测本月成交概率</p>
+<p><strong>漏斗阶段</strong>: 1. <strong>线索</strong>:
+100个（转化率40%） 2. <strong>商机</strong>: 40个（转化率50%） 3.
+<strong>报价</strong>: 20个（转化率60%） 4. <strong>成交</strong>:
+12个（成交金额¥2,400万）</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>漏斗图 + 目标对比:
+  ┌─────────────────────────────┐
+  │   线索 [100]                │
+  │     ↓ 40%                   │
+  │   商机 [40]                 │
+  │     ↓ 50%                   │
+  │   报价 [20]                 │
+  │     ↓ 60%                   │
+  │   成交 [12] ¥2400万         │
+  ├─────────────────────────────┤
+  │ 本月目标: ¥3000万           │
+  │ 完成率: 80% [进度条]        │
+  │ AI预测: 88% 达成概率        │
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h4 id="投标预测ai">1.5 投标预测AI</h4>
+<figure>
+<img src="AICRM%20→%20投标预测" alt="投标预测截图" />
+<figcaption aria-hidden="true">投标预测截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>项目管理</strong>:
+创建投标项目、填写项目信息 - <strong>竞争对手分析</strong>:
+最多添加5个竞争对手 - <strong>多轮对比</strong>:
+技术、价格、服务、品牌多维度对比 - <strong>胜率预测</strong>:
+AI计算中标概率 - <strong>甘特图</strong>: 项目进度可视化管理</p>
+<p><strong>5竞对多维度对比</strong>: - <strong>技术评分</strong>:
+0-100分 - <strong>价格评分</strong>: 0-100分 -
+<strong>服务评分</strong>: 0-100分 - <strong>品牌评分</strong>: 0-100分
+- <strong>综合得分</strong>: 加权平均</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>项目列表 + 分析面板:
+  ┌──────────────┬─────────────────────┐
+  │ 项目列表     │  竞争对手对比       │
+  │ ┌──────────┐│  [雷达图]           │
+  │ │项目A     ││   竞对1 ●           │
+  │ │胜率:75%  ││   竞对2 ●           │
+  │ └──────────┘│   竞对3 ●           │
+  │ [新建项目]  │  [详细评分表]       │
+  │             │  [甘特图]           │
+  └──────────────┴─────────────────────┘</code></pre>
+<hr />
+<h4 id="企业产品矩阵管理">1.6 企业产品矩阵管理</h4>
+<figure>
+<img src="AICRM%20→%20产品矩阵" alt="产品矩阵截图" />
+<figcaption aria-hidden="true">产品矩阵截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>双模式</strong>: 列表模式 +
+矩阵模式 - <strong>产品分类</strong>: 按产品线/价格区间/市场定位分类 -
+<strong>竞争力分析</strong>: 市场份额、竞争优势、价格区间 -
+<strong>数据源增强</strong>: 支持本地数据 + API数据双重来源</p>
+<p><strong>矩阵视图</strong>: - <strong>X轴</strong>: 市场份额（0-100%）
+- <strong>Y轴</strong>: 竞争力得分（0-100分） -
+<strong>气泡大小</strong>: 产品销售额 - <strong>气泡颜色</strong>:
+产品分类</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>双模式切换:
+  [列表模式] [矩阵模式] ← 切换按钮
+  
+  矩阵模式:
+  ┌─────────────────────────────┐
+  │ 竞争力                      │
+  │ 100│    ●(明星产品)         │
+  │  80│  ●(问题产品)           │
+  │  60│        ●(金牛产品)     │
+  │  40│  ●(瘦狗产品)           │
+  │   0└───────────────────→    │
+  │    0   25   50   75   100   │
+  │           市场份额          │
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h4 id="自然语言交互">1.7 自然语言交互</h4>
+<figure>
+<img src="AICRM%20→%20AI助手" alt="自然语言截图" />
+<figcaption aria-hidden="true">自然语言截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>语音输入</strong>: 支持语音识别
+- <strong>智能理解</strong>: 自然语言解析用户意图 -
+<strong>快捷操作</strong>: - “查看XX客户信息” - “创建新联系人” -
+“导出本月销售报表” - “显示高风险客户”</p>
+<p><strong>支持的命令类型</strong>: 1. <strong>查询类</strong>:
+查看、显示、搜索 2. <strong>操作类</strong>: 创建、编辑、删除、导出 3.
+<strong>分析类</strong>: 分析、对比、预测、推荐</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>聊天界面:
+  ┌─────────────────────────────┐
+  │ AI助手对话                  │
+  ├─────────────────────────────┤
+  │ 用户: 查看本月高价值客户    │
+  │ AI: 已为您筛选出12个客户... │
+  │     [查看列表]              │
+  │                             │
+  │ 用户: 导出PDF报告           │
+  │ AI: 正在生成...             │
+  │     [下载PDF]               │
+  ├─────────────────────────────┤
+  │ [输入框] [🎤语音] [发送]   │
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h3 id="aimes助手---智能制造执行系统-新增三大功能">2. AIMES助手 -
+智能制造执行系统 ⭐ <strong>(新增三大功能)</strong></h3>
+<h4 id="mes数据接口配置">2.1 MES数据接口配置</h4>
+<figure>
+<img src="AIMES%20→%20MES接口" alt="MES接口配置截图" />
+<figcaption aria-hidden="true">MES接口配置截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>支持系统</strong>:
+SAP、Oracle、用友、金蝶、自定义系统 - <strong>接口配置</strong>: -
+API地址设置 - 认证方式（API Key / OAuth 2.0 / Basic Auth） -
+同步频率（实时/每小时/每天） - 数据范围选择 - <strong>连接测试</strong>:
+一键测试连接状态 - <strong>同步监控</strong>: -
+连接状态（已连接/未连接） - 同步数据量统计 - 网络延迟监控 -
+<strong>同步日志</strong>: 记录所有同步操作历史</p>
+<p><strong>操作流程</strong>: 1. 选择MES系统类型 2.
+填写API地址和认证信息 3. 点击”测试连接”验证配置 4.
+设置同步频率和数据范围 5. 点击”启动同步”开始数据同步</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>配置对话框:
+  ┌─────────────────────────────┐
+  │ MES数据接口配置             │
+  ├─────────────────────────────┤
+  │ 系统类型: [SAP ▼]           │
+  │ API地址:  [输入框]          │
+  │ 认证方式: [API Key ▼]       │
+  │ API Key:  [输入框]          │
+  │ 同步频率: [实时 ▼]          │
+  │ 数据范围: [☑生产 ☑质量]    │
+  ├─────────────────────────────┤
+  │ 连接状态: ● 已连接          │
+  │ 同步数据: 1,250 条          │
+  │ 网络延迟: 45ms              │
+  ├─────────────────────────────┤
+  │ [测试连接] [启动同步] [停止]│
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h4 id="手动录入生产数据">2.2 手动录入生产数据</h4>
+<figure>
+<img src="AIMES%20→%20数据录入" alt="手动录入截图" />
+<figcaption aria-hidden="true">手动录入截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>三类数据</strong>: 1.
+<strong>生产数据</strong>:
+生产线、工单号、产品型号、计划/实际产量、合格率 2.
+<strong>质量数据</strong>: 检验批次、检验项目、合格数、不良数、不良原因
+3. <strong>设备数据</strong>: 设备编号、运行状态、故障类型、停机时间</p>
+<p><strong>表单验证</strong>: - 必填项检查 - 数值范围验证 - 日期格式验证
+- 逻辑关系验证（如：实际产量≤计划产量）</p>
+<p><strong>操作流程</strong>: 1. 选择数据类型标签页 2.
+填写必填和选填字段 3. 点击”提交”保存数据 4. 系统自动更新相关图表</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>录入对话框:
+  ┌─────────────────────────────┐
+  │ 手动录入数据               │
+  │ [生产数据][质量数据][设备数据]│
+  ├─────────────────────────────┤
+  │ 生产线: [输入框] *          │
+  │ 工单号: [输入框] *          │
+  │ 产品型号: [输入框] *        │
+  │ 计划产量: [数字] *          │
+  │ 实际产量: [数字] *          │
+  │ 合格率: [数字] %            │
+  │ 生产日期: [日期选择器] *    │
+  │ 班次: [白班▼]               │
+  │ 备注: [文本框]              │
+  ├─────────────────────────────┤
+  │ [重置] [提交]               │
+  └─────────────────────────────┘
+  * 必填项</code></pre>
+<hr />
+<h4 id="健康指数与质量趋势图">2.3 健康指数与质量趋势图</h4>
+<figure>
+<img src="AIMES%20→%20数据分析" alt="健康指数图表截图" />
+<figcaption aria-hidden="true">健康指数图表截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>:</p>
+<h5 id="a.-设备健康指数图">A. 设备健康指数图</h5>
+<ul>
+<li><strong>图表类型</strong>: 折线图</li>
+<li><strong>监控设备</strong>:
+<ol type="1">
+<li>CNC加工中心-B02（红色预警线）</li>
+<li>焊接机器人-W05（绿色正常线）</li>
+<li>冲压设备-P01（蓝色优良线）</li>
+</ol></li>
+<li><strong>时间跨度</strong>: 最近7天</li>
+<li><strong>健康指数</strong>: 0-100分
+<ul>
+<li>90-100分: 优秀（绿色）</li>
+<li>70-89分: 良好（蓝色）</li>
+<li>50-69分: 预警（橙色）</li>
+<li>&lt;50分: 故障（红色）</li>
+</ul></li>
+</ul>
+<p><strong>数据示例</strong>:</p>
+<pre><code>CNC-B02: 85→82→78→75→70→68→68 (持续下降，需维护)
+焊接机器人-W05: 88→89→87→86→85→85→86 (稳定)
+冲压设备-P01: 95→94→93→93→92→92→92 (优秀)</code></pre>
+<h5 id="b.-质量趋势分析图">B. 质量趋势分析图</h5>
+<ul>
+<li><strong>图表类型</strong>: 组合图（折线图 + 柱状图）</li>
+<li><strong>指标</strong>:
+<ol type="1">
+<li>合格率（折线）: 98.5%→99.1%→98.8%→99.3%…</li>
+<li>不良数（柱状图）: 15→9→12→7→8→11→8</li>
+<li>批次数（折线）: 8→10→9→11→10→9→10</li>
+</ol></li>
+<li><strong>时间跨度</strong>: 最近7天</li>
+</ul>
+<p><strong>截图说明</strong>:</p>
+<pre><code>双图表布局:
+  ┌──────────────────────────────┐
+  │ 设备健康指数趋势             │
+  │ [折线图]                     │
+  │ 100│     ━ 冲压设备-P01      │
+  │  90│   ━ 焊接机器人-W05      │
+  │  80│ ━ CNC-B02 (预警)        │
+  │  70│                         │
+  │    └─────────────────────→  │
+  │      12/14 12/15 ... 12/20  │
+  └──────────────────────────────┘
+  
+  ┌──────────────────────────────┐
+  │ 质量趋势分析                 │
+  │ [组合图]                     │
+  │100%│ ━ 合格率               │
+  │ 20│ ▌不良数                │
+  │ 10│ ▌▌▌▌▌▌▌               │
+  │  0└─────────────────────→  │
+  │    12/14 12/15 ... 12/20    │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h3 id="设备运营大脑---设备全生命周期管理">3. 设备运营大脑 -
+设备全生命周期管理</h3>
+<h4 id="设备台账管理">3.1 设备台账管理</h4>
+<figure>
+<img src="设备管理%20→%20设备台账" alt="设备台账截图" />
+<figcaption aria-hidden="true">设备台账截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>设备信息</strong>:
+设备编号、名称、型号、制造商、采购日期 - <strong>技术参数</strong>:
+额定功率、工作压力、运行速度等 - <strong>维护记录</strong>:
+保养计划、维修历史、备件更换 - <strong>折旧计算</strong>:
+自动计算设备净值和残值</p>
+<p><strong>卡片尺寸</strong>: 已缩小20%（根据之前优化）</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>设备卡片网格:
+  ┌──────────┐ ┌──────────┐ ┌──────────┐
+  │ 设备编号 │ │ 设备编号 │ │ 设备编号 │
+  │ CNC-001  │ │ WR-002   │ │ PS-003   │
+  ├──────────┤ ├──────────┤ ├──────────┤
+  │ 状态:运行│ │ 状态:维护│ │ 状态:停机│
+  │ 健康:85% │ │ 健康:92% │ │ 健康:45% │
+  │ [详情]   │ │ [详情]   │ │ [详情]   │
+  └──────────┘ └──────────┘ └──────────┘</code></pre>
+<hr />
+<h4 id="预测性维护">3.2 预测性维护</h4>
+<figure>
+<img src="设备管理%20→%20预测维护" alt="预测维护截图" />
+<figcaption aria-hidden="true">预测维护截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>AI预测</strong>:
+基于历史数据预测故障时间 - <strong>维护建议</strong>:
+自动生成维护计划和备件清单 - <strong>风险评估</strong>:
+计算设备故障风险等级 - <strong>成本分析</strong>: 对比预防性维护 vs
+事后维修成本</p>
+<p><strong>预测模型</strong>: - <strong>输入参数</strong>:
+运行时长、振动数据、温度曲线、历史故障 - <strong>输出结果</strong>:
+剩余寿命预测、故障概率、建议维护时间</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>预测面板:
+  ┌─────────────────────────────┐
+  │ 设备: CNC-B02               │
+  │ 剩余寿命: 45天              │
+  │ 故障概率: 68% (高风险)      │
+  ├─────────────────────────────┤
+  │ 建议维护时间: 2025-12-25    │
+  │ 预计停机时长: 4小时         │
+  │ 所需备件:                   │
+  │  - 轴承 x2                  │
+  │  - 密封圈 x4                │
+  │  - 润滑油 2L                │
+  ├─────────────────────────────┤
+  │ 成本对比:                   │
+  │ 预防维护: ¥8,000            │
+  │ 事后维修: ¥35,000           │
+  │ 节省: ¥27,000 (77%)         │
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h4 id="设备效率分析-oee">3.3 设备效率分析 (OEE)</h4>
+<figure>
+<img src="设备管理%20→%20效率分析" alt="OEE分析截图" />
+<figcaption aria-hidden="true">OEE分析截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>OEE计算</strong>: 综合设备效率 =
+可用率 × 性能率 × 质量率 - <strong>六大损失分析</strong>: 1. 故障损失 2.
+换模损失 3. 空转短暂停机 4. 速度降低 5. 启动损失 6. 不良品损失 -
+<strong>趋势对比</strong>: 日/周/月OEE趋势对比 -
+<strong>基准对比</strong>: 与行业标准/历史最佳对比</p>
+<p><strong>OEE等级</strong>: - <strong>世界级</strong>: ≥85% -
+<strong>优秀</strong>: 75-84% - <strong>良好</strong>: 65-74% -
+<strong>需改进</strong>: &lt;65%</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>OEE仪表盘:
+  ┌─────────────────────────────┐
+  │ 综合设备效率 (OEE)          │
+  │      [环形进度图]            │
+  │         78.5%               │
+  │        (良好)               │
+  ├─────────────────────────────┤
+  │ 可用率: 92.5%               │
+  │ 性能率: 88.3%               │
+  │ 质量率: 96.1%               │
+  ├─────────────────────────────┤
+  │ 六大损失分布:               │
+  │ [柱状图]                    │
+  │ 故障15% 换模10% 速度8%...   │
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h4 id="备件库存管理">3.4 备件库存管理</h4>
+<figure>
+<img src="设备管理%20→%20备件库存" alt="备件管理截图" />
+<figcaption aria-hidden="true">备件管理截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>库存监控</strong>:
+实时显示备件库存数量 - <strong>安全库存</strong>: 设置最低库存预警线 -
+<strong>自动补货</strong>: 低于安全库存自动生成采购申请 -
+<strong>使用追踪</strong>: 记录备件领用和归还历史</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>备件列表:
+  ┌──────────────────────────────┐
+  │ 备件名称    当前库存  安全库存│
+  │ 轴承 SKF6205   8      10 ⚠️ │
+  │ 密封圈 NBR    25      15 ✓  │
+  │ 润滑油 68#    12L     10L ✓ │
+  │ [补货申请] [使用记录]        │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h3 id="拧紧数据分析智能体">4. 拧紧数据分析智能体</h3>
+<h4 id="拧紧曲线分析">4.1 拧紧曲线分析</h4>
+<figure>
+<img src="拧紧分析%20→%20曲线分析" alt="拧紧曲线截图" />
+<figcaption aria-hidden="true">拧紧曲线截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>三维曲线</strong>:
+扭矩-角度-时间立体曲线 - <strong>曲线类型</strong>: - 扭矩-角度曲线 -
+扭矩-时间曲线 - 角度-时间曲线 - <strong>AI分析</strong>: - 异常点检测 -
+拧紧质量评估 - 工艺参数建议 - <strong>对比分析</strong>:
+多条曲线叠加对比 - <strong>导出功能</strong>: 导出PDF报告/Excel数据</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>曲线分析界面:
+  ┌──────────────────────────────┐
+  │ [3D曲线图]                   │
+  │    扭矩(Nm)                  │
+  │      ↑                       │
+  │     /│\                      │
+  │    / │ \  曲线1(合格)        │
+  │   /  │  \ 曲线2(异常)        │
+  │  /   │   \                   │
+  │ └────┼────→ 角度(°)         │
+  │      ↓                       │
+  │    时间(s)                   │
+  ├──────────────────────────────┤
+  │ AI分析结果:                  │
+  │ ✓ 曲线斜率正常               │
+  │ ⚠️ 峰值扭矩偏低5%            │
+  │ 建议: 增加预紧扭矩至25Nm     │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h4 id="统计分析图表">4.2 统计分析图表</h4>
+<figure>
+<img src="拧紧分析%20→%20统计分析" alt="统计图表截图" />
+<figcaption aria-hidden="true">统计图表截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>CPK分析</strong>:
+过程能力指数计算 - <strong>直方图</strong>: 扭矩分布直方图 -
+<strong>控制图</strong>: X-R控制图监控过程稳定性 -
+<strong>散点图</strong>: 扭矩-角度散点分布</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>四象限图表:
+  ┌──────────┬──────────┐
+  │ CPK分析  │ 直方图   │
+  │ CPK=1.45 │ [柱状图] │
+  ├──────────┼──────────┤
+  │ 控制图   │ 散点图   │
+  │ [折线图] │ [点阵图] │
+  └──────────┴──────────┘</code></pre>
+<hr />
+<h3 id="套筒工具选型智能体">5. 套筒工具选型智能体</h3>
+<h4 id="智能推荐系统">5.1 智能推荐系统</h4>
+<figure>
+<img src="工具选型%20→%20智能推荐" alt="套筒选型截图" />
+<figcaption aria-hidden="true">套筒选型截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>输入参数</strong>:
+螺栓型号、扭矩要求、工作环境 - <strong>AI推荐</strong>: -
+推荐套筒型号（Top 3） - 推荐品牌（Atlas/Desoutter/HYTORC等） - 价格区间
+- 库存情况 - <strong>对比分析</strong>: 多个方案对比表 -
+<strong>生成报价单</strong>: Excel报价单导出</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>选型向导:
+  ┌─────────────────────────────┐
+  │ 第1步: 螺栓参数             │
+  │ 螺栓型号: [M12 ▼]           │
+  │ 扭矩要求: [50 Nm]           │
+  │ 数量: [100 颗]              │
+  ├─────────────────────────────┤
+  │ 第2步: 工作环境             │
+  │ 环境: [室内▼]               │
+  │ 频率: [高频▼]               │
+  ├─────────────────────────────┤
+  │ 推荐方案:                   │
+  │ ┌─────────┬──────┬────────┐│
+  │ │方案1    │Atlas │¥15,000 ││
+  │ │方案2    │Desoutter│¥18,000││
+  │ │方案3    │HYTORC│¥22,000 ││
+  │ └─────────┴──────┴────────┘│
+  │ [生成报价单] [查看详情]     │
+  └─────────────────────────────┘</code></pre>
+<hr />
+<h3 id="其他智能体简介">6. 其他智能体简介</h3>
+<h4 id="工艺改进验证智能体">6.1 工艺改进验证智能体</h4>
+<ul>
+<li><strong>功能</strong>: 拧紧工艺参数优化、验证实验设计</li>
+<li><strong>特色</strong>: DOE实验设计、响应面分析</li>
+</ul>
+<h4 id="安彤智能学习">6.2 安彤智能学习</h4>
+<ul>
+<li><strong>功能</strong>: AI自动学习引擎、知识库管理</li>
+<li><strong>特色</strong>: 主动学习、智能推荐、多语言支持</li>
+</ul>
+<h4 id="产品技术小课堂">6.3 产品技术小课堂</h4>
+<ul>
+<li><strong>功能</strong>: 在线培训课程、多媒体资源管理</li>
+<li><strong>特色</strong>: 视频/文档/外部链接、进度追踪</li>
+</ul>
+<h4 id="智能算账系统">6.4 智能算账系统</h4>
+<ul>
+<li><strong>功能</strong>: 成本收益分析、ROI计算</li>
+<li><strong>特色</strong>: 动态定价模型、方案对比</li>
+</ul>
+<h4 id="ai国际营销中台">6.5 AI国际营销中台</h4>
+<ul>
+<li><strong>功能</strong>: 全球营销自动化、多语言内容生成</li>
+<li><strong>特色</strong>: SEO优化、社交媒体管理、数据分析</li>
+</ul>
+<hr />
+<h2 id="产品与服务板块">产品与服务板块</h2>
+<h3 id="产品系列展示">1. 产品系列展示</h3>
+<figure>
+<img src="产品服务%20→%20产品系列" alt="产品系列截图" />
+<figcaption aria-hidden="true">产品系列截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>4级分类</strong>: 一级分类 →
+二级分类 → 三级分类 → 产品详情 - <strong>示例分类</strong>:
+<code>拧紧工具   ├─ 电动扳手   │  ├─ 角向扳手   │  │  └─ Atlas Copco ETP系列   │  └─ 直柄扳手   └─ 气动扳手</code>
+- <strong>搜索筛选</strong>: 按品牌/型号/价格/应用场景筛选 -
+<strong>产品对比</strong>: 最多4个产品对比</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>产品列表页:
+  ┌─────────────────────────────┐
+  │ [搜索框] [筛选▼] [对比]     │
+  ├─────────────────────────────┤
+  │ 拧紧工具 &gt; 电动扳手 &gt; 角向  │
+  ├───────┬───────┬───────┬─────┤
+  │ [图] │ [图] │ [图] │ [图]│
+  │ Atlas│ Deso-│HYTORC│国产 │
+  │ ETP  │utter │ Avanti│扳手 │
+  │¥15k  │¥18k  │¥22k  │¥8k  │
+  │[详情]│[详情]│[详情]│[详情]│
+  └───────┴───────┴───────┴─────┘</code></pre>
+<hr />
+<h3 id="安彤工单系统">2. 安彤工单系统</h3>
+<figure>
+<img src="产品服务%20→%20安彤工单" alt="工单系统截图" />
+<figcaption aria-hidden="true">工单系统截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>工单创建</strong>:
+填写设备信息、故障描述、优先级 - <strong>工单分配</strong>:
+自动分配或手动指派工程师 - <strong>进度追踪</strong>:
+实时更新工单状态（待处理/处理中/已完成） - <strong>工单统计</strong>:
+按类型/优先级/工程师统计</p>
+<p><strong>工单状态</strong>: - 🔴 待处理 - 🟡 处理中 - 🟢 已完成 - ⚫
+已关闭</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>工单列表:
+  ┌──────────────────────────────┐
+  │ [新建工单] [搜索] [筛选]     │
+  ├──────────────────────────────┤
+  │ 工单号  设备    状态  优先级 │
+  │ WO-001  CNC-01  🟡处理中 高  │
+  │ WO-002  WR-05   🟢已完成 中  │
+  │ WO-003  PS-03   🔴待处理 紧急│
+  │ [详情] [详情] [详情]         │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h3 id="学习培训系统">3. 学习培训系统</h3>
+<figure>
+<img src="产品服务%20→%20学习培训" alt="学习培训截图" />
+<figcaption aria-hidden="true">学习培训截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>课程分类</strong>:
+按技术领域/难度/时长分类 - <strong>多媒体支持</strong>:
+视频、PDF、PPT、外部链接 - <strong>学习进度</strong>:
+记录学习时长和完成度 - <strong>考试认证</strong>: 在线考试、证书颁发</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>课程列表:
+  ┌──────────────────────────────┐
+  │ 我的课程  全部课程  考试认证 │
+  ├──────────────────────────────┤
+  │ ┌────────────┐ ┌────────────┐│
+  │ │ [视频封面] │ │ [PDF图标]  ││
+  │ │ 拧紧工艺   │ │ 设备维护   ││
+  │ │ 基础培训   │ │ 手册       ││
+  │ │ 进度:60%   │ │ 已下载     ││
+  │ │ [继续学习] │ │ [查看]     ││
+  │ └────────────┘ └────────────┘│
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h2 id="解决方案板块">解决方案板块</h2>
+<h3 id="汽车行业解决方案">1. 汽车行业解决方案</h3>
+<figure>
+<img src="解决方案%20→%20汽车行业" alt="汽车方案截图" />
+<figcaption aria-hidden="true">汽车方案截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>应用场景</strong>:
+发动机装配、车身焊接、总装线 - <strong>核心产品</strong>:
+电动扳手、拧紧控制器、MES系统 - <strong>成功案例</strong>:
+上汽、一汽、长城等</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>方案详情页:
+  ┌──────────────────────────────┐
+  │ [行业Banner图]               │
+  ├──────────────────────────────┤
+  │ 痛点分析:                    │
+  │ - 扭矩精度要求高             │
+  │ - 追溯性要求严格             │
+  │ - 节拍时间紧张               │
+  ├──────────────────────────────┤
+  │ 我们的解决方案:              │
+  │ [图文混排]                   │
+  │ 1. 高精度伺服电动扳手        │
+  │ 2. 实时数据采集系统          │
+  │ 3. AI质量预测分析            │
+  ├──────────────────────────────┤
+  │ 成功案例:                    │
+  │ [客户Logo] [客户Logo]        │
+  │ [查看详情] [免费咨询]        │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h3 id="航空航天解决方案">2. 航空航天解决方案</h3>
+<h3 id="新能源解决方案">3. 新能源解决方案</h3>
+<h3 id="电子电器解决方案">4. 电子电器解决方案</h3>
+<p><em>(类似结构，篇幅原因省略)</em></p>
+<hr />
+<h2 id="后台管理板块">后台管理板块</h2>
+<h3 id="首页布局管理">1. 首页布局管理</h3>
+<figure>
+<img src="后台%20→%20首页布局" alt="首页管理截图" />
+<figcaption aria-hidden="true">首页管理截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>Banner管理</strong>:
+上传/编辑/删除轮播图 - <strong>明星产品管理</strong>: -
+上传视频/图片/GIF - 设置标题、描述、链接 - 调整显示顺序 - 设置主题色 -
+<strong>智能体卡片管理</strong>: - 开启/关闭显示 - 调整卡片顺序 -
+自定义卡片内容</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>管理面板:
+  ┌──────────────────────────────┐
+  │ [Banner管理][明星产品][智能体]│
+  ├──────────────────────────────┤
+  │ 明星产品列表:                │
+  │ ┌────────────┬───────────────┐│
+  │ │ [缩略图]   │ 产品名称      ││
+  │ │            │ [编辑][删除]  ││
+  │ │            │ ↑↓ 排序       ││
+  │ └────────────┴───────────────┘│
+  │ [+ 添加新产品]               │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h3 id="导航栏配置">2. 导航栏配置</h3>
+<figure>
+<img src="后台%20→%20导航栏管理" alt="导航配置截图" />
+<figcaption aria-hidden="true">导航配置截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>一级菜单</strong>:
+添加/编辑/删除/排序 - <strong>二级菜单</strong>: 支持无限层级子菜单 -
+<strong>链接类型</strong>: 内部路由/外部链接 -
+<strong>权限控制</strong>: 设置菜单访问权限</p>
+<p><strong>截图说明</strong>:</p>
+<pre><code>树形结构编辑:
+  ┌──────────────────────────────┐
+  │ 导航菜单树                   │
+  ├──────────────────────────────┤
+  │ ▼ 首页                       │
+  │ ▼ AI智能体                   │
+  │   ├─ 明升AICRM               │
+  │   ├─ AIMES助手               │
+  │   └─ 设备管理                │
+  │ ▼ 产品与服务                 │
+  │   ├─ 产品系列                │
+  │   ├─ 安彤工单                │
+  │   └─ 学习培训                │
+  │ [+ 添加一级菜单]             │
+  └──────────────────────────────┘</code></pre>
+<hr />
+<h3 id="产品分类管理">3. 产品分类管理</h3>
+<figure>
+<img src="后台%20→%20产品分类" alt="分类管理截图" />
+<figcaption aria-hidden="true">分类管理截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>4级分类</strong>:
+支持最多4层分类 - <strong>批量操作</strong>: 批量导入/导出/删除 -
+<strong>拖拽排序</strong>: 可拖拽调整分类顺序 -
+<strong>图片管理</strong>: 为每个分类设置封面图</p>
+<hr />
+<h3 id="工单管理后台">4. 工单管理后台</h3>
+<figure>
+<img src="后台%20→%20工单管理" alt="工单后台截图" />
+<figcaption aria-hidden="true">工单后台截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>工单审核</strong>:
+审核待处理工单 - <strong>工程师管理</strong>: 添加/编辑工程师信息 -
+<strong>统计报表</strong>: 工单数量、处理时长、满意度统计 -
+<strong>SLA监控</strong>: 超时工单预警</p>
+<hr />
+<h3 id="知识库管理">5. 知识库管理</h3>
+<figure>
+<img src="后台%20→%20知识库" alt="知识库后台截图" />
+<figcaption aria-hidden="true">知识库后台截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>文档上传</strong>:
+支持PDF、Word、PPT、Excel、视频 - <strong>分类管理</strong>:
+按主题/产品/难度分类 - <strong>全文搜索</strong>: 基于关键词搜索文档内容
+- <strong>访问统计</strong>: 记录文档下载次数和阅读时长</p>
+<hr />
+<h3 id="用户权限管理">6. 用户权限管理</h3>
+<figure>
+<img src="后台%20→%20权限管理" alt="权限管理截图" />
+<figcaption aria-hidden="true">权限管理截图</figcaption>
+</figure>
+<p><strong>功能说明</strong>: - <strong>角色管理</strong>:
+超级管理员、管理员、普通用户、访客 - <strong>权限分配</strong>: -
+页面访问权限 - 功能操作权限 - 数据查看权限 - <strong>审计日志</strong>:
+记录所有操作日志</p>
+<hr />
+<h2 id="附录所有功能清单">附录：所有功能清单</h2>
+<h3 id="a.-前台功能列表">A. 前台功能列表</h3>
+<h4 id="首页模块">首页模块</h4>
+<ol type="1">
+<li>✅ 顶部导航栏（中英文切换）</li>
+<li>✅ Banner轮播图（朦胧特效可调）</li>
+<li>✅ AI智能体展示区（10个智能体）</li>
+<li>✅ 明星产品展示区（卡片已缩小30%）</li>
+<li>✅ 产品服务展示区（卡片已缩小30%）</li>
+<li>✅ 询盘按钮（可拖拽）</li>
+</ol>
+<h4 id="ai智能体模块">AI智能体模块</h4>
+<ol start="7" type="1">
+<li>✅ 明升AICRM
+<ul>
+<li>客户360画像</li>
+<li>联系人管理</li>
+<li>关系图谱</li>
+<li>客户沙盘分析</li>
+<li>销售漏斗</li>
+<li>目标管理</li>
+<li>投标预测AI</li>
+<li>产品矩阵管理</li>
+<li>自然语言交互</li>
+</ul></li>
+<li>✅ AIMES助手
+<ul>
+<li>MES数据接口配置</li>
+<li>手动录入窗口</li>
+<li>健康指数图</li>
+<li>质量趋势图</li>
+</ul></li>
+<li>✅ 设备运营大脑
+<ul>
+<li>设备台账</li>
+<li>预测性维护</li>
+<li>OEE分析</li>
+<li>备件管理</li>
+</ul></li>
+<li>✅ 拧紧数据分析
+<ul>
+<li>曲线分析</li>
+<li>统计图表</li>
+<li>AI智能分析</li>
+</ul></li>
+<li>✅ 套筒工具选型</li>
+<li>✅ 工艺改进验证</li>
+<li>✅ 安彤智能学习</li>
+<li>✅ 产品技术小课堂</li>
+<li>✅ 智能算账系统</li>
+<li>✅ AI国际营销中台</li>
+</ol>
+<h4 id="产品服务模块">产品服务模块</h4>
+<ol start="17" type="1">
+<li>✅ 产品系列展示（4级分类）</li>
+<li>✅ 安彤工单系统</li>
+<li>✅ 学习培训系统</li>
+</ol>
+<h4 id="解决方案模块">解决方案模块</h4>
+<ol start="20" type="1">
+<li>✅ 汽车行业方案</li>
+<li>✅ 航空航天方案</li>
+<li>✅ 新能源方案</li>
+<li>✅ 电子电器方案</li>
+</ol>
+<h3 id="b.-后台功能列表">B. 后台功能列表</h3>
+<ol start="24" type="1">
+<li>✅ 首页布局管理</li>
+<li>✅ Banner管理</li>
+<li>✅ 明星产品管理</li>
+<li>✅ 智能体卡片管理</li>
+<li>✅ 导航栏配置</li>
+<li>✅ 产品分类管理（4级）</li>
+<li>✅ 产品信息管理</li>
+<li>✅ 工单管理后台</li>
+<li>✅ 工程师管理</li>
+<li>✅ 知识库管理</li>
+<li>✅ 课程管理</li>
+<li>✅ 用户权限管理</li>
+<li>✅ 系统日志</li>
+<li>✅ 数据库维护</li>
+<li>✅ 智能体注册中心</li>
+</ol>
+<h3 id="c.-快捷键功能">C. 快捷键功能</h3>
+<ol start="39" type="1">
+<li>✅ <code>Ctrl+Shift+D</code> - 开启产品服务拖拽模式</li>
+<li>✅ <code>Ctrl+Shift+I</code> - 开启询盘按钮拖拽</li>
+<li>✅ <code>Ctrl+Shift+Q</code> - 快速访问设备页面</li>
+<li>✅ <code>Ctrl+Shift+R</code> - 刷新图表数据</li>
+</ol>
+<hr />
+<h2 id="截图位置索引">📸 截图位置索引</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>功能模块</th>
+<th>访问路径</th>
+<th>截图位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>首页Banner</strong></td>
+<td>http://localhost:3002</td>
+<td>页面顶部</td>
+</tr>
+<tr>
+<td><strong>AI智能体卡片</strong></td>
+<td>http://localhost:3002#ai-agents</td>
+<td>首页中部</td>
+</tr>
+<tr>
+<td><strong>明星产品</strong></td>
+<td>http://localhost:3002#featured</td>
+<td>首页中下部</td>
+</tr>
+<tr>
+<td><strong>产品服务</strong></td>
+<td>http://localhost:3002#products</td>
+<td>首页底部</td>
+</tr>
+<tr>
+<td><strong>明升AICRM</strong></td>
+<td>http://localhost:3002/mingsheng-aicrm</td>
+<td>全页面</td>
+</tr>
+<tr>
+<td><strong>AIMES助手</strong></td>
+<td>http://localhost:3002/mingsheng-aicrm?tab=aimes</td>
+<td>全页面</td>
+</tr>
+<tr>
+<td><strong>设备管理</strong></td>
+<td>http://localhost:3002/equipment-lifecycle</td>
+<td>全页面</td>
+</tr>
+<tr>
+<td><strong>拧紧分析</strong></td>
+<td>http://localhost:3002/tightening-analysis</td>
+<td>全页面</td>
+</tr>
+<tr>
+<td><strong>产品系列</strong></td>
+<td>http://localhost:3002/products-services</td>
+<td>全页面</td>
+</tr>
+<tr>
+<td><strong>后台管理</strong></td>
+<td>http://localhost:3002/admin</td>
+<td>全页面</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="使用说明">📋 使用说明</h2>
+<h3 id="如何使用本文档截图">如何使用本文档截图</h3>
+<ol type="1">
+<li><p><strong>启动开发服务器</strong>:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 前端</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 后端</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> server</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> index.js</span></code></pre></div></li>
+<li><p><strong>访问对应页面</strong>:
+根据上表”访问路径”打开浏览器</p></li>
+<li><p><strong>截图工具推荐</strong>:</p>
+<ul>
+<li>Windows: Snipping Tool / Snipaste</li>
+<li>Mac: Command+Shift+4</li>
+<li>浏览器扩展: Awesome Screenshot</li>
+</ul></li>
+<li><p><strong>截图规范</strong>:</p>
+<ul>
+<li><strong>分辨率</strong>: 1920x1080</li>
+<li><strong>格式</strong>: PNG</li>
+<li><strong>命名</strong>: <code>功能模块_页面名称_日期.png</code></li>
+<li><strong>标注</strong>: 使用红框标注关键功能</li>
+</ul></li>
+<li><p><strong>生成PDF</strong>:</p>
+<ul>
+<li>使用Word/Google Docs插入截图</li>
+<li>按本文档章节结构排版</li>
+<li>导出为PDF格式</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="版本历史">🔄 版本历史</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 30%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>更新内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.5.0</td>
+<td>2025-12-20</td>
+<td>明星产品/产品服务卡片缩小30%、AIMES三大功能、询盘按钮拖拽</td>
+</tr>
+<tr>
+<td>v2.4.0</td>
+<td>2025-12-19</td>
+<td>设备页面5项优化、快捷键功能、卡片缩小20%</td>
+</tr>
+<tr>
+<td>v2.3.0</td>
+<td>2025-12-18</td>
+<td>AICRM深度优化、沙盘分析、投标预测AI</td>
+</tr>
+<tr>
+<td>v2.2.0</td>
+<td>2025-12-17</td>
+<td>AI营销中台、移动端响应式、学习培训系统</td>
+</tr>
+<tr>
+<td>v2.1.0</td>
+<td>2025-12-16</td>
+<td>设备运营大脑、拧紧曲线智能分析</td>
+</tr>
+<tr>
+<td>v2.0.0</td>
+<td>2025-12-15</td>
+<td>企业级智能体平台Phase1-4全部完成</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="技术支持">📞 技术支持</h2>
+<ul>
+<li><strong>文档维护</strong>: AIWEB开发团队</li>
+<li><strong>更新频率</strong>: 每次版本发布同步更新</li>
+<li><strong>反馈渠道</strong>: 通过工单系统提交文档改进建议</li>
+</ul>
+<hr />
+<p><strong>文档结束</strong></p>
+</body>
+</html>

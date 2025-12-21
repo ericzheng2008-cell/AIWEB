@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 工作流编辑器问题诊断</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin: 0 0 30px 0;
+      font-size: 32px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    .step {
+      margin: 10px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+    }
+    .step-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .code {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 5px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .btn-success {
+      background: #28a745;
+    }
+    .btn-success:hover {
+      background: #218838;
+    }
+    .btn-warning {
+      background: #ffc107;
+      color: #333;
+    }
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 10px;
+      margin: 8px 0;
+      background: white;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+    }
+    .checklist li:before {
+      content: "□ ";
+      font-size: 20px;
+      margin-right: 10px;
+      color: #667eea;
+    }
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .alert-info {
+      background: #d1ecf1;
+      border-left: 4px solid #17a2b8;
+      color: #0c5460;
+    }
+    .alert-warning {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      color: #856404;
+    }
+    .alert-danger {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 工作流编辑器问题诊断指南</h1>
+    
+    <div class="alert alert-info">
+      <strong>💡 诊断目标：</strong>找出工作流编辑器"无法使用"的具体原因
+    </div>
+
+    <!-- 第一步：访问页面 -->
+    <div class="section">
+      <div class="section-title">📍 第1步：访问工作流编辑器</div>
+      <div class="step">
+        <span class="step-number">1</span>
+        <strong>确保服务器运行中</strong>
+        <div class="code">npm run dev</div>
+      </div>
+      <div class="step">
+        <span class="step-number">2</span>
+        <strong>访问编辑器页面</strong>
+        <div class="code">http://localhost:5173/#/workflow-editor-v5-n8n</div>
+        <a href="http://localhost:5173/#/workflow-editor-v5-n8n" class="btn" target="_blank">🚀 立即访问</a>
+      </div>
+    </div>
+
+    <!-- 第二步：检查控制台 -->
+    <div class="section">
+      <div class="section-title">🔍 第2步：打开浏览器控制台检查错误</div>
+      <div class="step">
+        <span class="step-number">1</span>
+        <strong>打开开发者工具</strong>
+        <ul>
+          <li>Windows: <code>F12</code> 或 <code>Ctrl + Shift + I</code></li>
+          <li>Mac: <code>Cmd + Option + I</code></li>
+        </ul>
+      </div>
+      <div class="step">
+        <span class="step-number">2</span>
+        <strong>切换到 Console 标签</strong>
+      </div>
+      <div class="step">
+        <span class="step-number">3</span>
+        <strong>查找以下类型的错误</strong>
+        <ul class="checklist">
+          <li>❌ 红色错误信息</li>
+          <li>⚠️ 黄色警告信息</li>
+          <li>🔵 蓝色信息（通常无害）</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 第三步：常见问题检查 -->
+    <div class="section">
+      <div class="section-title">📋 第3步：常见问题检查清单</div>
+      <ul class="checklist">
+        <li>页面是否完全空白？</li>
+        <li>是否显示了顶部工具栏？</li>
+        <li>是否显示了左侧节点库？</li>
+        <li>画布区域是否可见？</li>
+        <li>是否可以从左侧拖拽节点？</li>
+        <li>节点是否可以在画布上显示？</li>
+        <li>节点是否可以拖动？</li>
+        <li>点击节点是否有反应？</li>
+        <li>双击节点是否打开编辑面板？</li>
+      </ul>
+    </div>
+
+    <!-- 第四步：功能测试 -->
+    <div class="section">
+      <div class="section-title">🧪 第4步：功能逐项测试</div>
+      
+      <div class="step">
+        <span class="step-number">A</span>
+        <strong>测试节点添加</strong>
+        <ol>
+          <li>从左侧节点库找到"手动触发"节点</li>
+          <li>拖拽到画布中央</li>
+          <li>松开鼠标</li>
+          <li>✅ 检查：节点是否出现在画布上？</li>
+        </ol>
+      </div>
+
+      <div class="step">
+        <span class="step-number">B</span>
+        <strong>测试节点拖动</strong>
+        <ol>
+          <li>单击画布上的节点</li>
+          <li>按住鼠标左键不放</li>
+          <li>移动鼠标</li>
+          <li>✅ 检查：节点是否跟随鼠标移动？是否抖动？</li>
+        </ol>
+      </div>
+
+      <div class="step">
+        <span class="step-number">C</span>
+        <strong>测试节点选中</strong>
+        <ol>
+          <li>单击画布上的节点</li>
+          <li>✅ 检查：节点边框是否变成蓝色？</li>
+          <li>✅ 检查：右侧是否打开属性面板？</li>
+        </ol>
+      </div>
+
+      <div class="step">
+        <span class="step-number">D</span>
+        <strong>测试节点编辑</strong>
+        <ol>
+          <li>双击画布上的节点</li>
+          <li>✅ 检查：右侧属性面板是否显示详细参数？</li>
+          <li>✅ 检查：是否有多个标签页（参数、连接映射等）？</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 第五步：复制控制台错误 -->
+    <div class="section">
+      <div class="section-title">📸 第5步：收集错误信息</div>
+      <div class="alert alert-warning">
+        <strong>⚠️ 重要：</strong>如果发现任何错误，请完整复制控制台中的错误信息
+      </div>
+      <div class="step">
+        <span class="step-number">1</span>
+        <strong>在控制台中右键点击错误信息</strong>
+      </div>
+      <div class="step">
+        <span class="step-number">2</span>
+        <strong>选择"复制消息"或"Copy message"</strong>
+      </div>
+      <div class="step">
+        <span class="step-number">3</span>
+        <strong>将错误信息发送给我</strong>
+      </div>
+    </div>
+
+    <!-- 第六步：截图 -->
+    <div class="section">
+      <div class="section-title">📷 第6步：如果可能，请提供截图</div>
+      <ul class="checklist">
+        <li>整个页面的截图（显示布局问题）</li>
+        <li>控制台错误的截图（显示具体错误）</li>
+        <li>问题操作的视频录制（如果抖动等）</li>
+      </ul>
+    </div>
+
+    <!-- 快速操作 -->
+    <div class="section">
+      <div class="section-title">⚡ 快速操作</div>
+      <a href="http://localhost:5173/#/workflow-editor-v5-n8n" class="btn btn-success" target="_blank">
+        🚀 访问工作流编辑器
+      </a>
+      <a href="http://localhost:5173/" class="btn btn-warning" target="_blank">
+        🏠 返回首页
+      </a>
+      <button class="btn" onclick="copyDiagnosticScript()">
+        📋 复制诊断脚本
+      </button>
+    </div>
+
+    <!-- 诊断脚本 -->
+    <div class="section">
+      <div class="section-title">🔧 自动诊断脚本</div>
+      <div class="alert alert-info">
+        将以下代码复制到浏览器控制台运行，自动检测问题
+      </div>
+      <div class="code" id="diagnosticScript">
+// 工作流编辑器自动诊断脚本
+console.log('🔍 开始诊断工作流编辑器...')
+
+const checks = {
+  '页面URL': location.href,
+  'Vue应用': !!document.querySelector('#app'),
+  '工作流容器': !!document.querySelector('.n8n-workflow-editor'),
+  '顶部工具栏': !!document.querySelector('.n8n-header'),
+  '左侧节点库': !!document.querySelector('.n8n-sidebar'),
+  '画布区域': !!document.querySelector('.n8n-canvas'),
+  '节点库节点数': document.querySelectorAll('.node-card').length,
+  '画布节点数': document.querySelectorAll('.canvas-node').length,
+  '右侧面板': !!document.querySelector('.n8n-panel'),
+  'Element Plus样式': !!document.querySelector('style[data-vite-dev-id]')
+}
+
+console.table(checks)
+
+// 检查Vue实例
+const app = document.querySelector('#app')?.__vue__
+if (app) {
+  console.log('✅ Vue应用已挂载')
+} else {
+  console.error('❌ Vue应用未找到')
+}
+
+// 检查控制台错误
+console.log('📊 诊断完成！请截图发送给开发者')
+      </div>
+    </div>
+
+    <div class="alert alert-info" style="margin-top: 30px;">
+      <strong>💬 反馈信息：</strong>
+      <p>请告诉我：</p>
+      <ol>
+        <li>具体哪个功能"无法使用"？</li>
+        <li>点击某个按钮后发生了什么？</li>
+        <li>控制台有什么错误信息？</li>
+        <li>页面显示是否正常？</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    function copyDiagnosticScript() {
+      const script = document.getElementById('diagnosticScript').textContent
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 诊断脚本已复制到剪贴板！\n\n请：\n1. 访问工作流编辑器页面\n2. 按F12打开控制台\n3. 粘贴并运行脚本\n4. 截图发送结果')
+      })
+    }
+  </script>
+</body>
+</html>

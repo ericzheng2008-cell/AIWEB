@@ -158,188 +158,96 @@
       </div>
     </section>
 
-    <!-- AI营销中台板块 -->
+    <!-- AI营销中台板块 - 集成为单个卡片 -->
     <section class="section marketing-hub-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">🚀 AI国际营销中台 / AI Marketing Hub</h2>
-          <p class="section-desc">智能化、自动化、数据化的完整营销解决方案 | 7种语言 · 20个系统 · ROI提升385%</p>
+          <p class="section-desc">智能化、自动化、数据化的完整营销解决方案</p>
         </div>
         
-        <!-- 核心数据展示 -->
-        <div class="hub-stats">
-          <div class="stat-item">
-            <div class="stat-icon">📊</div>
-            <div class="stat-value">8,830</div>
-            <div class="stat-label">行专业代码</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-icon">🎯</div>
-            <div class="stat-value">20</div>
-            <div class="stat-label">个核心系统</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-icon">🌍</div>
-            <div class="stat-value">7</div>
-            <div class="stat-label">种国际语言</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-icon">💰</div>
-            <div class="stat-value">385%</div>
-            <div class="stat-label">营销ROI</div>
-          </div>
-        </div>
-
-        <!-- 功能模块 -->
-        <div class="hub-features">
-          <!-- Phase 2: AI驱动营销 -->
-          <div class="feature-group">
-            <h3 class="feature-group-title">
-              <el-icon><TrendCharts /></el-icon>
-              Phase 2：AI驱动营销
-            </h3>
-            <div class="feature-cards">
-              <div class="feature-card" @click="$router.push('/ai-product-selector')">
-                <div class="feature-icon">🎯</div>
-                <h4>AI产品选型系统</h4>
-                <p>4步智能推荐 | 92%准确率</p>
-                <el-button type="primary" size="small" plain>立即体验</el-button>
-              </div>
-              <div class="feature-card" @click="$router.push('/resource-center')">
-                <div class="feature-icon">📚</div>
-                <h4>资源中心</h4>
-                <p>白皮书 · 技术文档 · 案例</p>
-                <el-button type="primary" size="small" plain>浏览资源</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">🏆</div>
-                <h4>AI询盘评分</h4>
-                <p>A/B/C/D智能分级</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h4>AI自动报价</h4>
-                <p>PDF生成 · 邮件发送</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
+        <!-- 单个卡片容器 -->
+        <div class="marketing-hub-card" @click="$router.push('/ai-product-selector')">
+          <div class="hub-card-header">
+            <div class="hub-icon">
+              <el-icon :size="40"><TrendCharts /></el-icon>
+            </div>
+            <div class="hub-title">
+              <h3>AI国际营销中台</h3>
+              <p>7种语言 · 20个系统 · ROI提升385%</p>
             </div>
           </div>
+          
+          <div class="hub-card-stats">
+            <div class="mini-stat">
+              <span class="stat-icon">📊</span>
+              <span class="stat-text">8,830行代码</span>
+            </div>
+            <div class="mini-stat">
+              <span class="stat-icon">🎯</span>
+              <span class="stat-text">20个系统</span>
+            </div>
+            <div class="mini-stat">
+              <span class="stat-icon">🌍</span>
+              <span class="stat-text">7种语言</span>
+            </div>
+            <div class="mini-stat">
+              <span class="stat-icon">💰</span>
+              <span class="stat-text">385% ROI</span>
+            </div>
+          </div>
+          
+          <div class="hub-card-features">
+            <div class="feature-tag">🎯 AI产品选型</div>
+            <div class="feature-tag">📚 资源中心</div>
+            <div class="feature-tag">📧 邮件营销</div>
+            <div class="feature-tag">🔄 线索孵化</div>
+            <div class="feature-tag">📊 数据分析</div>
+            <div class="feature-tag">🔮 AI预测</div>
+          </div>
+          
+          <div class="hub-card-footer">
+            <el-button type="primary" size="large" @click.stop="$router.push('/ai-product-selector')">
+              <el-icon><Promotion /></el-icon>
+              立即体验
+            </el-button>
+            <el-button size="large" plain @click.stop="openDemoPage">
+              <el-icon><Document /></el-icon>
+              查看演示
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Phase 3: 营销自动化 -->
-          <div class="feature-group">
-            <h3 class="feature-group-title">
+    <!-- 🆕 AI工作流平台卡片 -->
+    <section class="section workflow-platforms-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">🤖 AI工作流平台 / AI Workflow Platforms</h2>
+          <p class="section-desc">连接顶尖AI工作流平台，一站式管理企业智能化流程</p>
+        </div>
+        
+        <div class="workflow-platforms-grid">
+          <div v-for="platform in workflowPlatforms" :key="platform.id" 
+               class="workflow-platform-card"
+               @click="openPlatformLink(platform.url)">
+            <div class="platform-logo">
+              <img v-if="platform.logo" :src="platform.logo" :alt="platform.name" />
+              <span v-else class="platform-icon">{{ platform.icon }}</span>
+            </div>
+            <div class="platform-info">
+              <h3>{{ platform.name }}</h3>
+              <p>{{ platform.description }}</p>
+              <div class="platform-tags">
+                <el-tag v-for="tag in platform.tags" :key="tag" size="small">{{ tag }}</el-tag>
+              </div>
+            </div>
+            <div class="platform-action">
               <el-icon><Connection /></el-icon>
-              Phase 3：营销自动化
-            </h3>
-            <div class="feature-cards">
-              <div class="feature-card" @click="$router.push('/email-marketing')">
-                <div class="feature-icon">📧</div>
-                <h4>AI邮件营销</h4>
-                <p>A/B测试 · 10,000封/天</p>
-                <el-button type="success" size="small" plain>创建活动</el-button>
-              </div>
-              <div class="feature-card" @click="$router.push('/lead-nurturing')">
-                <div class="feature-icon">🔄</div>
-                <h4>线索孵化系统</h4>
-                <p>6阶段漏斗 · 自动化工作流</p>
-                <el-button type="success" size="small" plain>查看线索</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">🗺️</div>
-                <h4>客户旅程追踪</h4>
-                <p>行为分析 · 转化归因</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h4>AI内容推荐</h4>
-                <p>协同过滤 · 个性化推送</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
+              <span>访问平台</span>
             </div>
           </div>
-
-          <!-- Phase 4: 数据分析 -->
-          <div class="feature-group">
-            <h3 class="feature-group-title">
-              <el-icon><DataAnalysis /></el-icon>
-              Phase 4：数据分析优化
-            </h3>
-            <div class="feature-cards">
-              <div class="feature-card" @click="$router.push('/marketing-data-hub')">
-                <div class="feature-icon">📊</div>
-                <h4>营销数据中台</h4>
-                <p>实时KPI · 可视化看板</p>
-                <el-button type="warning" size="small" plain>查看数据</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">🔮</div>
-                <h4>AI预测分析</h4>
-                <p>85%准确率 · 流失预警</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h4>自动化报表</h4>
-                <p>日/周/月报 · PDF导出</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
-              <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h4>多维度归因</h4>
-                <p>6种模型 · 触点分析</p>
-                <el-button size="small" plain>了解详情</el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ROI对比 -->
-        <div class="roi-comparison">
-          <h3>💰 真实效果对比</h3>
-          <div class="roi-grid">
-            <div class="roi-item">
-              <div class="roi-label">响应速度</div>
-              <div class="roi-before">24小时</div>
-              <div class="roi-arrow">→</div>
-              <div class="roi-after">即时</div>
-              <div class="roi-improve">↓ 95%</div>
-            </div>
-            <div class="roi-item">
-              <div class="roi-label">转化率</div>
-              <div class="roi-before">3%</div>
-              <div class="roi-arrow">→</div>
-              <div class="roi-after">8-12%</div>
-              <div class="roi-improve">↑ 166-300%</div>
-            </div>
-            <div class="roi-item">
-              <div class="roi-label">获客成本</div>
-              <div class="roi-before">¥50/个</div>
-              <div class="roi-arrow">→</div>
-              <div class="roi-after">¥15/个</div>
-              <div class="roi-improve">↓ 70%</div>
-            </div>
-            <div class="roi-item">
-              <div class="roi-label">营销ROI</div>
-              <div class="roi-before">180%</div>
-              <div class="roi-arrow">→</div>
-              <div class="roi-after">385-520%</div>
-              <div class="roi-improve">↑ 114-189%</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CTA按钮 -->
-        <div class="hub-cta">
-          <el-button type="primary" size="large" @click="$router.push('/ai-product-selector')">
-            <el-icon><Promotion /></el-icon>
-            立即体验AI营销中台
-          </el-button>
-          <el-button size="large" plain @click="openDemoPage">
-            <el-icon><Document /></el-icon>
-            查看完整功能演示
-          </el-button>
         </div>
       </div>
     </section>
@@ -557,6 +465,82 @@ const solutions = ref([
   { id: 4, name: '能源设备', description: '能源设备制造与维护工具解决方案', icon: 'HotWater' }
 ])
 
+// 🆕 AI工作流平台数据
+const workflowPlatforms = ref([
+  {
+    id: 1,
+    name: 'UniEAP Workflow',
+    description: '用友BIP统一工作流平台，支持企业级流程编排',
+    url: 'https://iuap.yonyoucloud.com/iuap/',
+    icon: '🏢',
+    tags: ['企业级', 'BIP平台', '用友']
+  },
+  {
+    id: 2,
+    name: '金蝶云·星空',
+    description: '金蝶云星空工作流引擎，ERP与经营一体化',
+    url: 'https://www.kingdee.com/products/cosmic',
+    icon: '⭐',
+    tags: ['ERP', '经营一体化', '金蝶']
+  },
+  {
+    id: 3,
+    name: '金蝶云·星辰',
+    description: '金蝶云星辰，面向成长型企业的云原生ERP',
+    url: 'https://www.kingdee.com/products/star',
+    icon: '🌟',
+    tags: ['云原生', '成长型企业', '金蝶']
+  },
+  {
+    id: 4,
+    name: '神州数码 AI FOR PROCESS',
+    description: '神州数码AI驱动的智能流程自动化平台',
+    url: 'https://www.digitalchina.com/',
+    icon: '🤖',
+    tags: ['AI驱动', 'RPA', '神州数码']
+  },
+  {
+    id: 5,
+    name: 'Coze',
+    description: '字节跳动AI Bot开发平台，快速构建智能助手',
+    url: 'https://www.coze.com/',
+    icon: '🚀',
+    tags: ['AI Bot', '快速开发', '字节跳动']
+  },
+  {
+    id: 6,
+    name: 'Dify',
+    description: '开源LLM应用开发平台，支持工作流编排',
+    url: 'https://dify.ai/',
+    icon: '🔧',
+    tags: ['开源', 'LLM', '工作流']
+  },
+  {
+    id: 7,
+    name: 'AIFLOWY',
+    description: 'AI驱动的工作流自动化平台',
+    url: 'https://aiflowy.com/',
+    icon: '🌊',
+    tags: ['AI自动化', '低代码', '工作流']
+  },
+  {
+    id: 8,
+    name: 'N8N',
+    description: '开源工作流自动化工具，支持300+集成',
+    url: 'https://n8n.io/',
+    icon: '⚡',
+    tags: ['开源', '自动化', '300+集成']
+  },
+  {
+    id: 9,
+    name: '华为云 FlexusAI',
+    description: '华为云AI工作流编排平台，企业级AI应用',
+    url: 'https://www.huaweicloud.com/',
+    icon: '☁️',
+    tags: ['华为云', 'AI编排', '企业级']
+  }
+])
+
 // AI智能体数据（移除工具选型和工单管理）
 const aiAgents = ref([
   { 
@@ -628,6 +612,16 @@ const aiAgents = ref([
     path: '/mingsheng-aicrm?tab=aimes',
     badge: '新功能',
     category: 'manufacturing'
+  },
+  { 
+    id: 11, 
+    name: '工作流智能体', 
+    description: '多部门工作流可视化管理 - 拖拽式流程设计、自定义节点、智能连接、实时协同', 
+    icon: 'Operation',
+    tags: ['流程管理', '可视化设计', '部门协同'],
+    path: '/workflow-agent',
+    badge: '新上线',
+    category: 'management'
   }
 ])
 
@@ -720,6 +714,12 @@ const goToContact = () => {
 
 const openDemoPage = () => {
   window.open('/📊_AI营销中台功能演示_2025-12-17.html', '_blank')
+}
+
+// 🆕 打开工作流平台链接
+const openPlatformLink = (url) => {
+  window.open(url, '_blank')
+  ElMessage.success('正在跳转到平台...')
 }
 
 const handleBannerClick = (banner) => {
@@ -1279,181 +1279,207 @@ onMounted(() => {
   line-height: 1.5;
 }
 
-/* AI营销中台板块 */
+/* AI营销中台板块 - 单卡片样式 */
 .marketing-hub-section {
   background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
   padding: 80px 0;
 }
 
-.hub-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 50px;
-}
-
-.stat-item {
+.marketing-hub-card {
+  max-width: 420px;
+  margin: 0 auto;
   background: white;
-  padding: 30px 20px;
   border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  transition: all 0.3s;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.stat-item:hover {
+.marketing-hub-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
 }
 
-.stat-icon {
-  font-size: 42px;
-  margin-bottom: 12px;
-}
-
-.stat-value {
-  font-size: 42px;
-  font-weight: 700;
-  color: #667eea;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  color: #666;
-  font-size: 14px;
-}
-
-.hub-features {
-  margin-bottom: 50px;
-}
-
-.feature-group {
-  margin-bottom: 40px;
-}
-
-.feature-group-title {
+.hub-card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 24px;
-  padding-left: 10px;
-  border-left: 4px solid #667eea;
-}
-
-.feature-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
 }
 
-.feature-card {
-  background: white;
-  padding: 24px;
+.hub-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
-.feature-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
-  transform: translateY(-4px);
-}
-
-.feature-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.feature-card h4 {
-  font-size: 16px;
+.hub-title h3 {
+  font-size: 20px;
   font-weight: 600;
-  margin-bottom: 8px;
   color: #333;
+  margin-bottom: 6px;
 }
 
-.feature-card p {
-  color: #666;
+.hub-title p {
   font-size: 13px;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-.roi-comparison {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-  margin-bottom: 40px;
-}
-
-.roi-comparison h3 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.roi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-}
-
-.roi-item {
-  text-align: center;
-}
-
-.roi-label {
-  font-size: 14px;
   color: #666;
-  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.hub-card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.mini-stat .stat-icon {
+  font-size: 18px;
+}
+
+.hub-card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.feature-tag {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 500;
 }
 
-.roi-before {
-  font-size: 16px;
-  color: #999;
-  text-decoration: line-through;
-  margin-bottom: 8px;
+.hub-card-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 }
 
-.roi-arrow {
-  font-size: 20px;
-  color: #667eea;
-  margin: 8px 0;
+.hub-card-footer .el-button {
+  flex: 1;
 }
 
-.roi-after {
-  font-size: 24px;
-  font-weight: 700;
-  color: #667eea;
-  margin-bottom: 8px;
+/* 🆕 AI工作流平台板块 */
+.workflow-platforms-section {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  padding: 80px 0;
 }
 
-.roi-improve {
+.workflow-platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.workflow-platform-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workflow-platform-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
+}
+
+.platform-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.platform-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.platform-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.platform-info h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #10b981;
-  padding: 4px 12px;
-  background: #f0fdf4;
-  border-radius: 20px;
-  display: inline-block;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
 }
 
-.hub-cta {
-  text-align: center;
-  padding-top: 20px;
+.platform-info p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
 }
 
-.hub-cta .el-button {
-  margin: 0 10px;
+.platform-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.platform-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4caf50;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.platform-action .el-icon {
+  font-size: 16px;
+}
+
+@media (max-width: 992px) {
+  .workflow-platforms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .workflow-platforms-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .agent-tags {
@@ -1596,18 +1622,25 @@ onMounted(() => {
   color: #666;
 }
 
-/* 明星产品展示 */
+/* 明星产品展示（缩小30% - 2025-12-20）*/
 .featured-products-section {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 56px 0; /* 从80px缩小到56px */
 }
 
 .featured-products-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
+  grid-template-columns: repeat(3, 1fr); /* 从2列改为3列，卡片更小 */
+  gap: 28px; /* 从40px缩小到28px */
 }
 
 @media (max-width: 1200px) {
+  .featured-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
   .featured-products-grid {
     grid-template-columns: 1fr;
   }
@@ -1615,20 +1648,20 @@ onMounted(() => {
 
 .featured-product-card {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 12px; /* 从16px缩小到12px */
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 阴影缩小 */
   transition: all 0.3s ease;
 }
 
 .featured-product-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); /* 阴影缩小 */
+  transform: translateY(-3px); /* 从-4px缩小到-3px */
 }
 
 .product-media {
   width: 100%;
-  height: 280px; /* 减小30%: 400 → 280 */
+  height: 196px; /* 280px * 0.7 = 196px（再缩小30%）*/
   background: #000;
   position: relative;
 }
@@ -1656,27 +1689,27 @@ onMounted(() => {
 }
 
 .product-info {
-  padding: 22px; /* 减小30%: 32 → 22 */
+  padding: 15px; /* 22px * 0.7 = 15px（再缩小30%）*/
   text-align: center;
 }
 
 .product-info h3 {
-  font-size: 17px; /* 减小30%: 24 → 17 */
+  font-size: 12px; /* 17px * 0.7 = 12px（再缩小30%）*/
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 11px; /* 减小30%: 16 → 11 */
+  margin-bottom: 8px; /* 11px * 0.7 = 8px（再缩小30%）*/
 }
 
 .product-info p {
-  font-size: 11px; /* 减小30%: 15 → 11 */
+  font-size: 8px; /* 11px * 0.7 = 8px（再缩小30%）*/
   color: #666;
-  line-height: 1.6;
-  margin-bottom: 17px; /* 减小30%: 24 → 17 */
+  line-height: 1.5;
+  margin-bottom: 12px; /* 17px * 0.7 = 12px（再缩小30%）*/
 }
 
 .product-info .el-button {
-  font-size: 11px; /* 减小30%: 16 → 11 */
-  padding: 8px 22px; /* 减小30%: 12→8, 32→22 */
+  font-size: 8px; /* 11px * 0.7 = 8px（再缩小30%）*/
+  padding: 6px 15px; /* 8px * 0.7 = 6px, 22px * 0.7 = 15px（再缩小30%）*/
 }
 
 /* ========== 新增媒体类型样式 ========== */

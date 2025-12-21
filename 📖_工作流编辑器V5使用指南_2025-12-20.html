@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📖 工作流编辑器V5使用指南 - N8N Edition</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 60px 40px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .header .version {
+      font-size: 24px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+    .header .description {
+      font-size: 18px;
+      opacity: 0.8;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .quick-start {
+      background: #f8f9fa;
+      padding: 40px;
+      text-align: center;
+    }
+    .quick-start h2 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 50px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+    }
+    .content {
+      padding: 40px;
+    }
+    .section {
+      margin-bottom: 50px;
+    }
+    .section h2 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .feature-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .feature-card h3 {
+      font-size: 20px;
+      color: #667eea;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .feature-card ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .feature-card li {
+      padding: 8px 0;
+      color: #555;
+    }
+    .feature-card li:before {
+      content: "✓ ";
+      color: #67c23a;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .nodes-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .nodes-table thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .nodes-table th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    .nodes-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .nodes-table tbody tr:hover {
+      background: #f5f7fa;
+    }
+    .node-icon {
+      font-size: 24px;
+    }
+    .steps-container {
+      display: grid;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .step-card {
+      background: white;
+      border-left: 5px solid #667eea;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    .step-card h3 {
+      color: #667eea;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .step-card p {
+      color: #666;
+      line-height: 1.8;
+    }
+    .highlight {
+      background: #fff3cd;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: #856404;
+    }
+    .comparison-table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .comparison-table th {
+      background: #667eea;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    .comparison-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .comparison-table td:first-child {
+      font-weight: 600;
+      text-align: left;
+    }
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .badge-success {
+      background: #67c23a;
+      color: white;
+    }
+    .badge-new {
+      background: #409eff;
+      color: white;
+    }
+    .badge-upgrade {
+      background: #e6a23c;
+      color: white;
+    }
+    .footer {
+      background: #f8f9fa;
+      padding: 30px;
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <h1>📖 工作流编辑器V5</h1>
+      <div class="version">v5.0 N8N Edition</div>
+      <div class="description">
+        基于N8N设计理念·节点测试功能·AI智能助手·企业级工作流平台
+      </div>
+    </div>
+
+    <!-- 快速开始 -->
+    <div class="quick-start">
+      <h2>🚀 立即体验</h2>
+      <a href="http://localhost:5173/workflow-editor-v5-n8n" class="btn-primary">
+        打开工作流编辑器V5
+      </a>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 核心特性 -->
+      <div class="section">
+        <h2>🌟 核心特性</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>🎨 N8N风格UI</h3>
+            <ul>
+              <li>简洁现代的设计</li>
+              <li>流畅的交互体验</li>
+              <li>优雅的配色方案</li>
+              <li>响应式布局</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>📦 25个企业级节点</h3>
+            <ul>
+              <li>触发器 (4个)</li>
+              <li>核心节点 (4个)</li>
+              <li>AI智能 (5个)</li>
+              <li>数据处理 (4个)</li>
+              <li>系统集成 (4个)</li>
+              <li>控制流 (4个)</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>▶️ 节点测试功能</h3>
+            <ul>
+              <li>一键执行节点</li>
+              <li>查看输入/输出</li>
+              <li>执行时长统计</li>
+              <li>Token消耗显示</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>🤖 AI智能助手</h3>
+            <ul>
+              <li>浮窗式设计</li>
+              <li>自然语言生成</li>
+              <li>快速模板推荐</li>
+              <li>智能节点建议</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>📋 工作流模板</h3>
+            <ul>
+              <li>质量问题处理</li>
+              <li>设备故障诊断</li>
+              <li>采购审批流程</li>
+              <li>生产异常处理</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>⚡ 流畅交互</h3>
+            <ul>
+              <li>拖拽创建节点</li>
+              <li>贝塞尔曲线连接</li>
+              <li>快速添加按钮</li>
+              <li>小地图导航</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 节点库 -->
+      <div class="section">
+        <h2>📦 节点库</h2>
+        <table class="nodes-table">
+          <thead>
+            <tr>
+              <th>图标</th>
+              <th>节点名称</th>
+              <th>类型</th>
+              <th>描述</th>
+              <th>使用场景</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="node-icon">🤖</td>
+              <td>AI对话</td>
+              <td>AI智能</td>
+              <td>与AI模型对话</td>
+              <td>智能客服、问答系统</td>
+            </tr>
+            <tr>
+              <td class="node-icon">🧠</td>
+              <td>AI分析</td>
+              <td>AI智能</td>
+              <td>AI智能分析</td>
+              <td>故障诊断、数据分析</td>
+            </tr>
+            <tr>
+              <td class="node-icon">🏷️</td>
+              <td>AI分类</td>
+              <td>AI智能</td>
+              <td>智能分类</td>
+              <td>工单分流、文档分类</td>
+            </tr>
+            <tr>
+              <td class="node-icon">🔍</td>
+              <td>AI提取</td>
+              <td>AI智能</td>
+              <td>提取关键信息</td>
+              <td>信息提取、数据清洗</td>
+            </tr>
+            <tr>
+              <td class="node-icon">✨</td>
+              <td>AI生成</td>
+              <td>AI智能</td>
+              <td>生成文本内容</td>
+              <td>报告生成、文案创作</td>
+            </tr>
+            <tr>
+              <td class="node-icon">🗄️</td>
+              <td>数据库</td>
+              <td>集成</td>
+              <td>查询数据库</td>
+              <td>数据查询、CRUD操作</td>
+            </tr>
+            <tr>
+              <td class="node-icon">🔀</td>
+              <td>条件判断</td>
+              <td>控制流</td>
+              <td>条件分支</td>
+              <td>流程分支、逻辑判断</td>
+            </tr>
+            <tr>
+              <td class="node-icon">🔄</td>
+              <td>循环</td>
+              <td>控制流</td>
+              <td>循环执行</td>
+              <td>批量处理、重复任务</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 快速指南 -->
+      <div class="section">
+        <h2>📖 快速指南</h2>
+        <div class="steps-container">
+          <div class="step-card">
+            <h3>1️⃣ 添加节点</h3>
+            <p>
+              <span class="highlight">方式1</span>: 从左侧节点库拖拽节点到画布<br>
+              <span class="highlight">方式2</span>: 点击节点库中的节点卡片<br>
+              <span class="highlight">方式3</span>: 点击已选节点的 <strong>[+]</strong> 快速添加按钮<br>
+              <span class="highlight">方式4</span>: 双击画布空白区域,唤起AI助手自动生成
+            </p>
+          </div>
+          <div class="step-card">
+            <h3>2️⃣ 连接节点</h3>
+            <p>
+              鼠标移到源节点的 <strong>输出端点 ●</strong>,按住鼠标拖动到目标节点的 <strong>输入端点 ●</strong>,释放鼠标完成连接。
+              连接线会自动生成优雅的贝塞尔曲线。
+            </p>
+          </div>
+          <div class="step-card">
+            <h3>3️⃣ 配置节点</h3>
+            <p>
+              <strong>单击</strong>选中节点,右侧会打开属性面板。在 <span class="highlight">参数</span> 标签页中填写节点配置:
+              基础信息、AI参数、数据映射、条件规则等。配置完成后点击 <strong>保存</strong>。
+            </p>
+          </div>
+          <div class="step-card">
+            <h3>4️⃣ 测试节点 ⭐ 核心功能</h3>
+            <p>
+              选中节点后,切换到 <span class="highlight">执行</span> 标签页,点击 <strong>▶️ 执行此节点</strong>。
+              可以查看节点的输入数据、输出数据、执行时长、Token消耗等详细信息。这是V5的核心特性!
+            </p>
+          </div>
+          <div class="step-card">
+            <h3>5️⃣ 使用模板</h3>
+            <p>
+              在左侧节点库切换到 <span class="highlight">模板</span> 标签页,选择预置的工作流模板:
+              质量问题处理、设备故障诊断、采购审批流程、生产异常处理。一键应用快速开始。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 版本对比 -->
+      <div class="section">
+        <h2>📊 版本对比</h2>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>特性</th>
+              <th>V4.0</th>
+              <th>V5.0 N8N</th>
+              <th>提升</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>UI设计</td>
+              <td>企业级</td>
+              <td>N8N风格</td>
+              <td><span class="badge badge-upgrade">更现代</span></td>
+            </tr>
+            <tr>
+              <td>节点总数</td>
+              <td>26个</td>
+              <td>25个</td>
+              <td><span class="badge badge-success">精简优化</span></td>
+            </tr>
+            <tr>
+              <td>节点测试</td>
+              <td>❌</td>
+              <td>✅</td>
+              <td><span class="badge badge-new">核心功能</span></td>
+            </tr>
+            <tr>
+              <td>快速添加</td>
+              <td>❌</td>
+              <td>✅</td>
+              <td><span class="badge badge-new">N8N特色</span></td>
+            </tr>
+            <tr>
+              <td>AI助手</td>
+              <td>基础</td>
+              <td>浮窗式</td>
+              <td><span class="badge badge-upgrade">更友好</span></td>
+            </tr>
+            <tr>
+              <td>属性面板</td>
+              <td>5标签</td>
+              <td>3标签</td>
+              <td><span class="badge badge-upgrade">更简洁</span></td>
+            </tr>
+            <tr>
+              <td>模板系统</td>
+              <td>❌</td>
+              <td>✅ 4个</td>
+              <td><span class="badge badge-new">快速开始</span></td>
+            </tr>
+            <tr>
+              <td>小地图</td>
+              <td>❌</td>
+              <td>✅</td>
+              <td><span class="badge badge-new">导航增强</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 使用场景 -->
+      <div class="section">
+        <h2>💡 使用场景</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>🔍 质量问题AI识别</h3>
+            <p style="color: #666;">
+              手动触发 → AI图像识别 → 条件判断 → 批次隔离 → 通知QC → 生成8D报告 → 发送邮件
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>⚙️ 设备故障诊断</h3>
+            <p style="color: #666;">
+              设备告警 → 查询设备数据 → AI故障分析 → 生成维修方案 → 创建工单 → 发送通知
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>🛒 采购智能审批</h3>
+            <p style="color: #666;">
+              Webhook触发 → AI需求分析 → 数据库查询 → AI比价分析 → 条件判断 → 多级审批 → 合同生成
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>🏭 生产异常处理</h3>
+            <p style="color: #666;">
+              异常检测 → AI根因分析 → 生成改善方案 → 临时措施 → 永久措施 → SOP更新 → 验证闭环
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+      <p>📦 v5.0 N8N Edition | 🚀 基于N8N设计理念 | ⚡ 节点测试·AI助手·企业级工作流</p>
+      <p style="margin-top: 10px; color: #999;">
+        交付时间: 2025-12-20 | 状态: ✅ 开发完成
+      </p>
+    </div>
+  </div>
+</body>
+</html>

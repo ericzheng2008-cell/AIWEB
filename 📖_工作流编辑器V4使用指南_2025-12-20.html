@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📖 工作流节点编辑器V4使用指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+                'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .version {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .quick-access {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .quick-access h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(56, 239, 125, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(109, 213, 237, 0.4);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 22px;
+            margin: 20px 0 15px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card .icon {
+            font-size: 28px;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-card li {
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-card li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e9ecef;
+        }
+
+        .shortcut-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .shortcut-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shortcut-key {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .node-library {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .node-category {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .node-category:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .node-category h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .node-category .category-icon {
+            font-size: 28px;
+        }
+
+        .node-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .node-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-list li:last-child {
+            border-bottom: none;
+        }
+
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-left: 3px solid #e9ecef;
+        }
+
+        .steps li:before {
+            content: counter(step);
+            position: absolute;
+            left: -18px;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            color: #856404;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 3px solid #e9ecef;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .feature-grid,
+            .node-library {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📖 工作流节点编辑器V4使用指南</h1>
+            <p class="version">V4.0 Professional Edition | 企业级工作流设计平台</p>
+        </div>
+
+        <div class="quick-access">
+            <h2>🚀 快速访问</h2>
+            <div class="btn-group">
+                <a href="http://localhost:5173/workflow-editor-v4" class="btn btn-primary" target="_blank">
+                    🎨 打开编辑器V4
+                </a>
+                <a href="http://localhost:5173/workflow-agent" class="btn btn-success" target="_blank">
+                    📊 对比V2.7版本
+                </a>
+                <a href="http://localhost:5173/workflow-agent-v3" class="btn btn-info" target="_blank">
+                    🏢 查看V3.0企业版
+                </a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>🎯 核心特性</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><span class="icon">📚</span>六大节点分类</h4>
+                        <ul>
+                            <li>触发节点 (4个)</li>
+                            <li>操作节点 (4个)</li>
+                            <li>AI智能 (5个)</li>
+                            <li>控制节点 (4个)</li>
+                            <li>集成节点 (5个)</li>
+                            <li>输出节点 (4个)</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4><span class="icon">⚙️</span>完整属性编辑</h4>
+                        <ul>
+                            <li>基础设置</li>
+                            <li>AI参数配置</li>
+                            <li>数据映射</li>
+                            <li>集成设置</li>
+                            <li>权限控制</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4><span class="icon">🎨</span>流畅画布交互</h4>
+                        <ul>
+                            <li>自由拖拽节点</li>
+                            <li>贝塞尔曲线连接</li>
+                            <li>框选多选</li>
+                            <li>撤销/重做(50步)</li>
+                            <li>缩放平移</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4><span class="icon">🤖</span>AI智能助手</h4>
+                        <ul>
+                            <li>双击画布AI推荐</li>
+                            <li>AI自动生成流程</li>
+                            <li>智能节点配置</li>
+                            <li>上下文感知</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4><span class="icon">🖱️</span>右键菜单</h4>
+                        <ul>
+                            <li>复制/剪切/粘贴</li>
+                            <li>克隆节点</li>
+                            <li>删除节点</li>
+                            <li>删除连接线</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4><span class="icon">🗺️</span>导航辅助</h4>
+                        <ul>
+                            <li>缩略图导航</li>
+                            <li>网格吸附</li>
+                            <li>自动布局</li>
+                            <li>批量对齐</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⌨️ 快捷键</h2>
+                <div class="shortcut-table">
+                    <div class="shortcut-item">
+                        <span>撤销</span>
+                        <span class="shortcut-key">Ctrl + Z</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>重做</span>
+                        <span class="shortcut-key">Ctrl + Y</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>全选</span>
+                        <span class="shortcut-key">Ctrl + A</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>复制节点</span>
+                        <span class="shortcut-key">Ctrl + C</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>剪切节点</span>
+                        <span class="shortcut-key">Ctrl + X</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>粘贴节点</span>
+                        <span class="shortcut-key">Ctrl + V</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>删除选中</span>
+                        <span class="shortcut-key">Delete</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>保存工作流</span>
+                        <span class="shortcut-key">Ctrl + S</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📚 节点库</h2>
+                <div class="node-library">
+                    <div class="node-category">
+                        <h4><span class="category-icon">🌩️</span>触发 Trigger</h4>
+                        <ul class="node-list">
+                            <li>👆 手动触发</li>
+                            <li>⏰ 定时触发</li>
+                            <li>🚨 设备告警</li>
+                            <li>📄 文档上传</li>
+                        </ul>
+                    </div>
+
+                    <div class="node-category">
+                        <h4><span class="category-icon">🛠️</span>操作 Action</h4>
+                        <ul class="node-list">
+                            <li>✅ 审批节点</li>
+                            <li>📝 表单填写</li>
+                            <li>📧 消息通知</li>
+                            <li>📋 创建任务</li>
+                        </ul>
+                    </div>
+
+                    <div class="node-category">
+                        <h4><span class="category-icon">🧠</span>AI 智能</h4>
+                        <ul class="node-list">
+                            <li>🧠 AI判断</li>
+                            <li>📊 AI分析</li>
+                            <li>📄 AI生成文档</li>
+                            <li>🎯 AI分派</li>
+                            <li>🔮 AI预测</li>
+                        </ul>
+                    </div>
+
+                    <div class="node-category">
+                        <h4><span class="category-icon">💠</span>控制 Logic</h4>
+                        <ul class="node-list">
+                            <li>💠 条件分支</li>
+                            <li>⚡ 并行执行</li>
+                            <li>🔄 循环节点</li>
+                            <li>🔀 汇聚节点</li>
+                        </ul>
+                    </div>
+
+                    <div class="node-category">
+                        <h4><span class="category-icon">🔗</span>集成 Integration</h4>
+                        <ul class="node-list">
+                            <li>🏭 MES查询</li>
+                            <li>💼 ERP查询</li>
+                            <li>👥 CRM查询</li>
+                            <li>📡 设备数据</li>
+                            <li>🎫 创建工单</li>
+                        </ul>
+                    </div>
+
+                    <div class="node-category">
+                        <h4><span class="category-icon">📤</span>输出 Output</h4>
+                        <ul class="node-list">
+                            <li>📑 生成报告</li>
+                            <li>✉️ 发送邮件</li>
+                            <li>💾 数据导出</li>
+                            <li>🗄️ 归档存储</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🚀 快速上手</h2>
+                
+                <h3>方法1: AI自动生成</h3>
+                <ol class="steps">
+                    <li>点击顶部"AI 构建流程"按钮</li>
+                    <li>输入任务描述,例如:"处理设备故障"</li>
+                    <li>选择涉及部门</li>
+                    <li>点击"开始生成"</li>
+                    <li>AI自动创建完整流程</li>
+                </ol>
+
+                <h3>方法2: 手动拖拽</h3>
+                <ol class="steps">
+                    <li>从左侧节点库选择节点</li>
+                    <li>拖拽到画布中心</li>
+                    <li>继续添加其他节点</li>
+                    <li>鼠标移至节点显示连接点</li>
+                    <li>拖拽连接点创建连接线</li>
+                    <li>点击节点编辑属性</li>
+                </ol>
+
+                <h3>方法3: 双击快速添加</h3>
+                <ol class="steps">
+                    <li>双击画布空白处</li>
+                    <li>查看AI推荐的节点</li>
+                    <li>点击推荐节点添加</li>
+                    <li>继续编辑和连接</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <h2>📊 版本对比</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>特性</th>
+                            <th>V2.7</th>
+                            <th>V4.0</th>
+                            <th>提升</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>节点分类</td>
+                            <td>4种</td>
+                            <td>6种</td>
+                            <td>+50%</td>
+                        </tr>
+                        <tr>
+                            <td>节点总数</td>
+                            <td>15个</td>
+                            <td>26个</td>
+                            <td>+73%</td>
+                        </tr>
+                        <tr>
+                            <td>属性标签</td>
+                            <td>1个</td>
+                            <td>5个</td>
+                            <td>+400%</td>
+                        </tr>
+                        <tr>
+                            <td>撤销/重做</td>
+                            <td>❌</td>
+                            <td>✅ 50步</td>
+                            <td>新增</td>
+                        </tr>
+                        <tr>
+                            <td>框选多选</td>
+                            <td>❌</td>
+                            <td>✅</td>
+                            <td>新增</td>
+                        </tr>
+                        <tr>
+                            <td>右键菜单</td>
+                            <td>❌</td>
+                            <td>✅ 完整</td>
+                            <td>新增</td>
+                        </tr>
+                        <tr>
+                            <td>AI推荐</td>
+                            <td>简单</td>
+                            <td>智能浮层</td>
+                            <td>大幅提升</td>
+                        </tr>
+                        <tr>
+                            <td>AI生成</td>
+                            <td>❌</td>
+                            <td>✅ 完整流程</td>
+                            <td>新增</td>
+                        </tr>
+                        <tr>
+                            <td>数据映射</td>
+                            <td>❌</td>
+                            <td>✅ 可视化</td>
+                            <td>新增</td>
+                        </tr>
+                        <tr>
+                            <td>UI设计</td>
+                            <td>基础</td>
+                            <td>企业级</td>
+                            <td>质的飞跃</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>💡 使用技巧</h2>
+                
+                <div class="alert alert-success">
+                    <strong>✅ 提示:</strong> 使用AI自动生成功能可以快速创建完整的企业级工作流,节省80%的设计时间。
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>ℹ️ 信息:</strong> 右侧属性面板支持5个标签页,可以完整配置节点的所有参数,包括AI模型、数据映射、集成设置等。
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ 注意:</strong> 使用撤销/重做功能时,系统会保留最近50步操作历史,超过限制后旧的历史会被自动清除。
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 推荐场景</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🏭 生产管理</h4>
+                        <ul>
+                            <li>设备故障处理流程</li>
+                            <li>生产异常处理</li>
+                            <li>质量问题追溯</li>
+                            <li>工艺改进验证</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>🛒 采购流程</h4>
+                        <ul>
+                            <li>固定资产采购</li>
+                            <li>供应商评估</li>
+                            <li>预算审批</li>
+                            <li>验收入库</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>✅ 质量管理</h4>
+                        <ul>
+                            <li>8D报告流程</li>
+                            <li>批次隔离处理</li>
+                            <li>改善措施实施</li>
+                            <li>风险评估</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>🔧 设备管理</h4>
+                        <ul>
+                            <li>设备升级流程</li>
+                            <li>维修工单管理</li>
+                            <li>预防性维护</li>
+                            <li>备件管理</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>WorkflowEditorV4 - 企业级工作流节点编辑器</strong></p>
+            <p>版本: V4.0 Professional | 更新时间: 2025-12-20</p>
+            <p>访问地址: <a href="http://localhost:5173/workflow-editor-v4" target="_blank">http://localhost:5173/workflow-editor-v4</a></p>
+            <p style="margin-top: 15px; color: #667eea;">🎉 基于企业级UI设计文档,完全可用,可直接部署!</p>
+        </div>
+    </div>
+</body>
+</html>

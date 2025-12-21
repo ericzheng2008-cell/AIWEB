@@ -259,6 +259,46 @@ const routes = [
       category: 'AI营销中台'
     }
   },
+  {
+    path: '/workflow-agent',
+    name: 'WorkflowAgent',
+    component: () => import('../views/WorkflowAgent.vue'),
+    meta: {
+      title: '工作流智能体 v2.7',
+      description: '多部门工作流可视化管理 - 拖拽式流程设计、自定义节点、智能连接',
+      category: '流程管理'
+    }
+  },
+  {
+    path: '/workflow-agent-v3',
+    name: 'WorkflowAgentV3',
+    component: () => import('../views/WorkflowAgentV3.vue'),
+    meta: {
+      title: '工作流智能体 v3.0 Enterprise',
+      description: '企业级AI工作流平台 - 六大节点类型·智能推荐·完整调试·数据链路追踪',
+      category: '企业级平台'
+    }
+  },
+  {
+    path: '/workflow-editor-v4',
+    name: 'WorkflowEditorV4',
+    component: () => import('../views/WorkflowEditorV4.vue'),
+    meta: {
+      title: '工作流节点编辑器 v4.0 Professional',
+      description: '专业级节点编辑器 - 六大节点分类·完整属性编辑·AI智能助手·企业级设计',
+      category: '流程管理'
+    }
+  },
+  {
+    path: '/workflow-editor-v5-n8n',
+    name: 'WorkflowEditorV5_N8N',
+    component: () => import('../views/WorkflowEditorV5_N8N.vue'),
+    meta: {
+      title: '工作流编辑器 v7.0 Ultra Edition',
+      description: '企业级工作流平台·30节点·9属性标签·AI智能·SLA管理·权限审计·数据追踪·25倍超大节点·拖拽修复',
+      category: '流程管理'
+    }
+  },
   // 管理后台路由
   {
     path: '/admin/login',

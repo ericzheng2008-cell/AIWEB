@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>AIWEB公网部署完整方案</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">AIWEB公网部署完整方案</h1>
+</header>
+<h1 id="aiweb公网部署完整方案">📘 AIWEB公网部署完整方案</h1>
+<p><strong>版本：</strong> v2.5.0<br />
+<strong>日期：</strong> 2025-12-20<br />
+<strong>文档类型：</strong> 互联网公开访问部署指南</p>
+<hr />
+<h2 id="目录">📋 目录</h2>
+<ol type="1">
+<li><a href="#部署方案对比">部署方案对比</a></li>
+<li><a href="#云服务器部署">云服务器部署</a></li>
+<li><a href="#cdn加速方案">CDN加速方案</a></li>
+<li><a href="#域名与ssl配置">域名与SSL配置</a></li>
+<li><a href="#安全加固">安全加固</a></li>
+<li><a href="#费用预算">费用预算</a></li>
+<li><a href="#部署流程">部署流程</a></li>
+<li><a href="#运维监控">运维监控</a></li>
+</ol>
+<hr />
+<h2 id="部署方案对比">1. 部署方案对比</h2>
+<h3 id="方案选择矩阵">1.1 方案选择矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>适用场景</th>
+<th>优点</th>
+<th>缺点</th>
+<th>成本/年</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>阿里云ECS</strong></td>
+<td>企业级应用</td>
+<td>稳定、可扩展</td>
+<td>配置复杂</td>
+<td>¥3,000-15,000</td>
+</tr>
+<tr>
+<td><strong>腾讯云CVM</strong></td>
+<td>企业级应用</td>
+<td>性价比高</td>
+<td>网络速度</td>
+<td>¥2,500-12,000</td>
+</tr>
+<tr>
+<td><strong>华为云ECS</strong></td>
+<td>政企客户</td>
+<td>安全合规</td>
+<td>价格较高</td>
+<td>¥3,500-18,000</td>
+</tr>
+<tr>
+<td><strong>Vercel</strong></td>
+<td>前端静态托管</td>
+<td>免费、快速</td>
+<td>后端受限</td>
+<td>¥0-2,000</td>
+</tr>
+<tr>
+<td><strong>Netlify</strong></td>
+<td>JAMstack应用</td>
+<td>简单易用</td>
+<td>功能有限</td>
+<td>¥0-1,500</td>
+</tr>
+<tr>
+<td><strong>Railway</strong></td>
+<td>全栈应用</td>
+<td>自动部署</td>
+<td>流量限制</td>
+<td>¥0-800</td>
+</tr>
+</tbody>
+</table>
+<h3 id="推荐方案">1.2 推荐方案</h3>
+<h4 id="推荐方案一阿里云ecs-oss-cdn企业级">🏆 推荐方案一：阿里云ECS +
+OSS + CDN（企业级）</h4>
+<p><strong>适合</strong>： - 日访问量 &gt; 1000 - 需要高可用性 -
+有技术团队维护</p>
+<p><strong>架构</strong>：</p>
+<pre><code>用户 → CDN → 负载均衡 → ECS集群 → RDS数据库
+                            ↓
+                          OSS存储</code></pre>
+<h4 id="推荐方案二vercel-serverless轻量级">🥈 推荐方案二：Vercel +
+Serverless（轻量级）</h4>
+<p><strong>适合</strong>： - 中小型网站 - 预算有限 - 流量不大（&lt;
+100GB/月）</p>
+<p><strong>架构</strong>：</p>
+<pre><code>用户 → Vercel CDN → 静态页面
+                  → Serverless Functions (API)
+                  → 云数据库</code></pre>
+<hr />
+<h2 id="云服务器部署">2. 云服务器部署</h2>
+<h3 id="阿里云ecs部署方案">2.1 阿里云ECS部署方案</h3>
+<h4 id="配置选择">配置选择</h4>
+<p><strong>入门版（个人/小团队）</strong> | 配置项 | 规格 | 价格/年 |
+|——-|——|———| | <strong>实例类型</strong> | ecs.t6-c1m2.large | ¥588 | |
+<strong>CPU</strong> | 2核 | - | | <strong>内存</strong> | 4GB | - | |
+<strong>系统盘</strong> | 40GB ESSD | ¥120 | | <strong>数据盘</strong> |
+100GB 高效云盘 | ¥360 | | <strong>带宽</strong> | 5Mbps | ¥600 | |
+<strong>总计</strong> | - | <strong>¥1,668/年</strong> |</p>
+<p><strong>标准版（中小企业）</strong> | 配置项 | 规格 | 价格/年 |
+|——-|——|———| | <strong>实例类型</strong> | ecs.c6.xlarge | ¥3,500 | |
+<strong>CPU</strong> | 4核 | - | | <strong>内存</strong> | 8GB | - | |
+<strong>系统盘</strong> | 100GB ESSD | ¥300 | | <strong>数据盘</strong>
+| 500GB SSD | ¥2,400 | | <strong>带宽</strong> | 10Mbps | ¥1,200 | |
+<strong>负载均衡</strong> | SLB标准版 | ¥1,800 | | <strong>总计</strong>
+| - | <strong>¥9,200/年</strong> |</p>
+<p><strong>企业版（大型企业）</strong> | 配置项 | 规格 | 价格/年 |
+|——-|——|———| | <strong>ECS实例</strong> | 2台 ecs.c6.2xlarge | ¥14,000 |
+| <strong>CPU</strong> | 8核 × 2 | - | | <strong>内存</strong> | 16GB ×
+2 | - | | <strong>RDS数据库</strong> | MySQL 8.0 高可用 | ¥8,000 | |
+<strong>OSS存储</strong> | 1TB 标准存储 | ¥1,500 | |
+<strong>CDN流量</strong> | 10TB/年 | ¥3,000 | |
+<strong>负载均衡</strong> | SLB高性能 | ¥3,600 | |
+<strong>WAF防护</strong> | Web应用防火墙 | ¥9,600 | |
+<strong>总计</strong> | - | <strong>¥39,700/年</strong> |</p>
+<h4 id="部署步骤">部署步骤</h4>
+<p><strong>步骤1：购买ECS实例</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 登录阿里云控制台</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://ecs.console.aliyun.com</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择区域：根据用户分布选择</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 华北2（北京）、华东2（上海）、华南1（深圳）</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 实例配置</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">镜像：Ubuntu</span> 22.04 64位</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">实例类型：按上表选择</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">网络：专有网络VPC</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">公网IP：分配</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">安全组：新建（后续配置）</span></span></code></pre></div>
+<p><strong>步骤2：配置安全组</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 入方向规则</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">22/TCP</span>    源：您的IP    （SSH访问）</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">80/TCP</span>    源：0.0.0.0/0  （HTTP）</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">443/TCP</span>   源：0.0.0.0/0  （HTTPS）</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">3000/TCP</span>  源：内网      （前端服务）</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">3001/TCP</span>  源：内网      （后端API）</span></code></pre></div>
+<p><strong>步骤3：连接服务器</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用SSH连接</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> root@your-server-ip</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 更新系统</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> upgrade <span class="at">-y</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装基础工具</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> curl wget git vim build-essential</span></code></pre></div>
+<p><strong>步骤4：安装运行环境</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装Node.js 18</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSL</span> https://deb.nodesource.com/setup_18.x <span class="kw">|</span> <span class="fu">bash</span> <span class="at">-</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> nodejs</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装Nginx</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> nginx</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装PM2</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> pm2</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证安装</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">--version</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="ex">nginx</span> <span class="at">-v</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="ex">pm2</span> <span class="at">--version</span></span></code></pre></div>
+<p><strong>步骤5：部署代码</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 克隆代码</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /var/www</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/your-org/AIWEB1.git</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> AIWEB1</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装依赖</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">--production</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建前端</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 启动后端</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> server</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ex">pm2</span> start index.js <span class="at">--name</span> aiweb-api</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 配置开机自启</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="ex">pm2</span> startup</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="ex">pm2</span> save</span></code></pre></div>
+<p><strong>步骤6：配置Nginx</strong></p>
+<pre class="nginx"><code># /etc/nginx/sites-available/aiweb
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    # 强制HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+
+    # SSL证书（后续配置）
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    # SSL优化
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Gzip压缩
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/javascript application/json;
+
+    # 前端静态文件
+    location / {
+        root /var/www/AIWEB1/dist;
+        try_files $uri $uri/ /index.html;
+        index index.html;
+        
+        # 缓存设置
+        expires 7d;
+        add_header Cache-Control &quot;public, immutable&quot;;
+    }
+
+    # API代理
+    location /api/ {
+        proxy_pass http://127.0.0.1:3001/;
+        proxy_http_version 1.1;
+        
+        # 代理头
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &#39;upgrade&#39;;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # 超时设置
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # 上传文件访问
+    location /uploads/ {
+        alias /var/www/AIWEB1/server/uploads/;
+        expires 30d;
+    }
+
+    # 安全头
+    add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;
+    add_header X-Content-Type-Options &quot;nosniff&quot; always;
+    add_header X-XSS-Protection &quot;1; mode=block&quot; always;
+}
+
+# 启用配置
+ln -s /etc/nginx/sites-available/aiweb /etc/nginx/sites-enabled/
+nginx -t
+systemctl reload nginx</code></pre>
+<h3 id="腾讯云cvm部署方案">2.2 腾讯云CVM部署方案</h3>
+<h4 id="配置对比">配置对比</h4>
+<table>
+<thead>
+<tr>
+<th>规格</th>
+<th>腾讯云</th>
+<th>阿里云</th>
+<th>价格优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2核4GB</strong></td>
+<td>¥1,200/年</td>
+<td>¥1,668/年</td>
+<td>腾讯云便宜28%</td>
+</tr>
+<tr>
+<td><strong>4核8GB</strong></td>
+<td>¥2,800/年</td>
+<td>¥3,500/年</td>
+<td>腾讯云便宜20%</td>
+</tr>
+<tr>
+<td><strong>8核16GB</strong></td>
+<td>¥6,500/年</td>
+<td>¥8,000/年</td>
+<td>腾讯云便宜19%</td>
+</tr>
+</tbody>
+</table>
+<h4 id="特色功能">特色功能</h4>
+<ul>
+<li><strong>轻量应用服务器</strong>：集成环境，一键部署</li>
+<li><strong>云开发CloudBase</strong>：Serverless后端服务</li>
+<li><strong>对象存储COS</strong>：图片、视频存储</li>
+</ul>
+<h3 id="华为云ecs部署方案">2.3 华为云ECS部署方案</h3>
+<h4 id="优势">优势</h4>
+<ul>
+<li>✅ <strong>政企认证</strong>：通过多项安全认证</li>
+<li>✅ <strong>国产化</strong>：支持国产芯片和操作系统</li>
+<li>✅ <strong>合规性</strong>：满足等保2.0要求</li>
+</ul>
+<h4 id="适用场景">适用场景</h4>
+<ul>
+<li>政府项目</li>
+<li>国企央企</li>
+<li>金融、医疗等强监管行业</li>
+</ul>
+<hr />
+<h2 id="cdn加速方案">3. CDN加速方案</h2>
+<h3 id="为什么需要cdn">3.1 为什么需要CDN？</h3>
+<table>
+<thead>
+<tr>
+<th>优势</th>
+<th>说明</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>加速访问</strong></td>
+<td>就近访问边缘节点</td>
+<td>延迟降低60-80%</td>
+</tr>
+<tr>
+<td><strong>降低成本</strong></td>
+<td>减少源站带宽消耗</td>
+<td>节省40-70%带宽费用</td>
+</tr>
+<tr>
+<td><strong>抗攻击</strong></td>
+<td>DDoS防护、CC防护</td>
+<td>提升安全性</td>
+</tr>
+<tr>
+<td><strong>提升体验</strong></td>
+<td>秒开、流畅</td>
+<td>用户满意度↑</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cdn配置步骤以阿里云为例">3.2 CDN配置步骤（以阿里云为例）</h3>
+<p><strong>步骤1：开通CDN服务</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 登录阿里云CDN控制台</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">https://cdn.console.aliyun.com</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 购买流量包（可选）</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">100GB流量包：¥17/月</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">1TB流量包：¥142/月</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ex">10TB流量包：¥1,280/月</span></span></code></pre></div>
+<p><strong>步骤2：添加加速域名</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 加速域名：static.your-domain.com</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 源站类型：OSS域名 或 IP地址</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 源站地址：your-server-ip 或 bucket.oss-cn-beijing.aliyuncs.com</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 加速区域：中国大陆 / 全球</span></span></code></pre></div>
+<p><strong>步骤3：配置CNAME</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 获取CDN分配的CNAME</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：static.your-domain.com.w.kunlunsl.com</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 到域名服务商添加CNAME记录</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">记录类型：CNAME</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ex">主机记录：static</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="ex">记录值：static.your-domain.com.w.kunlunsl.com</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ex">TTL：10分钟</span></span></code></pre></div>
+<p><strong>步骤4：优化配置</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 缓存配置</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">目录：/static/*</span>     过期时间：30天</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">目录：/assets/*</span>    过期时间：365天</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">目录：/uploads/*</span>   过期时间：30天</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">文件：*.html</span>       过期时间：1小时</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">文件：*.js,*.css</span>   过期时间：7天</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 压缩优化</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="ex">智能压缩：开启</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Brotli压缩：开启</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 性能优化</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="ex">HTTP/2：开启</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="ex">IPv6：开启（可选）</span></span></code></pre></div>
+<h3 id="cdn费用估算">3.3 CDN费用估算</h3>
+<table>
+<thead>
+<tr>
+<th>月流量</th>
+<th>按流量计费</th>
+<th>按带宽计费</th>
+<th>推荐方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>&lt; 100GB</strong></td>
+<td>¥17</td>
+<td>¥180</td>
+<td>流量计费</td>
+</tr>
+<tr>
+<td><strong>100-500GB</strong></td>
+<td>¥71-142</td>
+<td>¥900</td>
+<td>流量计费</td>
+</tr>
+<tr>
+<td><strong>500GB-1TB</strong></td>
+<td>¥142-284</td>
+<td>¥1,800</td>
+<td>流量包</td>
+</tr>
+<tr>
+<td><strong>1-10TB</strong></td>
+<td>¥1,280</td>
+<td>¥9,000</td>
+<td>带宽计费</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="域名与ssl配置">4. 域名与SSL配置</h2>
+<h3 id="域名购买">4.1 域名购买</h3>
+<h4 id="域名注册商对比">域名注册商对比</h4>
+<table>
+<thead>
+<tr>
+<th>注册商</th>
+<th>.com价格</th>
+<th>.cn价格</th>
+<th>优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>阿里云</strong></td>
+<td>¥69/年</td>
+<td>¥29/年</td>
+<td>集成度高</td>
+</tr>
+<tr>
+<td><strong>腾讯云</strong></td>
+<td>¥55/年</td>
+<td>¥35/年</td>
+<td>价格便宜</td>
+</tr>
+<tr>
+<td><strong>GoDaddy</strong></td>
+<td>$11.99/年</td>
+<td>-</td>
+<td>国际化</td>
+</tr>
+<tr>
+<td><strong>Namecheap</strong></td>
+<td>$8.88/年</td>
+<td>-</td>
+<td>性价比高</td>
+</tr>
+</tbody>
+</table>
+<h4 id="域名选择建议">域名选择建议</h4>
+<ul>
+<li>✅ 优先选择 <code>.com</code>（国际通用）</li>
+<li>✅ 备选 <code>.cn</code>（中国企业）</li>
+<li>✅ 简短易记，与品牌相关</li>
+<li>❌ 避免特殊字符、数字混淆</li>
+</ul>
+<h3 id="dns解析配置">4.2 DNS解析配置</h3>
+<p><strong>基础解析记录</strong></p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A记录（主域名）</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">@</span>       A       123.45.67.89    （服务器IP）</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># A记录（www子域名）</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">www</span>     A       123.45.67.89</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># CNAME记录（CDN加速）</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">static</span>  CNAME   cdn.your-domain.com.w.kunlunsl.com</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># MX记录（邮箱）</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="ex">@</span>       MX      mx.your-domain.com  优先级：10</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># TXT记录（验证）</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="ex">@</span>       TXT     <span class="st">&quot;v=spf1 include:_spf.example.com ~all&quot;</span></span></code></pre></div>
+<p><strong>智能解析（可选）</strong></p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 境内用户 → 国内服务器</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">default</span>  A  123.45.67.89  （阿里云北京）</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 境外用户 → 海外服务器</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="ex">overseas</span> A  45.67.89.123  （AWS新加坡）</span></code></pre></div>
+<h3 id="ssl证书申请">4.3 SSL证书申请</h3>
+<h4 id="免费ssl证书lets-encrypt">免费SSL证书（Let’s Encrypt）</h4>
+<p><strong>使用Certbot自动申请</strong></p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装Certbot</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> certbot python3-certbot-nginx</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 自动申请并配置Nginx</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">certbot</span> <span class="at">--nginx</span> <span class="at">-d</span> your-domain.com <span class="at">-d</span> www.your-domain.com</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 测试自动续期</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="ex">certbot</span> renew <span class="at">--dry-run</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 自动续期（添加到crontab）</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 3 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> certbot renew <span class="at">--quiet</span></span></code></pre></div>
+<p><strong>手动申请</strong></p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 申请证书</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">certbot</span> certonly <span class="at">--webroot</span> <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-w</span> /var/www/AIWEB1/dist <span class="dt">\</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> your-domain.com <span class="dt">\</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> www.your-domain.com</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 证书位置</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="ex">/etc/letsencrypt/live/your-domain.com/fullchain.pem</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="ex">/etc/letsencrypt/live/your-domain.com/privkey.pem</span></span></code></pre></div>
+<h4 id="商业ssl证书">商业SSL证书</h4>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>验证级别</th>
+<th>价格/年</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DV证书</strong></td>
+<td>域名验证</td>
+<td>¥0-500</td>
+<td>个人网站、博客</td>
+</tr>
+<tr>
+<td><strong>OV证书</strong></td>
+<td>组织验证</td>
+<td>¥1,000-3,000</td>
+<td>企业官网</td>
+</tr>
+<tr>
+<td><strong>EV证书</strong></td>
+<td>扩展验证</td>
+<td>¥3,000-10,000</td>
+<td>金融、电商</td>
+</tr>
+<tr>
+<td><strong>通配符证书</strong></td>
+<td>多子域名</td>
+<td>¥2,000-5,000</td>
+<td>大型网站</td>
+</tr>
+</tbody>
+</table>
+<p><strong>推荐品牌</strong>： - DigiCert（高端） - GeoTrust（中端） -
+RapidSSL（入门）</p>
+<hr />
+<h2 id="安全加固">5. 安全加固</h2>
+<h3 id="服务器安全">5.1 服务器安全</h3>
+<h4 id="ssh安全加固">SSH安全加固</h4>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 修改SSH配置</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /etc/ssh/sshd_config</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 禁用root登录</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">PermitRootLogin</span> no</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 禁用密码登录（使用密钥）</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ex">PasswordAuthentication</span> no</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 修改SSH端口（可选）</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Port</span> 22022</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 重启SSH服务</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> restart sshd</span></code></pre></div>
+<h4 id="防火墙配置">防火墙配置</h4>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装Fail2ban（防暴力破解）</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> fail2ban</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 配置Fail2ban</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /etc/fail2ban/jail.local</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="ex">[DEFAULT]</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="ex">bantime</span> = 3600</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="ex">findtime</span> = 600</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="ex">maxretry</span> = 5</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="ex">[sshd]</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="ex">enabled</span> = true</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="ex">port</span> = 22</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="ex">logpath</span> = /var/log/auth.log</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 启动服务</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> start fail2ban</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> enable fail2ban</span></code></pre></div>
+<h4 id="系统安全更新">系统安全更新</h4>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 自动安全更新</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> unattended-upgrades</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 配置自动更新</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="ex">dpkg-reconfigure</span> <span class="at">-plow</span> unattended-upgrades</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 手动更新</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> upgrade <span class="at">-y</span></span></code></pre></div>
+<h3 id="应用安全">5.2 应用安全</h3>
+<h4 id="环境变量保护">环境变量保护</h4>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建.env文件</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /var/www/AIWEB1/server/.env</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 添加敏感配置</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="va">DB_PASSWORD</span><span class="op">=</span>your-secure-password</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="va">JWT_SECRET</span><span class="op">=</span>your-random-secret-key-change-this</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="va">API_KEY</span><span class="op">=</span>your-api-key</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 设置文件权限</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 .env</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="fu">chown</span> www-data:www-data .env</span></code></pre></div>
+<h4 id="sql注入防护">SQL注入防护</h4>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 使用参数化查询</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="fu">query</span>(<span class="st">&#39;SELECT * FROM users WHERE id = ?&#39;</span><span class="op">,</span> [userId])</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">// 避免直接拼接SQL</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ❌ 错误示例</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="fu">query</span>(<span class="st">&#39;SELECT * FROM users WHERE id = &#39;</span> <span class="op">+</span> userId)</span></code></pre></div>
+<h4 id="xss防护">XSS防护</h4>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 输出转义</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> DOMPurify <span class="im">from</span> <span class="st">&#39;dompurify&#39;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> clean <span class="op">=</span> DOMPurify<span class="op">.</span><span class="fu">sanitize</span>(userInput)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">// CSP头设置（Nginx）</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>add_header Content<span class="op">-</span>Security<span class="op">-</span>Policy <span class="st">&quot;default-src &#39;self&#39;; script-src &#39;self&#39; &#39;unsafe-inline&#39;&quot;</span><span class="op">;</span></span></code></pre></div>
+<h3 id="waf防护可选">5.3 WAF防护（可选）</h3>
+<p><strong>阿里云WAF</strong> | 版本 | 价格/年 | 防护能力 | |—–|———|———|
+| <strong>基础版</strong> | ¥9,600 | DDoS、CC、SQL注入 | |
+<strong>高级版</strong> | ¥28,800 | + AI防护、零日漏洞 | |
+<strong>企业版</strong> | ¥58,800 | + 定制规则、专家服务 |</p>
+<p><strong>腾讯云WAF</strong> - 价格更低（约便宜20%） - 功能相似</p>
+<hr />
+<h2 id="费用预算">6. 费用预算</h2>
+<h3 id="年度费用估算">6.1 年度费用估算</h3>
+<h4 id="方案一小型网站个人初创">方案一：小型网站（个人/初创）</h4>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>服务</th>
+<th>费用/年</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>服务器</strong></td>
+<td>阿里云ECS 2核4GB</td>
+<td>¥1,668</td>
+</tr>
+<tr>
+<td><strong>域名</strong></td>
+<td>.com域名</td>
+<td>¥69</td>
+</tr>
+<tr>
+<td><strong>SSL证书</strong></td>
+<td>Let’s Encrypt</td>
+<td>¥0</td>
+</tr>
+<tr>
+<td><strong>CDN</strong></td>
+<td>100GB流量包</td>
+<td>¥204</td>
+</tr>
+<tr>
+<td><strong>备份</strong></td>
+<td>OSS 50GB</td>
+<td>¥60</td>
+</tr>
+<tr>
+<td><strong>总计</strong></td>
+<td>-</td>
+<td><strong>¥2,001</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="方案二中型网站中小企业">方案二：中型网站（中小企业）</h4>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>服务</th>
+<th>费用/年</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>服务器</strong></td>
+<td>阿里云ECS 4核8GB</td>
+<td>¥9,200</td>
+</tr>
+<tr>
+<td><strong>域名</strong></td>
+<td>.com + .cn</td>
+<td>¥98</td>
+</tr>
+<tr>
+<td><strong>SSL证书</strong></td>
+<td>OV证书</td>
+<td>¥2,000</td>
+</tr>
+<tr>
+<td><strong>CDN</strong></td>
+<td>1TB流量包</td>
+<td>¥1,704</td>
+</tr>
+<tr>
+<td><strong>数据库</strong></td>
+<td>RDS MySQL 2核4GB</td>
+<td>¥4,800</td>
+</tr>
+<tr>
+<td><strong>OSS存储</strong></td>
+<td>500GB</td>
+<td>¥600</td>
+</tr>
+<tr>
+<td><strong>备份</strong></td>
+<td>异地备份</td>
+<td>¥1,200</td>
+</tr>
+<tr>
+<td><strong>监控</strong></td>
+<td>云监控高级版</td>
+<td>¥1,200</td>
+</tr>
+<tr>
+<td><strong>总计</strong></td>
+<td>-</td>
+<td><strong>¥20,802</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="方案三大型网站企业级">方案三：大型网站（企业级）</h4>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>服务</th>
+<th>费用/年</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>服务器集群</strong></td>
+<td>ECS 8核16GB × 2</td>
+<td>¥20,000</td>
+</tr>
+<tr>
+<td><strong>负载均衡</strong></td>
+<td>SLB高性能</td>
+<td>¥3,600</td>
+</tr>
+<tr>
+<td><strong>数据库</strong></td>
+<td>RDS高可用</td>
+<td>¥12,000</td>
+</tr>
+<tr>
+<td><strong>CDN</strong></td>
+<td>10TB流量</td>
+<td>¥15,360</td>
+</tr>
+<tr>
+<td><strong>OSS存储</strong></td>
+<td>2TB</td>
+<td>¥2,400</td>
+</tr>
+<tr>
+<td><strong>WAF防护</strong></td>
+<td>高级版</td>
+<td>¥28,800</td>
+</tr>
+<tr>
+<td><strong>DDoS防护</strong></td>
+<td>50Gbps</td>
+<td>¥24,000</td>
+</tr>
+<tr>
+<td><strong>域名</strong></td>
+<td>多域名</td>
+<td>¥500</td>
+</tr>
+<tr>
+<td><strong>SSL证书</strong></td>
+<td>EV通配符证书</td>
+<td>¥8,000</td>
+</tr>
+<tr>
+<td><strong>监控告警</strong></td>
+<td>企业版</td>
+<td>¥6,000</td>
+</tr>
+<tr>
+<td><strong>技术支持</strong></td>
+<td>7×24小时</td>
+<td>¥12,000</td>
+</tr>
+<tr>
+<td><strong>总计</strong></td>
+<td>-</td>
+<td><strong>¥132,660</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="成本优化建议">6.2 成本优化建议</h3>
+<h4 id="省钱技巧">💰 省钱技巧</h4>
+<ol type="1">
+<li><strong>长期购买</strong>：3年比1年便宜40%</li>
+<li><strong>新用户优惠</strong>：首购可享50%折扣</li>
+<li><strong>学生认证</strong>：阿里云学生机114元/年</li>
+<li><strong>预留实例</strong>：承诺1-3年使用，折扣70%</li>
+<li><strong>按量付费</strong>：流量小时选择按量计费</li>
+</ol>
+<h4 id="性价比方案">🎯 性价比方案</h4>
+<pre><code>低成本：Vercel(免费) + Supabase(免费) = ¥0/年
+  适合：个人项目、演示网站
+
+平衡型：阿里云ECS + CDN = ¥2,000-5,000/年
+  适合：初创公司、小型企业
+
+企业级：混合云 + 容灾备份 = ¥50,000-200,000/年
+  适合：大型企业、关键业务</code></pre>
+<hr />
+<h2 id="部署流程">7. 部署流程</h2>
+<h3 id="快速部署vercel">7.1 快速部署（Vercel）</h3>
+<p><strong>步骤1：准备代码</strong></p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 确保package.json有build命令</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;scripts&quot;</span><span class="ex">:</span> {</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;build&quot;</span><span class="ex">:</span> <span class="st">&quot;vite build&quot;</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;preview&quot;</span><span class="ex">:</span> <span class="st">&quot;vite preview&quot;</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建vercel.json</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;version&quot;</span><span class="ex">:</span> 2,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;builds&quot;</span><span class="ex">:</span> [</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">{</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;src&quot;</span><span class="ex">:</span> <span class="st">&quot;package.json&quot;</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;use&quot;</span><span class="ex">:</span> <span class="st">&quot;@vercel/static-build&quot;</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;config&quot;</span><span class="ex">:</span> { <span class="st">&quot;distDir&quot;</span>: <span class="st">&quot;dist&quot;</span> }</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="ex">],</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;routes&quot;</span><span class="ex">:</span> [</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">{</span> <span class="st">&quot;handle&quot;</span><span class="ex">:</span> <span class="st">&quot;filesystem&quot;</span> },</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">{</span> <span class="st">&quot;src&quot;</span><span class="ex">:</span> <span class="st">&quot;/api/(.*)&quot;</span>, <span class="st">&quot;dest&quot;</span>: <span class="st">&quot;/server/index.js&quot;</span> },</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">{</span> <span class="st">&quot;src&quot;</span><span class="ex">:</span> <span class="st">&quot;/(.*)&quot;</span>, <span class="st">&quot;dest&quot;</span>: <span class="st">&quot;/index.html&quot;</span> }</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">]</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<p><strong>步骤2：连接GitHub</strong></p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 推送代码到GitHub</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;Ready for deployment&quot;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin main</span></code></pre></div>
+<p><strong>步骤3：导入Vercel</strong></p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 访问 https://vercel.com</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 点击 &quot;New Project&quot;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择GitHub仓库</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 配置构建设置：</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   Framework Preset: Vite</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   Build Command: npm run build</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   Output Directory: dist</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 点击 &quot;Deploy&quot;</span></span></code></pre></div>
+<p><strong>步骤4：绑定域名</strong></p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 在Vercel项目设置中添加域名</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Settings</span> → Domains → Add Domain</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="ex">your-domain.com</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 配置DNS（到域名服务商）</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Type:</span> CNAME</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Name:</span> @</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Value:</span> cname.vercel-dns.com</span></code></pre></div>
+<h3 id="docker部署">7.2 Docker部署</h3>
+<p><strong>步骤1：创建Dockerfile</strong></p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 前端Dockerfile</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> node:18-alpine <span class="kw">AS</span> builder</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WORKDIR</span> /app</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> package*.json ./</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">npm</span> install</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> . .</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">npm</span> run build</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> nginx:alpine</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> <span class="op">--from=builder</span> /app/dist /usr/share/nginx/html</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> nginx.conf /etc/nginx/conf.d/default.conf</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="kw">EXPOSE</span> 80</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="kw">CMD</span> [<span class="st">&quot;nginx&quot;</span>, <span class="st">&quot;-g&quot;</span>, <span class="st">&quot;daemon off;&quot;</span>]</span></code></pre></div>
+<p><strong>步骤2：创建docker-compose.yml</strong></p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;3.8&#39;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">frontend</span><span class="kw">:</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;80:80&quot;</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;443:443&quot;</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./nginx.conf:/etc/nginx/conf.d/default.conf</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./ssl:/etc/nginx/ssl</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">depends_on</span><span class="kw">:</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> backend</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">backend</span><span class="kw">:</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span><span class="at"> ./server</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;3001:3001&quot;</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> NODE_ENV=production</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> DATABASE_PATH=/data/aiweb.db</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./server/data:/data</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./server/uploads:/app/uploads</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx</span><span class="kw">:</span></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;80:80&quot;</span></span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;443:443&quot;</span></span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./nginx.conf:/etc/nginx/nginx.conf</span></span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./dist:/usr/share/nginx/html</span></span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./ssl:/etc/nginx/ssl</span></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">depends_on</span><span class="kw">:</span></span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> backend</span></span></code></pre></div>
+<p><strong>步骤3：构建运行</strong></p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建镜像</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> build</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 启动容器</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看日志</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> logs <span class="at">-f</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 停止容器</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> down</span></code></pre></div>
+<hr />
+<h2 id="运维监控">8. 运维监控</h2>
+<h3 id="监控指标">8.1 监控指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标类型</th>
+<th>监控项</th>
+<th>告警阈值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>性能</strong></td>
+<td>CPU使用率</td>
+<td>&gt; 80%</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>内存使用率</td>
+<td>&gt; 85%</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>磁盘使用率</td>
+<td>&gt; 90%</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>网络带宽</td>
+<td>&gt; 80%</td>
+</tr>
+<tr>
+<td><strong>可用性</strong></td>
+<td>HTTP状态码</td>
+<td>5xx &gt; 1%</td>
+</tr>
+<tr>
+<td><strong>可用性</strong></td>
+<td>响应时间</td>
+<td>&gt; 3秒</td>
+</tr>
+<tr>
+<td><strong>可用性</strong></td>
+<td>服务在线率</td>
+<td>&lt; 99.9%</td>
+</tr>
+<tr>
+<td><strong>安全</strong></td>
+<td>异常登录</td>
+<td>立即告警</td>
+</tr>
+<tr>
+<td><strong>安全</strong></td>
+<td>DDoS攻击</td>
+<td>立即告警</td>
+</tr>
+</tbody>
+</table>
+<h3 id="日志分析">8.2 日志分析</h3>
+<p><strong>Nginx访问日志分析</strong></p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看访问量TOP10</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span> /var/log/nginx/access.log <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-nr</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-10</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看访问最多的URL</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{print $7}&#39;</span> /var/log/nginx/access.log <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-nr</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-10</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看404错误</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&quot;404&quot;</span> /var/log/nginx/access.log</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看慢请求（&gt;2秒）</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;$NF &gt; 2 {print $0}&#39;</span> /var/log/nginx/access.log</span></code></pre></div>
+<h3 id="告警通知">8.3 告警通知</h3>
+<p><strong>配置钉钉/企业微信告警</strong></p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安装监控脚本</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /usr/local/bin/monitor-alert.sh</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="va">CPU</span><span class="op">=</span><span class="va">$(</span><span class="ex">top</span> <span class="at">-bn1</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&quot;Cpu(s)&quot;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $2}&#39;</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-d</span><span class="st">&#39;%&#39;</span> <span class="at">-f1</span><span class="va">)</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">((</span> <span class="va">$(</span><span class="bu">echo</span> <span class="st">&quot;</span><span class="va">$CPU</span><span class="st"> &gt; 80&quot;</span> <span class="kw">|</span> <span class="fu">bc</span> <span class="at">-l</span><span class="va">)</span> <span class="kw">));</span> <span class="cf">then</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">curl</span> <span class="at">-X</span> POST <span class="st">&#39;https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx&#39;</span> <span class="dt">\</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">-H</span> <span class="st">&#39;Content-Type: application/json&#39;</span> <span class="dt">\</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">-d</span> <span class="st">&quot;{</span><span class="dt">\&quot;</span><span class="st">msgtype</span><span class="dt">\&quot;</span><span class="st">:</span><span class="dt">\&quot;</span><span class="st">text</span><span class="dt">\&quot;</span><span class="st">,</span><span class="dt">\&quot;</span><span class="st">text</span><span class="dt">\&quot;</span><span class="st">:{</span><span class="dt">\&quot;</span><span class="st">content</span><span class="dt">\&quot;</span><span class="st">:</span><span class="dt">\&quot;</span><span class="st">⚠️ CPU使用率过高: </span><span class="va">${CPU}</span><span class="st">%</span><span class="dt">\&quot;</span><span class="st">}}&quot;</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 添加定时任务（每5分钟检查）</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="ex">*/5</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /usr/local/bin/monitor-alert.sh</span></code></pre></div>
+<hr />
+<h2 id="部署检查清单">📋 部署检查清单</h2>
+<h3 id="部署前">部署前</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />服务器采购完成</label></li>
+<li><label><input type="checkbox" />域名注册完成</label></li>
+<li><label><input type="checkbox" />SSL证书申请完成</label></li>
+<li><label><input type="checkbox" />代码准备就绪</label></li>
+<li><label><input type="checkbox" />备份策略制定</label></li>
+</ul>
+<h3 id="部署中">部署中</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />服务器配置完成</label></li>
+<li><label><input type="checkbox" />代码部署成功</label></li>
+<li><label><input type="checkbox" />数据库初始化</label></li>
+<li><label><input type="checkbox" />Nginx配置正确</label></li>
+<li><label><input type="checkbox" />SSL证书安装</label></li>
+<li><label><input type="checkbox" />CDN配置完成</label></li>
+</ul>
+<h3 id="部署后">部署后</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />功能测试通过</label></li>
+<li><label><input type="checkbox" />性能测试通过</label></li>
+<li><label><input type="checkbox" />安全扫描通过</label></li>
+<li><label><input type="checkbox" />监控告警配置</label></li>
+<li><label><input type="checkbox" />备份任务运行</label></li>
+<li><label><input type="checkbox" />文档更新完成</label></li>
+</ul>
+<hr />
+<p><strong>文档版本</strong>：v2.5.0<br />
+<strong>最后更新</strong>：2025-12-20<br />
+<strong>技术支持</strong>：support@mingsheng.com</p>
+</body>
+</html>
