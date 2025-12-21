@@ -734,16 +734,25 @@ export const useAntomAIStore = defineStore('antomAI', () => {
     startThinkingLoop()
     startImprovementLoop()
     
-    // 欢迎消息
-    setTimeout(() => {
-      ElNotification({
-        title: '🤖 安彤智能体已就绪',
-        message: '我会主动学习您的使用习惯，思考潜在问题，并持续优化为您服务。有任何需要随时告诉我！',
-        type: 'success',
-        duration: 8000,
-        position: 'bottom-right'
-      })
-    }, 2000)
+    // 检查是否已显示过欢迎消息（每次会话只显示一次）
+    const sessionKey = 'antom_welcome_shown_' + new Date().toDateString()
+    const hasShownWelcome = sessionStorage.getItem(sessionKey)
+    
+    if (!hasShownWelcome) {
+      // 欢迎消息 - 2秒后显示，2秒后自动关闭
+      setTimeout(() => {
+        ElNotification({
+          title: '🤖 安彤智能体已就绪',
+          message: '我会主动学习您的使用习惯，思考潜在问题，并持续优化为您服务。有任何需要随时告诉我！',
+          type: 'success',
+          duration: 2000, // 2秒后自动关闭
+          position: 'bottom-right'
+        })
+        
+        // 标记已显示，防止本次会话重复显示
+        sessionStorage.setItem(sessionKey, 'true')
+      }, 2000) // 页面加载2秒后显示
+    }
     
     logger.info('✅ 安彤智能体系统初始化完成')
   }
