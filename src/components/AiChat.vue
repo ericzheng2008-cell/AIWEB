@@ -1625,4 +1625,337 @@ watch(() => chatStore.messages.length, () => {
   opacity: 1;
   transform: scale(1.2) rotate(90deg);
 }
+
+/* ===================================================
+   移动端响应式适配 - 修复手机端无法对话问题
+   ================================================= */
+
+/* 大屏手机 (最大 768px) */
+@media screen and (max-width: 768px) {
+  .chat-window {
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important; /* 动态视口高度，适配手机浏览器地址栏 */
+    max-width: none;
+    max-height: none;
+    border-radius: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+  }
+
+  .chat-header {
+    padding: 16px 15px;
+    min-height: 60px;
+  }
+
+  .header-left .header-info h3 {
+    font-size: 16px;
+  }
+
+  .header-left .header-info p {
+    font-size: 12px;
+  }
+
+  .header-actions {
+    gap: 12px;
+  }
+
+  .chat-messages {
+    flex: 1;
+    padding: 12px 15px;
+    padding-bottom: env(safe-area-inset-bottom); /* iOS安全区域 */
+  }
+
+  .message {
+    margin-bottom: 16px;
+  }
+
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .message-avatar .el-icon {
+    font-size: 18px !important;
+  }
+
+  .message-bubble {
+    padding: 12px 14px;
+    font-size: 14px;
+    max-width: calc(100vw - 100px);
+  }
+
+  /* 输入区域 - 关键修复 */
+  .chat-input {
+    padding: 12px 15px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* iOS底部安全区域 */
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  .chat-input :deep(.el-input__wrapper) {
+    font-size: 15px; /* 防止iOS自动缩放 */
+    min-height: 44px; /* 触摸友好尺寸 */
+  }
+
+  .chat-input :deep(.el-input__inner) {
+    font-size: 15px !important; /* 防止iOS自动缩放 */
+    -webkit-appearance: none; /* 移除iOS默认样式 */
+  }
+
+  .send-icon {
+    font-size: 24px;
+    padding: 8px;
+    min-width: 44px; /* 触摸友好 */
+    min-height: 44px;
+  }
+
+  /* 快捷问题区域 */
+  .quick-questions {
+    padding: 12px 15px;
+    padding-bottom: 8px;
+  }
+
+  .quick-title {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .question-chips {
+    gap: 8px;
+  }
+
+  .question-chip {
+    font-size: 13px;
+    padding: 8px 14px;
+    min-height: 36px; /* 触摸友好 */
+  }
+
+  /* 建议卡片 */
+  .suggestion-card {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-height: 44px; /* 触摸友好 */
+  }
+
+  /* 聊天按钮位置调整 */
+  .chat-button.ai-assistant {
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 60px;
+    height: 60px;
+  }
+
+  /* 最小化窗口 */
+  .chat-mini {
+    width: calc(100vw - 40px);
+    max-width: 280px;
+    height: 52px;
+    padding: 0 18px;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .mini-header span {
+    font-size: 14px;
+  }
+
+  /* 遮罩层 */
+  .chat-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* 小屏手机 (最大 480px) */
+@media screen and (max-width: 480px) {
+  .chat-header {
+    padding: 14px 12px;
+  }
+
+  .header-left .header-info h3 {
+    font-size: 15px;
+  }
+
+  .header-left .header-info p {
+    font-size: 11px;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .header-actions .action-icon {
+    font-size: 18px !important;
+  }
+
+  .chat-messages {
+    padding: 10px 12px;
+  }
+
+  .message-bubble {
+    padding: 10px 12px;
+    font-size: 13px;
+    max-width: calc(100vw - 80px);
+  }
+
+  .chat-input {
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .quick-questions {
+    padding: 10px 12px;
+  }
+
+  .question-chip {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  /* 聊天按钮 */
+  .chat-button.ai-assistant {
+    width: 56px;
+    height: 56px;
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+
+  .ai-avatar {
+    transform: scale(0.9);
+  }
+}
+
+/* 横屏模式优化 */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .chat-window {
+    height: 100vh !important;
+  }
+
+  .chat-header {
+    padding: 10px 15px;
+    min-height: 50px;
+  }
+
+  .header-left .header-info h3 {
+    font-size: 14px;
+  }
+
+  .header-left .header-info p {
+    display: none; /* 横屏隐藏副标题 */
+  }
+
+  .chat-messages {
+    padding: 8px 15px;
+  }
+
+  .message {
+    margin-bottom: 12px;
+  }
+
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .quick-questions {
+    padding: 8px 15px;
+  }
+}
+
+/* iOS Safari 特殊处理 */
+@supports (-webkit-touch-callout: none) {
+  @media screen and (max-width: 768px) {
+    .chat-window {
+      /* 使用 100vh 而不是 100dvh，避免地址栏导致的布局问题 */
+      height: 100vh !important;
+      /* 添加额外的底部内边距，确保输入框不被虚拟键盘遮挡 */
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .chat-input {
+      /* 确保输入框在虚拟键盘弹出时可见 */
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      z-index: 1000;
+    }
+
+    .chat-input :deep(.el-input__inner) {
+      /* 防止iOS缩放页面 */
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* 触摸优化 - 增加可点击区域 */
+@media (hover: none) and (pointer: coarse) {
+  /* 触摸设备检测 */
+  .action-icon,
+  .send-icon,
+  .mini-close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .question-chip,
+  .suggestion-card {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 禁用触摸设备的悬停效果 */
+  .message-bubble:hover,
+  .suggestion-card:hover,
+  .question-chip:hover {
+    transform: none;
+  }
+
+  /* 添加触摸反馈 */
+  .question-chip:active,
+  .suggestion-card:active,
+  .send-icon:active,
+  .action-icon:active {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+/* 键盘弹出时的处理 */
+@media screen and (max-width: 768px) {
+  /* 当虚拟键盘弹出时，确保输入框可见 */
+  .chat-window.keyboard-open {
+    height: calc(100vh - var(--keyboard-height, 0px)) !important;
+  }
+
+  /* 确保消息列表可以滚动到底部 */
+  .chat-messages {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+    overscroll-behavior: contain; /* 防止过度滚动 */
+  }
+}
+
+/* 平板设备 (768px - 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .chat-window {
+    width: 480px;
+    height: 700px;
+  }
+
+  .chat-button.ai-assistant {
+    width: 70px;
+    height: 70px;
+  }
+}
 </style>
