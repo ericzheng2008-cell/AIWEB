@@ -371,9 +371,9 @@ const onDrag = (e) => {
   const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
   const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
   
-  // 计算新位置(右侧定位)
+  // 计算新位置(右侧定位) - 高度从650改为720
   const newX = Math.max(0, Math.min(window.innerWidth - 400, clientX - dragStart.value.x))
-  const newY = Math.max(0, Math.min(window.innerHeight - 600, clientY - dragStart.value.y))
+  const newY = Math.max(0, Math.min(window.innerHeight - 720, clientY - dragStart.value.y))
   
   windowPosition.value = {
     x: window.innerWidth - newX - 400, // 转换为right定位
@@ -1275,7 +1275,7 @@ watch(() => chatStore.messages.length, () => {
 
 .chat-window {
   width: 420px;
-  height: 650px;
+  height: 720px;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25), 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -1824,14 +1824,15 @@ watch(() => chatStore.messages.length, () => {
   border: 1px solid rgba(245, 108, 108, 0.3);
 }
 
-/* 🆕 输入框容器（文字输入+发送按钮） */
-.chat-input {
-  padding: 12px 20px;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+  /* 🆕 输入框容器（文字输入+发送按钮） */
+  .chat-input {
+    padding: 16px 20px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100px; /* 🔧 增加输入区域高度，确保文字输入框清晰可见 */
+  }
 
 .input-wrapper {
   display: flex;
@@ -1839,20 +1840,24 @@ watch(() => chatStore.messages.length, () => {
   gap: 12px;
 }
 
-.text-input {
-  flex: 1;
-}
+  .text-input {
+    flex: 1;
+    min-width: 0; /* 🔧 允许flex子元素正常收缩 */
+    width: 100%; /* 🔧 确保输入框占满宽度 */
+  }
 
-.text-input :deep(.el-textarea__inner) {
-  border-radius: 16px;
-  border: 2px solid rgba(102, 126, 234, 0.2);
-  padding: 12px 16px;
-  font-size: 14px;
-  line-height: 1.6;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
-  resize: none;
-}
+  .text-input :deep(.el-textarea__inner) {
+    border-radius: 16px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    resize: none;
+    min-height: 60px !important; /* 🔧 增加输入框最小高度，更容易看到和点击 */
+    height: auto !important;
+  }
 
 .text-input :deep(.el-textarea__inner:hover) {
   border-color: rgba(102, 126, 234, 0.4);
@@ -2204,8 +2209,9 @@ watch(() => chatStore.messages.length, () => {
   }
   
   .chat-input {
-    padding: 10px 15px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* iOS底部安全区域 */
+    padding: 14px 15px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom)); /* iOS底部安全区域 */
+    min-height: 100px !important; /* 🔧 确保手机端输入区域足够高 */
   }
   
   .input-wrapper {
@@ -2213,9 +2219,9 @@ watch(() => chatStore.messages.length, () => {
   }
 
   .text-input :deep(.el-textarea__inner) {
-    font-size: 15px; /* 防止iOS自动缩放 */
-    min-height: 44px; /* 触摸友好尺寸 */
-    padding: 10px 14px;
+    font-size: 16px !important; /* 防止iOS自动缩放 */
+    min-height: 54px !important; /* 🔧 增加触摸友好尺寸，更容易看到 */
+    padding: 14px 16px !important;
   }
 
   .send-btn {

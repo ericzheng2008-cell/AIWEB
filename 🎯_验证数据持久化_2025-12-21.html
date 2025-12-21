@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>验证数据持久化 - 测试工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+    }
+    
+    h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .test-section h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .test-item {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .test-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .test-name {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .test-status {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .status-pending {
+      background: #ffeaa7;
+      color: #d63031;
+    }
+    
+    .status-success {
+      background: #55efc4;
+      color: #00b894;
+    }
+    
+    .status-error {
+      background: #ff7675;
+      color: #d63031;
+    }
+    
+    .test-result {
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #555;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: #00b894;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #00a085;
+    }
+    
+    .btn-danger {
+      background: #d63031;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #c92a2b;
+    }
+    
+    .btn-info {
+      background: #0984e3;
+      color: white;
+    }
+    
+    .btn-info:hover {
+      background: #0770c4;
+    }
+    
+    .storage-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .storage-info h3 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .storage-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .storage-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .storage-table td:first-child {
+      font-weight: 600;
+      width: 200px;
+    }
+    
+    .code-block {
+      background: #2d3436;
+      color: #dfe6e9;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      🔍 数据持久化验证工具
+    </h1>
+    <p class="subtitle">检查后台修改的数据是否正确保存到localStorage/后端</p>
+    
+    <!-- 存储信息概览 -->
+    <div class="storage-info">
+      <h3>📦 当前存储状态</h3>
+      <table class="storage-table">
+        <tr>
+          <td>localStorage可用:</td>
+          <td id="localStorageAvailable">检查中...</td>
+        </tr>
+        <tr>
+          <td>IndexedDB可用:</td>
+          <td id="indexedDBAvailable">检查中...</td>
+        </tr>
+        <tr>
+          <td>已使用空间:</td>
+          <td id="storageUsage">检查中...</td>
+        </tr>
+        <tr>
+          <td>CMS初始化标记:</td>
+          <td id="cmsInitialized">检查中...</td>
+        </tr>
+      </table>
+    </div>
+    
+    <!-- 测试1: localStorage数据检查 -->
+    <div class="test-section">
+      <h2>📝 测试1: localStorage数据检查</h2>
+      
+      <div class="test-item">
+        <div class="test-item-header">
+          <span class="test-name">网站LOGO</span>
+          <span class="test-status status-pending" id="status-logo">待检查</span>
+        </div>
+        <div class="test-result" id="result-logo">等待检查...</div>
+      </div>
+      
+      <div class="test-item">
+        <div class="test-item-header">
+          <span class="test-name">首页Banner</span>
+          <span class="test-status status-pending" id="status-banners">待检查</span>
+        </div>
+        <div class="test-result" id="result-banners">等待检查...</div>
+      </div>
+      
+      <div class="test-item">
+        <div class="test-item-header">
+          <span class="test-name">明星产品</span>
+          <span class="test-status status-pending" id="status-products">待检查</span>
+        </div>
+        <div class="test-result" id="result-products">等待检查...</div>
+      </div>
+      
+      <div class="test-item">
+        <div class="test-item-header">
+          <span class="test-name">公司信息</span>
+          <span class="test-status status-pending" id="status-company">待检查</span>
+        </div>
+        <div class="test-result" id="result-company">等待检查...</div>
+      </div>
+    </div>
+    
+    <!-- 测试2: 数据持久化测试 -->
+    <div class="test-section">
+      <h2>🔄 测试2: 数据持久化测试</h2>
+      
+      <div class="test-item">
+        <div class="test-item-header">
+          <span class="test-name">保存测试数据</span>
+          <span class="test-status status-pending" id="status-save">未测试</span>
+        </div>
+        <div class="test-result" id="result-save">点击"开始测试"按钮...</div>
+      </div>
+      
+      <div class="test-item">
+        <div class="test-item-header">
+          <span class="test-name">刷新后数据保持</span>
+          <span class="test-status status-pending" id="status-refresh">未测试</span>
+        </div>
+        <div class="test-result" id="result-refresh">先完成保存测试...</div>
+      </div>
+    </div>
+    
+    <!-- 诊断建议 -->
+    <div class="test-section" id="diagnostic-section" style="display: none;">
+      <h2>💡 诊断建议</h2>
+      <div id="diagnostic-content"></div>
+    </div>
+    
+    <!-- 操作按钮 -->
+    <div class="button-group">
+      <button class="btn-primary" onclick="checkAllData()">
+        🔍 开始检查
+      </button>
+      <button class="btn-success" onclick="testPersistence()">
+        🧪 测试持久化
+      </button>
+      <button class="btn-danger" onclick="clearAllData()">
+        🗑️ 清除所有数据
+      </button>
+      <button class="btn-info" onclick="exportData()">
+        📥 导出数据
+      </button>
+      <button class="btn-info" onclick="viewRawData()">
+        🔧 查看原始数据
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // 检查存储可用性
+    function checkStorageAvailability() {
+      // localStorage
+      try {
+        localStorage.setItem('test', 'test')
+        localStorage.removeItem('test')
+        document.getElementById('localStorageAvailable').textContent = '✅ 可用'
+      } catch (e) {
+        document.getElementById('localStorageAvailable').textContent = '❌ 不可用: ' + e.message
+      }
+      
+      // IndexedDB
+      if (window.indexedDB) {
+        document.getElementById('indexedDBAvailable').textContent = '✅ 可用'
+      } else {
+        document.getElementById('indexedDBAvailable').textContent = '❌ 不支持'
+      }
+      
+      // 存储使用量
+      if (navigator.storage && navigator.storage.estimate) {
+        navigator.storage.estimate().then(estimate => {
+          const used = (estimate.usage / 1024 / 1024).toFixed(2)
+          const quota = (estimate.quota / 1024 / 1024).toFixed(2)
+          document.getElementById('storageUsage').textContent = `${used} MB / ${quota} MB`
+        })
+      } else {
+        document.getElementById('storageUsage').textContent = '浏览器不支持查询'
+      }
+      
+      // CMS初始化标记
+      const initialized = localStorage.getItem('cmsInitialized')
+      document.getElementById('cmsInitialized').textContent = initialized === 'true' ? '✅ 已初始化' : '❌ 未初始化'
+    }
+    
+    // 检查所有数据
+    function checkAllData() {
+      const diagnosticItems = []
+      
+      // 检查LOGO
+      const logo = localStorage.getItem('siteLogo')
+      const logoElement = document.getElementById('result-logo')
+      const logoStatus = document.getElementById('status-logo')
+      
+      if (logo && logo.trim() !== '') {
+        logoElement.textContent = `✅ LOGO已保存: ${logo.substring(0, 100)}...`
+        logoStatus.textContent = '正常'
+        logoStatus.className = 'test-status status-success'
+      } else {
+        logoElement.textContent = '❌ LOGO未保存或为空'
+        logoStatus.textContent = '异常'
+        logoStatus.className = 'test-status status-error'
+        diagnosticItems.push({
+          issue: 'LOGO丢失',
+          reason: 'localStorage中siteLogo为空',
+          solution: '请在后台重新上传LOGO并保存'
+        })
+      }
+      
+      // 检查Banner
+      const banners = localStorage.getItem('homeBanners')
+      const bannersElement = document.getElementById('result-banners')
+      const bannersStatus = document.getElementById('status-banners')
+      
+      if (banners) {
+        try {
+          const bannersData = JSON.parse(banners)
+          bannersElement.textContent = `✅ 找到 ${bannersData.length} 个Banner\n${JSON.stringify(bannersData, null, 2)}`
+          bannersStatus.textContent = '正常'
+          bannersStatus.className = 'test-status status-success'
+        } catch (e) {
+          bannersElement.textContent = '❌ Banner数据格式错误: ' + e.message
+          bannersStatus.textContent = '错误'
+          bannersStatus.className = 'test-status status-error'
+          diagnosticItems.push({
+            issue: 'Banner数据损坏',
+            reason: 'JSON解析失败',
+            solution: '清除localStorage并重新设置Banner'
+          })
+        }
+      } else {
+        bannersElement.textContent = '❌ 未找到Banner数据'
+        bannersStatus.textContent = '缺失'
+        bannersStatus.className = 'test-status status-error'
+        diagnosticItems.push({
+          issue: 'Banner缺失',
+          reason: 'localStorage中homeBanners为空',
+          solution: '请在后台添加Banner并保存'
+        })
+      }
+      
+      // 检查明星产品
+      const products = localStorage.getItem('featuredProducts')
+      const productsElement = document.getElementById('result-products')
+      const productsStatus = document.getElementById('status-products')
+      
+      if (products) {
+        try {
+          const productsData = JSON.parse(products)
+          productsElement.textContent = `✅ 找到 ${productsData.length} 个明星产品\n${JSON.stringify(productsData, null, 2)}`
+          productsStatus.textContent = '正常'
+          productsStatus.className = 'test-status status-success'
+        } catch (e) {
+          productsElement.textContent = '❌ 明星产品数据格式错误: ' + e.message
+          productsStatus.textContent = '错误'
+          productsStatus.className = 'test-status status-error'
+          diagnosticItems.push({
+            issue: '明星产品数据损坏',
+            reason: 'JSON解析失败',
+            solution: '清除localStorage并重新设置明星产品'
+          })
+        }
+      } else {
+        productsElement.textContent = '❌ 未找到明星产品数据'
+        productsStatus.textContent = '缺失'
+        productsStatus.className = 'test-status status-error'
+        diagnosticItems.push({
+          issue: '明星产品缺失',
+          reason: 'localStorage中featuredProducts为空',
+          solution: '请在后台添加明星产品并保存'
+        })
+      }
+      
+      // 检查公司信息
+      const siteConfig = localStorage.getItem('siteConfig')
+      const companyElement = document.getElementById('result-company')
+      const companyStatus = document.getElementById('status-company')
+      
+      if (siteConfig) {
+        try {
+          const configData = JSON.parse(siteConfig)
+          companyElement.textContent = `✅ 公司信息已保存\n${JSON.stringify(configData, null, 2)}`
+          companyStatus.textContent = '正常'
+          companyStatus.className = 'test-status status-success'
+        } catch (e) {
+          companyElement.textContent = '❌ 公司信息数据格式错误: ' + e.message
+          companyStatus.textContent = '错误'
+          companyStatus.className = 'test-status status-error'
+        }
+      } else {
+        companyElement.textContent = '⚠️ 公司信息使用默认值'
+        companyStatus.textContent = '默认'
+        companyStatus.className = 'test-status status-pending'
+      }
+      
+      // 显示诊断建议
+      if (diagnosticItems.length > 0) {
+        showDiagnostic(diagnosticItems)
+      } else {
+        document.getElementById('diagnostic-section').style.display = 'none'
+      }
+    }
+    
+    // 显示诊断建议
+    function showDiagnostic(items) {
+      const section = document.getElementById('diagnostic-section')
+      const content = document.getElementById('diagnostic-content')
+      
+      let html = ''
+      items.forEach((item, index) => {
+        html += `
+          <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #d63031;">
+            <h4 style="color: #d63031; margin-bottom: 10px;">问题 ${index + 1}: ${item.issue}</h4>
+            <p style="margin-bottom: 8px;"><strong>原因:</strong> ${item.reason}</p>
+            <p><strong>解决方案:</strong> ${item.solution}</p>
+          </div>
+        `
+      })
+      
+      content.innerHTML = html
+      section.style.display = 'block'
+    }
+    
+    // 测试持久化
+    function testPersistence() {
+      const testData = {
+        timestamp: Date.now(),
+        test: 'persistence_test_' + Math.random()
+      }
+      
+      try {
+        localStorage.setItem('testPersistence', JSON.stringify(testData))
+        
+        document.getElementById('result-save').textContent = `✅ 测试数据已保存\n${JSON.stringify(testData, null, 2)}`
+        document.getElementById('status-save').textContent = '成功'
+        document.getElementById('status-save').className = 'test-status status-success'
+        
+        document.getElementById('result-refresh').innerHTML = `
+          <div style="background: #fff3cd; padding: 12px; border-radius: 6px; border-left: 4px solid #ffc107;">
+            <strong>⚠️ 请刷新页面验证</strong><br>
+            刷新后,测试数据应该依然存在<br>
+            <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #ffc107; border: none; border-radius: 4px; cursor: pointer;">
+              🔄 立即刷新页面
+            </button>
+          </div>
+        `
+        
+        setTimeout(() => {
+          const saved = localStorage.getItem('testPersistence')
+          if (saved) {
+            const savedData = JSON.parse(saved)
+            if (savedData.timestamp === testData.timestamp) {
+              document.getElementById('status-refresh').textContent = '成功'
+              document.getElementById('status-refresh').className = 'test-status status-success'
+            }
+          }
+        }, 100)
+        
+      } catch (e) {
+        document.getElementById('result-save').textContent = '❌ 保存失败: ' + e.message
+        document.getElementById('status-save').textContent = '失败'
+        document.getElementById('status-save').className = 'test-status status-error'
+      }
+    }
+    
+    // 清除所有数据
+    function clearAllData() {
+      if (confirm('⚠️ 确定要清除所有CMS数据吗?这将删除:\n- 网站LOGO\n- 首页Banner\n- 明星产品\n- 公司信息\n\n此操作不可恢复!')) {
+        localStorage.removeItem('siteLogo')
+        localStorage.removeItem('homeBanners')
+        localStorage.removeItem('featuredProducts')
+        localStorage.removeItem('siteConfig')
+        localStorage.removeItem('cmsInitialized')
+        
+        alert('✅ 所有数据已清除!\n请重新在后台设置数据')
+        location.reload()
+      }
+    }
+    
+    // 导出数据
+    function exportData() {
+      const data = {
+        siteLogo: localStorage.getItem('siteLogo'),
+        homeBanners: localStorage.getItem('homeBanners'),
+        featuredProducts: localStorage.getItem('featuredProducts'),
+        siteConfig: localStorage.getItem('siteConfig'),
+        exportTime: new Date().toISOString()
+      }
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `cms-backup-${Date.now()}.json`
+      a.click()
+      
+      alert('✅ 数据已导出为JSON文件')
+    }
+    
+    // 查看原始数据
+    function viewRawData() {
+      const allData = {}
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        allData[key] = localStorage.getItem(key)
+      }
+      
+      const win = window.open('', '_blank')
+      win.document.write(`
+        <html>
+        <head>
+          <title>localStorage原始数据</title>
+          <style>
+            body { font-family: monospace; padding: 20px; background: #2d3436; color: #dfe6e9; }
+            pre { background: #000; padding: 20px; border-radius: 8px; overflow: auto; }
+          </style>
+        </head>
+        <body>
+          <h1>localStorage原始数据</h1>
+          <pre>${JSON.stringify(allData, null, 2)}</pre>
+        </body>
+        </html>
+      `)
+    }
+    
+    // 页面加载时自动检查
+    window.onload = function() {
+      checkStorageAvailability()
+      checkAllData()
+      
+      // 检查是否是刷新后
+      const testData = localStorage.getItem('testPersistence')
+      if (testData) {
+        document.getElementById('result-refresh').textContent = `✅ 刷新后数据依然存在!\n${testData}`
+        document.getElementById('status-refresh').textContent = '通过'
+        document.getElementById('status-refresh').className = 'test-status status-success'
+      }
+    }
+  </script>
+</body>
+</html>

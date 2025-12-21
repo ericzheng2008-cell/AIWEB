@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 验证应答机器人输入框修复</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .checklist {
+      margin: 30px 0;
+    }
+    
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: #f8f9ff;
+      border-radius: 10px;
+      margin: 10px 0;
+      border-left: 4px solid #667eea;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .check-item:hover {
+      background: #e8ecff;
+      transform: translateX(5px);
+    }
+    
+    .check-item.checked {
+      background: #f6ffed;
+      border-left-color: #52c41a;
+    }
+    
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .check-item.checked .checkbox {
+      background: #52c41a;
+      border-color: #52c41a;
+      color: white;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+    }
+    
+    .btn-block {
+      width: 100%;
+      text-align: center;
+    }
+    
+    .progress {
+      margin: 30px 0;
+      text-align: center;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #f0f0f0;
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .alert {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+    
+    .alert-success {
+      background: #f6ffed;
+      border-left: 4px solid #52c41a;
+      color: #389e0d;
+    }
+    
+    .alert-warning {
+      background: #fffbe6;
+      border-left: 4px solid #faad14;
+      color: #ad6800;
+    }
+    
+    .section {
+      margin: 30px 0;
+      padding: 25px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+      border-radius: 15px;
+    }
+    
+    h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 验证应答机器人输入框修复</h1>
+    <p style="color: #666; margin-bottom: 30px;">请按照以下清单逐项检查输入框功能</p>
+
+    <!-- 进度条 -->
+    <div class="progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%">
+          <span id="progressText">0%</span>
+        </div>
+      </div>
+      <p id="progressDesc" style="color: #666; margin-top: 10px;">请开始检查...</p>
+    </div>
+
+    <!-- 基础功能检查 -->
+    <div class="section">
+      <h2>📋 基础功能检查</h2>
+      <div class="checklist" id="basicChecklist">
+        <div class="check-item" data-check="basic-1" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>聊天窗口能否正常打开</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">点击右下角 AI 人形助手按钮，聊天窗口应该弹出</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="basic-2" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>输入框是否清晰可见</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">输入框高度至少50px，有白色背景和边框</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="basic-3" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>是否有提示文字</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">应显示"输入消息，按回车发送..."</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="basic-4" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>语音按钮是否可见</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">输入框上方有紫色圆形麦克风按钮</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="basic-5" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>发送按钮是否可见</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">输入框右侧有紫色圆形纸飞机按钮</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 输入功能检查 -->
+    <div class="section">
+      <h2>⌨️ 输入功能检查</h2>
+      <div class="checklist" id="inputChecklist">
+        <div class="check-item" data-check="input-1" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>能否点击输入框</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">点击输入框，光标应该出现</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="input-2" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>能否输入文字</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">尝试输入"测试"，文字应该显示在输入框中</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="input-3" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>按回车能否发送</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">输入文字后按回车键，消息应该发送</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="input-4" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>点击发送按钮能否发送</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">输入文字后点击发送按钮，消息应该发送</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="input-5" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>AI是否正常回复</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">发送消息后，AI 应该有回复</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 移动端检查（如果适用） -->
+    <div class="section">
+      <h2>📱 移动端检查（如果使用手机）</h2>
+      <div class="checklist" id="mobileChecklist">
+        <div class="check-item" data-check="mobile-1" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>手机上输入框是否可见</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">输入框应该占满屏幕宽度</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="mobile-2" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>虚拟键盘能否正常弹出</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">点击输入框，手机键盘应该弹出</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="mobile-3" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>输入框是否被键盘遮挡</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">键盘弹出后，输入框应该仍然可见</p>
+          </div>
+        </div>
+        
+        <div class="check-item" data-check="mobile-4" onclick="toggleCheck(this)">
+          <div class="checkbox"></div>
+          <div>
+            <strong>按钮是否触摸友好</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">发送和语音按钮应该容易点击（至少44px）</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果 -->
+    <div id="result" style="display: none;">
+      <div class="alert alert-success">
+        <h3 style="margin-bottom: 10px;">🎉 恭喜！所有检查项都已通过</h3>
+        <p>应答机器人输入框功能完全正常，可以正常使用了！</p>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div style="margin-top: 30px; text-align: center;">
+      <button class="btn btn-success btn-block" onclick="openDiagnostic()">
+        🔍 如果有问题，打开诊断工具
+      </button>
+      <button class="btn btn-block" onclick="resetChecklist()">
+        🔄 重新检查
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let checkedItems = new Set();
+    const totalItems = document.querySelectorAll('.check-item').length;
+
+    function toggleCheck(element) {
+      const checkId = element.getAttribute('data-check');
+      
+      if (checkedItems.has(checkId)) {
+        checkedItems.delete(checkId);
+        element.classList.remove('checked');
+        element.querySelector('.checkbox').innerHTML = '';
+      } else {
+        checkedItems.add(checkId);
+        element.classList.add('checked');
+        element.querySelector('.checkbox').innerHTML = '✓';
+      }
+      
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const progress = (checkedItems.size / totalItems) * 100;
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progressDesc = document.getElementById('progressDesc');
+      const result = document.getElementById('result');
+      
+      progressFill.style.width = progress + '%';
+      progressText.textContent = Math.round(progress) + '%';
+      
+      if (progress === 0) {
+        progressDesc.textContent = '请开始检查...';
+        result.style.display = 'none';
+      } else if (progress < 50) {
+        progressDesc.textContent = '继续加油！还有 ' + (totalItems - checkedItems.size) + ' 项待检查';
+        result.style.display = 'none';
+      } else if (progress < 100) {
+        progressDesc.textContent = '快完成了！还剩 ' + (totalItems - checkedItems.size) + ' 项';
+        result.style.display = 'none';
+      } else {
+        progressDesc.textContent = '所有检查项已完成！';
+        result.style.display = 'block';
+        confetti();
+      }
+    }
+
+    function resetChecklist() {
+      checkedItems.clear();
+      document.querySelectorAll('.check-item').forEach(item => {
+        item.classList.remove('checked');
+        item.querySelector('.checkbox').innerHTML = '';
+      });
+      updateProgress();
+    }
+
+    function openDiagnostic() {
+      window.open('🔍_诊断应答机器人输入框问题_2025-12-21.html', '_blank');
+    }
+
+    function confetti() {
+      // 简单的庆祝效果
+      console.log('🎉 恭喜完成所有检查！');
+    }
+
+    // 页面加载时的提示
+    window.onload = function() {
+      console.log('🔍 验证页面已加载');
+      console.log('📋 请按照清单逐项检查输入框功能');
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 应答机器人输入框诊断</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 25px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+      border-radius: 15px;
+      border-left: 4px solid #667eea;
+    }
+    
+    h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .check-item {
+      margin: 15px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+    }
+    
+    .check-item h3 {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    
+    .check-item p {
+      color: #666;
+      line-height: 1.6;
+      margin: 5px 0;
+    }
+    
+    .code {
+      background: #f5f5f5;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #e83e8c;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .status-ok {
+      background: #f6ffed;
+      color: #52c41a;
+      border: 1px solid #b7eb8f;
+    }
+    
+    .status-error {
+      background: #fff1f0;
+      color: #ff4d4f;
+      border: 1px solid #ffccc7;
+    }
+    
+    .status-warning {
+      background: #fffbe6;
+      color: #faad14;
+      border: 1px solid #ffe58f;
+    }
+    
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #667eea;
+    }
+    
+    .result h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    
+    .result pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .fix-steps {
+      background: #fff7e6;
+      border-left: 4px solid #faad14;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    
+    .fix-steps ol {
+      margin-left: 20px;
+      line-height: 2;
+    }
+    
+    .fix-steps li {
+      margin: 10px 0;
+    }
+    
+    .screenshot {
+      margin: 20px 0;
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 10px;
+      border: 2px dashed #d9d9d9;
+      text-align: center;
+    }
+    
+    .screenshot img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .alert {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .alert-info {
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      color: #0050b3;
+    }
+    
+    .alert-warning {
+      background: #fffbe6;
+      border-left: 4px solid #faad14;
+      color: #ad6800;
+    }
+    
+    .icon {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 应答机器人输入框诊断</h1>
+    <p class="subtitle">检查文字输入功能是否正常显示</p>
+
+    <!-- 第一步：打开控制台检查 -->
+    <div class="section">
+      <h2>📋 第一步：浏览器控制台检查</h2>
+      
+      <div class="check-item">
+        <h3>1️⃣ 打开开发者工具</h3>
+        <p>按 <span class="code">F12</span> 或 <span class="code">Ctrl+Shift+I</span> 打开开发者工具</p>
+        <p>切换到 <span class="code">Console (控制台)</span> 选项卡</p>
+      </div>
+
+      <div class="check-item">
+        <h3>2️⃣ 点击应答机器人按钮</h3>
+        <p>点击右下角的 AI 人形助手按钮,打开聊天窗口</p>
+      </div>
+
+      <div class="check-item">
+        <h3>3️⃣ 在控制台运行诊断脚本</h3>
+        <p>复制以下代码,粘贴到控制台并按回车:</p>
+        <button class="btn" onclick="copyDiagnosticScript()">📋 复制诊断脚本</button>
+      </div>
+
+      <div class="result" id="scriptContainer">
+        <pre id="diagnosticScript">// 应答机器人输入框诊断脚本
+console.log('🔍 开始诊断应答机器人输入框...');
+
+// 1. 检查聊天窗口是否存在
+const chatWindow = document.querySelector('.chat-window');
+console.log('✅ 聊天窗口:', chatWindow ? '已找到' : '❌ 未找到');
+
+// 2. 检查输入容器
+const inputContainer = document.querySelector('.chat-input-container');
+console.log('✅ 输入容器:', inputContainer ? '已找到' : '❌ 未找到');
+
+// 3. 检查文字输入框
+const textInput = document.querySelector('.text-input');
+const textarea = document.querySelector('.text-input textarea');
+console.log('✅ 输入框元素:', textInput ? '已找到' : '❌ 未找到');
+console.log('✅ Textarea元素:', textarea ? '已找到' : '❌ 未找到');
+
+// 4. 检查输入框样式
+if (textarea) {
+  const styles = window.getComputedStyle(textarea);
+  console.log('📊 输入框样式:');
+  console.log('  - display:', styles.display);
+  console.log('  - visibility:', styles.visibility);
+  console.log('  - opacity:', styles.opacity);
+  console.log('  - height:', styles.height);
+  console.log('  - min-height:', styles.minHeight);
+  console.log('  - z-index:', styles.zIndex);
+  console.log('  - position:', styles.position);
+  
+  // 检查是否被禁用
+  console.log('  - disabled:', textarea.disabled);
+  console.log('  - readonly:', textarea.readOnly);
+}
+
+// 5. 检查是否被其他元素遮挡
+if (inputContainer) {
+  const rect = inputContainer.getBoundingClientRect();
+  console.log('📏 输入容器位置:');
+  console.log('  - top:', rect.top);
+  console.log('  - left:', rect.left);
+  console.log('  - width:', rect.width);
+  console.log('  - height:', rect.height);
+  console.log('  - 是否在可视区域:', rect.top < window.innerHeight && rect.bottom > 0);
+}
+
+// 6. 检查语音录音状态
+console.log('🎤 检查Vue实例状态...');
+const vueApp = document.querySelector('#app').__vue_app__;
+if (vueApp) {
+  console.log('✅ Vue应用已找到');
+} else {
+  console.log('⚠️ 无法访问Vue应用实例');
+}
+
+// 7. 高亮显示输入框
+if (textarea) {
+  textarea.style.border = '3px solid red';
+  textarea.style.minHeight = '60px';
+  console.log('🎯 已用红色边框标记输入框');
+  setTimeout(() => {
+    textarea.style.border = '';
+  }, 3000);
+}
+
+console.log('✅ 诊断完成!请查看上方输出结果');
+</pre>
+      </div>
+    </div>
+
+    <!-- 常见问题及解决方案 -->
+    <div class="section">
+      <h2>🔧 常见问题及解决方案</h2>
+
+      <div class="check-item">
+        <h3>问题1: 输入框高度太小，看不见 <span class="status status-warning">常见</span></h3>
+        <p><strong>症状:</strong> 输入框存在但高度为0或非常小</p>
+        <p><strong>原因:</strong> CSS样式冲突或移动端适配问题</p>
+        <button class="btn btn-success" onclick="fixInputHeight()">🔧 立即修复高度问题</button>
+      </div>
+
+      <div class="check-item">
+        <h3>问题2: 输入框被禁用 <span class="status status-warning">常见</span></h3>
+        <p><strong>症状:</strong> 输入框呈灰色，无法点击</p>
+        <p><strong>原因:</strong> 语音录音状态未重置或AI正在输入</p>
+        <button class="btn btn-success" onclick="enableInput()">🔧 启用输入框</button>
+      </div>
+
+      <div class="check-item">
+        <h3>问题3: 输入框被其他元素遮挡 <span class="status status-error">需修复</span></h3>
+        <p><strong>症状:</strong> 输入框存在但点击无反应</p>
+        <p><strong>原因:</strong> z-index层级问题</p>
+        <button class="btn btn-success" onclick="fixZIndex()">🔧 修复层级问题</button>
+      </div>
+
+      <div class="check-item">
+        <h3>问题4: 移动端输入框不显示 <span class="status status-warning">移动端</span></h3>
+        <p><strong>症状:</strong> 手机浏览器中看不到输入框</p>
+        <p><strong>原因:</strong> 响应式样式未正确应用</p>
+        <button class="btn btn-success" onclick="fixMobileInput()">🔧 修复移动端显示</button>
+      </div>
+    </div>
+
+    <!-- 手动修复步骤 -->
+    <div class="fix-steps">
+      <h3>📝 手动修复步骤（如果上述按钮无效）</h3>
+      <ol>
+        <li>在控制台找到输入框元素： <span class="code">document.querySelector('.text-input textarea')</span></li>
+        <li>检查元素样式，确认是否有问题</li>
+        <li>运行修复脚本或手动调整样式</li>
+        <li>如果问题仍存在，需要修改源代码 <span class="code">src/components/AiChat.vue</span></li>
+      </ol>
+    </div>
+
+    <!-- 截图说明 -->
+    <div class="section">
+      <h2>📸 正确的输入框应该是这样的</h2>
+      <div class="alert alert-info">
+        <span class="icon">💡</span>
+        <div>
+          <strong>正常状态:</strong>
+          <p>✅ 输入框清晰可见，高度至少40px</p>
+          <p>✅ 有"输入消息，按回车发送..."提示文字</p>
+          <p>✅ 旁边有语音按钮和发送按钮</p>
+          <p>✅ 可以正常点击和输入文字</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快速操作按钮 -->
+    <div class="section">
+      <h2>⚡ 快速操作</h2>
+      <button class="btn btn-success" onclick="testAllFixes()">🔧 一键修复所有问题</button>
+      <button class="btn" onclick="testInput()">🧪 测试输入功能</button>
+      <button class="btn btn-danger" onclick="resetChat()">🔄 重置聊天窗口</button>
+    </div>
+
+    <div class="alert alert-warning">
+      <span class="icon">⚠️</span>
+      <div>
+        <strong>注意:</strong> 如果以上所有方法都无效，可能需要修改源代码。请联系开发人员或查看下方的代码修复方案。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 复制诊断脚本
+    function copyDiagnosticScript() {
+      const script = document.getElementById('diagnosticScript').textContent;
+      navigator.clipboard.writeText(script).then(() => {
+        alert('✅ 诊断脚本已复制到剪贴板！\n\n请：\n1. 按F12打开控制台\n2. 粘贴脚本\n3. 按回车运行');
+      });
+    }
+
+    // 修复输入框高度
+    function fixInputHeight() {
+      const textarea = document.querySelector('.text-input textarea');
+      if (textarea) {
+        textarea.style.minHeight = '60px';
+        textarea.style.height = '60px';
+        textarea.style.padding = '12px 16px';
+        textarea.style.fontSize = '15px';
+        alert('✅ 已修复输入框高度！请检查聊天窗口。');
+      } else {
+        alert('❌ 未找到输入框元素，请先打开聊天窗口。');
+      }
+    }
+
+    // 启用输入框
+    function enableInput() {
+      const textarea = document.querySelector('.text-input textarea');
+      if (textarea) {
+        textarea.disabled = false;
+        textarea.readOnly = false;
+        textarea.style.opacity = '1';
+        textarea.style.cursor = 'text';
+        alert('✅ 已启用输入框！');
+      } else {
+        alert('❌ 未找到输入框元素，请先打开聊天窗口。');
+      }
+    }
+
+    // 修复z-index层级
+    function fixZIndex() {
+      const inputContainer = document.querySelector('.chat-input-container');
+      const textarea = document.querySelector('.text-input textarea');
+      
+      if (inputContainer) {
+        inputContainer.style.zIndex = '1000';
+        inputContainer.style.position = 'relative';
+      }
+      
+      if (textarea) {
+        textarea.style.position = 'relative';
+        textarea.style.zIndex = '10';
+      }
+      
+      alert('✅ 已修复层级问题！');
+    }
+
+    // 修复移动端显示
+    function fixMobileInput() {
+      const inputContainer = document.querySelector('.chat-input-container');
+      const textarea = document.querySelector('.text-input textarea');
+      const chatWindow = document.querySelector('.chat-window');
+      
+      if (inputContainer) {
+        inputContainer.style.position = 'sticky';
+        inputContainer.style.bottom = '0';
+        inputContainer.style.background = '#fff';
+        inputContainer.style.zIndex = '100';
+      }
+      
+      if (textarea) {
+        textarea.style.fontSize = '16px'; // 防止iOS缩放
+        textarea.style.minHeight = '50px';
+        textarea.style.width = '100%';
+      }
+      
+      if (chatWindow && window.innerWidth <= 768) {
+        chatWindow.style.width = '100vw';
+        chatWindow.style.height = '100vh';
+      }
+      
+      alert('✅ 已修复移动端显示！');
+    }
+
+    // 一键修复所有问题
+    function testAllFixes() {
+      fixInputHeight();
+      setTimeout(() => enableInput(), 100);
+      setTimeout(() => fixZIndex(), 200);
+      setTimeout(() => fixMobileInput(), 300);
+      setTimeout(() => {
+        alert('✅ 所有修复已应用！\n\n请测试输入框是否正常工作。\n如果仍有问题，请查看控制台诊断信息。');
+      }, 500);
+    }
+
+    // 测试输入功能
+    function testInput() {
+      const textarea = document.querySelector('.text-input textarea');
+      if (textarea) {
+        textarea.value = '测试输入功能...';
+        textarea.focus();
+        alert('✅ 如果能看到"测试输入功能..."文字，说明输入框正常！');
+      } else {
+        alert('❌ 未找到输入框，请先打开聊天窗口。');
+      }
+    }
+
+    // 重置聊天窗口
+    function resetChat() {
+      if (confirm('确定要关闭并重新打开聊天窗口吗？')) {
+        const chatButton = document.querySelector('.chat-button.ai-assistant');
+        const chatWindow = document.querySelector('.chat-window');
+        
+        if (chatWindow) {
+          chatWindow.style.display = 'none';
+          setTimeout(() => {
+            chatWindow.style.display = '';
+            if (chatButton) chatButton.click();
+          }, 500);
+        }
+        
+        alert('✅ 聊天窗口已重置！');
+      }
+    }
+
+    // 页面加载完成提示
+    window.onload = function() {
+      console.log('🔍 应答机器人输入框诊断页面已加载');
+      console.log('📋 请按照页面指引进行诊断');
+    };
+  </script>
+</body>
+</html>
