@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIWEB异地访问配置验证</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header .version {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-num {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .check-item {
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.2s;
+        }
+
+        .check-item:hover {
+            background: #e8f4fd;
+        }
+
+        .check-box {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .check-box.checked::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .check-box.checked {
+            background: #667eea;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #545b62;
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            color: #0c5460;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border-left: 4px solid #155724;
+            color: #155724;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            border-left: 4px solid #856404;
+            color: #856404;
+        }
+
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+
+        .progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .step {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🔍</span>
+                <span>AIWEB异地访问配置验证</span>
+            </h1>
+            <div class="version">Version 1.0 | 2025-12-21</div>
+        </div>
+
+        <div class="content">
+            <!-- 进度条 -->
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+            </div>
+
+            <!-- 第一步 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-num">1</span>
+                    <span>cpolar安装检查</span>
+                </div>
+
+                <div class="alert info">
+                    <span style="font-size: 24px;">💡</span>
+                    <div>
+                        <strong>cpolar是什么？</strong>
+                        <p style="margin-top: 5px;">cpolar是一款国内内网穿透工具，可以让异地用户通过互联网访问您本地电脑上运行的AIWEB系统。</p>
+                    </div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>已访问 <a href="https://www.cpolar.com" target="_blank">cpolar.com</a> 并注册账号</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>已下载并安装cpolar Windows客户端</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>已在cpolar控制台获取Authtoken并完成认证</div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <a href="https://www.cpolar.com" target="_blank" class="btn">访问cpolar官网</a>
+                    <a href="https://www.cpolar.com/download" target="_blank" class="btn secondary">下载客户端</a>
+                    <a href="https://dashboard.cpolar.com/auth" target="_blank" class="btn secondary">获取Token</a>
+                </div>
+
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode(this)">复制</button>
+# 认证cpolar（管理员命令行执行）
+cd "C:\Program Files\cpolar"
+cpolar authtoken YOUR_TOKEN_HERE
+
+# 测试连接
+cpolar http 3002
+                </div>
+            </div>
+
+            <!-- 第二步 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-num">2</span>
+                    <span>AIWEB服务启动</span>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>已运行 <code>🚀_启动AIWEB并开启外网访问.bat</code></div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>看到3个命令行窗口：后端、前端、cpolar</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>本地浏览器可访问 <a href="http://localhost:3002" target="_blank">http://localhost:3002</a></div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="window.open('http://localhost:3002')">测试本地访问</button>
+                    <button class="btn secondary" onclick="window.open('http://localhost:9200')">打开cpolar管理界面</button>
+                </div>
+            </div>
+
+            <!-- 第三步 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-num">3</span>
+                    <span>获取外网访问地址</span>
+                </div>
+
+                <div class="alert warning">
+                    <span style="font-size: 24px;">⚠️</span>
+                    <div>
+                        <strong>重要：免费版域名每次启动都会变化</strong>
+                        <p style="margin-top: 5px;">如需固定域名，建议升级到VIP版（¥10/月）</p>
+                    </div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>在cpolar窗口或管理界面看到类似 <code>https://abc123.cpolar.cn</code> 的地址</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>已复制该地址</div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">您的外网地址：</label>
+                    <input type="text" id="publicUrl" placeholder="https://abc123.cpolar.cn" 
+                           style="width: 100%; padding: 12px; border: 2px solid #667eea; border-radius: 6px; font-size: 16px;">
+                    <button class="btn" onclick="testPublicUrl()" style="margin-top: 10px;">测试此地址</button>
+                    <button class="btn secondary" onclick="generateQR()" style="margin-top: 10px;">生成二维码</button>
+                </div>
+
+                <div id="qrcode" style="text-align: center; margin-top: 20px; display: none;">
+                    <canvas id="qrCanvas"></canvas>
+                    <p style="margin-top: 10px; color: #6c757d;">手机扫码访问</p>
+                </div>
+            </div>
+
+            <!-- 第四步 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-num">4</span>
+                    <span>异地访问测试</span>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>使用手机4G/5G网络（断开WiFi）</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>在手机浏览器输入外网地址</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>AIWEB首页正常显示</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>智能体卡片可点击</div>
+                </div>
+
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <div>图表和数据正常显示</div>
+                </div>
+
+                <div class="alert success" style="margin-top: 20px; display: none;" id="successAlert">
+                    <span style="font-size: 24px;">✅</span>
+                    <div>
+                        <strong>恭喜！异地访问配置成功</strong>
+                        <p style="margin-top: 5px;">现在可以将地址分享给其他测试人员了</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第五步 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-num">5</span>
+                    <span>分享给测试人员</span>
+                </div>
+
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyShareText()">复制分享文本</button>
+<span id="shareText">📱 AIWEB内测访问地址
+
+访问地址：<span id="shareUrl">（请先在上方填写外网地址）</span>
+
+适用设备：
+✅ 手机（iPhone/Android）
+✅ 电脑（Windows/Mac）
+✅ 平板（iPad/Android平板）
+
+适用网络：
+✅ 4G/5G移动数据
+✅ 家庭WiFi
+✅ 公司WiFi
+✅ 任意网络环境
+
+操作步骤：
+1. 打开手机浏览器（Chrome/Safari）
+2. 输入上述地址
+3. 等待10-20秒加载
+4. 开始测试
+
+添加到桌面（可选）：
+▪ iPhone：Safari打开后，分享 → 添加到主屏幕
+▪ Android：Chrome打开后，菜单 → 添加到主屏幕
+
+注意事项：
+⚠️ 仅限内测使用，请勿外传
+⚠️ 如无法访问，请联系管理员
+⚠️ 建议添加书签或桌面快捷方式</span>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="copyShareText()">复制分享文本</button>
+                    <button class="btn secondary" onclick="sendEmail()">发送邮件</button>
+                </div>
+            </div>
+
+            <!-- 升级建议 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-num">💎</span>
+                    <span>升级到VIP版（推荐）</span>
+                </div>
+
+                <div class="alert info">
+                    <span style="font-size: 24px;">🎯</span>
+                    <div>
+                        <strong>为什么要升级VIP？</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>固定域名，不用每次重新分享地址</li>
+                            <li>自定义子域名，更专业</li>
+                            <li>3条隧道，可同时穿透多个服务</li>
+                            <li>仅需¥10/月或¥120/年</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <a href="https://dashboard.cpolar.com/get-started" target="_blank" class="btn">立即升级VIP</a>
+                    <a href="https://www.cpolar.com/docs" target="_blank" class="btn secondary">查看文档</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>AIWEB 异地访问配置验证</strong></p>
+            <p style="margin-top: 10px;">Version 1.0 | 创建日期：2025-12-21</p>
+            <p style="margin-top: 10px; font-size: 14px;">
+                📖 详细文档：<a href="🌐_异地手机访问快速方案_2025-12-21.md">查看完整方案</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 切换检查项
+        function toggleCheck(element) {
+            const checkbox = element.querySelector('.check-box');
+            checkbox.classList.toggle('checked');
+            updateProgress();
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const total = document.querySelectorAll('.check-item').length;
+            const checked = document.querySelectorAll('.check-box.checked').length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+
+            // 如果完成所有检查项，显示成功提示
+            if (percentage === 100) {
+                document.getElementById('successAlert').style.display = 'flex';
+            }
+        }
+
+        // 测试公网地址
+        function testPublicUrl() {
+            const url = document.getElementById('publicUrl').value.trim();
+            if (!url) {
+                alert('请先输入外网地址');
+                return;
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('地址格式错误，应该以http://或https://开头');
+                return;
+            }
+            window.open(url, '_blank');
+        }
+
+        // 生成二维码（简化版，实际需要QR库）
+        function generateQR() {
+            const url = document.getElementById('publicUrl').value.trim();
+            if (!url) {
+                alert('请先输入外网地址');
+                return;
+            }
+
+            // 更新分享URL
+            document.getElementById('shareUrl').textContent = url;
+
+            // 显示提示
+            alert('二维码功能需要引入QR库。\n\n您可以使用在线工具生成：\n1. 访问 https://cli.im/url\n2. 输入地址：' + url + '\n3. 生成二维码并保存');
+        }
+
+        // 复制代码
+        function copyCode(button) {
+            const codeBox = button.parentElement;
+            const code = codeBox.textContent.replace('复制', '').trim();
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '已复制';
+                setTimeout(() => {
+                    button.textContent = '复制';
+                }, 2000);
+            });
+        }
+
+        // 复制分享文本
+        function copyShareText() {
+            const url = document.getElementById('publicUrl').value.trim();
+            if (!url) {
+                alert('请先在"获取外网访问地址"步骤填写外网地址');
+                return;
+            }
+
+            const shareText = `📱 AIWEB内测访问地址
+
+访问地址：${url}
+
+适用设备：
+✅ 手机（iPhone/Android）
+✅ 电脑（Windows/Mac）
+✅ 平板（iPad/Android平板）
+
+适用网络：
+✅ 4G/5G移动数据
+✅ 家庭WiFi
+✅ 公司WiFi
+✅ 任意网络环境
+
+操作步骤：
+1. 打开手机浏览器（Chrome/Safari）
+2. 输入上述地址
+3. 等待10-20秒加载
+4. 开始测试
+
+添加到桌面（可选）：
+▪ iPhone：Safari打开后，分享 → 添加到主屏幕
+▪ Android：Chrome打开后，菜单 → 添加到主屏幕
+
+注意事项：
+⚠️ 仅限内测使用，请勿外传
+⚠️ 如无法访问，请联系管理员
+⚠️ 建议添加书签或桌面快捷方式`;
+
+            navigator.clipboard.writeText(shareText).then(() => {
+                alert('✅ 分享文本已复制到剪贴板\n\n可以直接粘贴发送给测试人员');
+            });
+        }
+
+        // 发送邮件
+        function sendEmail() {
+            const url = document.getElementById('publicUrl').value.trim();
+            if (!url) {
+                alert('请先填写外网地址');
+                return;
+            }
+
+            const subject = 'AIWEB内测访问地址';
+            const body = `AIWEB内测访问地址：${url}\n\n请使用手机浏览器打开上述地址进行测试。`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        // 页面加载时的提示
+        window.addEventListener('load', () => {
+            console.log('AIWEB异地访问配置验证工具已加载');
+        });
+    </script>
+</body>
+</html>

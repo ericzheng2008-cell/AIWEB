@@ -208,7 +208,7 @@
           </div>
         </div>
 
-        <!-- 输入区域 - 增强版：支持语音、数字选项 -->
+        <!-- 输入区域 - 增强版：支持语音、数字选项、表情 -->
         <div class="chat-input-container">
           <!-- 数字选项快捷按钮（当有推荐时显示） -->
           <div class="number-options" v-if="numberOptions.length > 0">
@@ -225,48 +225,81 @@
             </div>
           </div>
           
+          <!-- 输入工具栏 -->
           <div class="chat-input">
-            <!-- 语音输入按钮 -->
-            <el-tooltip content="点击开始语音输入" placement="top">
-              <el-button
-                :class="['voice-btn', { recording: isRecording }]"
-                @click="toggleVoiceInput"
-                :disabled="chatStore.isTyping"
-                size="small"
-                circle
+            <div class="input-toolbar">
+              <!-- 语音输入按钮 -->
+              <el-tooltip 
+                :content="voiceSupported ? (isRecording ? '点击停止录音' : '点击开始语音输入') : '您的浏览器不支持语音识别，请使用Chrome或Edge浏览器'" 
+                placement="top"
               >
-                <el-icon :size="18">
-                  <component :is="isRecording ? 'VideoPlay' : 'Microphone'" />
-                </el-icon>
-              </el-button>
-            </el-tooltip>
+                <el-button
+                  :class="['voice-btn', { recording: isRecording, disabled: !voiceSupported }]"
+                  @click="toggleVoiceInput"
+                  :disabled="chatStore.isTyping || !voiceSupported"
+                  size="large"
+                  circle
+                >
+                  <el-icon :size="20">
+                    <component :is="isRecording ? 'VideoPlay' : 'Microphone'" />
+                  </el-icon>
+                </el-button>
+              </el-tooltip>
+              
+              <!-- 语音不可用提示 -->
+              <div v-if="!voiceSupported" class="voice-not-supported">
+                <el-icon><WarningFilled /></el-icon>
+                <span>语音功能需要Chrome或Edge浏览器</span>
+              </div>
+            </div>
             
             <!-- 文字输入框 -->
-            <el-input
-              v-model="inputMessage"
-              :placeholder="isRecording ? '🎤 正在录音，点击停止...' : t('aiChat.placeholder')"
-              @keyup.enter="sendMessage"
-              :disabled="chatStore.isTyping || isRecording"
-              class="text-input"
-            >
-              <template #suffix>
-                <el-icon
-                  class="send-icon"
-                  :class="{ active: inputMessage.trim() }"
+            <div class="input-wrapper">
+              <el-input
+                v-model="inputMessage"
+                :placeholder="isRecording ? '🎤 正在录音中，说话后会自动识别...' : '输入消息，按回车发送...'"
+                @keyup.enter="sendMessage"
+                :disabled="chatStore.isTyping || isRecording"
+                class="text-input"
+                type="textarea"
+                :rows="1"
+                :autosize="{ minRows: 1, maxRows: 4 }"
+                resize="none"
+              />
+              
+              <!-- 发送按钮 -->
+              <el-tooltip content="发送消息 (Enter)" placement="top">
+                <el-button
+                  type="primary"
+                  :class="['send-btn', { active: inputMessage.trim() }]"
                   @click="sendMessage"
+                  :disabled="!inputMessage.trim() || chatStore.isTyping"
+                  circle
+                  size="large"
                 >
-                  <Promotion />
-                </el-icon>
-              </template>
-            </el-input>
+                  <el-icon :size="20">
+                    <Promotion />
+                  </el-icon>
+                </el-button>
+              </el-tooltip>
+            </div>
           </div>
           
           <!-- 语音识别状态提示 -->
-          <div class="voice-status" v-if="isRecording">
-            <div class="voice-wave">
-              <span></span><span></span><span></span><span></span><span></span>
+          <transition name="fade">
+            <div class="voice-status" v-if="isRecording">
+              <div class="voice-wave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span class="voice-text">🎤 正在识别语音，请说话...</span>
+              <el-button size="small" @click="toggleVoiceInput" type="danger">停止录音</el-button>
             </div>
-            <span class="voice-text">正在识别语音...</span>
+          </transition>
+          
+          <!-- 输入提示 -->
+          <div class="input-hint">
+            <el-icon><InfoFilled /></el-icon>
+            <span>{{ voiceSupported ? '支持文字输入和语音输入' : '支持文字输入' }}</span>
           </div>
         </div>
       </div>
@@ -283,7 +316,7 @@ import { useLearningEngineStore } from '../store/learningEngine'
 import { ElMessage } from 'element-plus'
 import { 
   Service, Close, Delete, Minus, Cpu, Promotion,
-  Microphone, VideoPlay
+  Microphone, VideoPlay, WarningFilled, InfoFilled
 } from '@element-plus/icons-vue'
 import AiChatFeedback from './AiChatFeedback.vue'
 
@@ -299,6 +332,7 @@ const isMinimized = ref(false)
 // 🆕 语音输入相关状态
 const isRecording = ref(false)
 const recognition = ref(null)
+const voiceSupported = ref(false)
 
 // 🆕 数字选项相关状态
 const numberOptions = ref([])
@@ -585,6 +619,7 @@ const handleSuggestion = (suggestion) => {
 // 🆕 语音输入功能
 const initSpeechRecognition = () => {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    voiceSupported.value = true
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     recognition.value = new SpeechRecognition()
     recognition.value.lang = locale.value === 'zh-CN' ? 'zh-CN' : 'en-US'
@@ -596,7 +631,7 @@ const initSpeechRecognition = () => {
       console.log('🎤 [Voice] recognized:', transcript)
       inputMessage.value = transcript
       isRecording.value = false
-      ElMessage.success(`识别成功：${transcript}`)
+      ElMessage.success(`✅ 识别成功：${transcript}`)
       
       // 自动发送识别的内容
       setTimeout(() => {
@@ -607,22 +642,48 @@ const initSpeechRecognition = () => {
     recognition.value.onerror = (event) => {
       console.error('🎤 [Voice] error:', event.error)
       isRecording.value = false
-      ElMessage.error(`语音识别失败：${event.error}`)
+      
+      let errorMsg = '语音识别失败'
+      switch(event.error) {
+        case 'no-speech':
+          errorMsg = '未检测到语音，请重试'
+          break
+        case 'audio-capture':
+          errorMsg = '无法访问麦克风，请检查权限'
+          break
+        case 'not-allowed':
+          errorMsg = '麦克风权限被拒绝，请允许访问麦克风'
+          break
+        case 'network':
+          errorMsg = '网络错误，请检查网络连接'
+          break
+        default:
+          errorMsg = `语音识别失败：${event.error}`
+      }
+      
+      ElMessage.error(errorMsg)
     }
     
     recognition.value.onend = () => {
       isRecording.value = false
       console.log('🎤 [Voice] ended')
     }
+    
+    console.log('🎤 [Voice] Speech recognition initialized successfully')
   } else {
+    voiceSupported.value = false
     console.warn('🎤 [Voice] 浏览器不支持语音识别')
   }
 }
 
 // 切换语音输入
 const toggleVoiceInput = () => {
-  if (!recognition.value) {
-    ElMessage.warning('您的浏览器不支持语音识别功能，请使用Chrome或Edge浏览器')
+  if (!recognition.value || !voiceSupported.value) {
+    ElMessage.warning({
+      message: '您的浏览器不支持语音识别功能\n\n建议使用以下浏览器：\n• Chrome (推荐)\n• Microsoft Edge\n• Safari (iOS)',
+      duration: 5000,
+      showClose: true
+    })
     return
   }
   
@@ -631,12 +692,22 @@ const toggleVoiceInput = () => {
     recognition.value.stop()
     isRecording.value = false
     console.log('🎤 [Voice] stopped by user')
+    ElMessage.info('已停止录音')
   } else {
-    // 开始录音
-    recognition.value.start()
-    isRecording.value = true
-    console.log('🎤 [Voice] started')
-    ElMessage.info('正在录音，请说话...')
+    try {
+      // 开始录音
+      recognition.value.start()
+      isRecording.value = true
+      console.log('🎤 [Voice] started')
+      ElMessage.info({
+        message: '🎤 开始录音，请说话...',
+        duration: 2000
+      })
+    } catch (error) {
+      console.error('🎤 [Voice] start error:', error)
+      isRecording.value = false
+      ElMessage.error('启动语音识别失败，请稍后重试')
+    }
   }
 }
 
@@ -1613,6 +1684,7 @@ watch(() => chatStore.messages.length, () => {
   }
 }
 
+/* 快捷问题区域 */
 .quick-questions {
   padding: 20px;
   background: #fff;
@@ -1633,62 +1705,11 @@ watch(() => chatStore.messages.length, () => {
   gap: 10px;
 }
 
-.question-chip {
-  background: linear-gradient(135deg, #f0f3ff 0%, #e8ecff 100%);
-  color: #667eea;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  font-weight: 500;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 快捷问题悬浮光效 */
-.question-chip::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(102, 126, 234, 0.2);
-  transform: translate(-50%, -50%);
-  transition: width 0.5s, height 0.5s;
-}
-
-.question-chip:hover::before {
-  width: 200px;
-  height: 200px;
-}
-
-.question-chip:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
-  border-color: transparent;
-}
-
-.question-chip:active {
-  transform: translateY(-1px) scale(1.02);
-}
-
-.chat-input {
-  padding: 20px;
-  background: #fff;
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
-  position: relative;
-}
-
 /* 🆕 输入容器（包含数字选项、语音、输入框） */
 .chat-input-container {
   background: #fff;
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  border-top: 2px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* 🆕 数字选项区域 */
@@ -1738,58 +1759,168 @@ watch(() => chatStore.messages.length, () => {
   transform: translateY(0);
 }
 
-/* 🆕 语音按钮样式 */
+/* 🆕 输入工具栏 */
+.input-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px 8px 20px;
+  background: linear-gradient(135deg, #fafbff 0%, #fff 100%);
+  border-bottom: 1px dashed rgba(102, 126, 234, 0.1);
+}
+
+/* 🆕 语音按钮样式 - 更突出 */
 .voice-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   color: white;
-  margin-right: 10px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.voice-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+.voice-btn:hover:not(.disabled) {
+  transform: scale(1.15);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
 }
 
 .voice-btn.recording {
   animation: recording-pulse 1.5s infinite;
   background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+  box-shadow: 0 3px 10px rgba(255, 77, 79, 0.4);
+}
+
+.voice-btn.disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 @keyframes recording-pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+    box-shadow: 0 3px 10px rgba(255, 77, 79, 0.4);
   }
   50% {
     transform: scale(1.15);
-    box-shadow: 0 4px 16px rgba(255, 77, 79, 0.6);
+    box-shadow: 0 5px 20px rgba(255, 77, 79, 0.7);
   }
 }
 
-/* 🆕 输入框容器（语音按钮+文字输入） */
-.chat-input {
-  padding: 20px;
-  background: #fff;
+/* 🆕 语音不支持提示 */
+.voice-not-supported {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  font-size: 12px;
+  color: #f56c6c;
+  background: #fef0f0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 108, 108, 0.3);
+}
+
+/* 🆕 输入框容器（文字输入+发送按钮） */
+.chat-input {
+  padding: 12px 20px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
 }
 
 .text-input {
   flex: 1;
 }
 
-/* 🆕 语音识别状态 */
+.text-input :deep(.el-textarea__inner) {
+  border-radius: 16px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  resize: none;
+}
+
+.text-input :deep(.el-textarea__inner:hover) {
+  border-color: rgba(102, 126, 234, 0.4);
+  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.15);
+}
+
+.text-input :deep(.el-textarea__inner:focus) {
+  border-color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+}
+
+.text-input :deep(.el-textarea__inner::placeholder) {
+  color: #999;
+  font-size: 13px;
+}
+
+/* 🆕 发送按钮 - 更突出 */
+.send-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: scale(1.15) rotate(10deg);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
+}
+
+.send-btn:active:not(:disabled) {
+  transform: scale(1.05) rotate(5deg);
+}
+
+.send-btn.active {
+  animation: pulse-send 2s infinite;
+}
+
+@keyframes pulse-send {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.send-btn:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* 🆕 语音识别状态 - 更醒目 */
 .voice-status {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #fff1f0 0%, #fff 100%);
-  border-top: 1px solid rgba(255, 77, 79, 0.1);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #fff1f0 0%, #ffe7e7 100%);
+  border-top: 2px solid rgba(255, 77, 79, 0.2);
+  border-bottom: 2px solid rgba(255, 77, 79, 0.2);
   display: flex;
   align-items: center;
   gap: 12px;
+  box-shadow: inset 0 2px 8px rgba(255, 77, 79, 0.1);
 }
 
 .voice-wave {
@@ -1799,11 +1930,12 @@ watch(() => chatStore.messages.length, () => {
 }
 
 .voice-wave span {
-  width: 3px;
-  height: 12px;
+  width: 4px;
+  height: 16px;
   background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
   border-radius: 2px;
   animation: voice-wave 1.2s ease-in-out infinite;
+  box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
 }
 
 .voice-wave span:nth-child(1) { animation-delay: 0s; }
@@ -1813,75 +1945,86 @@ watch(() => chatStore.messages.length, () => {
 .voice-wave span:nth-child(5) { animation-delay: 0.4s; }
 
 @keyframes voice-wave {
-  0%, 100% { height: 12px; }
-  50% { height: 24px; }
+  0%, 100% { 
+    height: 16px;
+    opacity: 0.7;
+  }
+  50% { 
+    height: 32px;
+    opacity: 1;
+  }
 }
 
 .voice-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #ff4d4f;
-  font-weight: 500;
+  font-weight: 600;
+  flex: 1;
 }
 
-/* 输入框聚焦光晕 */
-.chat-input::before {
+/* 🆕 输入提示 */
+.input-hint {
+  padding: 8px 20px 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #999;
+  background: #fafbff;
+}
+
+.input-hint .el-icon {
+  color: #667eea;
+  font-size: 14px;
+}
+
+/* 快捷问题卡片样式 */
+.question-chip {
+  background: linear-gradient(135deg, #f0f3ff 0%, #e8ecff 100%);
+  color: #667eea;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 快捷问题悬浮光效 */
+.question-chip::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
   width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
-  transition: width 0.4s ease;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
 }
 
-.chat-input:focus-within::before {
-  width: 100%;
+.question-chip:hover::before {
+  width: 200px;
+  height: 200px;
 }
 
-.chat-input :deep(.el-input__wrapper) {
-  border-radius: 24px;
-  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.1);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(102, 126, 234, 0.15);
+.question-chip:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+  border-color: transparent;
 }
 
-.chat-input :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.3);
+.question-chip:active {
+  transform: translateY(-1px) scale(1.02);
 }
 
-.chat-input :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
-  border-color: #667eea;
-}
-
-.send-icon {
-  cursor: pointer;
-  color: #ccc;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  font-size: 22px;
-}
-
-.send-icon.active {
-  color: #667eea;
-  animation: pulse-send 2s infinite;
-}
-
-@keyframes pulse-send {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-.send-icon:hover {
-  transform: scale(1.2) rotate(10deg);
-  color: #764ba2;
-}
+/* 输入框聚焦光晕（移除重复定义）*/
 
 /* 滑入动画 */
 .slide-up-enter-active,
@@ -2037,31 +2180,61 @@ watch(() => chatStore.messages.length, () => {
   }
 
   /* 输入区域 - 关键修复 */
-  .chat-input {
-    padding: 12px 15px;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* iOS底部安全区域 */
-    background: #fff;
-    border-top: 1px solid #e0e0e0;
+  .chat-input-container {
     position: sticky;
     bottom: 0;
     z-index: 100;
+    background: #fff;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .input-toolbar {
+    padding: 10px 15px 6px 15px;
+  }
+  
+  .voice-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  
+  .voice-not-supported {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .chat-input {
+    padding: 10px 15px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* iOS底部安全区域 */
+  }
+  
+  .input-wrapper {
+    gap: 10px;
   }
 
-  .chat-input :deep(.el-input__wrapper) {
+  .text-input :deep(.el-textarea__inner) {
     font-size: 15px; /* 防止iOS自动缩放 */
     min-height: 44px; /* 触摸友好尺寸 */
+    padding: 10px 14px;
   }
 
-  .chat-input :deep(.el-input__inner) {
-    font-size: 15px !important; /* 防止iOS自动缩放 */
-    -webkit-appearance: none; /* 移除iOS默认样式 */
+  .send-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
   }
-
-  .send-icon {
-    font-size: 24px;
-    padding: 8px;
-    min-width: 44px; /* 触摸友好 */
-    min-height: 44px;
+  
+  .voice-status {
+    padding: 10px 15px;
+  }
+  
+  .voice-text {
+    font-size: 13px;
+  }
+  
+  .input-hint {
+    padding: 6px 15px 10px 15px;
+    font-size: 11px;
   }
 
   /* 快捷问题区域 */
@@ -2154,9 +2327,23 @@ watch(() => chatStore.messages.length, () => {
     max-width: calc(100vw - 80px);
   }
 
+  .input-toolbar {
+    padding: 8px 12px 4px 12px;
+  }
+  
+  .voice-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
   .chat-input {
-    padding: 10px 12px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    padding: 8px 12px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+  
+  .send-btn {
+    width: 40px;
+    height: 40px;
   }
 
   .quick-questions {
@@ -2178,6 +2365,11 @@ watch(() => chatStore.messages.length, () => {
 
   .ai-avatar {
     transform: scale(0.9);
+  }
+  
+  .input-hint {
+    padding: 4px 12px 8px 12px;
+    font-size: 10px;
   }
 }
 
@@ -2228,7 +2420,7 @@ watch(() => chatStore.messages.length, () => {
       padding-bottom: env(safe-area-inset-bottom, 0);
     }
 
-    .chat-input {
+    .chat-input-container {
       /* 确保输入框在虚拟键盘弹出时可见 */
       position: sticky;
       bottom: 0;
@@ -2236,7 +2428,7 @@ watch(() => chatStore.messages.length, () => {
       z-index: 1000;
     }
 
-    .chat-input :deep(.el-input__inner) {
+    .text-input :deep(.el-textarea__inner) {
       /* 防止iOS缩放页面 */
       font-size: 16px !important;
     }
@@ -2247,7 +2439,6 @@ watch(() => chatStore.messages.length, () => {
 @media (hover: none) and (pointer: coarse) {
   /* 触摸设备检测 */
   .action-icon,
-  .send-icon,
   .mini-close {
     min-width: 44px;
     min-height: 44px;
@@ -2273,7 +2464,8 @@ watch(() => chatStore.messages.length, () => {
   /* 添加触摸反馈 */
   .question-chip:active,
   .suggestion-card:active,
-  .send-icon:active,
+  .send-btn:active,
+  .voice-btn:active,
   .action-icon:active {
     opacity: 0.7;
     transform: scale(0.95);
