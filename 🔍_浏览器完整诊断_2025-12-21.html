@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIWEB 完整诊断工具 - 2025-12-21</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .section h2 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+    
+    .output {
+      background: #2d3748;
+      color: #68d391;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 15px;
+      line-height: 1.6;
+    }
+    
+    .output .error {
+      color: #fc8181;
+    }
+    
+    .output .warning {
+      color: #f6e05e;
+    }
+    
+    .output .success {
+      color: #68d391;
+    }
+    
+    .output .info {
+      color: #63b3ed;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .status-card {
+      padding: 15px;
+      background: white;
+      border-radius: 6px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .status-card h3 {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .status-card .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .status-ok {
+      color: #48bb78 !important;
+    }
+    
+    .status-error {
+      color: #f56565 !important;
+    }
+    
+    .status-warning {
+      color: #ed8936 !important;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: #666;
+      font-size: 14px;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 AIWEB 完整诊断工具</h1>
+    <p class="subtitle">检测网页打开问题 - 2025-12-21</p>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(0)">📊 系统状态</button>
+      <button class="tab" onclick="switchTab(1)">🌐 网络检测</button>
+      <button class="tab" onclick="switchTab(2)">🔧 组件检查</button>
+      <button class="tab" onclick="switchTab(3)">📝 控制台日志</button>
+      <button class="tab" onclick="switchTab(4)">💊 快速修复</button>
+    </div>
+
+    <!-- Tab 0: 系统状态 -->
+    <div class="tab-content active">
+      <div class="section">
+        <h2>📊 系统状态概览</h2>
+        <div class="grid">
+          <div class="status-card">
+            <h3>浏览器</h3>
+            <div class="value" id="browserName">检测中...</div>
+          </div>
+          <div class="status-card">
+            <h3>Vue 版本</h3>
+            <div class="value" id="vueVersion">检测中...</div>
+          </div>
+          <div class="status-card">
+            <h3>路由状态</h3>
+            <div class="value" id="routerStatus">检测中...</div>
+          </div>
+          <div class="status-card">
+            <h3>Store 状态</h3>
+            <div class="value" id="storeStatus">检测中...</div>
+          </div>
+        </div>
+        <button class="btn btn-success" onclick="checkSystemStatus()">🔄 刷新系统状态</button>
+        <div class="output" id="systemOutput"></div>
+      </div>
+    </div>
+
+    <!-- Tab 1: 网络检测 -->
+    <div class="tab-content">
+      <div class="section">
+        <h2>🌐 网络连接检测</h2>
+        <button class="btn" onclick="checkFrontend()">检查前端服务 (5173)</button>
+        <button class="btn" onclick="checkBackend()">检查后端服务 (5000)</button>
+        <button class="btn btn-info" onclick="checkAllPorts()">检查所有端口</button>
+        <div class="output" id="networkOutput"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: 组件检查 -->
+    <div class="tab-content">
+      <div class="section">
+        <h2>🔧 组件加载检查</h2>
+        <button class="btn" onclick="checkVueApp()">检查 Vue 应用</button>
+        <button class="btn" onclick="checkRouter()">检查路由</button>
+        <button class="btn" onclick="checkStore()">检查状态管理</button>
+        <button class="btn" onclick="checkI18n()">检查国际化</button>
+        <button class="btn btn-success" onclick="checkAllComponents()">全面检查</button>
+        <div class="output" id="componentOutput"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: 控制台日志 -->
+    <div class="tab-content">
+      <div class="section">
+        <h2>📝 控制台错误日志</h2>
+        <button class="btn" onclick="captureConsoleErrors()">捕获错误</button>
+        <button class="btn btn-warning" onclick="clearConsoleLog()">清空日志</button>
+        <button class="btn btn-info" onclick="exportLog()">导出日志</button>
+        <div class="output" id="consoleOutput"></div>
+      </div>
+    </div>
+
+    <!-- Tab 4: 快速修复 -->
+    <div class="tab-content">
+      <div class="section">
+        <h2>💊 快速修复方案</h2>
+        <button class="btn btn-warning" onclick="clearCache()">清除浏览器缓存</button>
+        <button class="btn btn-warning" onclick="clearLocalStorage()">清除本地存储</button>
+        <button class="btn btn-success" onclick="reloadWithoutCache()">强制刷新页面</button>
+        <button class="btn btn-info" onclick="resetToDefaults()">恢复默认设置</button>
+        <div class="output" id="fixOutput"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab 切换
+    function switchTab(index) {
+      const tabs = document.querySelectorAll('.tab');
+      const contents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      contents.forEach((content, i) => {
+        content.classList.toggle('active', i === index);
+      });
+    }
+
+    // 日志输出函数
+    function log(outputId, message, type = 'info') {
+      const output = document.getElementById(outputId);
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type;
+      output.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearLog(outputId) {
+      document.getElementById(outputId).innerHTML = '';
+    }
+
+    // 系统状态检测
+    function checkSystemStatus() {
+      clearLog('systemOutput');
+      log('systemOutput', '🔍 开始检测系统状态...', 'info');
+      
+      // 浏览器信息
+      const browser = detectBrowser();
+      document.getElementById('browserName').textContent = browser;
+      log('systemOutput', `浏览器: ${browser}`, 'success');
+      
+      // 检查 Vue
+      setTimeout(() => {
+        if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
+          log('systemOutput', '✅ Vue DevTools 已加载', 'success');
+          document.getElementById('vueVersion').textContent = 'Vue 3';
+          document.getElementById('vueVersion').className = 'value status-ok';
+        } else {
+          log('systemOutput', '⚠️ Vue DevTools 未检测到', 'warning');
+          document.getElementById('vueVersion').textContent = '未知';
+          document.getElementById('vueVersion').className = 'value status-warning';
+        }
+        
+        // 检查路由
+        if (window.location.pathname) {
+          log('systemOutput', `✅ 当前路由: ${window.location.pathname}`, 'success');
+          document.getElementById('routerStatus').textContent = '正常';
+          document.getElementById('routerStatus').className = 'value status-ok';
+        }
+        
+        // 检查 localStorage
+        try {
+          const storeKeys = Object.keys(localStorage);
+          log('systemOutput', `✅ LocalStorage 键数量: ${storeKeys.length}`, 'success');
+          document.getElementById('storeStatus').textContent = storeKeys.length;
+          document.getElementById('storeStatus').className = 'value status-ok';
+          
+          storeKeys.forEach(key => {
+            log('systemOutput', `  - ${key}`, 'info');
+          });
+        } catch (e) {
+          log('systemOutput', `❌ LocalStorage 访问失败: ${e.message}`, 'error');
+          document.getElementById('storeStatus').textContent = '错误';
+          document.getElementById('storeStatus').className = 'value status-error';
+        }
+        
+        log('systemOutput', '✅ 系统状态检测完成', 'success');
+      }, 500);
+    }
+
+    function detectBrowser() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Chrome')) return 'Chrome';
+      if (ua.includes('Firefox')) return 'Firefox';
+      if (ua.includes('Safari')) return 'Safari';
+      if (ua.includes('Edge')) return 'Edge';
+      return 'Unknown';
+    }
+
+    // 网络检测
+    async function checkFrontend() {
+      clearLog('networkOutput');
+      log('networkOutput', '🌐 检查前端服务 (http://localhost:5173)...', 'info');
+      
+      try {
+        const response = await fetch('http://localhost:5173', { method: 'HEAD' });
+        if (response.ok) {
+          log('networkOutput', '✅ 前端服务运行正常', 'success');
+        } else {
+          log('networkOutput', `⚠️ 前端服务响应异常: ${response.status}`, 'warning');
+        }
+      } catch (e) {
+        log('networkOutput', `❌ 前端服务连接失败: ${e.message}`, 'error');
+        log('networkOutput', '💡 请运行: npm run dev', 'warning');
+      }
+    }
+
+    async function checkBackend() {
+      clearLog('networkOutput');
+      log('networkOutput', '🌐 检查后端服务 (http://localhost:5000)...', 'info');
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/health');
+        if (response.ok) {
+          log('networkOutput', '✅ 后端服务运行正常', 'success');
+        } else {
+          log('networkOutput', `⚠️ 后端服务响应异常: ${response.status}`, 'warning');
+        }
+      } catch (e) {
+        log('networkOutput', `❌ 后端服务连接失败: ${e.message}`, 'error');
+        log('networkOutput', '💡 请运行: node server/index.js', 'warning');
+      }
+    }
+
+    async function checkAllPorts() {
+      clearLog('networkOutput');
+      log('networkOutput', '🔍 检查所有服务端口...', 'info');
+      
+      const ports = [
+        { port: 5173, name: '前端服务', url: 'http://localhost:5173' },
+        { port: 5000, name: '后端服务', url: 'http://localhost:5000/api/health' },
+        { port: 3000, name: '备用端口', url: 'http://localhost:3000' }
+      ];
+      
+      for (const { port, name, url } of ports) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
+          
+          const response = await fetch(url, { 
+            method: 'HEAD',
+            signal: controller.signal 
+          });
+          clearTimeout(timeout);
+          
+          if (response.ok) {
+            log('networkOutput', `✅ ${name} (${port}): 运行正常`, 'success');
+          } else {
+            log('networkOutput', `⚠️ ${name} (${port}): 响应异常 ${response.status}`, 'warning');
+          }
+        } catch (e) {
+          if (e.name === 'AbortError') {
+            log('networkOutput', `⏱️ ${name} (${port}): 超时`, 'warning');
+          } else {
+            log('networkOutput', `❌ ${name} (${port}): 未运行`, 'error');
+          }
+        }
+      }
+      
+      log('networkOutput', '✅ 端口检查完成', 'success');
+    }
+
+    // 组件检查
+    function checkVueApp() {
+      clearLog('componentOutput');
+      log('componentOutput', '🔍 检查 Vue 应用实例...', 'info');
+      
+      if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
+        log('componentOutput', '✅ Vue 应用已加载', 'success');
+        log('componentOutput', `Vue 版本: ${window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue ? '3.x' : '未知'}`, 'info');
+      } else {
+        log('componentOutput', '❌ Vue 应用未检测到', 'error');
+      }
+      
+      // 检查 #app
+      const app = document.getElementById('app');
+      if (app) {
+        log('componentOutput', '✅ #app 元素存在', 'success');
+        log('componentOutput', `子元素数量: ${app.children.length}`, 'info');
+        if (app.children.length === 0) {
+          log('componentOutput', '⚠️ #app 是空的，可能渲染失败', 'warning');
+        }
+      } else {
+        log('componentOutput', '❌ #app 元素不存在', 'error');
+      }
+    }
+
+    function checkRouter() {
+      clearLog('componentOutput');
+      log('componentOutput', '🔍 检查路由系统...', 'info');
+      
+      log('componentOutput', `当前路径: ${window.location.pathname}`, 'info');
+      log('componentOutput', `哈希: ${window.location.hash || '(无)'}`, 'info');
+      log('componentOutput', `查询参数: ${window.location.search || '(无)'}`, 'info');
+      
+      // 检查 router-view
+      const routerView = document.querySelector('[data-v-app]') || document.querySelector('.main-wrapper');
+      if (routerView) {
+        log('componentOutput', '✅ 路由视图已挂载', 'success');
+      } else {
+        log('componentOutput', '⚠️ 路由视图未找到', 'warning');
+      }
+    }
+
+    function checkStore() {
+      clearLog('componentOutput');
+      log('componentOutput', '🔍 检查状态管理...', 'info');
+      
+      const storeKeys = Object.keys(localStorage).filter(k => k.includes('store') || k.includes('pinia'));
+      if (storeKeys.length > 0) {
+        log('componentOutput', `✅ 找到 ${storeKeys.length} 个 Store 相关键`, 'success');
+        storeKeys.forEach(key => {
+          log('componentOutput', `  - ${key}`, 'info');
+        });
+      } else {
+        log('componentOutput', '⚠️ 未找到 Store 数据', 'warning');
+      }
+    }
+
+    function checkI18n() {
+      clearLog('componentOutput');
+      log('componentOutput', '🔍 检查国际化...', 'info');
+      
+      const lang = localStorage.getItem('lang') || localStorage.getItem('language');
+      if (lang) {
+        log('componentOutput', `✅ 当前语言: ${lang}`, 'success');
+      } else {
+        log('componentOutput', '⚠️ 未设置语言', 'warning');
+      }
+    }
+
+    function checkAllComponents() {
+      checkVueApp();
+      setTimeout(() => {
+        checkRouter();
+        setTimeout(() => {
+          checkStore();
+          setTimeout(() => {
+            checkI18n();
+            log('componentOutput', '✅ 全部组件检查完成', 'success');
+          }, 500);
+        }, 500);
+      }, 500);
+    }
+
+    // 控制台日志
+    let errorLog = [];
+    
+    window.addEventListener('error', (e) => {
+      errorLog.push({
+        type: 'error',
+        message: e.message,
+        file: e.filename,
+        line: e.lineno,
+        time: new Date().toLocaleTimeString()
+      });
+    });
+
+    window.addEventListener('unhandledrejection', (e) => {
+      errorLog.push({
+        type: 'promise',
+        message: e.reason,
+        time: new Date().toLocaleTimeString()
+      });
+    });
+
+    function captureConsoleErrors() {
+      clearLog('consoleOutput');
+      log('consoleOutput', '📝 捕获的错误日志:', 'info');
+      
+      if (errorLog.length === 0) {
+        log('consoleOutput', '✅ 没有错误日志', 'success');
+      } else {
+        errorLog.forEach(err => {
+          log('consoleOutput', `[${err.time}] ${err.type}: ${err.message}`, 'error');
+          if (err.file) {
+            log('consoleOutput', `  位置: ${err.file}:${err.line}`, 'info');
+          }
+        });
+      }
+    }
+
+    function clearConsoleLog() {
+      errorLog = [];
+      clearLog('consoleOutput');
+      log('consoleOutput', '✅ 日志已清空', 'success');
+    }
+
+    function exportLog() {
+      const logText = JSON.stringify(errorLog, null, 2);
+      const blob = new Blob([logText], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `aiweb-error-log-${new Date().getTime()}.json`;
+      a.click();
+      log('consoleOutput', '✅ 日志已导出', 'success');
+    }
+
+    // 快速修复
+    function clearCache() {
+      clearLog('fixOutput');
+      log('fixOutput', '🧹 清除浏览器缓存...', 'info');
+      
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            caches.delete(name);
+          });
+          log('fixOutput', `✅ 已清除 ${names.length} 个缓存`, 'success');
+        });
+      } else {
+        log('fixOutput', '⚠️ 浏览器不支持 Cache API', 'warning');
+      }
+    }
+
+    function clearLocalStorage() {
+      clearLog('fixOutput');
+      log('fixOutput', '🧹 清除本地存储...', 'info');
+      
+      const count = localStorage.length;
+      localStorage.clear();
+      log('fixOutput', `✅ 已清除 ${count} 个本地存储项`, 'success');
+      log('fixOutput', '💡 请刷新页面使更改生效', 'warning');
+    }
+
+    function reloadWithoutCache() {
+      clearLog('fixOutput');
+      log('fixOutput', '🔄 强制刷新页面...', 'info');
+      
+      setTimeout(() => {
+        location.reload(true);
+      }, 1000);
+    }
+
+    function resetToDefaults() {
+      clearLog('fixOutput');
+      log('fixOutput', '🔧 恢复默认设置...', 'info');
+      
+      clearCache();
+      clearLocalStorage();
+      
+      setTimeout(() => {
+        log('fixOutput', '✅ 设置已恢复', 'success');
+        log('fixOutput', '🔄 3秒后自动刷新页面...', 'warning');
+        
+        setTimeout(() => {
+          location.reload(true);
+        }, 3000);
+      }, 1000);
+    }
+
+    // 页面加载时自动检测
+    window.addEventListener('load', () => {
+      checkSystemStatus();
+    });
+  </script>
+</body>
+</html>

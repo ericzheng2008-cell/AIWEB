@@ -479,6 +479,15 @@ const routes = [
           title: '客户360画像与沙盘分析管理',
           description: '客户画像配置、数据源整合、沙盘分析设置、AI预测配置'
         }
+      },
+      {
+        path: 'material-download',
+        name: 'AdminMaterialDownload',
+        component: () => import('../views/admin/MaterialDownloadManage.vue'),
+        meta: {
+          title: '资料下载管理',
+          description: '管理产品手册、技术资料、白皮书等下载资源，处理索取报价请求'
+        }
       }
     ]
   }

@@ -6,6 +6,141 @@
     </div>
 
     <el-tabs v-model="activeTab" class="content-tabs">
+      <!-- 🆕 站点配置 -->
+      <el-tab-pane label="站点配置" name="site">
+        <div class="section-header">
+          <h2>网站LOGO和公司信息</h2>
+          <el-button type="success" @click="saveSiteConfig">
+            <el-icon><Check /></el-icon>
+            保存配置
+          </el-button>
+        </div>
+
+        <el-form :model="siteConfig" label-width="140px" class="site-config-form">
+          <!-- LOGO上传 -->
+          <el-form-item label="网站LOGO">
+            <div class="logo-upload-section">
+              <el-upload
+                class="logo-uploader"
+                :show-file-list="false"
+                :before-upload="beforeLogoUpload"
+                :auto-upload="false"
+                :on-change="handleLogoChange"
+                accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                drag>
+                <el-icon v-if="!siteConfig.logo" class="el-icon--upload"><UploadFilled /></el-icon>
+                <img v-else :src="siteConfig.logo" class="logo-preview-image" />
+                <div v-if="!siteConfig.logo" class="el-upload__text">
+                  将LOGO拖到此处，或<em>点击上传</em>
+                </div>
+                <template #tip>
+                  <div class="el-upload__tip">
+                    支持 PNG、JPG、SVG | 建议尺寸 200x60px | 大小 < 500KB | 建议使用透明背景
+                  </div>
+                </template>
+              </el-upload>
+              
+              <div v-if="siteConfig.logo" class="logo-actions">
+                <el-button type="danger" size="small" @click="siteConfig.logo = ''">
+                  <el-icon><Delete /></el-icon> 删除LOGO
+                </el-button>
+                <el-button type="primary" size="small" @click="previewHeader">
+                  <el-icon><View /></el-icon> 预览效果
+                </el-button>
+              </div>
+              
+              <el-alert 
+                title="💡 LOGO使用说明" 
+                type="info" 
+                :closable="false"
+                style="margin-top: 16px">
+                <template #default>
+                  <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                    <li>LOGO将显示在网站顶部导航栏左侧</li>
+                    <li>建议上传透明背景的PNG格式图片，适配性更好</li>
+                    <li>推荐尺寸为 200x60px，高度不超过60px</li>
+                    <li>如果不上传LOGO，将显示公司名称文字</li>
+                  </ul>
+                </template>
+              </el-alert>
+            </div>
+          </el-form-item>
+          
+          <el-divider content-position="left">
+            <el-icon><OfficeBuilding /></el-icon> 公司信息
+          </el-divider>
+          
+          <!-- 公司名称（多语言） -->
+          <el-tabs v-model="siteActiveLangTab" class="lang-tabs">
+            <el-tab-pane label="🇨🇳 中文" name="zh-CN">
+              <el-form-item label="公司名称（中文）" required>
+                <el-input 
+                  v-model="siteConfig.companyName['zh-CN']" 
+                  placeholder="请输入公司名称（中文）"
+                  maxlength="50"
+                  show-word-limit />
+                <el-text type="info" size="small" style="margin-top: 8px;">
+                  如：明升伟业工业设备有限公司
+                </el-text>
+              </el-form-item>
+              
+              <el-form-item label="公司口号（中文）">
+                <el-input 
+                  v-model="siteConfig.slogan['zh-CN']" 
+                  placeholder="请输入公司口号或标语（中文）"
+                  maxlength="100"
+                  show-word-limit />
+                <el-text type="info" size="small" style="margin-top: 8px;">
+                  如：智能制造 · 精益求精
+                </el-text>
+              </el-form-item>
+            </el-tab-pane>
+            
+            <el-tab-pane label="🇺🇸 English" name="en-US">
+              <el-form-item label="Company Name" required>
+                <el-input 
+                  v-model="siteConfig.companyName['en-US']" 
+                  placeholder="Enter company name (English)"
+                  maxlength="50"
+                  show-word-limit />
+                <el-text type="info" size="small" style="margin-top: 8px;">
+                  e.g., Mingsheng Industrial Equipment Co., Ltd.
+                </el-text>
+              </el-form-item>
+              
+              <el-form-item label="Company Slogan">
+                <el-input 
+                  v-model="siteConfig.slogan['en-US']" 
+                  placeholder="Enter company slogan (English)"
+                  maxlength="100"
+                  show-word-limit />
+                <el-text type="info" size="small" style="margin-top: 8px;">
+                  e.g., Smart Manufacturing · Excellence Pursuit
+                </el-text>
+              </el-form-item>
+            </el-tab-pane>
+          </el-tabs>
+          
+          <el-divider />
+          
+          <!-- 预览效果 -->
+          <el-form-item label="实时预览">
+            <div class="header-preview">
+              <div class="preview-logo">
+                <img v-if="siteConfig.logo" :src="siteConfig.logo" alt="Logo Preview" class="preview-logo-img" />
+                <div v-else class="preview-logo-text">
+                  <h1>{{ siteConfig.companyName[siteActiveLangTab] || '公司名称' }}</h1>
+                  <p class="preview-slogan">{{ siteConfig.slogan[siteActiveLangTab] || '公司口号' }}</p>
+                </div>
+              </div>
+            </div>
+            <el-text type="info" size="small">
+              这是导航栏LOGO区域的预览效果（当前语言：{{ siteActiveLangTab === 'zh-CN' ? '中文' : 'English' }}）
+            </el-text>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      
       <!-- Banner轮播图管理 -->
       <el-tab-pane label="首页Banner" name="banner">
         <div class="section-header">
@@ -345,7 +480,13 @@
         <el-form-item label="媒体类型" required>
           <el-radio-group v-model="editingFeatured.mediaType" @change="handleMediaTypeChange">
             <el-radio label="video-file" border>
-              <el-icon><VideoCamera /></el-icon> 视频文件 (MP4)
+              <el-icon><VideoCamera /></el-icon> 视频文件 (MP4) <el-tag size="small" type="success">推荐</el-tag>
+            </el-radio>
+            <el-radio label="image-file" border>
+              <el-icon><Picture /></el-icon> 图片文件 (JPG/PNG) <el-tag size="small" type="success">推荐</el-tag>
+            </el-radio>
+            <el-radio label="gif-file" border>
+              <el-icon><PictureFilled /></el-icon> 动画文件 (GIF/动图) <el-tag size="small" type="success">推荐</el-tag>
             </el-radio>
             <el-radio label="video-link" border>
               <el-icon><Link /></el-icon> 视频链接 (YouTube/Vimeo)
@@ -353,14 +494,8 @@
             <el-radio label="web-link" border>
               <el-icon><Connection /></el-icon> 网页链接
             </el-radio>
-            <el-radio label="image-file" border>
-              <el-icon><Picture /></el-icon> 图片文件 (JPG/PNG)
-            </el-radio>
             <el-radio label="image-link" border>
               <el-icon><Link /></el-icon> 图片链接
-            </el-radio>
-            <el-radio label="gif-file" border>
-              <el-icon><PictureFilled /></el-icon> 动画文件 (GIF/动图)
             </el-radio>
             <el-radio label="animation-link" border>
               <el-icon><Link /></el-icon> 动态图片链接
@@ -371,12 +506,52 @@
         <!-- 媒体URL/文件上传 -->
         <el-form-item 
           :label="getMediaUrlLabel()" 
-          required
+          :required="!isFileUploadType()"
           class="media-url-item">
-          <!-- 文件URL输入模式（所有类型统一使用URL） -->
-          <div class="upload-section">
+          
+          <!-- 文件上传模式（优先推荐） -->
+          <div v-if="isFileUploadType()" class="upload-section">
             <el-alert 
-              title="💡 上传提示"
+              title="💡 本地上传（推荐）"
+              :description="getUploadTip()" 
+              type="success" 
+              :closable="false"
+              style="margin-bottom: 12px"
+            />
+            <el-upload
+              class="media-uploader"
+              drag
+              :show-file-list="false"
+              :auto-upload="false"
+              :accept="getAcceptType()"
+              :before-upload="beforeMediaUpload"
+              :on-change="handleMediaFileChange">
+              <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+              <div class="el-upload__text">
+                将{{ getMediaTypeText() }}拖到此处，或<em>点击上传</em>
+              </div>
+              <template #tip>
+                <div class="el-upload__tip">
+                  {{ getUploadTip() }}
+                </div>
+              </template>
+            </el-upload>
+            
+            <!-- 文件预览 -->
+            <div v-if="editingFeatured.mediaUrl" class="media-file-preview">
+              <div class="preview-header">
+                <el-text type="success"><el-icon><Check /></el-icon> 文件已上传</el-text>
+                <el-button size="small" type="danger" @click="editingFeatured.mediaUrl = ''">
+                  <el-icon><Delete /></el-icon> 删除文件
+                </el-button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- URL链接模式（备选方案） -->
+          <div v-else class="upload-section">
+            <el-alert 
+              title="💡 链接地址"
               :description="getUploadTip()" 
               type="info" 
               :closable="false"
@@ -405,12 +580,36 @@
           <el-collapse v-model="showMediaHelp" class="help-collapse">
               <el-collapse-item name="help">
                 <template #title>
-                  <el-icon><InfoFilled /></el-icon> 如何填写{{ getMediaTypeText() }}URL？
+                  <el-icon><InfoFilled /></el-icon> {{ isFileUploadType() ? '如何上传' : '如何填写' }}{{ getMediaTypeText() }}{{ isFileUploadType() ? '' : 'URL' }}？
                 </template>
                 <div class="help-content">
+                  <div v-if="editingFeatured.mediaType === 'video-file'">
+                    <p><strong>🎥 视频文件上传:</strong></p>
+                    <el-tag type="success">推荐格式</el-tag>
+                    <p class="mt-2">• 支持格式: MP4, AVI, MOV</p>
+                    <p>• 建议尺寸: 1920x1080 或 1280x720</p>
+                    <p>• 文件大小: 建议 < 50MB，最大100MB</p>
+                    <p>• 视频时长: 建议 15-60秒</p>
+                  </div>
+                  
+                  <div v-if="editingFeatured.mediaType === 'image-file'">
+                    <p><strong>🖼️ 图片文件上传:</strong></p>
+                    <el-tag type="success">推荐格式</el-tag>
+                    <p class="mt-2">• 支持格式: JPG, PNG, WEBP</p>
+                    <p>• 建议尺寸: 1200x800px</p>
+                    <p>• 文件大小: 建议 < 500KB，最大2MB</p>
+                  </div>
+                  
+                  <div v-if="editingFeatured.mediaType === 'gif-file'">
+                    <p><strong>🎞️ 动画文件上传:</strong></p>
+                    <el-tag type="success">推荐格式</el-tag>
+                    <p class="mt-2">• 支持格式: GIF, APNG</p>
+                    <p>• 建议大小: < 2MB，最大5MB</p>
+                    <p>• 帧数建议: < 100帧</p>
+                  </div>
+                  
                   <div v-if="editingFeatured.mediaType === 'video-link'">
                     <p><strong>🎥 YouTube视频:</strong></p>
-                    <el-tag type="success">推荐</el-tag>
                     <code>https://www.youtube.com/embed/VIDEO_ID</code>
                     <p class="mt-2">示例: <code>https://www.youtube.com/embed/dQw4w9WgXcQ</code></p>
                     
@@ -567,17 +766,24 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useCmsStore } from '@/store/cms'
+import { useCmsAdvancedStore } from '@/store/cmsAdvanced'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Plus, Edit, Delete, QuestionFilled, InfoFilled,
   VideoCamera, Link, Connection, Picture, PictureFilled,
-  Upload, CircleCheck, Hide, Check, Close, Setting, UploadFilled
+  Upload, CircleCheck, Hide, Check, Close, Setting, UploadFilled,
+  OfficeBuilding, View
 } from '@element-plus/icons-vue'
 
 const cmsStore = useCmsStore()
-const activeTab = ref('banner')
+const cmsAdvancedStore = useCmsAdvancedStore()
+const activeTab = ref('site')  // 默认打开站点配置
 const activeLangTab = ref('zh-CN')
+const siteActiveLangTab = ref('zh-CN')
 const showMediaHelp = ref([])
+
+// 🆕 站点配置数据
+const siteConfig = computed(() => cmsAdvancedStore.siteConfig)
 
 // Banner数据
 const banners = computed(() => cmsStore.homeBanners)
@@ -919,7 +1125,7 @@ const handleMediaTypeChange = (newType) => {
 }
 
 // 判断是否为文件上传模式
-const isFileUploadMode = () => {
+const isFileUploadType = () => {
   return ['video-file', 'image-file', 'gif-file'].includes(editingFeatured.mediaType)
 }
 
@@ -927,7 +1133,7 @@ const isFileUploadMode = () => {
 const getMediaUrlLabel = () => {
   const labels = {
     'video-file': '上传视频文件',
-    'video-link': '视频嵌入链接',
+    'video-link': '视频嵌入链接（可选）',
     'web-link': '网页链接',
     'image-file': '上传图片文件',
     'image-link': '图片URL',
@@ -965,29 +1171,33 @@ const getMediaTypeText = () => {
 // 获取上传提示
 const getUploadTip = () => {
   const tips = {
-    'video-file': '支持MP4、AVI、MOV格式，文件大小不超过50MB',
-    'image-file': '支持JPG、PNG、WEBP格式，文件大小不超过5MB，建议尺寸1200x800px',
-    'gif-file': '支持GIF格式，文件大小不超过10MB，建议帧数<100帧'
+    'video-file': '支持MP4、AVI、MOV格式，推荐1920x1080，文件大小建议<50MB（最大100MB）',
+    'video-link': '输入YouTube、Vimeo或腾讯视频的嵌入链接地址',
+    'web-link': '输入完整的网页URL地址',
+    'image-file': '支持JPG、PNG、WEBP格式，建议尺寸1200x800px，文件大小<2MB',
+    'image-link': '输入图片的完整URL地址',
+    'gif-file': '支持GIF、APNG格式，建议<2MB（最大5MB），帧数<100帧',
+    'animation-link': '输入动态图片的完整URL地址'
   }
   return tips[editingFeatured.mediaType] || '请选择文件上传'
 }
 
 // 获取接受的文件类型
-const getAcceptTypes = () => {
+const getAcceptType = () => {
   const accepts = {
     'video-file': 'video/mp4,video/avi,video/quicktime',
     'image-file': 'image/jpeg,image/png,image/webp',
-    'gif-file': 'image/gif'
+    'gif-file': 'image/gif,image/apng'
   }
   return accepts[editingFeatured.mediaType] || '*'
 }
 
 // 文件上传前验证
-const beforeUpload = (file) => {
+const beforeMediaUpload = (file) => {
   const sizeLimit = {
-    'video-file': 50 * 1024 * 1024, // 50MB
-    'image-file': 5 * 1024 * 1024,  // 5MB
-    'gif-file': 10 * 1024 * 1024    // 10MB
+    'video-file': 100 * 1024 * 1024, // 100MB
+    'image-file': 2 * 1024 * 1024,   // 2MB
+    'gif-file': 5 * 1024 * 1024      // 5MB
   }
   
   const limit = sizeLimit[editingFeatured.mediaType]
@@ -999,20 +1209,26 @@ const beforeUpload = (file) => {
   return true
 }
 
-// 文件上传成功回调
-const handleUploadSuccess = (response, file) => {
-  if (response.code === 200 && response.data) {
-    editingFeatured.mediaUrl = response.data.url
-    ElMessage.success('文件上传成功')
-  } else {
-    ElMessage.error('文件上传失败: ' + (response.message || '未知错误'))
+// 处理媒体文件上传（本地Base64）
+const handleMediaFileChange = async (file) => {
+  if (!beforeMediaUpload(file.raw)) {
+    return
   }
-}
-
-// 文件上传失败回调
-const handleUploadError = (error) => {
-  console.error('上传失败:', error)
-  ElMessage.error('文件上传失败，请重试')
+  
+  try {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      editingFeatured.mediaUrl = e.target.result
+      ElMessage.success('文件上传成功')
+    }
+    reader.onerror = () => {
+      ElMessage.error('文件读取失败，请重试')
+    }
+    reader.readAsDataURL(file.raw)
+  } catch (error) {
+    console.error('文件上传失败:', error)
+    ElMessage.error('文件上传失败，请重试')
+  }
 }
 
 // 辅助函数 - 获取媒体类型标签和颜色
@@ -1039,6 +1255,67 @@ const getMediaTypeColor = (type) => {
   if (type.includes('web')) return 'success'
   return 'info'
 }
+
+// ========== 🆕 站点配置管理 ==========
+
+// LOGO上传前验证
+const beforeLogoUpload = (file) => {
+  const isImage = /^image\/(png|jpeg|jpg|svg\+xml)$/.test(file.type)
+  const isLt500K = file.size / 1024 < 500
+
+  if (!isImage) {
+    ElMessage.error('只能上传 PNG、JPG、SVG 格式的图片!')
+    return false
+  }
+  if (!isLt500K) {
+    ElMessage.error('图片大小不能超过 500KB!')
+    return false
+  }
+  return true
+}
+
+// LOGO选择处理
+const handleLogoChange = async (file) => {
+  if (beforeLogoUpload(file.raw)) {
+    try {
+      const base64 = await convertImageToBase64(file.raw)
+      cmsAdvancedStore.updateLogo(base64)
+      ElMessage.success('LOGO已上传，请点击"保存配置"按钮保存')
+    } catch (error) {
+      ElMessage.error('LOGO上传失败: ' + error.message)
+    }
+  }
+}
+
+// 保存站点配置
+const saveSiteConfig = () => {
+  // 验证必填项
+  if (!siteConfig.value.companyName['zh-CN']) {
+    ElMessage.warning('请填写公司名称（中文）')
+    siteActiveLangTab.value = 'zh-CN'
+    return
+  }
+  if (!siteConfig.value.companyName['en-US']) {
+    ElMessage.warning('请填写公司名称（英文）')
+    siteActiveLangTab.value = 'en-US'
+    return
+  }
+  
+  // 保存到store（已经通过v-model实时更新了）
+  ElMessage.success('站点配置保存成功！')
+}
+
+// 预览Header效果
+const previewHeader = () => {
+  ElMessage({
+    message: '提示：配置保存后，刷新前台页面即可看到效果',
+    type: 'info',
+    duration: 3000
+  })
+  // 可以打开新窗口预览
+  window.open('/', '_blank')
+}
+
 </script>
 
 <style scoped>
@@ -1080,6 +1357,103 @@ const getMediaTypeColor = (type) => {
   font-size: 18px;
   font-weight: 600;
   color: #333;
+}
+
+/* ========== 🆕 站点配置样式 ========== */
+.site-config-form {
+  max-width: 800px;
+}
+
+.logo-upload-section {
+  width: 100%;
+}
+
+.logo-uploader {
+  width: 100%;
+}
+
+.logo-uploader :deep(.el-upload) {
+  width: 100%;
+}
+
+.logo-uploader :deep(.el-upload-dragger) {
+  width: 100%;
+  padding: 40px;
+  border: 2px dashed #d9d9d9;
+  border-radius: 12px;
+  background: #fafafa;
+  transition: all 0.3s;
+}
+
+.logo-uploader :deep(.el-upload-dragger:hover) {
+  border-color: #409eff;
+  background: #f0f9ff;
+}
+
+.logo-preview-image {
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  padding: 20px;
+}
+
+.logo-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.header-preview {
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+  border-radius: 12px;
+  border: 2px solid #e4e7ed;
+}
+
+.preview-logo {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.preview-logo-img {
+  height: 60px;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+.preview-logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-logo-text h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #003366;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.preview-slogan {
+  font-size: 12px;
+  color: #666;
+  font-weight: 400;
+  margin: 0;
+}
+
+.lang-tabs {
+  margin: 20px 0;
+}
+
+.lang-tabs :deep(.el-tabs__item) {
+  font-weight: 500;
+  font-size: 15px;
 }
 
 /* Banner列表 */
@@ -1427,6 +1801,24 @@ const getMediaTypeColor = (type) => {
   background: #fafafa;
   display: inline-block;
 }
+
+/* 文件上传预览 */
+.media-file-preview {
+  margin-top: 16px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.media-file-preview .preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f5f7fa;
+  border-bottom: 1px solid #dcdfe6;
+}
+
 
 .thumbnail-preview img {
   max-width: 300px;

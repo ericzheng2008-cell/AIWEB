@@ -72,6 +72,15 @@
         </nav>
 
         <div class="header-actions">
+          <!-- 索取报价按钮 -->
+          <el-button 
+            type="primary" 
+            class="quote-btn" 
+            @click="showQuoteDialog = true">
+            <el-icon><ChatDotRound /></el-icon>
+            {{ t('header.requestQuote') }}
+          </el-button>
+          
           <el-icon class="search-icon" :size="20" @click="showSearch = !showSearch">
             <Search />
           </el-icon>
@@ -148,30 +157,165 @@
         </div>
       </div>
     </transition>
+    
+    <!-- 索取报价弹窗 (复用MaterialDownload的注册功能) -->
+    <el-dialog
+      v-model="showQuoteDialog"
+      :title="t('header.requestQuoteTitle')"
+      width="500px"
+      :close-on-click-modal="false"
+      class="quote-dialog">
+      
+      <el-form 
+        ref="quoteFormRef" 
+        :model="quoteForm" 
+        :rules="quoteRules"
+        label-width="100px">
+        
+        <el-alert
+          :title="t('header.quoteNotice')"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 20px" />
+
+        <el-form-item :label="t('materials.form.name')" prop="name">
+          <el-input 
+            v-model="quoteForm.name" 
+            :placeholder="t('materials.form.namePlaceholder')"
+            clearable />
+        </el-form-item>
+
+        <el-form-item :label="t('materials.form.company')" prop="company">
+          <el-input 
+            v-model="quoteForm.company" 
+            :placeholder="t('materials.form.companyPlaceholder')"
+            clearable />
+        </el-form-item>
+
+        <el-form-item :label="t('materials.form.phone')" prop="phone">
+          <el-input 
+            v-model="quoteForm.phone" 
+            :placeholder="t('materials.form.phonePlaceholder')"
+            clearable />
+        </el-form-item>
+
+        <el-form-item :label="t('materials.form.email')" prop="email">
+          <el-input 
+            v-model="quoteForm.email" 
+            :placeholder="t('materials.form.emailPlaceholder')"
+            clearable />
+        </el-form-item>
+        
+        <el-form-item :label="t('header.quoteProduct')" prop="product">
+          <el-input 
+            v-model="quoteForm.product" 
+            type="textarea"
+            :rows="3"
+            :placeholder="t('header.quoteProductPlaceholder')"
+            clearable />
+        </el-form-item>
+
+        <el-form-item :label="t('materials.form.captcha')" prop="captcha">
+          <div class="captcha-container">
+            <el-input 
+              v-model="quoteForm.captcha" 
+              :placeholder="t('materials.form.captchaPlaceholder')"
+              style="width: 200px" />
+            <div class="captcha-code" @click="refreshQuoteCaptcha">
+              <canvas ref="quoteCaptchaCanvas" width="120" height="40"></canvas>
+            </div>
+          </div>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button @click="showQuoteDialog = false">
+          {{ t('common.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="submitQuoteRequest" :loading="quoteSubmitting">
+          {{ t('common.submit') }}
+        </el-button>
+      </template>
+    </el-dialog>
   </header>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { ElMessage } from 'element-plus'
 import { supportedLanguages } from '../i18n'
 import { useCmsAdvancedStore } from '../store/cmsAdvanced'
 import { usePageContentStore } from '../store/pageContent'
+import { useMaterialDownloadStore } from '../store/materialDownload'
 import { 
-  Phone, Message, ArrowDown, Check, Search, Menu, Close 
+  Phone, Message, ArrowDown, Check, Search, Menu, Close, ChatDotRound 
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
 const cmsStore = useCmsAdvancedStore()
 const pageStore = usePageContentStore()
+const materialStore = useMaterialDownloadStore()
 
 const searchQuery = ref('')
 const showSearch = ref(false)
 const currentLang = ref(locale.value)
 const showMobileMenu = ref(false)
 const activeMobileSubmenu = ref(null)
+
+// 索取报价相关
+const showQuoteDialog = ref(false)
+const quoteSubmitting = ref(false)
+const quoteFormRef = ref(null)
+const quoteCaptchaCanvas = ref(null)
+const quoteCaptchaCode = ref('')
+
+// 报价表单
+const quoteForm = ref({
+  name: '',
+  company: '',
+  phone: '',
+  email: '',
+  product: '',
+  captcha: ''
+})
+
+// 报价表单验证规则
+const quoteRules = {
+  name: [
+    { required: true, message: '请输入姓名', trigger: 'blur' },
+    { min: 2, max: 20, message: '姓名长度在 2 到 20 个字符', trigger: 'blur' }
+  ],
+  company: [
+    { required: true, message: '请输入公司名称', trigger: 'blur' }
+  ],
+  phone: [
+    { required: true, message: '请输入联系电话', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+  ],
+  email: [
+    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+  ],
+  product: [
+    { required: true, message: '请输入产品或服务需求', trigger: 'blur' }
+  ],
+  captcha: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { 
+      validator: (rule, value, callback) => {
+        if (value.toLowerCase() !== quoteCaptchaCode.value.toLowerCase()) {
+          callback(new Error('验证码不正确'))
+        } else {
+          callback()
+        }
+      }, 
+      trigger: 'blur' 
+    }
+  ]
+}
 
 // 从CMS获取配置
 const siteConfig = computed(() => cmsStore.siteConfig)
@@ -210,6 +354,112 @@ const toggleLanguage = () => {
 const toggleMobileSubmenu = (id) => {
   activeMobileSubmenu.value = activeMobileSubmenu.value === id ? null : id
 }
+
+// 生成验证码
+const generateQuoteCaptcha = () => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let code = ''
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return code
+}
+
+// 绘制验证码
+const drawQuoteCaptcha = () => {
+  nextTick(() => {
+    if (!quoteCaptchaCanvas.value) return
+    
+    const ctx = quoteCaptchaCanvas.value.getContext('2d')
+    const width = quoteCaptchaCanvas.value.width
+    const height = quoteCaptchaCanvas.value.height
+    
+    // 清空画布
+    ctx.clearRect(0, 0, width, height)
+    
+    // 背景
+    ctx.fillStyle = '#f0f0f0'
+    ctx.fillRect(0, 0, width, height)
+    
+    // 干扰线
+    for (let i = 0; i < 5; i++) {
+      ctx.strokeStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.3)`
+      ctx.beginPath()
+      ctx.moveTo(Math.random() * width, Math.random() * height)
+      ctx.lineTo(Math.random() * width, Math.random() * height)
+      ctx.stroke()
+    }
+    
+    // 验证码文字
+    quoteCaptchaCode.value = generateQuoteCaptcha()
+    ctx.font = 'bold 24px Arial'
+    ctx.textBaseline = 'middle'
+    
+    for (let i = 0; i < quoteCaptchaCode.value.length; i++) {
+      ctx.fillStyle = `rgb(${Math.random() * 100}, ${Math.random() * 100}, ${Math.random() * 100})`
+      ctx.save()
+      ctx.translate(20 + i * 25, height / 2)
+      ctx.rotate((Math.random() - 0.5) * 0.3)
+      ctx.fillText(quoteCaptchaCode.value[i], 0, 0)
+      ctx.restore()
+    }
+    
+    // 干扰点
+    for (let i = 0; i < 30; i++) {
+      ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`
+      ctx.beginPath()
+      ctx.arc(Math.random() * width, Math.random() * height, 1, 0, 2 * Math.PI)
+      ctx.fill()
+    }
+  })
+}
+
+// 刷新验证码
+const refreshQuoteCaptcha = () => {
+  drawQuoteCaptcha()
+}
+
+// 提交报价请求
+const submitQuoteRequest = async () => {
+  if (!quoteFormRef.value) return
+  
+  await quoteFormRef.value.validate((valid) => {
+    if (valid) {
+      quoteSubmitting.value = true
+      
+      const userInfo = {
+        name: quoteForm.value.name,
+        company: quoteForm.value.company,
+        phone: quoteForm.value.phone,
+        email: quoteForm.value.email,
+        product: quoteForm.value.product,
+        purpose: 'quote'
+      }
+      
+      // 注册用户（报价请求）
+      materialStore.registerUser(userInfo)
+      
+      setTimeout(() => {
+        quoteSubmitting.value = false
+        showQuoteDialog.value = false
+        ElMessage.success(t('header.quoteSuccess'))
+        
+        // 重置表单
+        quoteFormRef.value.resetFields()
+      }, 1000)
+    }
+  })
+}
+
+// 监听报价弹窗打开，绘制验证码
+watch(() => showQuoteDialog.value, (val) => {
+  if (val) {
+    nextTick(() => {
+      drawQuoteCaptcha()
+    })
+  }
+})
+
 </script>
 
 <style scoped>
@@ -475,6 +725,22 @@ const toggleMobileSubmenu = (id) => {
   gap: 20px;
 }
 
+/* 索取报价按钮 */
+.quote-btn {
+  height: 40px;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.25);
+  transition: all 0.3s;
+}
+
+.quote-btn:hover {
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.35);
+  transform: translateY(-2px);
+}
+
 .search-icon {
   cursor: pointer;
   color: #666;
@@ -483,6 +749,42 @@ const toggleMobileSubmenu = (id) => {
 
 .search-icon:hover {
   color: #1890ff;
+}
+
+/* 索取报价弹窗样式 */
+.quote-dialog .el-dialog__header {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: white;
+  padding: 20px 24px;
+}
+
+.quote-dialog .el-dialog__title {
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.captcha-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.captcha-code {
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #dcdfe6;
+  transition: all 0.3s;
+}
+
+.captcha-code:hover {
+  border-color: #1890ff;
+  box-shadow: 0 0 8px rgba(24, 144, 255, 0.3);
+}
+
+.captcha-code canvas {
+  display: block;
 }
 
 .search-panel {

@@ -208,24 +208,66 @@
           </div>
         </div>
 
-        <!-- 输入区域 -->
-        <div class="chat-input">
-          <el-input
-            v-model="inputMessage"
-            :placeholder="t('aiChat.placeholder')"
-            @keyup.enter="sendMessage"
-            :disabled="chatStore.isTyping"
-          >
-            <template #suffix>
-              <el-icon
-                class="send-icon"
-                :class="{ active: inputMessage.trim() }"
-                @click="sendMessage"
+        <!-- 输入区域 - 增强版：支持语音、数字选项 -->
+        <div class="chat-input-container">
+          <!-- 数字选项快捷按钮（当有推荐时显示） -->
+          <div class="number-options" v-if="numberOptions.length > 0">
+            <div class="options-title">💡 快速选择：</div>
+            <div class="options-buttons">
+              <button
+                v-for="(option, index) in numberOptions"
+                :key="index"
+                class="option-btn"
+                @click="selectNumberOption(index + 1)"
               >
-                <Promotion />
-              </el-icon>
-            </template>
-          </el-input>
+                {{ index + 1 }}. {{ option.text }}
+              </button>
+            </div>
+          </div>
+          
+          <div class="chat-input">
+            <!-- 语音输入按钮 -->
+            <el-tooltip content="点击开始语音输入" placement="top">
+              <el-button
+                :class="['voice-btn', { recording: isRecording }]"
+                @click="toggleVoiceInput"
+                :disabled="chatStore.isTyping"
+                size="small"
+                circle
+              >
+                <el-icon :size="18">
+                  <component :is="isRecording ? 'VideoPlay' : 'Microphone'" />
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+            
+            <!-- 文字输入框 -->
+            <el-input
+              v-model="inputMessage"
+              :placeholder="isRecording ? '🎤 正在录音，点击停止...' : t('aiChat.placeholder')"
+              @keyup.enter="sendMessage"
+              :disabled="chatStore.isTyping || isRecording"
+              class="text-input"
+            >
+              <template #suffix>
+                <el-icon
+                  class="send-icon"
+                  :class="{ active: inputMessage.trim() }"
+                  @click="sendMessage"
+                >
+                  <Promotion />
+                </el-icon>
+              </template>
+            </el-input>
+          </div>
+          
+          <!-- 语音识别状态提示 -->
+          <div class="voice-status" v-if="isRecording">
+            <div class="voice-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <span class="voice-text">正在识别语音...</span>
+          </div>
         </div>
       </div>
     </transition>
@@ -239,6 +281,10 @@ import { useAiChatStore } from '../store/aiChat'
 import { useClassroomStore } from '../store/classroom'
 import { useLearningEngineStore } from '../store/learningEngine'
 import { ElMessage } from 'element-plus'
+import { 
+  Service, Close, Delete, Minus, Cpu, Promotion,
+  Microphone, VideoPlay
+} from '@element-plus/icons-vue'
 import AiChatFeedback from './AiChatFeedback.vue'
 
 const { t, locale } = useI18n()
@@ -249,6 +295,13 @@ const inputMessage = ref('')
 const messagesContainer = ref(null)
 const hasUnread = ref(false)
 const isMinimized = ref(false)
+
+// 🆕 语音输入相关状态
+const isRecording = ref(false)
+const recognition = ref(null)
+
+// 🆕 数字选项相关状态
+const numberOptions = ref([])
 
 // 拖动功能相关状态
 const windowPosition = ref({ x: 20, y: 20 })
@@ -303,23 +356,58 @@ const stopDrag = () => {
   document.removeEventListener('touchend', stopDrag)
 }
 
-// 聊天按钮拖动开始
+// 🔧 聊天按钮拖动开始（优化：只在移动后才进入拖拽模式）
+let dragTimer = null
+let dragStartPosition = null
+
 const startButtonDrag = (e) => {
-  e.stopPropagation() // 阻止触发toggleChat
-  isButtonDragging.value = true
-  
   const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX
   const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY
   
+  dragStartPosition = { x: clientX, y: clientY }
   dragStart.value = {
     x: clientX - (window.innerWidth - buttonPosition.value.x - 90),
     y: clientY - (window.innerHeight - buttonPosition.value.y - 100)
   }
   
-  document.addEventListener('mousemove', onButtonDrag)
-  document.addEventListener('mouseup', stopButtonDrag)
-  document.addEventListener('touchmove', onButtonDrag)
-  document.addEventListener('touchend', stopButtonDrag)
+  // 添加移动监听，只在鼠标移动一定距离后才进入拖拽模式
+  document.addEventListener('mousemove', checkDragStart)
+  document.addEventListener('mouseup', cancelDragStart)
+  document.addEventListener('touchmove', checkDragStart)
+  document.addEventListener('touchend', cancelDragStart)
+}
+
+// 检查是否开始拖拽（移动超过5px才算拖拽）
+const checkDragStart = (e) => {
+  const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
+  const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
+  
+  const distance = Math.sqrt(
+    Math.pow(clientX - dragStartPosition.x, 2) + 
+    Math.pow(clientY - dragStartPosition.y, 2)
+  )
+  
+  if (distance > 5) {
+    // 移动超过5px，进入拖拽模式
+    isButtonDragging.value = true
+    document.removeEventListener('mousemove', checkDragStart)
+    document.removeEventListener('mouseup', cancelDragStart)
+    document.removeEventListener('touchmove', checkDragStart)
+    document.removeEventListener('touchend', cancelDragStart)
+    
+    document.addEventListener('mousemove', onButtonDrag)
+    document.addEventListener('mouseup', stopButtonDrag)
+    document.addEventListener('touchmove', onButtonDrag)
+    document.addEventListener('touchend', stopButtonDrag)
+  }
+}
+
+// 取消拖拽启动（小距离移动或快速点击）
+const cancelDragStart = () => {
+  document.removeEventListener('mousemove', checkDragStart)
+  document.removeEventListener('mouseup', cancelDragStart)
+  document.removeEventListener('touchmove', checkDragStart)
+  document.removeEventListener('touchend', cancelDragStart)
 }
 
 // 聊天按钮拖动中
@@ -344,9 +432,14 @@ const stopButtonDrag = (e) => {
   if (isButtonDragging.value) {
     e.stopPropagation()
     e.preventDefault()
+    console.log('🔧 [AI Chat] drag stopped')
   }
   
-  isButtonDragging.value = false
+  // 延迟重置拖拽状态，避免立即触发点击
+  setTimeout(() => {
+    isButtonDragging.value = false
+  }, 100)
+  
   document.removeEventListener('mousemove', onButtonDrag)
   document.removeEventListener('mouseup', stopButtonDrag)
   document.removeEventListener('touchmove', onButtonDrag)
@@ -367,6 +460,9 @@ onMounted(() => {
   learningStore.loadFeedbacks()
   // 绑定全局快捷键
   document.addEventListener('keydown', handleKeyboardShortcut)
+  // 🆕 初始化语音识别
+  initSpeechRecognition()
+  console.log('🎤 [Voice] Speech recognition initialized')
 })
 
 // 组件卸载时移除监听器
@@ -384,12 +480,15 @@ const quickQuestions = computed(() => ({
 }))
 
 const toggleChat = () => {
+  console.log('🔍 [AI Chat] toggleChat called, current visible:', chatStore.chatVisible, 'dragging:', isButtonDragging.value)
   chatStore.toggleChat()
+  console.log('✅ [AI Chat] after toggle, visible:', chatStore.chatVisible)
   hasUnread.value = false
   isMinimized.value = false
   if (chatStore.chatVisible) {
     nextTick(() => {
       scrollToBottom()
+      console.log('📜 [AI Chat] scrolled to bottom')
     })
   }
 }
@@ -482,6 +581,118 @@ const handleSuggestion = (suggestion) => {
     ElMessage.success('正在打开外部学习资源...')
   }
 }
+
+// 🆕 语音输入功能
+const initSpeechRecognition = () => {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    recognition.value = new SpeechRecognition()
+    recognition.value.lang = locale.value === 'zh-CN' ? 'zh-CN' : 'en-US'
+    recognition.value.continuous = false
+    recognition.value.interimResults = false
+    
+    recognition.value.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      console.log('🎤 [Voice] recognized:', transcript)
+      inputMessage.value = transcript
+      isRecording.value = false
+      ElMessage.success(`识别成功：${transcript}`)
+      
+      // 自动发送识别的内容
+      setTimeout(() => {
+        sendMessage()
+      }, 500)
+    }
+    
+    recognition.value.onerror = (event) => {
+      console.error('🎤 [Voice] error:', event.error)
+      isRecording.value = false
+      ElMessage.error(`语音识别失败：${event.error}`)
+    }
+    
+    recognition.value.onend = () => {
+      isRecording.value = false
+      console.log('🎤 [Voice] ended')
+    }
+  } else {
+    console.warn('🎤 [Voice] 浏览器不支持语音识别')
+  }
+}
+
+// 切换语音输入
+const toggleVoiceInput = () => {
+  if (!recognition.value) {
+    ElMessage.warning('您的浏览器不支持语音识别功能，请使用Chrome或Edge浏览器')
+    return
+  }
+  
+  if (isRecording.value) {
+    // 停止录音
+    recognition.value.stop()
+    isRecording.value = false
+    console.log('🎤 [Voice] stopped by user')
+  } else {
+    // 开始录音
+    recognition.value.start()
+    isRecording.value = true
+    console.log('🎤 [Voice] started')
+    ElMessage.info('正在录音，请说话...')
+  }
+}
+
+// 🆕 数字选项功能
+const selectNumberOption = (number) => {
+  console.log('🔢 [Number Option] selected:', number)
+  
+  const option = numberOptions.value[number - 1]
+  if (!option) {
+    ElMessage.warning('选项不存在')
+    return
+  }
+  
+  // 根据option类型执行相应操作
+  if (option.action === 'navigate' && option.route) {
+    chatStore.navigateToFunction(option.route)
+    ElMessage.success(`正在打开：${option.text}`)
+  } else if (option.action === 'external_link' && option.url) {
+    window.open(option.url, '_blank')
+    ElMessage.success(`正在打开：${option.text}`)
+  }
+  
+  // 清空数字选项
+  setTimeout(() => {
+    numberOptions.value = []
+  }, 300)
+}
+
+// 🆕 监听聊天消息变化，更新数字选项
+watch(() => chatStore.messages, (newMessages) => {
+  if (newMessages.length === 0) {
+    numberOptions.value = []
+    return
+  }
+  
+  // 获取最后一条AI消息
+  const lastAiMessage = [...newMessages].reverse().find(msg => msg.type === 'ai')
+  if (!lastAiMessage) {
+    numberOptions.value = []
+    return
+  }
+  
+  // 检查是否有建议卡片
+  if (lastAiMessage.suggestions && lastAiMessage.suggestions.length > 0) {
+    // 将建议转换为数字选项
+    numberOptions.value = lastAiMessage.suggestions.slice(0, 5).map(s => ({
+      text: s.text,
+      action: s.action,
+      route: s.route,
+      url: s.url
+    }))
+    console.log('🔢 [Number Options] updated:', numberOptions.value.length)
+  } else {
+    numberOptions.value = []
+  }
+}, { deep: true })
 
 watch(() => chatStore.messages.length, () => {
   nextTick(() => {
@@ -1472,6 +1683,144 @@ watch(() => chatStore.messages.length, () => {
   background: #fff;
   border-top: 1px solid rgba(102, 126, 234, 0.1);
   position: relative;
+}
+
+/* 🆕 输入容器（包含数字选项、语音、输入框） */
+.chat-input-container {
+  background: #fff;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+/* 🆕 数字选项区域 */
+.number-options {
+  padding: 15px 20px 0 20px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.options-title {
+  font-size: 13px;
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.options-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.option-btn {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.option-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.option-btn:active {
+  transform: translateY(0);
+}
+
+/* 🆕 语音按钮样式 */
+.voice-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.voice-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.voice-btn.recording {
+  animation: recording-pulse 1.5s infinite;
+  background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+}
+
+@keyframes recording-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 4px 16px rgba(255, 77, 79, 0.6);
+  }
+}
+
+/* 🆕 输入框容器（语音按钮+文字输入） */
+.chat-input {
+  padding: 20px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.text-input {
+  flex: 1;
+}
+
+/* 🆕 语音识别状态 */
+.voice-status {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #fff1f0 0%, #fff 100%);
+  border-top: 1px solid rgba(255, 77, 79, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.voice-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.voice-wave span {
+  width: 3px;
+  height: 12px;
+  background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+  border-radius: 2px;
+  animation: voice-wave 1.2s ease-in-out infinite;
+}
+
+.voice-wave span:nth-child(1) { animation-delay: 0s; }
+.voice-wave span:nth-child(2) { animation-delay: 0.1s; }
+.voice-wave span:nth-child(3) { animation-delay: 0.2s; }
+.voice-wave span:nth-child(4) { animation-delay: 0.3s; }
+.voice-wave span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes voice-wave {
+  0%, 100% { height: 12px; }
+  50% { height: 24px; }
+}
+
+.voice-text {
+  font-size: 13px;
+  color: #ff4d4f;
+  font-weight: 500;
 }
 
 /* 输入框聚焦光晕 */

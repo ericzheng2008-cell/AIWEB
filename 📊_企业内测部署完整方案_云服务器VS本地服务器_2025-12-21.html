@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 企业内测部署完整方案 - 云服务器 VS 本地服务器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      padding: 50px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding-bottom: 30px;
+      border-bottom: 3px solid #667eea;
+    }
+    
+    .header h1 {
+      font-size: 42px;
+      color: #667eea;
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+    
+    .header .subtitle {
+      font-size: 18px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-tab {
+      padding: 14px 32px;
+      background: #f5f7fa;
+      border: 2px solid #e4e7ed;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 15px;
+      color: #606266;
+    }
+    
+    .nav-tab.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .nav-tab:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .content-section {
+      display: none;
+    }
+    
+    .content-section.active {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+      font-size: 28px;
+      color: #303133;
+      margin-bottom: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .section-title::before {
+      content: '';
+      width: 6px;
+      height: 28px;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 3px;
+    }
+    
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+    
+    .comparison-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-radius: 16px;
+      padding: 32px;
+      border: 3px solid #e4e7ed;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .comparison-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+    }
+    
+    .comparison-card.cloud::before {
+      background: linear-gradient(90deg, #2196F3 0%, #03A9F4 100%);
+    }
+    
+    .comparison-card.local::before {
+      background: linear-gradient(90deg, #67C23A 0%, #85CE61 100%);
+    }
+    
+    .comparison-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+      border-color: #667eea;
+    }
+    
+    .card-header {
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e4e7ed;
+    }
+    
+    .card-header h3 {
+      font-size: 24px;
+      color: #303133;
+      margin-bottom: 8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-header .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    .badge.cloud {
+      background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);
+      color: white;
+    }
+    
+    .badge.local {
+      background: linear-gradient(135deg, #67C23A 0%, #85CE61 100%);
+      color: white;
+    }
+    
+    .info-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .info-item {
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: white;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.3s;
+    }
+    
+    .info-item:hover {
+      background: #f0f2f5;
+      transform: translateX(6px);
+    }
+    
+    .info-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .info-content {
+      flex: 1;
+    }
+    
+    .info-label {
+      font-weight: 700;
+      color: #303133;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+    
+    .info-value {
+      color: #606266;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .price-highlight {
+      background: linear-gradient(135deg, #FFF3CD 0%, #FFE8A1 100%);
+      padding: 20px 24px;
+      border-radius: 12px;
+      margin-top: 20px;
+      border: 2px solid #F9D71C;
+      text-align: center;
+    }
+    
+    .price-highlight .amount {
+      font-size: 36px;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 6px;
+    }
+    
+    .price-highlight .period {
+      font-size: 14px;
+      color: #666;
+      font-weight: 600;
+    }
+    
+    .budget-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .budget-table thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .budget-table th {
+      padding: 18px 16px;
+      font-weight: 700;
+      font-size: 15px;
+      text-align: left;
+    }
+    
+    .budget-table tbody tr {
+      border-bottom: 1px solid #e4e7ed;
+      transition: all 0.3s;
+    }
+    
+    .budget-table tbody tr:hover {
+      background: #f5f7fa;
+    }
+    
+    .budget-table td {
+      padding: 16px;
+      font-size: 14px;
+    }
+    
+    .budget-table .item-name {
+      font-weight: 600;
+      color: #303133;
+    }
+    
+    .budget-table .price-col {
+      font-weight: 700;
+      color: #E65100;
+      font-size: 16px;
+    }
+    
+    .budget-table tfoot {
+      background: #f8f9fa;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .budget-table tfoot td {
+      padding: 20px 16px;
+    }
+    
+    .steps-container {
+      margin-top: 30px;
+    }
+    
+    .step-item {
+      margin-bottom: 30px;
+      padding: 24px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-radius: 12px;
+      border-left: 6px solid #667eea;
+      position: relative;
+    }
+    
+    .step-number {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .step-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #303133;
+      margin-bottom: 12px;
+      margin-top: 20px;
+    }
+    
+    .step-content {
+      color: #606266;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 20px 24px;
+      border-radius: 10px;
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 16px 0;
+      overflow-x: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .code-block .comment {
+      color: #6272a4;
+    }
+    
+    .code-block .command {
+      color: #50fa7b;
+    }
+    
+    .requirement-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .requirement-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #e4e7ed;
+    }
+    
+    .requirement-card h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #303133;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .requirement-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .requirement-card li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      color: #606266;
+      font-size: 14px;
+    }
+    
+    .requirement-card li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #67C23A;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .highlight-box {
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+      padding: 24px;
+      border-radius: 12px;
+      border-left: 6px solid #2196F3;
+      margin: 24px 0;
+    }
+    
+    .highlight-box h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1565C0;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .highlight-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .highlight-box li {
+      padding: 8px 0;
+      padding-left: 28px;
+      position: relative;
+      color: #424242;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .highlight-box li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #2196F3;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    
+    .btn-container {
+      margin-top: 40px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 16px 40px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #67C23A 0%, #85CE61 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(103, 194, 58, 0.4);
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(103, 194, 58, 0.5);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    }
+    
+    .btn-info:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(33, 150, 243, 0.5);
+    }
+    
+    @media (max-width: 1024px) {
+      .comparison-grid,
+      .requirement-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      
+      .container {
+        box-shadow: none;
+        padding: 20px;
+      }
+      
+      .nav-tabs,
+      .btn-container {
+        display: none;
+      }
+      
+      .content-section {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 页面标题 -->
+    <div class="header">
+      <h1>📊 企业内测部署完整方案</h1>
+      <p class="subtitle">云服务器 VS 本地服务器 - 预算对比 | 详细步骤 | 硬件软件网络人员要求</p>
+    </div>
+    
+    <!-- 导航标签 -->
+    <div class="nav-tabs">
+      <div class="nav-tab active" onclick="showSection('overview')">📋 方案概览</div>
+      <div class="nav-tab" onclick="showSection('budget')">💰 预算对比</div>
+      <div class="nav-tab" onclick="showSection('cloud')">☁️ 云服务器部署</div>
+      <div class="nav-tab" onclick="showSection('local')">🖥️ 本地服务器部署</div>
+      <div class="nav-tab" onclick="showSection('requirements')">📌 硬件软件要求</div>
+      <div class="nav-tab" onclick="showSection('network')">🌐 网络人员配置</div>
+    </div>
+    
+    <!-- 方案概览 -->
+    <div id="overview" class="content-section active">
+      <h2 class="section-title">📋 方案概览</h2>
+      
+      <div class="comparison-grid">
+        <!-- 云服务器方案 -->
+        <div class="comparison-card cloud">
+          <div class="card-header">
+            <h3>
+              <span>☁️</span>
+              云服务器方案
+              <span class="badge cloud">推荐</span>
+            </h3>
+          </div>
+          
+          <ul class="info-list">
+            <li class="info-item">
+              <span class="info-icon">💰</span>
+              <div class="info-content">
+                <div class="info-label">投资成本</div>
+                <div class="info-value">低（按需付费，无需大额一次性投资）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">⚡</span>
+              <div class="info-content">
+                <div class="info-label">部署速度</div>
+                <div class="info-value">极快（30分钟内完成部署）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">🌐</span>
+              <div class="info-content">
+                <div class="info-label">访问方式</div>
+                <div class="info-value">随时随地访问（支持手机/平板/电脑）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">🔧</span>
+              <div class="info-content">
+                <div class="info-label">维护难度</div>
+                <div class="info-value">简单（云服务商负责硬件维护）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">📈</span>
+              <div class="info-content">
+                <div class="info-label">扩展性</div>
+                <div class="info-value">优秀（随时升级配置，弹性扩展）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">👥</span>
+              <div class="info-content">
+                <div class="info-label">人员要求</div>
+                <div class="info-value">1人兼职即可（基础IT技能）</div>
+              </div>
+            </li>
+          </ul>
+          
+          <div class="price-highlight">
+            <div class="amount">¥2,000 - 5,000</div>
+            <div class="period">每年运营成本</div>
+          </div>
+        </div>
+        
+        <!-- 本地服务器方案 -->
+        <div class="comparison-card local">
+          <div class="card-header">
+            <h3>
+              <span>🖥️</span>
+              本地服务器方案
+              <span class="badge local">数据私有</span>
+            </h3>
+          </div>
+          
+          <ul class="info-list">
+            <li class="info-item">
+              <span class="info-icon">💰</span>
+              <div class="info-content">
+                <div class="info-label">投资成本</div>
+                <div class="info-value">高（需购买服务器硬件，一次性投资大）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">⚡</span>
+              <div class="info-content">
+                <div class="info-label">部署速度</div>
+                <div class="info-value">较慢（需采购硬件、配置网络，3-5天）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">🌐</span>
+              <div class="info-content">
+                <div class="info-label">访问方式</div>
+                <div class="info-value">企业内网（需VPN远程访问）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">🔧</span>
+              <div class="info-content">
+                <div class="info-label">维护难度</div>
+                <div class="info-value">复杂（需专人维护硬件、网络、系统）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">📈</span>
+              <div class="info-content">
+                <div class="info-label">扩展性</div>
+                <div class="info-value">受限（升级需购买新硬件）</div>
+              </div>
+            </li>
+            <li class="info-item">
+              <span class="info-icon">👥</span>
+              <div class="info-content">
+                <div class="info-label">人员要求</div>
+                <div class="info-value">1-2人专职（IT运维经验）</div>
+              </div>
+            </li>
+          </ul>
+          
+          <div class="price-highlight">
+            <div class="amount">¥15,000 - 30,000</div>
+            <div class="period">首年总成本（含硬件采购）</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="highlight-box">
+        <h4>📌 推荐选择建议</h4>
+        <ul>
+          <li><strong>选择云服务器</strong>：预算有限、快速上线、团队分散、无专业IT人员</li>
+          <li><strong>选择本地服务器</strong>：数据敏感性高、已有IT团队、需长期使用（3年以上）</li>
+          <li><strong>混合方案</strong>：测试阶段用云服务器，正式运营后迁移至本地服务器</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- 预算对比 -->
+    <div id="budget" class="content-section">
+      <h2 class="section-title">💰 预算对比详细分析</h2>
+      
+      <h3 style="margin: 30px 0 20px; color: #2196F3; font-size: 24px;">☁️ 云服务器方案预算（年度）</h3>
+      
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>项目</th>
+            <th>配置/说明</th>
+            <th>单价</th>
+            <th>数量</th>
+            <th>年度费用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="item-name">云服务器实例</td>
+            <td>2核4G，5M带宽，100G硬盘<br>（阿里云/腾讯云/华为云）</td>
+            <td class="price-col">¥150/月</td>
+            <td>1台</td>
+            <td class="price-col">¥1,800</td>
+          </tr>
+          <tr>
+            <td class="item-name">域名注册</td>
+            <td>.com/.cn 域名</td>
+            <td class="price-col">¥55/年</td>
+            <td>1个</td>
+            <td class="price-col">¥55</td>
+          </tr>
+          <tr>
+            <td class="item-name">SSL证书</td>
+            <td>免费SSL（Let's Encrypt）或付费DV证书</td>
+            <td class="price-col">¥0-300/年</td>
+            <td>1个</td>
+            <td class="price-col">¥200</td>
+          </tr>
+          <tr>
+            <td class="item-name">CDN加速</td>
+            <td>可选（提升访问速度）</td>
+            <td class="price-col">¥20/月</td>
+            <td>12月</td>
+            <td class="price-col">¥240</td>
+          </tr>
+          <tr>
+            <td class="item-name">数据库</td>
+            <td>云数据库MySQL（可选，服务器自建免费）</td>
+            <td class="price-col">¥0-50/月</td>
+            <td>12月</td>
+            <td class="price-col">¥0</td>
+          </tr>
+          <tr>
+            <td class="item-name">备份存储</td>
+            <td>OSS对象存储（数据备份）</td>
+            <td class="price-col">¥10/月</td>
+            <td>12月</td>
+            <td class="price-col">¥120</td>
+          </tr>
+          <tr>
+            <td class="item-name">流量费用</td>
+            <td>额外流量（超出5M带宽部分）</td>
+            <td class="price-col">¥30/月</td>
+            <td>12月</td>
+            <td class="price-col">¥360</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align: right;">云服务器年度总成本：</td>
+            <td class="price-col" style="font-size: 20px;">¥2,775</td>
+          </tr>
+        </tfoot>
+      </table>
+      
+      <h3 style="margin: 50px 0 20px; color: #67C23A; font-size: 24px;">🖥️ 本地服务器方案预算（首年）</h3>
+      
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>项目</th>
+            <th>配置/说明</th>
+            <th>单价</th>
+            <th>数量</th>
+            <th>费用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="item-name">服务器硬件</td>
+            <td>戴尔/联想企业级服务器<br>Intel Xeon处理器，16G内存，1TB硬盘</td>
+            <td class="price-col">¥8,000-15,000</td>
+            <td>1台</td>
+            <td class="price-col">¥12,000</td>
+          </tr>
+          <tr>
+            <td class="item-name">UPS不间断电源</td>
+            <td>1000VA，保障断电续航30分钟</td>
+            <td class="price-col">¥800-1,500</td>
+            <td>1台</td>
+            <td class="price-col">¥1,200</td>
+          </tr>
+          <tr>
+            <td class="item-name">网络设备</td>
+            <td>企业级路由器+千兆交换机</td>
+            <td class="price-col">¥800-2,000</td>
+            <td>1套</td>
+            <td class="price-col">¥1,500</td>
+          </tr>
+          <tr>
+            <td class="item-name">固定IP/专线</td>
+            <td>企业专线（如需外网访问）</td>
+            <td class="price-col">¥300-1,000/月</td>
+            <td>12月</td>
+            <td class="price-col">¥6,000</td>
+          </tr>
+          <tr>
+            <td class="item-name">操作系统</td>
+            <td>Windows Server或免费Linux</td>
+            <td class="price-col">¥0-3,000</td>
+            <td>1套</td>
+            <td class="price-col">¥0</td>
+          </tr>
+          <tr>
+            <td class="item-name">域名+SSL</td>
+            <td>同云服务器</td>
+            <td class="price-col">¥55+200</td>
+            <td>1年</td>
+            <td class="price-col">¥255</td>
+          </tr>
+          <tr>
+            <td class="item-name">电费</td>
+            <td>服务器功耗约300W，24小时运行</td>
+            <td class="price-col">¥0.6/度×7.2度/天</td>
+            <td>365天</td>
+            <td class="price-col">¥1,576</td>
+          </tr>
+          <tr>
+            <td class="item-name">机房/机柜</td>
+            <td>服务器机柜或专用机房（可选）</td>
+            <td class="price-col">¥2,000-5,000</td>
+            <td>1次</td>
+            <td class="price-col">¥3,000</td>
+          </tr>
+          <tr>
+            <td class="item-name">维护人员</td>
+            <td>IT运维人员工资（兼职或外包）</td>
+            <td class="price-col">¥2,000/月</td>
+            <td>12月</td>
+            <td class="price-col">¥24,000</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align: right;">本地服务器首年总成本：</td>
+            <td class="price-col" style="font-size: 20px;">¥49,531</td>
+          </tr>
+          <tr style="background: #fff3cd;">
+            <td colspan="4" style="text-align: right; color: #856404;">次年起年度运营成本（无硬件采购）：</td>
+            <td style="color: #E65100; font-weight: 700; font-size: 18px;">¥31,831</td>
+          </tr>
+        </tfoot>
+      </table>
+      
+      <div class="highlight-box">
+        <h4>💡 成本对比结论</h4>
+        <ul>
+          <li><strong>首年成本</strong>：云服务器 ¥2,775 vs 本地服务器 ¥49,531（<span style="color: #E65100; font-weight: 700;">云服务器节省94.4%</span>）</li>
+          <li><strong>3年总成本</strong>：云服务器 ¥8,325 vs 本地服务器 ¥113,193（<span style="color: #E65100; font-weight: 700;">云服务器节省92.6%</span>）</li>
+          <li><strong>投资回收期</strong>：本地服务器需使用<span style="color: #E65100; font-weight: 700;">6-8年</span>才能与云服务器成本持平</li>
+          <li><strong>隐性成本</strong>：本地服务器还有硬件故障、系统维护、安全补丁等额外投入</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- 云服务器部署 -->
+    <div id="cloud" class="content-section">
+      <h2 class="section-title">☁️ 云服务器部署详细步骤</h2>
+      
+      <div class="steps-container">
+        <!-- 步骤1 -->
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div class="step-title">购买云服务器</div>
+          <div class="step-content">
+            <p><strong>推荐云服务商：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>阿里云（最稳定，国内访问速度快）</li>
+              <li>腾讯云（性价比高，适合中小企业）</li>
+              <li>华为云（政企项目首选）</li>
+            </ul>
+            
+            <p style="margin-top: 16px;"><strong>配置选择：</strong></p>
+            <div class="code-block">
+<span class="comment"># 推荐配置（满足100人以内同时访问）</span>
+CPU: 2核
+内存: 4GB
+带宽: 5Mbps（按固定带宽）
+硬盘: 100GB SSD
+操作系统: Ubuntu 20.04 LTS / CentOS 7.9
+地域: 选择离用户最近的区域（如华北、华东、华南）
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>购买建议：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>新用户首选"新用户优惠"套餐，年付可享6-7折</li>
+              <li>选择"按固定带宽"而非"按流量"，成本更可控</li>
+              <li>勾选"自动续费"，避免到期忘记续费导致停机</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 步骤2 -->
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div class="step-title">配置服务器环境</div>
+          <div class="step-content">
+            <p><strong>SSH连接服务器：</strong></p>
+            <div class="code-block">
+<span class="comment"># Windows用户：下载并使用Xshell或PuTTY</span>
+<span class="comment"># Mac/Linux用户：打开终端执行以下命令</span>
+<span class="command">ssh root@你的服务器IP</span>
+<span class="comment"># 输入密码后即可登录</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>安装运行环境：</strong></p>
+            <div class="code-block">
+<span class="comment"># 1. 更新系统</span>
+<span class="command">sudo apt update && sudo apt upgrade -y</span>
+
+<span class="comment"># 2. 安装Node.js（v18 LTS）</span>
+<span class="command">curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -</span>
+<span class="command">sudo apt install -y nodejs</span>
+
+<span class="comment"># 3. 验证安装</span>
+<span class="command">node -v  # 应显示 v18.x.x</span>
+<span class="command">npm -v   # 应显示 9.x.x</span>
+
+<span class="comment"># 4. 安装PM2（进程管理工具）</span>
+<span class="command">sudo npm install -g pm2</span>
+
+<span class="comment"># 5. 安装Nginx（反向代理服务器）</span>
+<span class="command">sudo apt install -y nginx</span>
+
+<span class="comment"># 6. 安装Git</span>
+<span class="command">sudo apt install -y git</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤3 -->
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div class="step-title">部署前端和后端项目</div>
+          <div class="step-content">
+            <p><strong>克隆项目代码：</strong></p>
+            <div class="code-block">
+<span class="comment"># 创建项目目录</span>
+<span class="command">mkdir -p /var/www/aiweb</span>
+<span class="command">cd /var/www/aiweb</span>
+
+<span class="comment"># 克隆前端项目</span>
+<span class="command">git clone https://github.com/你的用户名/AIWEB1.git frontend</span>
+
+<span class="comment"># 安装依赖</span>
+<span class="command">cd frontend</span>
+<span class="command">npm install</span>
+
+<span class="comment"># 构建生产版本</span>
+<span class="command">npm run build</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>启动后端服务（如果有独立后端）：</strong></p>
+            <div class="code-block">
+<span class="comment"># 进入后端目录</span>
+<span class="command">cd /var/www/aiweb/frontend/server</span>
+
+<span class="comment"># 安装后端依赖</span>
+<span class="command">npm install</span>
+
+<span class="comment"># 使用PM2启动后端</span>
+<span class="command">pm2 start server.js --name aiweb-backend</span>
+<span class="command">pm2 save  # 保存进程列表</span>
+<span class="command">pm2 startup  # 设置开机自启</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤4 -->
+        <div class="step-item">
+          <div class="step-number">4</div>
+          <div class="step-title">配置Nginx反向代理</div>
+          <div class="step-content">
+            <p><strong>创建Nginx配置文件：</strong></p>
+            <div class="code-block">
+<span class="command">sudo nano /etc/nginx/sites-available/aiweb</span>
+
+<span class="comment"># 复制以下配置（替换your-domain.com为你的域名）</span>
+server {
+    listen 80;
+    server_name your-domain.com www.your-domain.com;
+    
+    <span class="comment"># 前端静态文件</span>
+    location / {
+        root /var/www/aiweb/frontend/dist;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+    
+    <span class="comment"># 后端API代理</span>
+    location /api {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>启用配置并重启Nginx：</strong></p>
+            <div class="code-block">
+<span class="command">sudo ln -s /etc/nginx/sites-available/aiweb /etc/nginx/sites-enabled/</span>
+<span class="command">sudo nginx -t  # 测试配置文件</span>
+<span class="command">sudo systemctl restart nginx</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤5 -->
+        <div class="step-item">
+          <div class="step-number">5</div>
+          <div class="step-title">配置域名解析</div>
+          <div class="step-content">
+            <p><strong>在域名服务商（阿里云/腾讯云）控制台：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>添加A记录：主机记录填写 <code>@</code>，记录值填写<strong>服务器公网IP</strong></li>
+              <li>添加A记录：主机记录填写 <code>www</code>，记录值填写<strong>服务器公网IP</strong></li>
+              <li>等待5-10分钟，DNS解析生效</li>
+            </ul>
+            
+            <p style="margin-top: 16px;"><strong>验证解析是否生效：</strong></p>
+            <div class="code-block">
+<span class="command">ping your-domain.com</span>
+<span class="comment"># 如果返回服务器IP，说明解析成功</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤6 -->
+        <div class="step-item">
+          <div class="step-number">6</div>
+          <div class="step-title">安装SSL证书（HTTPS）</div>
+          <div class="step-content">
+            <p><strong>使用Certbot自动安装免费SSL证书：</strong></p>
+            <div class="code-block">
+<span class="comment"># 安装Certbot</span>
+<span class="command">sudo apt install -y certbot python3-certbot-nginx</span>
+
+<span class="comment"># 自动配置SSL</span>
+<span class="command">sudo certbot --nginx -d your-domain.com -d www.your-domain.com</span>
+
+<span class="comment"># 输入邮箱，同意服务条款，选择是否接收邮件</span>
+<span class="comment"># Certbot会自动修改Nginx配置并启用HTTPS</span>
+
+<span class="comment"># 测试自动续期</span>
+<span class="command">sudo certbot renew --dry-run</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>验证HTTPS是否生效：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>访问 <code>https://your-domain.com</code></li>
+              <li>浏览器地址栏应显示🔒锁图标</li>
+              <li>HTTP会自动跳转到HTTPS</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 步骤7 -->
+        <div class="step-item">
+          <div class="step-number">7</div>
+          <div class="step-title">配置防火墙和安全组</div>
+          <div class="step-content">
+            <p><strong>在云服务器控制台配置安全组：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>开放端口：<strong>80</strong>（HTTP）、<strong>443</strong>（HTTPS）、<strong>22</strong>（SSH，仅限公司IP）</li>
+              <li>关闭其他不必要的端口（如3306 MySQL端口）</li>
+              <li>建议：SSH端口仅允许公司固定IP访问</li>
+            </ul>
+            
+            <p style="margin-top: 16px;"><strong>服务器端配置UFW防火墙：</strong></p>
+            <div class="code-block">
+<span class="command">sudo ufw allow 80/tcp</span>
+<span class="command">sudo ufw allow 443/tcp</span>
+<span class="command">sudo ufw allow 22/tcp</span>
+<span class="command">sudo ufw enable</span>
+<span class="command">sudo ufw status</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤8 -->
+        <div class="step-item">
+          <div class="step-number">8</div>
+          <div class="step-title">配置自动备份</div>
+          <div class="step-content">
+            <p><strong>创建备份脚本：</strong></p>
+            <div class="code-block">
+<span class="command">sudo nano /root/backup.sh</span>
+
+<span class="comment"># 复制以下内容</span>
+#!/bin/bash
+BACKUP_DIR="/root/backups"
+DATE=$(date +%Y%m%d)
+
+<span class="comment"># 创建备份目录</span>
+mkdir -p $BACKUP_DIR
+
+<span class="comment"># 备份项目文件</span>
+tar -czf $BACKUP_DIR/aiweb-$DATE.tar.gz /var/www/aiweb
+
+<span class="comment"># 删除7天前的备份</span>
+find $BACKUP_DIR -name "aiweb-*.tar.gz" -mtime +7 -delete
+
+<span class="comment"># 上传到云存储（可选）</span>
+<span class="comment"># ossutil cp $BACKUP_DIR/aiweb-$DATE.tar.gz oss://your-bucket/backups/</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>设置定时任务（每天凌晨2点自动备份）：</strong></p>
+            <div class="code-block">
+<span class="command">sudo chmod +x /root/backup.sh</span>
+<span class="command">sudo crontab -e</span>
+
+<span class="comment"># 添加以下行</span>
+0 2 * * * /root/backup.sh
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="highlight-box">
+        <h4>✅ 部署完成验证清单</h4>
+        <ul>
+          <li>访问 <code>https://your-domain.com</code> 可以正常打开网站</li>
+          <li>后端API接口正常响应（如 <code>/api/health</code>）</li>
+          <li>PM2进程状态正常（<code>pm2 list</code>）</li>
+          <li>SSL证书有效（浏览器显示🔒图标）</li>
+          <li>防火墙规则已配置</li>
+          <li>自动备份任务已设置</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- 本地服务器部署 -->
+    <div id="local" class="content-section">
+      <h2 class="section-title">🖥️ 本地服务器部署详细步骤</h2>
+      
+      <div class="steps-container">
+        <!-- 步骤1 -->
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div class="step-title">硬件采购与准备</div>
+          <div class="step-content">
+            <p><strong>服务器选型建议：</strong></p>
+            <table class="budget-table" style="margin: 16px 0;">
+              <thead>
+                <tr>
+                  <th>品牌</th>
+                  <th>型号</th>
+                  <th>配置</th>
+                  <th>价格</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>戴尔</td>
+                  <td>PowerEdge T140</td>
+                  <td>Xeon E-2224 / 16GB / 1TB</td>
+                  <td class="price-col">¥12,000</td>
+                </tr>
+                <tr>
+                  <td>联想</td>
+                  <td>ThinkSystem ST50</td>
+                  <td>Xeon E-2224G / 16GB / 1TB</td>
+                  <td class="price-col">¥10,500</td>
+                </tr>
+                <tr>
+                  <td>HP</td>
+                  <td>ProLiant ML30 Gen10</td>
+                  <td>Xeon E-2224 / 16GB / 1TB</td>
+                  <td class="price-col">¥13,500</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <p style="margin-top: 16px;"><strong>配套设备：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li><strong>UPS不间断电源</strong>：APC BK1000（¥1,200）或山特TG-BOX 850（¥800）</li>
+              <li><strong>网络设备</strong>：华为/H3C企业级路由器（¥800-1,500）</li>
+              <li><strong>服务器机柜</strong>（可选）：标准42U机柜（¥2,000-3,000）</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 步骤2 -->
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div class="step-title">操作系统安装</div>
+          <div class="step-content">
+            <p><strong>推荐系统：Ubuntu Server 20.04 LTS（免费）</strong></p>
+            
+            <p style="margin-top: 12px;"><strong>安装步骤：</strong></p>
+            <ol style="margin: 10px 0; padding-left: 30px;">
+              <li>下载Ubuntu Server ISO镜像：<a href="https://ubuntu.com/download/server" target="_blank" style="color: #2196F3;">https://ubuntu.com/download/server</a></li>
+              <li>制作U盘启动盘（使用Rufus工具）</li>
+              <li>插入U盘，开机进入BIOS，选择U盘启动</li>
+              <li>按照向导完成系统安装（选择"最小化安装"）</li>
+              <li>设置固定IP地址（如 <code>192.168.1.100</code>）</li>
+            </ol>
+            
+            <p style="margin-top: 16px;"><strong>网络配置：</strong></p>
+            <div class="code-block">
+<span class="comment"># 编辑网络配置文件</span>
+<span class="command">sudo nano /etc/netplan/00-installer-config.yaml</span>
+
+<span class="comment"># 配置示例（固定IP）</span>
+network:
+  version: 2
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses: [192.168.1.100/24]
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [114.114.114.114, 8.8.8.8]
+
+<span class="comment"># 应用配置</span>
+<span class="command">sudo netplan apply</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤3 -->
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div class="step-title">安装运行环境（同云服务器步骤2）</div>
+          <div class="step-content">
+            <p>参考<strong>云服务器部署 - 步骤2</strong>，安装Node.js、PM2、Nginx、Git等运行环境。</p>
+          </div>
+        </div>
+        
+        <!-- 步骤4 -->
+        <div class="step-item">
+          <div class="step-number">4</div>
+          <div class="step-title">部署项目（同云服务器步骤3）</div>
+          <div class="step-content">
+            <p>参考<strong>云服务器部署 - 步骤3</strong>，克隆项目、安装依赖、构建生产版本。</p>
+          </div>
+        </div>
+        
+        <!-- 步骤5 -->
+        <div class="step-item">
+          <div class="step-number">5</div>
+          <div class="step-title">配置内网访问</div>
+          <div class="step-content">
+            <p><strong>方案A：内网IP访问（简单）</strong></p>
+            <div class="code-block">
+<span class="comment"># 员工通过内网IP直接访问</span>
+http://192.168.1.100
+<span class="comment"># 优点：简单快速；缺点：需记住IP，无HTTPS</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>方案B：内网域名访问（推荐）</strong></p>
+            <ol style="margin: 10px 0; padding-left: 30px;">
+              <li>在路由器配置DNS，添加内网域名解析：<br>
+                <code>aiweb.local → 192.168.1.100</code>
+              </li>
+              <li>或在每台电脑的hosts文件添加：<br>
+                Windows：<code>C:\Windows\System32\drivers\etc\hosts</code><br>
+                Mac/Linux：<code>/etc/hosts</code><br>
+                添加一行：<code>192.168.1.100 aiweb.local</code>
+              </li>
+              <li>访问：<code>http://aiweb.local</code></li>
+            </ol>
+          </div>
+        </div>
+        
+        <!-- 步骤6 -->
+        <div class="step-item">
+          <div class="step-number">6</div>
+          <div class="step-title">配置外网访问（可选）</div>
+          <div class="step-content">
+            <p><strong>方案A：企业专线+固定公网IP</strong></p>
+            <ol style="margin: 10px 0; padding-left: 30px;">
+              <li>联系宽带运营商（电信/联通）申请企业专线</li>
+              <li>获得固定公网IP（如 <code>123.45.67.89</code>）</li>
+              <li>在路由器配置端口映射：<br>
+                外网 <code>80/443端口</code> → 内网服务器 <code>192.168.1.100:80/443</code>
+              </li>
+              <li>配置域名A记录指向公网IP</li>
+              <li>费用：¥300-1,000/月</li>
+            </ol>
+            
+            <p style="margin-top: 16px;"><strong>方案B：内网穿透（适合临时使用）</strong></p>
+            <div class="code-block">
+<span class="comment"># 使用frp或ngrok实现内网穿透</span>
+<span class="comment"># 免费工具：花生壳、NATAPP、Cpolar</span>
+
+<span class="comment"># 示例：使用Cpolar</span>
+<span class="command">curl -L https://www.cpolar.com/static/downloads/install-release-cpolar.sh | sudo bash</span>
+<span class="command">cpolar http 80  # 生成临时公网地址</span>
+
+<span class="comment"># 优点：成本低（免费或¥10/月）；缺点：速度慢，不稳定</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 步骤7 -->
+        <div class="step-item">
+          <div class="step-number">7</div>
+          <div class="step-title">配置防火墙和安全</div>
+          <div class="step-content">
+            <p><strong>服务器防火墙：</strong></p>
+            <div class="code-block">
+<span class="command">sudo ufw allow from 192.168.1.0/24 to any port 80</span>
+<span class="command">sudo ufw allow from 192.168.1.0/24 to any port 443</span>
+<span class="command">sudo ufw allow from 192.168.1.0/24 to any port 22</span>
+<span class="command">sudo ufw enable</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>路由器安全设置：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>修改路由器默认管理密码</li>
+              <li>禁用UPnP（避免自动端口映射）</li>
+              <li>开启MAC地址过滤（仅允许公司设备接入）</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 步骤8 -->
+        <div class="step-item">
+          <div class="step-number">8</div>
+          <div class="step-title">配置定时备份与监控</div>
+          <div class="step-content">
+            <p><strong>本地备份+云端备份双保险：</strong></p>
+            <div class="code-block">
+<span class="comment"># 参考云服务器步骤8，创建备份脚本</span>
+<span class="comment"># 额外配置：自动上传到阿里云OSS或百度网盘</span>
+
+<span class="comment"># 安装OSS命令行工具</span>
+<span class="command">wget http://gosspublic.alicdn.com/ossutil/1.7.14/ossutil64</span>
+<span class="command">chmod 755 ossutil64</span>
+<span class="command">./ossutil64 config  # 配置AccessKey</span>
+
+<span class="comment"># 在备份脚本中添加上传命令</span>
+<span class="command">./ossutil64 cp /root/backups/aiweb-$DATE.tar.gz oss://your-bucket/backups/</span>
+            </div>
+            
+            <p style="margin-top: 16px;"><strong>服务器监控（可选）：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>安装Netdata（实时监控）：<code>bash <(curl -Ss https://my-netdata.io/kickstart.sh)</code></li>
+              <li>访问：<code>http://192.168.1.100:19999</code> 查看CPU、内存、磁盘使用情况</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="highlight-box">
+        <h4>⚠️ 本地服务器注意事项</h4>
+        <ul>
+          <li><strong>UPS必备</strong>：突然断电会导致数据丢失或硬盘损坏</li>
+          <li><strong>散热通风</strong>：服务器需放置在通风良好的机房或机柜中</li>
+          <li><strong>定期维护</strong>：每月检查硬盘健康（<code>sudo smartctl -a /dev/sda</code>）</li>
+          <li><strong>系统更新</strong>：每月执行一次系统更新（<code>sudo apt update && sudo apt upgrade</code>）</li>
+          <li><strong>数据安全</strong>：务必配置异地备份（云端存储），避免单点故障</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- 硬件软件要求 -->
+    <div id="requirements" class="content-section">
+      <h2 class="section-title">📌 硬件软件网络要求对比</h2>
+      
+      <div class="requirement-grid">
+        <!-- 云服务器要求 -->
+        <div class="requirement-card">
+          <h4>☁️ 云服务器硬件要求</h4>
+          <ul>
+            <li>无需自购硬件</li>
+            <li>云端虚拟化资源</li>
+            <li>按需弹性扩展</li>
+            <li>云服务商负责维护</li>
+          </ul>
+        </div>
+        
+        <!-- 本地服务器要求 -->
+        <div class="requirement-card">
+          <h4>🖥️ 本地服务器硬件要求</h4>
+          <ul>
+            <li>企业级服务器1台（¥10,000+）</li>
+            <li>UPS不间断电源（¥800-1,500）</li>
+            <li>企业级路由器（¥800-2,000）</li>
+            <li>千兆交换机（¥300-800）</li>
+            <li>服务器机柜（可选，¥2,000+）</li>
+          </ul>
+        </div>
+        
+        <!-- 云服务器软件 -->
+        <div class="requirement-card">
+          <h4>☁️ 云服务器软件要求</h4>
+          <ul>
+            <li>操作系统：Ubuntu 20.04 LTS（免费）</li>
+            <li>Node.js v18 LTS（免费）</li>
+            <li>Nginx（免费）</li>
+            <li>PM2进程管理（免费）</li>
+            <li>Let's Encrypt SSL证书（免费）</li>
+            <li>Git版本控制（免费）</li>
+          </ul>
+        </div>
+        
+        <!-- 本地服务器软件 -->
+        <div class="requirement-card">
+          <h4>🖥️ 本地服务器软件要求</h4>
+          <ul>
+            <li>操作系统：Ubuntu/Windows Server</li>
+            <li>Node.js v18 LTS（免费）</li>
+            <li>Nginx（免费）</li>
+            <li>PM2进程管理（免费）</li>
+            <li>SSL证书（内网可选）</li>
+            <li>杀毒软件（推荐，¥500/年）</li>
+            <li>备份软件（可选，¥300/年）</li>
+          </ul>
+        </div>
+      </div>
+      
+      <h3 style="margin: 40px 0 20px; color: #303133; font-size: 22px;">🌐 网络带宽要求</h3>
+      
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>使用场景</th>
+            <th>云服务器带宽</th>
+            <th>本地服务器带宽</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10人内部测试</td>
+            <td class="price-col">3-5 Mbps</td>
+            <td class="price-col">千兆局域网即可</td>
+            <td>满足基本访问需求</td>
+          </tr>
+          <tr>
+            <td>50人同时在线</td>
+            <td class="price-col">5-8 Mbps</td>
+            <td class="price-col">千兆局域网 + 100M专线（如需外网）</td>
+            <td>较流畅访问体验</td>
+          </tr>
+          <tr>
+            <td>100人高并发</td>
+            <td class="price-col">10+ Mbps</td>
+            <td class="price-col">千兆局域网 + 200M专线（如需外网）</td>
+            <td>支持视频、大文件传输</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <h3 style="margin: 40px 0 20px; color: #303133; font-size: 22px;">💾 存储空间要求</h3>
+      
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>数据类型</th>
+            <th>预估空间</th>
+            <th>增长速率</th>
+            <th>建议配置</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>系统+应用程序</td>
+            <td>20-30 GB</td>
+            <td>缓慢</td>
+            <td>SSD硬盘</td>
+          </tr>
+          <tr>
+            <td>数据库（SQLite/MySQL）</td>
+            <td>5-20 GB</td>
+            <td>每月1-2GB</td>
+            <td>SSD硬盘</td>
+          </tr>
+          <tr>
+            <td>用户上传文件（图片/文档）</td>
+            <td>10-50 GB</td>
+            <td>每月5-10GB</td>
+            <td>SSD或HDD</td>
+          </tr>
+          <tr>
+            <td>日志文件</td>
+            <td>2-10 GB</td>
+            <td>每月2-5GB</td>
+            <td>定期清理</td>
+          </tr>
+          <tr>
+            <td>备份数据</td>
+            <td>50-200 GB</td>
+            <td>按备份策略</td>
+            <td>云存储或异地HDD</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="text-align: right;">推荐配置：</td>
+            <td style="font-weight: 700; color: #2196F3;">云服务器 100GB SSD / 本地服务器 500GB-1TB</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    
+    <!-- 网络人员配置 -->
+    <div id="network" class="content-section">
+      <h2 class="section-title">🌐 网络配置与人员要求</h2>
+      
+      <h3 style="margin: 30px 0 20px; color: #2196F3; font-size: 24px;">👥 人员配置要求</h3>
+      
+      <div class="requirement-grid">
+        <!-- 云服务器人员 -->
+        <div class="requirement-card">
+          <h4>☁️ 云服务器人员配置</h4>
+          <ul>
+            <li><strong>数量</strong>：1人兼职即可</li>
+            <li><strong>岗位</strong>：IT运维 / 技术支持</li>
+            <li><strong>技能要求</strong>：
+              <ul style="margin-top: 8px; padding-left: 20px;">
+                <li>基础Linux命令操作</li>
+                <li>熟悉SSH远程连接</li>
+                <li>了解Nginx/Node.js基本配置</li>
+                <li>会使用Git拉取代码</li>
+              </ul>
+            </li>
+            <li><strong>工作量</strong>：初期5小时，日常1小时/周</li>
+            <li><strong>薪资预算</strong>：¥2,000/月（兼职）</li>
+          </ul>
+        </div>
+        
+        <!-- 本地服务器人员 -->
+        <div class="requirement-card">
+          <h4>🖥️ 本地服务器人员配置</h4>
+          <ul>
+            <li><strong>数量</strong>：1-2人专职</li>
+            <li><strong>岗位</strong>：运维工程师 + 网络工程师</li>
+            <li><strong>技能要求</strong>：
+              <ul style="margin-top: 8px; padding-left: 20px;">
+                <li>Linux系统管理经验</li>
+                <li>服务器硬件故障排查</li>
+                <li>网络设备配置（路由器/交换机）</li>
+                <li>数据库管理与备份</li>
+                <li>安全防护与应急响应</li>
+              </ul>
+            </li>
+            <li><strong>工作量</strong>：初期40小时，日常8小时/周</li>
+            <li><strong>薪资预算</strong>：¥8,000-15,000/月（专职）</li>
+          </ul>
+        </div>
+      </div>
+      
+      <h3 style="margin: 40px 0 20px; color: #67C23A; font-size: 24px;">🔧 日常运维工作对比</h3>
+      
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>运维任务</th>
+            <th>云服务器</th>
+            <th>本地服务器</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="item-name">硬件故障排查</td>
+            <td>❌ 云服务商负责</td>
+            <td>✅ 需自行处理（硬盘/内存/电源故障）</td>
+          </tr>
+          <tr>
+            <td class="item-name">系统更新</td>
+            <td>✅ 每月1次（30分钟）</td>
+            <td>✅ 每月1次（1小时）</td>
+          </tr>
+          <tr>
+            <td class="item-name">安全补丁</td>
+            <td>✅ 自动推送，手动确认</td>
+            <td>✅ 需手动检查并安装</td>
+          </tr>
+          <tr>
+            <td class="item-name">数据备份</td>
+            <td>✅ 自动备份（脚本）</td>
+            <td>✅ 自动备份 + 手动异地备份</td>
+          </tr>
+          <tr>
+            <td class="item-name">性能监控</td>
+            <td>✅ 云监控平台（自动告警）</td>
+            <td>✅ 需部署监控系统（Netdata/Zabbix）</td>
+          </tr>
+          <tr>
+            <td class="item-name">网络故障</td>
+            <td>❌ 云服务商负责</td>
+            <td>✅ 需排查路由器/交换机/专线</td>
+          </tr>
+          <tr>
+            <td class="item-name">扩容升级</td>
+            <td>✅ 云控制台操作（5分钟）</td>
+            <td>✅ 需采购硬件并安装（1-3天）</td>
+          </tr>
+          <tr>
+            <td class="item-name">安全防护</td>
+            <td>✅ DDoS防护 + Web防火墙（云端）</td>
+            <td>✅ 需配置防火墙 + 杀毒软件</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <h3 style="margin: 40px 0 20px; color: #E6A23C; font-size: 24px;">📚 技术培训与支持</h3>
+      
+      <div class="requirement-grid">
+        <!-- 云服务器培训 -->
+        <div class="requirement-card">
+          <h4>☁️ 云服务器技术支持</h4>
+          <ul>
+            <li>阿里云/腾讯云官方文档（中文）</li>
+            <li>7×24小时工单支持</li>
+            <li>免费在线培训课程</li>
+            <li>社区论坛问答</li>
+            <li>电话技术支持（付费）</li>
+          </ul>
+        </div>
+        
+        <!-- 本地服务器培训 -->
+        <div class="requirement-card">
+          <h4>🖥️ 本地服务器技术支持</h4>
+          <ul>
+            <li>服务器厂商技术支持（硬件）</li>
+            <li>开源社区（Linux/Nginx/Node.js）</li>
+            <li>需购买技术支持服务（¥3,000/年）</li>
+            <li>聘请外包运维团队（¥500-1,000/次）</li>
+            <li>自建知识库与文档</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="highlight-box">
+        <h4>💡 人员成本对比（3年）</h4>
+        <ul>
+          <li><strong>云服务器</strong>：兼职运维 ¥2,000/月 × 36月 = <span style="color: #E65100; font-weight: 700;">¥72,000</span></li>
+          <li><strong>本地服务器</strong>：专职运维 ¥10,000/月 × 36月 = <span style="color: #E65100; font-weight: 700;">¥360,000</span></li>
+          <li><strong>节省成本</strong>：云服务器节省 <span style="color: #67C23A; font-weight: 700;">¥288,000</span>（80%）</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- 底部按钮 -->
+    <div class="btn-container">
+      <button class="btn btn-primary" onclick="window.print()">
+        <span>🖨️</span>
+        打印完整方案
+      </button>
+      <a href="http://localhost:3002" class="btn btn-success" target="_blank">
+        <span>🚀</span>
+        访问AIWEB系统
+      </a>
+      <button class="btn btn-info" onclick="downloadPlan()">
+        <span>💾</span>
+        下载方案PDF
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // 标签页切换
+    function showSection(sectionId) {
+      // 隐藏所有section
+      const sections = document.querySelectorAll('.content-section');
+      sections.forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      // 显示目标section
+      document.getElementById(sectionId).classList.add('active');
+      
+      // 更新tab状态
+      const tabs = document.querySelectorAll('.nav-tab');
+      tabs.forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // 滚动到顶部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // 下载方案
+    function downloadPlan() {
+      alert('💡 提示：\n\n1. 点击"打印完整方案"按钮\n2. 选择"另存为PDF"\n3. 即可保存完整部署方案文档\n\n或使用浏览器打印功能（Ctrl+P）直接保存为PDF。');
+    }
+    
+    // 页面加载完成后的提示
+    window.onload = function() {
+      console.log('%c📊 企业内测部署完整方案已加载', 'color: #667eea; font-size: 16px; font-weight: bold;');
+      console.log('%c💡 点击顶部标签切换不同章节查看详细内容', 'color: #67C23A; font-size: 14px;');
+    };
+  </script>
+</body>
+</html>

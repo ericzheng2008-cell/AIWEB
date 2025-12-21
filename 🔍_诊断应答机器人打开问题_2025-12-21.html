@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 应答机器人诊断工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 { font-size: 28px; margin-bottom: 10px; }
+    .content { padding: 30px; }
+    .diagnostic-box {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 5px solid #667eea;
+    }
+    .diagnostic-box h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    .check-item {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .check-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+    }
+    .code-block {
+      background: #282c34;
+      color: #abb2bf;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin: 5px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+      color: white;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+      color: white;
+    }
+    .result {
+      background: #e7f5ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border-left: 4px solid #1890ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔍 应答机器人诊断工具</h1>
+      <p>诊断点击无响应问题 | 2025-12-21</p>
+    </div>
+    
+    <div class="content">
+      <!-- 问题描述 -->
+      <div class="diagnostic-box">
+        <h3>❌ 当前问题</h3>
+        <p><strong>现象</strong>：点击右下角AI人形助手图标后，对话窗口没有打开</p>
+        <p style="margin-top: 10px;"><strong>影响</strong>：用户无法使用应答机器人功能</p>
+      </div>
+      
+      <!-- 诊断步骤 -->
+      <div class="diagnostic-box">
+        <h3>🔬 诊断步骤</h3>
+        
+        <div class="check-item">
+          <input type="checkbox" id="check1">
+          <label for="check1">
+            <strong>步骤1</strong>：打开浏览器控制台（F12），查看是否有JavaScript错误
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="check2">
+          <label for="check2">
+            <strong>步骤2</strong>：检查AI助手按钮是否可见（右下角）
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="check3">
+          <label for="check3">
+            <strong>步骤3</strong>：点击AI助手按钮，观察控制台是否有错误输出
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="check4">
+          <label for="check4">
+            <strong>步骤4</strong>：检查chatStore.chatVisible状态
+          </label>
+        </div>
+      </div>
+      
+      <!-- 可能的原因 -->
+      <div class="diagnostic-box">
+        <h3>🔍 可能的原因</h3>
+        
+        <p><strong>原因1：拖拽阻止了点击事件</strong></p>
+        <div class="code-block">
+@click="!isButtonDragging && toggleChat()"
+// 如果isButtonDragging为true，toggleChat不会执行
+        </div>
+        
+        <p style="margin-top: 15px;"><strong>原因2：chatVisible状态未正确切换</strong></p>
+        <div class="code-block">
+toggleChat() {
+  this.chatVisible = !this.chatVisible
+}
+// 检查状态是否正确更新
+        </div>
+        
+        <p style="margin-top: 15px;"><strong>原因3：窗口被遮罩层阻挡</strong></p>
+        <div class="code-block">
+v-if="chatStore.chatVisible && !isMinimized"
+// 确认条件是否满足
+        </div>
+      </div>
+      
+      <!-- 修复方案 -->
+      <div class="diagnostic-box">
+        <h3>✅ 修复方案</h3>
+        
+        <p><strong>方案1：优化拖拽逻辑</strong></p>
+        <div class="code-block">
+// 修改startButtonDrag，只在长按时才进入拖拽模式
+let dragTimer = null
+const startButtonDrag = (e) => {
+  dragTimer = setTimeout(() => {
+    isButtonDragging.value = true
+    // 拖拽逻辑
+  }, 200) // 200ms后才进入拖拽模式
+}
+
+const endButtonDrag = () => {
+  clearTimeout(dragTimer)
+  isButtonDragging.value = false
+}
+        </div>
+        
+        <p style="margin-top: 15px;"><strong>方案2：添加调试日志</strong></p>
+        <div class="code-block">
+const toggleChat = () => {
+  console.log('toggleChat called, current visible:', chatStore.chatVisible)
+  chatStore.toggleChat()
+  console.log('after toggle, visible:', chatStore.chatVisible)
+  hasUnread.value = false
+  isMinimized.value = false
+  if (chatStore.chatVisible) {
+    nextTick(() => {
+      scrollToBottom()
+    })
+  }
+}
+        </div>
+        
+        <p style="margin-top: 15px;"><strong>方案3：确保store初始化</strong></p>
+        <div class="code-block">
+// 在aiChat.js中确认初始值
+state: () => ({
+  chatVisible: false, // 确保初始为false
+  messages: [],
+  isTyping: false
+})
+        </div>
+      </div>
+      
+      <!-- 一键修复 -->
+      <div class="diagnostic-box">
+        <h3>🔧 一键应用修复</h3>
+        <p>点击下方按钮，系统会自动应用优化方案</p>
+        <button class="btn btn-success" onclick="copyFixCode()">📋 复制修复代码</button>
+        <button class="btn btn-primary" onclick="openDevTools()">🔍 打开开发者工具</button>
+        <button class="btn btn-danger" onclick="clearCache()">🗑️ 清除缓存并刷新</button>
+      </div>
+      
+      <!-- 测试步骤 -->
+      <div class="diagnostic-box">
+        <h3>🧪 测试步骤</h3>
+        <ol style="margin-left: 20px; line-height: 1.8;">
+          <li>应用修复代码后，重启开发服务器</li>
+          <li>访问 http://localhost:3002</li>
+          <li>打开浏览器控制台（F12）</li>
+          <li>点击右下角AI助手图标</li>
+          <li>观察控制台日志输出</li>
+          <li>确认对话窗口是否打开</li>
+        </ol>
+      </div>
+      
+      <!-- 结果显示 -->
+      <div id="resultBox" style="display: none;" class="result">
+        <strong>✅ 修复代码已复制到剪贴板</strong>
+        <p style="margin-top: 10px;">请在IDE中应用这些修复，然后重启服务器测试。</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function copyFixCode() {
+      const code = `// 🔧 修复1：优化拖拽逻辑（在AiChat.vue中）
+let dragTimer = null
+
+const startButtonDrag = (e) => {
+  e.stopPropagation()
+  
+  dragTimer = setTimeout(() => {
+    isButtonDragging.value = true
+    // 原有拖拽逻辑
+  }, 200) // 200ms后才进入拖拽模式
+}
+
+const endButtonDrag = () => {
+  clearTimeout(dragTimer)
+  isButtonDragging.value = false
+}
+
+// 🔧 修复2：添加调试日志
+const toggleChat = () => {
+  console.log('🔍 toggleChat called, current visible:', chatStore.chatVisible)
+  chatStore.toggleChat()
+  console.log('✅ after toggle, visible:', chatStore.chatVisible)
+  hasUnread.value = false
+  isMinimized.value = false
+  if (chatStore.chatVisible) {
+    nextTick(() => {
+      scrollToBottom()
+    })
+  }
+}`;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        document.getElementById('resultBox').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('resultBox').style.display = 'none';
+        }, 5000);
+      });
+    }
+    
+    function openDevTools() {
+      alert('请按 F12 键打开浏览器开发者工具，然后：\n\n1. 切换到 Console 标签\n2. 点击 AI 助手图标\n3. 查看控制台输出\n4. 检查是否有错误信息');
+    }
+    
+    function clearCache() {
+      if (confirm('确定要清除缓存并刷新页面吗？\n这将重新加载所有资源。')) {
+        location.reload(true);
+      }
+    }
+  </script>
+</body>
+</html>

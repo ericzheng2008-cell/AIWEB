@@ -20,7 +20,7 @@
         </p>
         <div class="hero-stats" data-aos="fade-up" data-aos-delay="400">
           <div class="stat-box">
-            <div class="stat-number">8+</div>
+            <div class="stat-number">10+</div>
             <div class="stat-text">智能体</div>
           </div>
           <div class="stat-box">
@@ -59,6 +59,8 @@
             <el-radio-button label="tool">工具选型</el-radio-button>
             <el-radio-button label="equipment">设备管理</el-radio-button>
             <el-radio-button label="analysis">数据分析</el-radio-button>
+            <el-radio-button label="marketing">营销管理</el-radio-button>
+            <el-radio-button label="manufacturing">智能制造</el-radio-button>
           </el-radio-group>
           <el-input 
             v-model="searchKeyword" 
@@ -451,6 +453,122 @@
               <div class="stat-item">
                 <div class="stat-value">95%</div>
                 <div class="stat-label">按时完成率</div>
+              </div>
+            </div>
+            <el-button type="primary" size="large" class="action-btn">
+              进入系统
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </div>
+
+          <!-- 明升AICRM智能助手 -->
+          <div 
+            class="agent-card highlight" 
+            @click="goToAgent('/mingsheng-aicrm')"
+            @mouseenter="onCardHover($event)"
+            @mouseleave="onCardLeave($event)"
+            data-aos="fade-up"
+            data-aos-delay="1000"
+            data-category="marketing">
+            <div class="badge badge-hot">
+              <el-icon><Star /></el-icon>
+              AI营销
+            </div>
+            <div class="card-glow"></div>
+            <div class="agent-icon">
+              <el-icon :size="64"><User /></el-icon>
+            </div>
+            <el-tooltip content="查看使用教程" placement="top">
+              <el-button 
+                class="help-btn" 
+                circle 
+                size="small" 
+                @click.stop="showHelp('mingsheng-aicrm')">
+                <el-icon><QuestionFilled /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <h2>明升AICRM智能助手</h2>
+            <p class="agent-desc">轻量化智能客户关系管理系统，AI驱动商机管理、客户360°画像、半自动执行</p>
+            <div class="agent-features">
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>客户管理</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>AI预测</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>商机跟进</span>
+              </div>
+            </div>
+            <div class="agent-stats">
+              <div class="stat-item">
+                <div class="stat-value">360°</div>
+                <div class="stat-label">客户画像</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">AI驱动</div>
+                <div class="stat-label">智能预测</div>
+              </div>
+            </div>
+            <el-button type="primary" size="large" class="action-btn">
+              进入系统
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </div>
+
+          <!-- 明升AIMES助手 -->
+          <div 
+            class="agent-card highlight" 
+            @click="goToAgent('/mingsheng-aicrm?tab=aimes')"
+            @mouseenter="onCardHover($event)"
+            @mouseleave="onCardLeave($event)"
+            data-aos="fade-up"
+            data-aos-delay="1100"
+            data-category="manufacturing">
+            <div class="badge badge-new">
+              <el-icon><Star /></el-icon>
+              新功能
+            </div>
+            <div class="card-glow"></div>
+            <div class="agent-icon">
+              <el-icon :size="64"><Setting /></el-icon>
+            </div>
+            <el-tooltip content="查看使用教程" placement="top">
+              <el-button 
+                class="help-btn" 
+                circle 
+                size="small" 
+                @click.stop="showHelp('aimes')">
+                <el-icon><QuestionFilled /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <h2>明升AIMES助手</h2>
+            <p class="agent-desc">AI MES系统 - 生产现场感知、智能排产、质量控制、设备智能运维</p>
+            <div class="agent-features">
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>智能制造</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>MES系统</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>AI排产</span>
+              </div>
+            </div>
+            <div class="agent-stats">
+              <div class="stat-item">
+                <div class="stat-value">实时</div>
+                <div class="stat-label">生产感知</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">智能</div>
+                <div class="stat-label">质量控制</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">

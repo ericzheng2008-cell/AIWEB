@@ -41,6 +41,14 @@
         </div>
         <div class="featured-products-grid">
           <div v-for="product in featuredProducts" :key="product.id" class="featured-product-card">
+            <!-- 返回主页按钮 -->
+            <div class="product-back-home">
+              <el-button type="info" size="small" plain @click="backToHome">
+                <el-icon><HomeFilled /></el-icon>
+                返回主页
+              </el-button>
+            </div>
+            
             <!-- 视频媒体 (兼容旧格式video和新格式video-file/video-link) -->
             <div v-if="isVideoType(product.mediaType)" class="product-media">
               <!-- 视频链接: YouTube, Vimeo等 -->
@@ -132,125 +140,499 @@
       </div>
     </section>
 
-    <!-- 智能体板块 -->
-    <section class="section ai-agents-section">
+    <!-- 🆕 核心智能体双卡片并排布局 -->
+    <section class="section core-agents-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">明升企业智能体 / MingSheng AI Agents</h2>
-          <p class="section-desc">基于人工智能的专业工业解决方案 | 自主学习·主动思考·持续进化</p>
+          <h2 class="section-title">🌟 核心智能体平台 / Core AI Platforms</h2>
+          <p class="section-desc">企业级智能体与国际营销中台双引擎驱动</p>
         </div>
-        <div class="agents-grid">
-          <div v-for="agent in aiAgents" :key="agent.id" 
-               class="agent-card"
-               :class="{ 'agent-card-new': agent.badge }"
-               @click="goToAgent(agent)">
-            <el-tag v-if="agent.badge" type="danger" size="small" class="agent-badge">{{ agent.badge }}</el-tag>
-            <div class="agent-icon">
-              <el-icon><component :is="agent.icon" /></el-icon>
+        
+        <div class="core-agents-grid">
+          <!-- 左侧: 明升企业智能体 -->
+          <div class="core-agent-card mingsheng-agent" @click="scrollToAgents">
+            <div class="card-corner-badge">企业智能体</div>
+            <!-- 返回主页按钮 -->
+            <div class="card-back-home">
+              <el-button type="info" size="small" plain @click.stop="backToHome">
+                <el-icon><HomeFilled /></el-icon>
+                返回主页
+              </el-button>
             </div>
-            <h3>{{ agent.name }}</h3>
-            <p>{{ agent.description }}</p>
-            <div class="agent-tags">
-              <el-tag v-for="tag in agent.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
+            
+            <div class="agent-card-header">
+              <div class="agent-icon">
+                <el-icon :size="56"><Cpu /></el-icon>
+              </div>
+              <div class="agent-title-group">
+                <h3>明升企业智能体</h3>
+                <p class="agent-subtitle">MingSheng AI Agents</p>
+                <div class="agent-stats-mini">
+                  <span class="stat-badge">25个智能体</span>
+                  <span class="stat-badge">7大领域</span>
+                </div>
+              </div>
             </div>
+            
+            <div class="agent-highlights">
+              <div class="highlight-row">
+                <el-icon color="#409EFF"><Tools /></el-icon>
+                <span>工业制造智能体群</span>
+              </div>
+              <div class="highlight-row">
+                <el-icon color="#67C23A"><Management /></el-icon>
+                <span>设备全生命周期管理</span>
+              </div>
+              <div class="highlight-row">
+                <el-icon color="#E6A23C"><DataLine /></el-icon>
+                <span>拧紧数据智能分析</span>
+              </div>
+              <div class="highlight-row">
+                <el-icon color="#F56C6C"><Connection /></el-icon>
+                <span>工作流自动编排</span>
+              </div>
+            </div>
+            
+            <div class="agent-features-compact">
+              <div class="compact-feature">
+                <span class="feature-icon">🎯</span>
+                <span class="feature-text">AI工单管理</span>
+              </div>
+              <div class="compact-feature">
+                <span class="feature-icon">📊</span>
+                <span class="feature-text">智能数据分析</span>
+              </div>
+              <div class="compact-feature">
+                <span class="feature-icon">🔧</span>
+                <span class="feature-text">工艺优化建议</span>
+              </div>
+              <div class="compact-feature">
+                <span class="feature-icon">📈</span>
+                <span class="feature-text">性能实时监控</span>
+              </div>
+            </div>
+            
+            <el-button type="primary" size="large" class="agent-card-action" @click.stop="scrollToAgents">
+              <el-icon><Collection /></el-icon>
+              查看全部智能体
+            </el-button>
+          </div>
+          
+          <!-- 右侧: AI国际营销中台 -->
+          <div class="core-agent-card marketing-hub" @click="$router.push('/ai-product-selector')">
+            <div class="card-corner-badge marketing">国际营销</div>
+            <!-- 返回主页按钮 -->
+            <div class="card-back-home">
+              <el-button type="info" size="small" plain @click.stop="backToHome">
+                <el-icon><HomeFilled /></el-icon>
+                返回主页
+              </el-button>
+            </div>
+            
+            <div class="agent-card-header">
+              <div class="agent-icon marketing">
+                <el-icon :size="56"><TrendCharts /></el-icon>
+              </div>
+              <div class="agent-title-group">
+                <h3>AI国际营销中台</h3>
+                <p class="agent-subtitle">AI Marketing Hub</p>
+                <div class="agent-stats-mini">
+                  <span class="stat-badge success">7种语言</span>
+                  <span class="stat-badge success">ROI 385% <span>↑</span></span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="agent-highlights">
+              <div class="highlight-row">
+                <el-icon color="#409EFF"><Search /></el-icon>
+                <span>AI产品智能选型</span>
+              </div>
+              <div class="highlight-row">
+                <el-icon color="#67C23A"><Message /></el-icon>
+                <span>多语言邮件营销</span>
+              </div>
+              <div class="highlight-row">
+                <el-icon color="#E6A23C"><DataAnalysis /></el-icon>
+                <span>客户行为分析</span>
+              </div>
+              <div class="highlight-row">
+                <el-icon color="#F56C6C"><MagicStick /></el-icon>
+                <span>AI营销预测</span>
+              </div>
+            </div>
+            
+            <div class="marketing-metrics-compact">
+              <div class="metric-compact primary-metric">
+                <div class="metric-number">385% <span>↑</span></div>
+                <div class="metric-label">营销ROI提升</div>
+              </div>
+              <div class="metric-compact">
+                <div class="metric-number">20+</div>
+                <div class="metric-label">系统集成</div>
+              </div>
+              <div class="metric-compact">
+                <div class="metric-number">7</div>
+                <div class="metric-label">全球语言</div>
+              </div>
+            </div>
+            
+            <div class="success-case-mini">
+              <el-icon color="#67C23A"><Trophy /></el-icon>
+              <span class="case-text">某汽车企业：线索转化 <strong>+68%</strong>，订单增长 <strong>2.3倍</strong></span>
+            </div>
+            
+            <el-button type="success" size="large" class="agent-card-action" @click.stop="$router.push('/ai-product-selector')">
+              <el-icon><Promotion /></el-icon>
+              立即体验营销中台
+            </el-button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- AI营销中台板块 - 集成为单个卡片 -->
-    <section class="section marketing-hub-section">
+    <!-- 🆕 AI工作平台 - 单卡片集成 -->
+    <section class="section workflow-platforms-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">🚀 AI国际营销中台 / AI Marketing Hub</h2>
-          <p class="section-desc">智能化、自动化、数据化的完整营销解决方案</p>
+          <h2 class="section-title">🤖 AI工作平台 / AI Work Platforms</h2>
+          <p class="section-desc">连接顶尖AI工作平台，一站式管理企业智能化流程</p>
         </div>
         
-        <!-- 单个卡片容器 -->
-        <div class="marketing-hub-card" @click="$router.push('/ai-product-selector')">
+        <!-- 单个大卡片容器 -->
+        <div class="workflow-hub-card" @click="showWorkflowPlatforms = true">
           <div class="hub-card-header">
             <div class="hub-icon">
-              <el-icon :size="40"><TrendCharts /></el-icon>
+              <el-icon :size="40"><Operation /></el-icon>
             </div>
             <div class="hub-title">
-              <h3>AI国际营销中台</h3>
-              <p>7种语言 · 20个系统 · ROI提升385%</p>
+              <h3>AI工作平台集</h3>
+              <p>30个顶尖平台 · 企业级流程 · 智能编排 · 一站式管理</p>
             </div>
           </div>
           
           <div class="hub-card-stats">
             <div class="mini-stat">
-              <span class="stat-icon">📊</span>
-              <span class="stat-text">8,830行代码</span>
+              <span class="stat-icon">🤖</span>
+              <span class="stat-text">30个平台</span>
             </div>
             <div class="mini-stat">
-              <span class="stat-icon">🎯</span>
-              <span class="stat-text">20个系统</span>
+              <span class="stat-icon">🏢</span>
+              <span class="stat-text">企业级</span>
             </div>
             <div class="mini-stat">
-              <span class="stat-icon">🌍</span>
-              <span class="stat-text">7种语言</span>
+              <span class="stat-icon">🌐</span>
+              <span class="stat-text">全球精选</span>
             </div>
             <div class="mini-stat">
-              <span class="stat-icon">💰</span>
-              <span class="stat-text">385% ROI</span>
+              <span class="stat-icon">⚡</span>
+              <span class="stat-text">智能编排</span>
             </div>
           </div>
           
           <div class="hub-card-features">
-            <div class="feature-tag">🎯 AI产品选型</div>
-            <div class="feature-tag">📚 资源中心</div>
-            <div class="feature-tag">📧 邮件营销</div>
-            <div class="feature-tag">🔄 线索孵化</div>
-            <div class="feature-tag">📊 数据分析</div>
-            <div class="feature-tag">🔮 AI预测</div>
+            <div class="feature-tag">🛠️ AI工具集</div>
+            <div class="feature-tag">🏢 UniEAP Workflow</div>
+            <div class="feature-tag">⭐ 金蝶云·星空</div>
+            <div class="feature-tag">🚀 Coze</div>
+            <div class="feature-tag">🔧 Dify</div>
+            <div class="feature-tag">📱 钉钉智能伙伴</div>
+            <div class="feature-tag">🚀 飞书Lark</div>
+            <div class="feature-tag">🧩 腾讯元器</div>
+            <div class="feature-tag">... +22个平台</div>
           </div>
           
           <div class="hub-card-footer">
-            <el-button type="primary" size="large" @click.stop="$router.push('/ai-product-selector')">
-              <el-icon><Promotion /></el-icon>
-              立即体验
+            <el-button type="primary" size="large" @click.stop="showWorkflowPlatforms = true">
+              <el-icon><Connection /></el-icon>
+              查看所有平台
             </el-button>
-            <el-button size="large" plain @click.stop="openDemoPage">
+            <el-button size="large" plain @click.stop="() => {}">
               <el-icon><Document /></el-icon>
-              查看演示
+              了解更多
             </el-button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 🆕 AI工作流平台卡片 -->
-    <section class="section workflow-platforms-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">🤖 AI工作流平台 / AI Workflow Platforms</h2>
-          <p class="section-desc">连接顶尖AI工作流平台，一站式管理企业智能化流程</p>
+    <!-- 🆕 制造企业AI工具平台弹窗 -->
+    <el-dialog
+      v-model="showWorkflowPlatforms"
+      title="🏭 制造企业AI工具全景图（100+ 工具 · 9大场景）"
+      width="95%"
+      :close-on-click-modal="true"
+      top="3vh"
+      class="manufacturing-tools-dialog">
+      
+      <!-- 返回主页按钮 -->
+      <div class="dialog-back-home">
+        <el-button type="primary" size="small" @click="backToHome">
+          <el-icon><HomeFilled /></el-icon>
+          返回主页
+        </el-button>
+      </div>
+      
+      <!-- 工具平台容器 -->
+      <div class="manufacturing-tools-container">
+        
+        <!-- 顶部导航栏：搜索 + 筛选 -->
+        <div class="tools-toolbar">
+          <div class="search-section">
+            <el-input 
+              v-model="toolSearchKeyword"
+              placeholder="搜索工具名称、用途、标签..."
+              :prefix-icon="Search"
+              clearable
+              size="large"
+              style="width: 400px" />
+          </div>
+          
+          <div class="filter-section">
+            <el-select v-model="selectedCategory" placeholder="工作场景" size="large" style="width: 180px">
+              <el-option label="全部场景" value="all" />
+              <el-option v-for="cat in platformCategories" :key="cat.id" 
+                :label="cat.name" :value="cat.id" />
+            </el-select>
+            
+            <el-select v-model="selectedCostLevel" placeholder="成本等级" size="large" style="width: 150px">
+              <el-option label="全部等级" value="all" />
+              <el-option label="低成本" value="低" />
+              <el-option label="中等成本" value="中" />
+              <el-option label="高成本" value="高" />
+            </el-select>
+            
+            <el-select v-model="selectedPrivatization" placeholder="私有化" size="large" style="width: 150px">
+              <el-option label="全部" value="all" />
+              <el-option label="支持私有化" value="yes" />
+              <el-option label="仅云端" value="no" />
+            </el-select>
+          </div>
         </div>
         
-        <div class="workflow-platforms-grid">
-          <div v-for="platform in workflowPlatforms" :key="platform.id" 
-               class="workflow-platform-card"
-               @click="openPlatformLink(platform.url)">
-            <div class="platform-logo">
-              <img v-if="platform.logo" :src="platform.logo" :alt="platform.name" />
-              <span v-else class="platform-icon">{{ platform.icon }}</span>
-            </div>
-            <div class="platform-info">
-              <h3>{{ platform.name }}</h3>
-              <p>{{ platform.description }}</p>
-              <div class="platform-tags">
-                <el-tag v-for="tag in platform.tags" :key="tag" size="small">{{ tag }}</el-tag>
+        <!-- 优先级推荐看板 -->
+        <div class="priority-board">
+          <div class="board-header">
+            <h3><el-icon><Trophy /></el-icon> 制造企业AI工具落地优先级推荐</h3>
+            <p>基于ROI、实施难度、行业实践的综合评估</p>
+          </div>
+          <div class="priority-grid">
+            <div v-for="item in toolPriorityRecommendation" :key="item.priority" class="priority-item">
+              <div class="priority-badge">P{{ item.priority }}</div>
+              <div class="priority-content">
+                <h4>{{ item.category }}</h4>
+                <div class="priority-tools">
+                  <el-tag v-for="tool in item.tools" :key="tool" size="small" type="info">{{ tool }}</el-tag>
+                </div>
+                <p class="priority-reason"><el-icon><InfoFilled /></el-icon> {{ item.reason }}</p>
+                <div class="priority-meta">
+                  <span>💰 {{ item.estimatedROI }}</span>
+                  <span>⏱️ {{ item.implementation }}</span>
+                </div>
               </div>
-            </div>
-            <div class="platform-action">
-              <el-icon><Connection /></el-icon>
-              <span>访问平台</span>
             </div>
           </div>
         </div>
+        
+        <!-- 分类工具展示 -->
+        <div class="tools-categories">
+          <div v-for="category in platformCategories" :key="category.id" class="category-section">
+            <!-- 分类头部 -->
+            <div class="category-header" @click="toggleCategory(category.id)">
+              <div class="category-title">
+                <span class="category-icon">{{ category.icon }}</span>
+                <h3>{{ category.name }}</h3>
+                <el-tag size="small" type="info">
+                  {{ getToolsByCategory(category.id).length }}个工具
+                </el-tag>
+              </div>
+              <el-icon class="toggle-icon" :class="{ 'is-expanded': expandedCategories.includes(category.id) }">
+                <ArrowDown />
+              </el-icon>
+            </div>
+            
+            <!-- 分类内容（折叠区域） -->
+            <el-collapse-transition>
+              <div v-show="expandedCategories.includes(category.id)" class="category-content">
+                
+                <!-- 子分类展示 -->
+                <div v-for="subCat in category.subCategories" :key="subCat.id" class="sub-category-section">
+                  <h4 class="sub-category-title">
+                    <span>{{ subCat.icon }}</span>
+                    {{ subCat.name }}
+                    <el-tag size="small">{{ getToolsByCategory(category.id, subCat.id).length }}</el-tag>
+                  </h4>
+                  
+                  <!-- 工具卡片网格 -->
+                  <div class="tools-grid">
+                    <div v-for="tool in getToolsByCategory(category.id, subCat.id)" :key="tool.id" 
+                         class="tool-card"
+                         @click="viewToolDetail(tool)">
+                      <div class="tool-header">
+                        <div class="tool-icon">{{ tool.icon }}</div>
+                        <div class="tool-meta">
+                          <h4>{{ tool.name }}</h4>
+                          <p>{{ tool.description }}</p>
+                        </div>
+                      </div>
+                      
+                      <div class="tool-details">
+                        <div class="detail-row">
+                          <span class="label">用途：</span>
+                          <span class="value">{{ tool.purpose }}</span>
+                        </div>
+                        <div class="detail-row">
+                          <span class="label">场景：</span>
+                          <span class="value">{{ tool.scenario }}</span>
+                        </div>
+                        <div class="detail-row">
+                          <span class="label">规模：</span>
+                          <el-tag size="small" type="success">{{ tool.companySize }}</el-tag>
+                          <el-tag size="small" :type="tool.costLevel === '高' ? 'danger' : tool.costLevel === '中' ? 'warning' : 'success'">
+                            {{ tool.costLevel }}成本
+                          </el-tag>
+                          <el-tag v-if="tool.privatization === '是'" size="small" type="info">私有化</el-tag>
+                        </div>
+                      </div>
+                      
+                      <div class="tool-tags">
+                        <el-tag v-for="tag in tool.tags.slice(0, 3)" :key="tag" size="small">{{ tag }}</el-tag>
+                      </div>
+                      
+                      <div class="tool-footer">
+                        <el-button type="primary" size="small" plain @click.stop="openToolLink(tool.url)">
+                          <el-icon><Connection /></el-icon>
+                          {{ tool.url === '#' ? '查看方案' : '访问官网' }}
+                        </el-button>
+                        <el-button size="small" @click.stop="viewToolDetail(tool)">
+                          查看详情
+                        </el-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </el-collapse-transition>
+          </div>
+        </div>
+        
       </div>
-    </section>
+    </el-dialog>
+    
+    <!-- 工具详情弹窗 -->
+    <el-dialog
+      v-model="showToolDetail"
+      :title="selectedTool?.name || '工具详情'"
+      width="800px"
+      class="tool-detail-dialog">
+      <div v-if="selectedTool" class="tool-detail-content">
+        <div class="detail-header">
+          <span class="detail-icon">{{ selectedTool.icon }}</span>
+          <div>
+            <h2>{{ selectedTool.name }}</h2>
+            <p class="detail-desc">{{ selectedTool.description }}</p>
+            <div class="detail-tags">
+              <el-tag v-for="tag in selectedTool.tags" :key="tag" size="small">{{ tag }}</el-tag>
+            </div>
+          </div>
+        </div>
+        
+        <el-divider />
+        
+        <div class="detail-sections">
+          <div class="detail-section">
+            <h4><el-icon><Tools /></el-icon> 核心信息</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">工具定位：</span>
+                <span>{{ selectedTool.purpose }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">典型产品：</span>
+                <span>{{ selectedTool.typicalProduct }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">适用场景：</span>
+                <span>{{ selectedTool.scenario }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">目标行业：</span>
+                <span>{{ selectedTool.targetIndustry }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4><el-icon><DataAnalysis /></el-icon> 技术与成本</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">企业规模：</span>
+                <el-tag type="success">{{ selectedTool.companySize }}</el-tag>
+              </div>
+              <div class="info-item">
+                <span class="info-label">私有化：</span>
+                <el-tag :type="selectedTool.privatization === '是' ? 'success' : 'info'">
+                  {{ selectedTool.privatization }}
+                </el-tag>
+              </div>
+              <div class="info-item">
+                <span class="info-label">API支持：</span>
+                <el-tag :type="selectedTool.apiSupport === '是' ? 'success' : 'info'">
+                  {{ selectedTool.apiSupport }}
+                </el-tag>
+              </div>
+              <div class="info-item">
+                <span class="info-label">成本等级：</span>
+                <el-tag :type="selectedTool.costLevel === '高' ? 'danger' : selectedTool.costLevel === '中' ? 'warning' : 'success'">
+                  {{ selectedTool.costLevel }}
+                </el-tag>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4><el-icon><Promotion /></el-icon> 优势与风险</h4>
+            <div class="pros-cons">
+              <div class="pros">
+                <h5>✅ 主要优点</h5>
+                <p>{{ selectedTool.advantage }}</p>
+              </div>
+              <div class="cons">
+                <h5><el-icon><Warning /></el-icon> 风险点</h5>
+                <p>{{ selectedTool.risk }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4><el-icon><Connection /></el-icon> 替代方案</h4>
+            <p>{{ selectedTool.alternative }}</p>
+          </div>
+          
+          <div class="detail-section priority-section">
+            <h4><el-icon><Trophy /></el-icon> 推荐优先级与落地建议</h4>
+            <el-tag :type="selectedTool.priority === '高' ? 'success' : selectedTool.priority === '中' ? 'warning' : 'info'" size="large">
+              {{ selectedTool.priority }}优先级
+            </el-tag>
+            <div class="config-suggestion">
+              <h5>💡 落地建议：</h5>
+              <p>{{ selectedTool.configSuggestion }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <el-divider />
+        
+        <div class="detail-actions">
+          <el-button type="primary" size="large" @click="openToolLink(selectedTool.url)">
+            <el-icon><Connection /></el-icon>
+            {{ selectedTool.url === '#' ? '联系咨询' : '访问官网' }}
+          </el-button>
+          <el-button size="large" @click="showToolDetail = false">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
 
     <!-- 应用解决方案 -->
     <section class="section solutions-section">
@@ -324,6 +706,9 @@
       </div>
     </section>
 
+    <!-- 📥 资料下载与索取报价 -->
+    <MaterialDownload />
+
     <!-- 服务网络 -->
     <section class="section service-network">
       <div class="container">
@@ -360,7 +745,15 @@ import { usePageContentStore } from '../store/pageContent'
 import { useProductsServicesStore } from '../store/productsServices'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
+import MaterialDownload from '../components/MaterialDownload.vue'
 import Sortable from 'sortablejs'
+import { 
+  Search, Message, DataAnalysis, MagicStick,
+  TrendCharts, Cpu, Tools, Management, DataLine, Connection,
+  Collection, Promotion, Trophy, Document, Location, Operation, ArrowDown, HomeFilled,
+  InfoFilled, Warning
+} from '@element-plus/icons-vue'
+import { manufacturingTools, toolCategories, priorityRecommendation } from '../data/manufacturingTools'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -371,6 +764,9 @@ const productsStore = useProductsServicesStore()
 
 // 拖拽元素引用
 const seriesGridRef = ref(null)
+
+// 工作流平台弹窗显示状态
+const showWorkflowPlatforms = ref(false)
 
 // 检查是否为管理员
 const isAdmin = computed(() => {
@@ -465,81 +861,94 @@ const solutions = ref([
   { id: 4, name: '能源设备', description: '能源设备制造与维护工具解决方案', icon: 'HotWater' }
 ])
 
-// 🆕 AI工作流平台数据
-const workflowPlatforms = ref([
-  {
-    id: 1,
-    name: 'UniEAP Workflow',
-    description: '用友BIP统一工作流平台，支持企业级流程编排',
-    url: 'https://iuap.yonyoucloud.com/iuap/',
-    icon: '🏢',
-    tags: ['企业级', 'BIP平台', '用友']
-  },
-  {
-    id: 2,
-    name: '金蝶云·星空',
-    description: '金蝶云星空工作流引擎，ERP与经营一体化',
-    url: 'https://www.kingdee.com/products/cosmic',
-    icon: '⭐',
-    tags: ['ERP', '经营一体化', '金蝶']
-  },
-  {
-    id: 3,
-    name: '金蝶云·星辰',
-    description: '金蝶云星辰，面向成长型企业的云原生ERP',
-    url: 'https://www.kingdee.com/products/star',
-    icon: '🌟',
-    tags: ['云原生', '成长型企业', '金蝶']
-  },
-  {
-    id: 4,
-    name: '神州数码 AI FOR PROCESS',
-    description: '神州数码AI驱动的智能流程自动化平台',
-    url: 'https://www.digitalchina.com/',
-    icon: '🤖',
-    tags: ['AI驱动', 'RPA', '神州数码']
-  },
-  {
-    id: 5,
-    name: 'Coze',
-    description: '字节跳动AI Bot开发平台，快速构建智能助手',
-    url: 'https://www.coze.com/',
-    icon: '🚀',
-    tags: ['AI Bot', '快速开发', '字节跳动']
-  },
-  {
-    id: 6,
-    name: 'Dify',
-    description: '开源LLM应用开发平台，支持工作流编排',
-    url: 'https://dify.ai/',
-    icon: '🔧',
-    tags: ['开源', 'LLM', '工作流']
-  },
-  {
-    id: 7,
-    name: 'AIFLOWY',
-    description: 'AI驱动的工作流自动化平台',
-    url: 'https://aiflowy.com/',
-    icon: '🌊',
-    tags: ['AI自动化', '低代码', '工作流']
-  },
-  {
-    id: 8,
-    name: 'N8N',
-    description: '开源工作流自动化工具，支持300+集成',
-    url: 'https://n8n.io/',
-    icon: '⚡',
-    tags: ['开源', '自动化', '300+集成']
-  },
-  {
-    id: 9,
-    name: '华为云 FlexusAI',
-    description: '华为云AI工作流编排平台，企业级AI应用',
-    url: 'https://www.huaweicloud.com/',
-    icon: '☁️',
-    tags: ['华为云', 'AI编排', '企业级']
+// 🆕 制造企业AI工具数据（从外部导入）- 已删除旧的内联数据
+
+// 🆕 制造企业AI工具数据（从外部导入）
+const workflowPlatforms = ref(manufacturingTools)
+const platformCategories = ref(toolCategories)
+const toolPriorityRecommendation = ref(priorityRecommendation)
+
+// 分类折叠状态（默认全部展开）
+const expandedCategories = ref(toolCategories.map(cat => cat.id))
+
+// 当前查看的工具详情
+const selectedTool = ref(null)
+const showToolDetail = ref(false)
+
+// 搜索和筛选
+const toolSearchKeyword = ref('')
+const selectedCategory = ref('all')
+const selectedCostLevel = ref('all')
+const selectedPrivatization = ref('all')
+
+// 切换分类折叠
+const toggleCategory = (categoryId) => {
+  const index = expandedCategories.value.indexOf(categoryId)
+  if (index > -1) {
+    expandedCategories.value.splice(index, 1)
+  } else {
+    expandedCategories.value.push(categoryId)
   }
-])
+}
+
+// 根据分类和子分类获取工具
+const getToolsByCategory = (categoryId, subCategoryId = null) => {
+  let tools = workflowPlatforms.value.filter(t => t.category === categoryId)
+  if (subCategoryId) {
+    tools = tools.filter(t => t.subCategory === subCategoryId)
+  }
+  return tools
+}
+
+// 搜索和筛选工具
+const filteredTools = computed(() => {
+  let tools = workflowPlatforms.value
+  
+  // 按分类筛选
+  if (selectedCategory.value !== 'all') {
+    tools = tools.filter(t => t.category === selectedCategory.value)
+  }
+  
+  // 按成本等级筛选
+  if (selectedCostLevel.value !== 'all') {
+    tools = tools.filter(t => t.costLevel === selectedCostLevel.value)
+  }
+  
+  // 按私有化筛选
+  if (selectedPrivatization.value !== 'all') {
+    const isPrivate = selectedPrivatization.value === 'yes'
+    tools = tools.filter(t => (t.privatization === '是') === isPrivate)
+  }
+  
+  // 按关键词搜索
+  if (toolSearchKeyword.value) {
+    const keyword = toolSearchKeyword.value.toLowerCase()
+    tools = tools.filter(t => 
+      t.name.toLowerCase().includes(keyword) ||
+      t.description.toLowerCase().includes(keyword) ||
+      t.tags.some(tag => tag.toLowerCase().includes(keyword)) ||
+      t.purpose.toLowerCase().includes(keyword)
+    )
+  }
+  
+  return tools
+})
+
+// 查看工具详情
+const viewToolDetail = (tool) => {
+  selectedTool.value = tool
+  showToolDetail.value = true
+}
+
+// 打开工具链接
+const openToolLink = (url) => {
+  if (url && url !== '#') {
+    window.open(url, '_blank')
+  } else {
+    ElMessage.info('该工具为企业自建方案，无外部链接')
+  }
+}
+
 
 // AI智能体数据（移除工具选型和工单管理）
 const aiAgents = ref([
@@ -605,7 +1014,7 @@ const aiAgents = ref([
   },
   { 
     id: 10, 
-    name: 'AIMES助手', 
+    name: '明升AIMES助手', 
     description: 'AI MES系统 - 生产现场感知、智能排产、质量控制、设备智能运维', 
     icon: 'Setting',
     tags: ['智能制造', 'MES系统', 'AI排产'],
@@ -615,7 +1024,7 @@ const aiAgents = ref([
   },
   { 
     id: 11, 
-    name: '工作流智能体', 
+    name: '明升AIFLOW', 
     description: '多部门工作流可视化管理 - 拖拽式流程设计、自定义节点、智能连接、实时协同', 
     icon: 'Operation',
     tags: ['流程管理', '可视化设计', '部门协同'],
@@ -716,10 +1125,29 @@ const openDemoPage = () => {
   window.open('/📊_AI营销中台功能演示_2025-12-17.html', '_blank')
 }
 
+// 🆕 AI智能对话启动
+const handleAIChatStart = () => {
+  ElMessage({
+    message: '正在启动AI营销顾问...',
+    type: 'success',
+    duration: 2000
+  })
+  setTimeout(() => {
+    router.push('/ai-product-selector')
+  }, 500)
+}
+
 // 🆕 打开工作流平台链接
 const openPlatformLink = (url) => {
   window.open(url, '_blank')
   ElMessage.success('正在跳转到平台...')
+}
+
+// 🆕 返回主页方法
+const backToHome = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  showWorkflowPlatforms.value = false
+  ElMessage.success('已返回主页顶部')
 }
 
 const handleBannerClick = (banner) => {
@@ -765,6 +1193,11 @@ const goToProductLink = (link) => {
 // 打开外部链接
 const openExternalLink = (url) => {
   window.open(url, '_blank')
+}
+
+// 滚动到智能体板块
+const scrollToAgents = () => {
+  router.push('/ai-agents')
 }
 
 // 判断是否为视频类型
@@ -933,9 +1366,9 @@ onMounted(() => {
   justify-content: center;
 }
 
-/* 通用板块样式 */
+/* 通用板块样式 - 优化滚动量 */
 .section {
-  padding: 80px 0;
+  padding: 50px 0; /* 减少: 80px → 50px，减少38% */
 }
 
 .container {
@@ -946,18 +1379,18 @@ onMounted(() => {
 
 .section-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 40px; /* 减少: 60px → 40px，减少33% */
 }
 
 .section-title {
-  font-size: 42px;
+  font-size: 36px; /* 减少: 42px → 36px */
   font-weight: 700;
   color: #1a1a1a;
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* 减少: 16px → 12px */
 }
 
 .section-desc {
-  font-size: 18px;
+  font-size: 16px; /* 减少: 18px → 16px */
   color: #666;
   max-width: 600px;
   margin: 0 auto;
@@ -1180,294 +1613,675 @@ onMounted(() => {
   line-height: 1.6;
 }
 
-/* 安彤智能体板块 */
-.ai-agents-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 80px 0;
+/* 🆕 核心智能体双卡片并排布局 */
+.core-agents-section {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+  padding: 60px 0;
 }
 
-.ai-agents-section .section-title,
-.ai-agents-section .section-desc {
-  color: #fff;
-}
-
-.agents-grid {
+.core-agents-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.agent-card {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 24px 20px;
-  border-radius: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  backdrop-filter: blur(10px);
+@media (max-width: 1200px) {
+  .core-agents-grid {
+    grid-template-columns: 1fr;
+    max-width: 700px;
+  }
+}
+
+/* 核心卡片样式 */
+.core-agent-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid transparent;
+  min-height: 650px;
+  display: flex;
+  flex-direction: column;
 }
 
-.agent-card:hover {
-  background: #fff;
-  border-color: #fff;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-  transform: translateY(-8px);
-}
-
-/* 新功能卡片样式 */
-.agent-card-new {
-  background: rgba(255, 245, 245, 0.98);
-  border: 2px solid rgba(255, 107, 107, 0.3);
-  animation: cardPulse 2s infinite;
-}
-
-.agent-card-new:hover {
-  background: #fff5f5;
-  border-color: #ff6b6b;
-  box-shadow: 0 12px 32px rgba(255, 107, 107, 0.3);
-}
-
-@keyframes cardPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 20px 8px rgba(255, 107, 107, 0.2);
-  }
-}
-
-/* 新功能徽章 */
-.agent-badge {
+.core-agent-card::before {
+  content: '';
   position: absolute;
-  top: 16px;
-  right: 16px;
-  font-weight: 600;
-  animation: badgeBounce 1s infinite;
-  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: height 0.3s;
 }
 
-@keyframes badgeBounce {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+.core-agent-card.marketing-hub::before {
+  background: linear-gradient(90deg, #67C23A 0%, #409EFF 100%);
+}
+
+.core-agent-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 48px rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.core-agent-card:hover::before {
+  height: 8px;
+}
+
+.core-agent-card.marketing-hub:hover {
+  box-shadow: 0 20px 48px rgba(103, 194, 58, 0.25);
+  border-color: rgba(103, 194, 58, 0.3);
+}
+
+/* 角标徽章 */
+.card-corner-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* 🆕 核心智能体卡片返回主页按钮 */
+.card-back-home {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.core-agent-card:hover .card-back-home {
+  opacity: 1;
+}
+
+.card-back-home .el-button {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-corner-badge.marketing {
+  background: linear-gradient(135deg, #67C23A 0%, #409EFF 100%);
+  box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
+}
+
+/* 卡片头部 */
+.agent-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #F0F2F5;
 }
 
 .agent-icon {
-  margin-bottom: 16px;
-  color: #667eea;
-}
-
-.agent-icon .el-icon {
-  font-size: 40px;
-}
-
-.agent-card h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #1a1a1a;
-}
-
-.agent-card p {
-  color: #666;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-/* AI营销中台板块 - 单卡片样式 */
-.marketing-hub-section {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
-  padding: 80px 0;
-}
-
-.marketing-hub-card {
-  max-width: 420px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.marketing-hub-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
-}
-
-.hub-card-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.hub-icon {
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
 }
 
-.hub-title h3 {
-  font-size: 20px;
+.agent-icon.marketing {
+  background: linear-gradient(135deg, #67C23A 0%, #409EFF 100%);
+  box-shadow: 0 8px 16px rgba(103, 194, 58, 0.3);
+}
+
+.agent-title-group h3 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #303133;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.5px;
+}
+
+.agent-subtitle {
+  font-size: 14px;
+  color: #909399;
+  font-weight: 500;
+  margin: 0 0 12px 0;
+}
+
+.agent-stats-mini {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
 }
 
-.hub-title p {
-  font-size: 13px;
-  color: #666;
-  line-height: 1.4;
+.stat-badge.success {
+  background: linear-gradient(135deg, #67C23A 0%, #85CE61 100%);
 }
 
-.hub-card-stats {
+/* 亮点列表 */
+.agent-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.highlight-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #F8F9FA;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #606266;
+  transition: all 0.3s;
+}
+
+.highlight-row:hover {
+  background: #ECF5FF;
+  transform: translateX(6px);
+}
+
+/* 紧凑功能特性 */
+.agent-features-compact {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
-.mini-stat {
+.compact-feature {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%);
   border-radius: 8px;
-  font-size: 13px;
-  color: #555;
+  font-size: 14px;
+  color: #606266;
+  border: 1px solid #E4E7ED;
 }
 
-.mini-stat .stat-icon {
+.feature-icon {
   font-size: 18px;
 }
 
-.hub-card-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.feature-tag {
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 16px;
-  font-size: 12px;
+.feature-text {
   font-weight: 500;
 }
 
+/* 营销指标紧凑版 */
+.marketing-metrics-compact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metric-compact {
+  text-align: center;
+  padding: 16px 12px;
+  background: #F8F9FA;
+  border-radius: 10px;
+  border: 2px solid #E4E7ED;
+  transition: all 0.3s;
+}
+
+.metric-compact.primary-metric {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFF5F0 100%);
+  border-color: #E6A23C;
+}
+
+.metric-compact:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metric-number {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+
+.metric-compact.primary-metric .metric-number {
+  font-size: 32px;
+  background: linear-gradient(135deg, #F56C6C 0%, #E6A23C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.metric-label {
+  font-size: 13px;
+  color: #606266;
+  font-weight: 500;
+}
+
+/* 成功案例迷你版 */
+.success-case-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #F0FFF4 0%, #E8F8F5 100%);
+  border-left: 4px solid #67C23A;
+  border-radius: 8px;
+  margin-bottom: 28px;
+}
+
+.case-text {
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.6;
+}
+
+.case-text strong {
+  color: #67C23A;
+  font-weight: 700;
+}
+
+/* 卡片操作按钮 */
+.agent-card-action {
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  height: 48px;
+  margin-top: auto;
+}
+
+/* 🆕 AI工作流平台板块 - 优化设计 */
+.workflow-platforms-section {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 60px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.workflow-platforms-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(66,165,245,0.1)"/></svg>');
+  opacity: 0.3;
+}
+
+.workflow-platforms-section .section-title {
+  color: #1565c0;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.workflow-platforms-section .section-desc {
+  color: #424242;
+  font-size: 16px;
+}
+
+/* 工作流Hub卡片 - 大卡片样式 */
+.workflow-hub-card {
+  background: white;
+  border-radius: 24px;
+  padding: 48px 40px;
+  box-shadow: 0 12px 40px rgba(33, 150, 243, 0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid transparent;
+}
+
+.workflow-hub-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #2196F3 0%, #03A9F4 100%);
+  transition: height 0.3s;
+}
+
+.workflow-hub-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 24px 64px rgba(33, 150, 243, 0.25);
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.workflow-hub-card:hover::before {
+  height: 8px;
+}
+
+/* Hub卡片头部 */
+.hub-card-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #E3F2FD;
+}
+
+.hub-icon {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+}
+
+.hub-title h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1565c0;
+  margin: 0 0 8px 0;
+}
+
+.hub-title p {
+  font-size: 15px;
+  color: #616161;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Hub统计数据 */
+.hub-card-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.mini-stat {
+  text-align: center;
+  padding: 20px 16px;
+  background: linear-gradient(135deg, #F5F5F5 0%, #FFFFFF 100%);
+  border-radius: 12px;
+  border: 2px solid #E0E0E0;
+  transition: all 0.3s;
+}
+
+.mini-stat:hover {
+  transform: scale(1.05);
+  border-color: #2196F3;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+}
+
+.stat-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.stat-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424242;
+  display: block;
+}
+
+/* Hub功能特性标签 */
+.hub-card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 32px;
+  justify-content: center;
+}
+
+.feature-tag {
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1565C0;
+  border: 2px solid #90CAF9;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.feature-tag:hover {
+  background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);
+  color: white;
+  border-color: #1976D2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* Hub卡片底部按钮区 */
 .hub-card-footer {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: center;
 }
 
 .hub-card-footer .el-button {
-  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: 12px;
 }
 
-/* 🆕 AI工作流平台板块 */
-.workflow-platforms-section {
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  padding: 80px 0;
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .hub-card-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .feature-tag {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+  
+  .hub-card-footer {
+    flex-direction: column;
+  }
+  
+  .hub-card-footer .el-button {
+    width: 100%;
+  }
 }
 
+/* 工作流平台弹窗网格 */
 .workflow-platforms-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* 🆕 弹窗返回主页按钮 */
+.dialog-back-home {
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  z-index: 1000;
+}
+
+.dialog-back-home .el-button {
+  background: linear-gradient(135deg, #409EFF 0%, #2196F3 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dialog-back-home .el-button:hover {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.5);
+  transform: translateY(-2px);
 }
 
 .workflow-platform-card {
   background: white;
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: 16px;
+  padding: 24px 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  border: 2px solid #E0E0E0;
+  position: relative;
+  overflow: hidden;
+}
+
+.workflow-platform-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #2196F3 0%, #03A9F4 100%);
+  transform: scaleY(0);
+  transition: transform 0.3s;
+}
+
+.workflow-platform-card:hover::before {
+  transform: scaleY(1);
 }
 
 .workflow-platform-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(33, 150, 243, 0.2);
+  border-color: #2196F3;
 }
 
 .platform-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: all 0.3s;
+  margin: 0 auto;
+}
+
+.workflow-platform-card:hover .platform-logo {
+  background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
 }
 
 .platform-logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  padding: 8px;
 }
 
 .platform-icon {
-  font-size: 40px;
+  font-size: 36px;
   line-height: 1;
+  transition: all 0.3s;
+}
+
+.workflow-platform-card:hover .platform-icon {
+  filter: brightness(5);
+}
+
+.platform-info {
+  text-align: center;
 }
 
 .platform-info h3 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 8px 0;
+  line-height: 1.3;
 }
 
 .platform-info p {
-  font-size: 14px;
+  font-size: 13px;
   color: #666;
   line-height: 1.5;
   margin: 0 0 12px 0;
+  min-height: 40px;
 }
 
 .platform-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  justify-content: center;
+}
+
+.platform-tags .el-tag {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 10px;
 }
 
 .platform-action {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #4caf50;
+  justify-content: center;
+  gap: 6px;
+  color: #2196F3;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid #f0f0f0;
+  transition: all 0.3s;
+}
+
+.workflow-platform-card:hover .platform-action {
+  color: #1976D2;
 }
 
 .platform-action .el-icon {
   font-size: 16px;
+}
+
+/* 响应式调整 */
+@media (max-width: 1400px) {
+  .workflow-platforms-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 992px) {
@@ -1630,8 +2444,8 @@ onMounted(() => {
 
 .featured-products-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 从2列改为3列，卡片更小 */
-  gap: 28px; /* 从40px缩小到28px */
+  grid-template-columns: repeat(3, 1fr); /* 保持3列布局 */
+  gap: 34px; /* 28px * 1.2 = 33.6px，向上取整为34px */
 }
 
 @media (max-width: 1200px) {
@@ -1648,20 +2462,41 @@ onMounted(() => {
 
 .featured-product-card {
   background: #fff;
-  border-radius: 12px; /* 从16px缩小到12px */
+  border-radius: 19px; /* 16px * 1.2 = 19.2px */
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 阴影缩小 */
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); /* 2px*1.2, 8px*1.5 */
   transition: all 0.3s ease;
+  position: relative; /* 为返回按钮定位 */
+}
+
+/* 🆕 明星产品卡片返回主页按钮 */
+.product-back-home {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.featured-product-card:hover .product-back-home {
+  opacity: 1;
+}
+
+.product-back-home .el-button {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .featured-product-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); /* 阴影缩小 */
-  transform: translateY(-3px); /* 从-4px缩小到-3px */
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12); /* 4px*1.5, 16px*1.5 */
+  transform: translateY(-5px); /* 4px * 1.2 = 4.8px */
 }
 
 .product-media {
   width: 100%;
-  height: 196px; /* 280px * 0.7 = 196px（再缩小30%）*/
+  height: 336px; /* 280px * 1.2 = 336px（放大20%）*/
   background: #000;
   position: relative;
 }
@@ -1689,26 +2524,26 @@ onMounted(() => {
 }
 
 .product-info {
-  padding: 15px; /* 22px * 0.7 = 15px（再缩小30%）*/
+  padding: 26px; /* 22px * 1.2 = 26.4px */
   text-align: center;
 }
 
 .product-info h3 {
-  font-size: 12px; /* 17px * 0.7 = 12px（再缩小30%）*/
+  font-size: 20px; /* 17px * 1.2 = 20.4px */
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 8px; /* 11px * 0.7 = 8px（再缩小30%）*/
+  margin-bottom: 13px; /* 11px * 1.2 = 13.2px */
 }
 
 .product-info p {
-  font-size: 8px; /* 11px * 0.7 = 8px（再缩小30%）*/
+  font-size: 13px; /* 11px * 1.2 = 13.2px */
   color: #666;
   line-height: 1.5;
-  margin-bottom: 12px; /* 17px * 0.7 = 12px（再缩小30%）*/
+  margin-bottom: 20px; /* 17px * 1.2 = 20.4px */
 }
 
 .product-info .el-button {
-  font-size: 8px; /* 11px * 0.7 = 8px（再缩小30%）*/
+  font-size: 13px; /* 11px * 1.2 = 13.2px */
   padding: 6px 15px; /* 8px * 0.7 = 6px, 22px * 0.7 = 15px（再缩小30%）*/
 }
 
@@ -1774,18 +2609,554 @@ onMounted(() => {
   }
   
   .product-info {
-    padding: 14px; /* 减小30%: 20 → 14 */
+    padding: 20px; /* 移动端保持适中尺寸 */
   }
   
   .product-info h3 {
-    font-size: 13px; /* 减小30%: 18 → 13 */
+    font-size: 16px; /* 移动端字体适中 */
   }
   
   .product-info p {
-    font-size: 10px; /* 减小30%: 14 → 10 */
+    font-size: 12px; /* 移动端字体适中 */
   }
 }
 
+/* ==================== 制造企业AI工具平台样式 ==================== */
+
+/* 工具平台弹窗 */
+.manufacturing-tools-dialog {
+  border-radius: 16px;
+}
+
+.manufacturing-tools-dialog .el-dialog__header {
+  background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);
+  color: white;
+  padding: 24px 32px;
+  border-radius: 16px 16px 0 0;
+}
+
+.manufacturing-tools-dialog .el-dialog__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.manufacturing-tools-dialog .el-dialog__body {
+  padding: 0;
+  max-height: 82vh;
+  overflow-y: auto;
+}
+
+/* 工具平台容器 */
+.manufacturing-tools-container {
+  padding: 24px;
+}
+
+/* 顶部工具栏 */
+.tools-toolbar {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.search-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.filter-section {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 优先级推荐看板 */
+.priority-board {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(255, 152, 0, 0.15);
+}
+
+.board-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.board-header h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #E65100;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.board-header p {
+  font-size: 16px;
+  color: #F57C00;
+  margin: 0;
+}
+
+.priority-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.priority-item {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.priority-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.2);
+}
+
+.priority-badge {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #FF6F00 0%, #FF9800 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.priority-content h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #E65100;
+  margin: 0 0 12px 0;
+}
+
+.priority-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.priority-reason {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.priority-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #F57C00;
+  margin-top: 8px;
+}
+
+/* 分类工具展示 */
+.tools-categories {
+  margin-top: 24px;
+}
+
+.category-section {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.category-header {
+  background: linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%);
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.category-header:hover {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.category-icon {
+  font-size: 32px;
+}
+
+.category-title h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1565C0;
+  margin: 0;
+}
+
+.toggle-icon {
+  font-size: 24px;
+  color: #1976D2;
+  transition: transform 0.3s;
+}
+
+.toggle-icon.is-expanded {
+  transform: rotate(180deg);
+}
+
+.category-content {
+  padding: 24px;
+  background: #FAFAFA;
+}
+
+/* 子分类 */
+.sub-category-section {
+  margin-bottom: 32px;
+}
+
+.sub-category-section:last-child {
+  margin-bottom: 0;
+}
+
+.sub-category-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #424242;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #E0E0E0;
+}
+
+/* 工具卡片网格 */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+
+.tool-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(25, 118, 210, 0.15);
+  border-color: #42A5F5;
+}
+
+.tool-header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.tool-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.tool-meta h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1565C0;
+  margin: 0 0 6px 0;
+}
+
+.tool-meta p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tool-details {
+  background: #F5F5F5;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.detail-row {
+  font-size: 13px;
+  color: #424242;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row .label {
+  font-weight: 600;
+  color: #1976D2;
+  min-width: 50px;
+}
+
+.detail-row .value {
+  flex: 1;
+  color: #666;
+}
+
+.tool-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tool-footer {
+  display: flex;
+  gap: 8px;
+}
+
+.tool-footer .el-button {
+  flex: 1;
+}
+
+/* 工具详情弹窗 */
+.tool-detail-dialog .el-dialog__header {
+  background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);
+  color: white;
+  padding: 24px 32px;
+}
+
+.tool-detail-dialog .el-dialog__title {
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.tool-detail-content {
+  padding: 24px;
+}
+
+.detail-header {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.detail-icon {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.detail-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1565C0;
+  margin: 0 0 8px 0;
+}
+
+.detail-desc {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-sections {
+  margin-top: 24px;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1976D2;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #E3F2FD;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  font-size: 14px;
+  color: #424242;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #1976D2;
+  min-width: 80px;
+}
+
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.pros, .cons {
+  background: #F5F5F5;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.pros h5, .cons h5 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pros h5 {
+  color: #43A047;
+}
+
+.cons h5 {
+  color: #E64A19;
+}
+
+.pros p, .cons p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.priority-section {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.config-suggestion {
+  margin-top: 16px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.config-suggestion h5 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #F57C00;
+  margin: 0 0 8px 0;
+}
+
+.config-suggestion p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .tools-toolbar {
+    flex-direction: column;
+  }
+  
+  .search-section {
+    width: 100%;
+  }
+  
+  .filter-section {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .filter-section .el-select {
+    width: 100% !important;
+  }
+  
+  .priority-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pros-cons {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 
 </style>

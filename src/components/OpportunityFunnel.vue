@@ -44,37 +44,108 @@
       </div>
     </el-card>
 
-    <!-- 漏斗阶段列表 -->
-    <div class="funnel-stages">
+    <!-- 漏斗阶段列表 - 时间线式纵向布局 -->
+    <div class="funnel-stages-timeline">
       <div 
         v-for="(stage, index) in stages" 
         :key="stage.id"
-        class="stage-module"
+        class="timeline-stage"
         :class="getRiskClass(stage.winRate)"
       >
-        <!-- 阶段头部 -->
-        <div class="stage-header" @click="toggleStage(stage.id)">
-          <div class="stage-left">
-            <div class="stage-number">{{ index + 1 }}</div>
-            <h3 class="stage-name">{{ stage.name }}</h3>
-          </div>
-          <div class="stage-center">
-            <el-progress 
-              :percentage="stage.winRate" 
-              :color="getProgressColor(stage.winRate)"
-              :stroke-width="12"
-            />
-          </div>
-          <div class="stage-right">
-            <div class="win-rate-display">
-              <span class="rate">{{ stage.winRate }}%</span>
-              <span class="trend" :class="getTrendClass(stage.trend)">
-                {{ stage.trend > 0 ? '↑' : '↓' }}{{ Math.abs(stage.trend) }}%
-              </span>
+        <!-- 时间线式三列布局 -->
+        <div class="timeline-row" @click="toggleStage(stage.id)">
+          <!-- 左侧：漏斗形状 + 阶段名称 -->
+          <div class="timeline-left">
+            <div class="funnel-shape" :style="getFunnelStyle(index, stages.length)">
+              <div class="stage-number">{{ index + 1 }}</div>
+              <div class="funnel-content">
+                <h3 class="stage-name">{{ stage.name }}</h3>
+                <div class="stage-time">{{ stage.startDate || '待开始' }}</div>
+              </div>
             </div>
-            <el-tag :type="getRiskTagType(stage.winRate)" size="large">
-              {{ getRiskLabel(stage.winRate) }}
-            </el-tag>
+            <!-- 时间线连接线 -->
+            <div v-if="index < stages.length - 1" class="timeline-connector"></div>
+          </div>
+
+          <!-- 中间：赢率指标 -->
+          <div class="timeline-center">
+            <div class="win-rate-card" :class="getRiskClass(stage.winRate)">
+              <div class="rate-header">
+                <span class="rate-label">赢率</span>
+                <el-tag :type="getRiskTagType(stage.winRate)" size="small">
+                  {{ getRiskLabel(stage.winRate) }}
+                </el-tag>
+              </div>
+              <div class="rate-value">
+                <span class="rate">{{ stage.winRate }}%</span>
+                <span class="trend" :class="getTrendClass(stage.trend)">
+                  <el-icon v-if="stage.trend > 0"><CaretTop /></el-icon>
+                  <el-icon v-else-if="stage.trend < 0"><CaretBottom /></el-icon>
+                  {{ stage.trend > 0 ? '+' : '' }}{{ stage.trend }}%
+                </span>
+              </div>
+              <el-progress 
+                :percentage="stage.winRate" 
+                :color="getProgressColor(stage.winRate)"
+                :stroke-width="8"
+                :show-text="false"
+              />
+              <div class="rate-footer">
+                <span class="predicted">预测下阶段: {{ stage.predictedNextRate }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧：标志事件（可多选/多填） -->
+          <div class="timeline-right">
+            <div class="milestone-events-section">
+              <div class="events-header">
+                <h4>📋 标志事件</h4>
+                <el-button 
+                  size="small" 
+                  type="primary" 
+                  text
+                  @click.stop="addEvent(stage.id)"
+                >
+                  <el-icon><Plus /></el-icon>
+                  添加
+                </el-button>
+              </div>
+              
+              <!-- 事件列表 -->
+              <div class="events-timeline">
+                <div 
+                  v-for="event in stage.events" 
+                  :key="event.id"
+                  class="event-badge"
+                  :class="{ positive: event.impact > 0, negative: event.impact < 0 }"
+                  @click.stop="editEvent(event)"
+                >
+                  <el-icon class="event-icon">
+                    <component :is="getEventIcon(event.type)" />
+                  </el-icon>
+                  <div class="event-info">
+                    <span class="event-type">{{ event.type }}</span>
+                    <span class="event-time">{{ event.time }}</span>
+                  </div>
+                  <el-tag 
+                    :type="event.impact > 0 ? 'success' : 'danger'" 
+                    size="small"
+                    class="impact-tag"
+                  >
+                    {{ event.impact > 0 ? '+' : '' }}{{ event.impact }}%
+                  </el-tag>
+                </div>
+                
+                <!-- 空状态 -->
+                <div v-if="!stage.events || stage.events.length === 0" class="empty-events">
+                  <el-icon><DocumentAdd /></el-icon>
+                  <span>暂无标志事件，点击"添加"创建</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 展开/收起图标 -->
             <el-icon class="expand-icon" :class="{ expanded: expandedStages.includes(stage.id) }">
               <ArrowDown />
             </el-icon>
@@ -763,7 +834,8 @@ import { useRouter } from 'vue-router'
 import { 
   CaretTop, CaretBottom, ArrowDown, Plus, Edit, Delete, 
   QuestionFilled, TrendCharts, Lightning, Refresh, Check, Close,
-  Phone, Message, VideoCamera, Document, Calendar, User as UserIcon, HomeFilled
+  Phone, Message, VideoCamera, Document, Calendar, User as UserIcon, HomeFilled,
+  DocumentAdd
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -797,6 +869,7 @@ const stages = ref([
   {
     id: 'stage-1',
     name: '潜在客户',
+    startDate: '2025-12-18',
     winRate: 70,
     trend: 5,
     activityScore: 75,
@@ -837,6 +910,7 @@ const stages = ref([
   {
     id: 'stage-2',
     name: '联系人',
+    startDate: '2025-12-16',
     winRate: 65,
     trend: -2,
     activityScore: 68,
@@ -877,6 +951,7 @@ const stages = ref([
   {
     id: 'stage-3',
     name: '首次接触',
+    startDate: '2025-12-14',
     winRate: 60,
     trend: 0,
     activityScore: 55,
@@ -957,6 +1032,7 @@ const stages = ref([
   {
     id: 'stage-5',
     name: '再次预约/拜访',
+    startDate: '2025-12-10',
     winRate: 55,
     trend: -5,
     activityScore: 45,
@@ -997,6 +1073,7 @@ const stages = ref([
   {
     id: 'stage-6',
     name: '决策/签单',
+    startDate: '2025-12-08',
     winRate: 50,
     trend: -8,
     activityScore: 40,
@@ -1426,6 +1503,36 @@ const getRiskTagType = (winRate) => {
   return 'danger'
 }
 
+// 🆕 计算漏斗形状样式（梯形，从上到下逐渐变窄）
+const getFunnelStyle = (index, total) => {
+  const baseWidth = 100 // 基础宽度百分比
+  const minWidth = 40 // 最小宽度百分比
+  const widthDecrement = (baseWidth - minWidth) / (total - 1) // 每阶段递减
+  
+  const currentWidth = baseWidth - (widthDecrement * index)
+  const nextWidth = Math.max(minWidth, baseWidth - (widthDecrement * (index + 1)))
+  
+  return {
+    width: '100%',
+    background: `linear-gradient(to bottom, 
+      #667eea ${currentWidth}%, 
+      #764ba2 100%)`,
+    clipPath: `polygon(
+      ${(100 - currentWidth) / 2}% 0%, 
+      ${(100 + currentWidth) / 2}% 0%, 
+      ${(100 + nextWidth) / 2}% 100%, 
+      ${(100 - nextWidth) / 2}% 100%
+    )`,
+    minHeight: '120px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '20px',
+    position: 'relative'
+  }
+}
+
 const getProgressColor = (winRate) => {
   if (winRate >= 70) return '#67C23A'
   if (winRate >= 50) return '#E6A23C'
@@ -1569,37 +1676,323 @@ const getPriorityType = (priority) => {
 }
 
 // 漏斗阶段
-.funnel-stages {
+// 🆕 时间线式纵向布局
+.funnel-stages-timeline {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0; // 无间隙，由连接线连接
   margin-bottom: 24px;
 }
 
-.stage-module {
-  border: 2px solid #EBEEF5;
-  border-radius: 12px;
-  overflow: hidden;
+.timeline-stage {
+  border: none; // 移除边框
+  overflow: visible; // 允许连接线显示
   transition: all 0.3s;
   
-  &.risk-low {
-    border-left: 5px solid #67C23A;
+  &.risk-low .funnel-shape {
+    border-color: #67C23A;
   }
   
-  &.risk-medium {
-    border-left: 5px solid #E6A23C;
+  &.risk-medium .funnel-shape {
+    border-color: #E6A23C;
   }
   
-  &.risk-high {
-    border-left: 5px solid #F56C6C;
-  }
-  
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  &.risk-high .funnel-shape {
+    border-color: #F56C6C;
   }
 }
 
-.stage-header {
+.timeline-row {
+  display: grid;
+  grid-template-columns: 300px 280px 1fr; // 左：漏斗，中：赢率，右：事件
+  gap: 24px;
+  align-items: start;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover {
+    background: rgba(102, 126, 234, 0.03);
+  }
+}
+
+// 🆕 左侧：漏斗形状 + 时间线
+.timeline-left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .funnel-shape {
+    width: 100%;
+    border: 3px solid #667eea;
+    border-radius: 12px;
+    position: relative;
+    overflow: visible;
+    
+    .stage-number {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      z-index: 10;
+    }
+    
+    .funnel-content {
+      padding: 20px;
+      color: #fff;
+      text-align: center;
+      
+      .stage-name {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 10px 0 8px 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      
+      .stage-time {
+        font-size: 13px;
+        opacity: 0.9;
+      }
+    }
+  }
+  
+  // 时间线连接线
+  .timeline-connector {
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    margin: 8px 0;
+    position: relative;
+    
+    &::after {
+      content: '↓';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #764ba2;
+      font-size: 16px;
+      font-weight: 700;
+    }
+  }
+}
+
+// 🆕 中间：赢率卡片
+.timeline-center {
+  .win-rate-card {
+    background: linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%);
+    border: 2px solid #EBEEF5;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s;
+    
+    &.risk-low {
+      border-color: #67C23A;
+      background: linear-gradient(135deg, #F0FFF4 0%, #FFFFFF 100%);
+    }
+    
+    &.risk-medium {
+      border-color: #E6A23C;
+      background: linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 100%);
+    }
+    
+    &.risk-high {
+      border-color: #F56C6C;
+      background: linear-gradient(135deg, #FEF0F0 0%, #FFFFFF 100%);
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    
+    .rate-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      .rate-label {
+        font-size: 14px;
+        color: #909399;
+        font-weight: 600;
+      }
+    }
+    
+    .rate-value {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+      
+      .rate {
+        font-size: 42px;
+        font-weight: 700;
+        color: #1A1A1A;
+        line-height: 1;
+      }
+      
+      .trend {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        
+        &.trend-up {
+          color: #67C23A;
+        }
+        
+        &.trend-down {
+          color: #F56C6C;
+        }
+        
+        &.trend-neutral {
+          color: #909399;
+        }
+      }
+    }
+    
+    .rate-footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #EBEEF5;
+      
+      .predicted {
+        font-size: 13px;
+        color: #606266;
+      }
+    }
+  }
+}
+
+// 🆕 右侧：标志事件
+.timeline-right {
+  position: relative;
+  
+  .milestone-events-section {
+    background: #FAFAFA;
+    border: 1px solid #EBEEF5;
+    border-radius: 12px;
+    padding: 16px;
+    min-height: 150px;
+    
+    .events-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #303133;
+        margin: 0;
+      }
+    }
+    
+    .events-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      
+      .event-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #fff;
+        border: 1px solid #E4E7ED;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        
+        &.positive {
+          border-left: 3px solid #67C23A;
+          background: linear-gradient(90deg, #F0FFF4 0%, #FFFFFF 100%);
+        }
+        
+        &.negative {
+          border-left: 3px solid #F56C6C;
+          background: linear-gradient(90deg, #FEF0F0 0%, #FFFFFF 100%);
+        }
+        
+        &:hover {
+          transform: translateX(4px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .event-icon {
+          font-size: 18px;
+          color: #409EFF;
+        }
+        
+        .event-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          
+          .event-type {
+            font-size: 13px;
+            font-weight: 600;
+            color: #303133;
+          }
+          
+          .event-time {
+            font-size: 11px;
+            color: #909399;
+          }
+        }
+        
+        .impact-tag {
+          flex-shrink: 0;
+        }
+      }
+      
+      .empty-events {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+        color: #909399;
+        font-size: 13px;
+        
+        .el-icon {
+          font-size: 32px;
+          margin-bottom: 8px;
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+  
+  .expand-icon {
+    position: absolute;
+    top: -30px;
+    right: 10px;
+    font-size: 20px;
+    color: #909399;
+    transition: transform 0.3s;
+    
+    &.expanded {
+      transform: rotate(180deg);
+    }
+  }
+}
   display: flex;
   align-items: center;
   padding: 20px;

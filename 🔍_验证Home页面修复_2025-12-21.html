@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Home页面修复验证清单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checklist {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #67C23A;
+            transition: all 0.3s ease;
+        }
+        .check-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .check-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        .check-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .check-item.critical {
+            border-left-color: #F56C6C;
+        }
+        .check-item.warning {
+            border-left-color: #E6A23C;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        .status-badge.critical {
+            background: #FEF0F0;
+            color: #F56C6C;
+        }
+        .status-badge.warning {
+            background: #FDF6EC;
+            color: #E6A23C;
+        }
+        .status-badge.success {
+            background: #F0F9FF;
+            color: #67C23A;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .error-example {
+            background: #FEF0F0;
+            border-left: 4px solid #F56C6C;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .success-example {
+            background: #F0F9FF;
+            border-left: 4px solid #67C23A;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .test-location {
+            background: #FDF6EC;
+            border: 1px solid #E6A23C;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .test-location strong {
+            color: #E6A23C;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #67C23A 0%, #409EFF 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .highlight {
+            background: #FFF3CD;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🔍</span>
+                <span>Home页面修复验证清单</span>
+            </h1>
+            <p>v2.6.3 · 2025-12-21 · 完整功能测试</p>
+        </div>
+
+        <div class="content">
+            <!-- 修复内容概述 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>📋</span>
+                    <span>修复内容概述</span>
+                </h2>
+                <div class="success-example">
+                    <strong>✅ 已修复问题：</strong>
+                    <ul style="margin: 10px 0 0 20px; line-height: 2;">
+                        <li>补充 <span class="highlight">Document</span>、<span class="highlight">Location</span>、<span class="highlight">Operation</span> 图标导入</li>
+                        <li>添加 <span class="highlight">scrollToAgents()</span> 函数定义</li>
+                        <li>修复 <span class="highlight">withModifiers</span> 编译错误</li>
+                    </ul>
+                </div>
+                <div class="error-example">
+                    <strong>❌ 修复前错误：</strong>
+                    <div class="code-block" style="margin-top: 10px; background: #2d2d2d;">
+Uncaught (in promise) TypeError: Cannot read properties of undefined (reading '_withMods')
+    at withModifiers (chunk-4T3M4GRL.js:12410:20)
+    at Proxy._sfc_render (Home.vue:264:84)
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进度条 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>📊</span>
+                    <span>测试进度</span>
+                </h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar">0%</div>
+                </div>
+            </div>
+
+            <!-- 测试清单1: 页面加载测试 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>✅</span>
+                    <span>测试1：页面加载检查<span class="status-badge critical">必测</span></span>
+                </h2>
+                <div class="checklist">
+                    <div class="check-item critical">
+                        <input type="checkbox" id="test1-1" onchange="updateProgress()">
+                        <label for="test1-1">
+                            <strong>首页正常加载</strong><br>
+                            访问 <code>http://localhost:3002</code>，页面应正常显示，无白屏
+                        </label>
+                    </div>
+                    <div class="check-item critical">
+                        <input type="checkbox" id="test1-2" onchange="updateProgress()">
+                        <label for="test1-2">
+                            <strong>无控制台错误</strong><br>
+                            按 F12 打开控制台，Console 标签应无红色错误信息
+                        </label>
+                    </div>
+                    <div class="check-item critical">
+                        <input type="checkbox" id="test1-3" onchange="updateProgress()">
+                        <label for="test1-3">
+                            <strong>所有图标正常显示</strong><br>
+                            检查工作流平台、服务网络等板块的图标是否正常显示
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试清单2: scrollToAgents 功能 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>🎯</span>
+                    <span>测试2：智能体跳转功能<span class="status-badge critical">必测</span></span>
+                </h2>
+                <div class="test-location">
+                    <strong>📍 测试位置：</strong>首页 → 核心智能体板块
+                </div>
+                <div class="checklist">
+                    <div class="check-item critical">
+                        <input type="checkbox" id="test2-1" onchange="updateProgress()">
+                        <label for="test2-1">
+                            <strong>点击"明升企业智能体"卡片（左侧）</strong><br>
+                            点击紫色的"明升企业智能体"整个卡片区域 → 应跳转到 <code>/ai-agents</code> 页面
+                        </label>
+                    </div>
+                    <div class="check-item critical">
+                        <input type="checkbox" id="test2-2" onchange="updateProgress()">
+                        <label for="test2-2">
+                            <strong>点击"查看全部智能体"按钮</strong><br>
+                            点击左侧卡片底部的蓝色按钮 → 应跳转到 <code>/ai-agents</code> 页面（阻止冒泡）
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test2-3" onchange="updateProgress()">
+                        <label for="test2-3">
+                            <strong>测试后退按钮</strong><br>
+                            点击浏览器后退按钮 → 应返回首页
+                        </label>
+                    </div>
+                </div>
+                <div class="code-block">
+// 第264行：@click.stop="scrollToAgents"
+// 功能：阻止事件冒泡，只执行按钮点击，不触发卡片点击
+                </div>
+            </div>
+
+            <!-- 测试清单3: Document Icon -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>📄</span>
+                    <span>测试3：Document 图标显示<span class="status-badge warning">重要</span></span>
+                </h2>
+                <div class="test-location">
+                    <strong>📍 测试位置：</strong>首页 → AI工作流平台 → "了解更多"按钮
+                </div>
+                <div class="checklist">
+                    <div class="check-item">
+                        <input type="checkbox" id="test3-1" onchange="updateProgress()">
+                        <label for="test3-1">
+                            <strong>滚动到AI工作流平台板块</strong><br>
+                            页面向下滚动，找到"🤖 AI工作流平台"板块
+                        </label>
+                    </div>
+                    <div class="check-item warning">
+                        <input type="checkbox" id="test3-2" onchange="updateProgress()">
+                        <label for="test3-2">
+                            <strong>Document 图标显示</strong><br>
+                            "了解更多"按钮左侧应显示文档图标（📄）
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test3-3" onchange="updateProgress()">
+                        <label for="test3-3">
+                            <strong>点击"了解更多"按钮</strong><br>
+                            点击按钮，应阻止冒泡（不触发卡片点击）
+                        </label>
+                    </div>
+                </div>
+                <div class="code-block">
+// 第391-394行：
+&lt;el-button size="large" plain @click.stop="() => {}"&gt;
+  &lt;el-icon&gt;&lt;Document /&gt;&lt;/el-icon&gt;
+  了解更多
+&lt;/el-button&gt;
+                </div>
+            </div>
+
+            <!-- 测试清单4: Operation Icon -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>⚙️</span>
+                    <span>测试4：Operation 图标显示<span class="status-badge warning">重要</span></span>
+                </h2>
+                <div class="test-location">
+                    <strong>📍 测试位置：</strong>首页 → AI工作流平台 → 卡片头部图标
+                </div>
+                <div class="checklist">
+                    <div class="check-item warning">
+                        <input type="checkbox" id="test4-1" onchange="updateProgress()">
+                        <label for="test4-1">
+                            <strong>Operation 图标显示</strong><br>
+                            工作流平台卡片左上角应显示齿轮/操作图标
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test4-2" onchange="updateProgress()">
+                        <label for="test4-2">
+                            <strong>Connection 图标显示</strong><br>
+                            "查看所有平台"按钮左侧应显示连接图标
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test4-3" onchange="updateProgress()">
+                        <label for="test4-3">
+                            <strong>点击"查看所有平台"按钮</strong><br>
+                            点击按钮 → 应弹出对话框显示29个平台列表
+                        </label>
+                    </div>
+                </div>
+                <div class="code-block">
+// 第347行：
+&lt;el-icon :size="40"&gt;&lt;Operation /&gt;&lt;/el-icon&gt;
+
+// 第388行：
+&lt;el-icon&gt;&lt;Connection /&gt;&lt;/el-icon&gt;
+                </div>
+            </div>
+
+            <!-- 测试清单5: Location Icon -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>📍</span>
+                    <span>测试5：Location 图标显示<span class="status-badge success">常规</span></span>
+                </h2>
+                <div class="test-location">
+                    <strong>📍 测试位置：</strong>首页 → 服务网络 → 各地办事处
+                </div>
+                <div class="checklist">
+                    <div class="check-item">
+                        <input type="checkbox" id="test5-1" onchange="updateProgress()">
+                        <label for="test5-1">
+                            <strong>滚动到服务网络板块</strong><br>
+                            页面向下滚动，找到"服务网络"板块
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test5-2" onchange="updateProgress()">
+                        <label for="test5-2">
+                            <strong>Location 图标显示（广州）</strong><br>
+                            "广州"办事处应显示位置图标（📍）
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test5-3" onchange="updateProgress()">
+                        <label for="test5-3">
+                            <strong>所有地点图标正常</strong><br>
+                            检查长沙、株洲、常德、柳州、武汉、宜昌、杭州、上海等地的图标
+                        </label>
+                    </div>
+                </div>
+                <div class="code-block">
+// 第515行：
+&lt;el-icon :size="32" color="#1890ff"&gt;&lt;Location /&gt;&lt;/el-icon&gt;
+                </div>
+            </div>
+
+            <!-- 浏览器兼容性测试 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>🌐</span>
+                    <span>测试6：浏览器兼容性<span class="status-badge success">可选</span></span>
+                </h2>
+                <div class="checklist">
+                    <div class="check-item">
+                        <input type="checkbox" id="test6-1" onchange="updateProgress()">
+                        <label for="test6-1">
+                            <strong>Chrome浏览器测试</strong><br>
+                            在 Chrome 中测试所有功能正常
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test6-2" onchange="updateProgress()">
+                        <label for="test6-2">
+                            <strong>Edge浏览器测试</strong><br>
+                            在 Edge 中测试所有功能正常
+                        </label>
+                    </div>
+                    <div class="check-item">
+                        <input type="checkbox" id="test6-3" onchange="updateProgress()">
+                        <label for="test6-3">
+                            <strong>Firefox浏览器测试</strong><br>
+                            在 Firefox 中测试所有功能正常
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速操作按钮 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span>🚀</span>
+                    <span>快速操作</span>
+                </h2>
+                <div class="btn-group">
+                    <button class="btn" onclick="window.open('http://localhost:3002', '_blank')">
+                        🌐 打开首页
+                    </button>
+                    <button class="btn" onclick="window.open('http://localhost:3002/ai-agents', '_blank')">
+                        🤖 打开智能体页面
+                    </button>
+                    <button class="btn" onclick="resetChecklist()">
+                        🔄 重置清单
+                    </button>
+                    <button class="btn" onclick="printReport()">
+                        📄 生成报告
+                    </button>
+                </div>
+            </div>
+
+            <!-- 测试结果 -->
+            <div class="section" id="resultSection" style="display: none;">
+                <h2 class="section-title">
+                    <span>🎉</span>
+                    <span>测试结果</span>
+                </h2>
+                <div class="success-example">
+                    <h3 style="margin-bottom: 15px;">✅ 恭喜！所有测试通过！</h3>
+                    <p style="line-height: 1.8;">
+                        Home.vue 页面渲染错误已成功修复：<br>
+                        • <strong>Document</strong>、<strong>Location</strong>、<strong>Operation</strong> 图标正常显示<br>
+                        • <strong>scrollToAgents()</strong> 函数正常工作<br>
+                        • 所有点击事件响应正常<br>
+                        • 无编译错误和运行时错误
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const totalTests = 18; // 总测试项数
+
+        function updateProgress() {
+            const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checkedCount / totalTests) * 100);
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+
+            // 如果全部完成，显示结果
+            if (checkedCount === totalTests) {
+                document.getElementById('resultSection').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            } else {
+                document.getElementById('resultSection').style.display = 'none';
+            }
+        }
+
+        function resetChecklist() {
+            if (confirm('确定要重置测试清单吗？')) {
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                updateProgress();
+            }
+        }
+
+        function printReport() {
+            const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checkedCount / totalTests) * 100);
+            
+            let report = `
+===========================================
+      Home页面修复测试报告
+===========================================
+
+测试时间: ${new Date().toLocaleString('zh-CN')}
+测试进度: ${checkedCount}/${totalTests} (${percentage}%)
+
+【测试项明细】
+`;
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                const title = section.querySelector('.section-title');
+                if (title && title.textContent.includes('测试')) {
+                    report += `\n${title.textContent.trim()}\n`;
+                    const items = section.querySelectorAll('.check-item');
+                    items.forEach(item => {
+                        const checkbox = item.querySelector('input[type="checkbox"]');
+                        const label = item.querySelector('label');
+                        if (checkbox && label) {
+                            const status = checkbox.checked ? '✅' : '⬜';
+                            const text = label.textContent.split('\n')[0].trim();
+                            report += `  ${status} ${text}\n`;
+                        }
+                    });
+                }
+            });
+
+            report += `
+===========================================
+             测试结论
+===========================================
+`;
+            if (percentage === 100) {
+                report += `
+✅ 所有测试通过！
+   Home.vue 页面渲染错误已成功修复。
+`;
+            } else {
+                report += `
+⚠️  测试未完成 (${percentage}%)
+   请继续完成剩余测试项。
+`;
+            }
+
+            report += `
+===========================================
+`;
+
+            // 创建文本文件并下载
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Home页面修复测试报告_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert('测试报告已生成并下载！');
+        }
+    </script>
+</body>
+</html>

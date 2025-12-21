@@ -89,6 +89,11 @@
           <span>📊 企业产品矩阵</span>
         </el-menu-item>
 
+        <el-menu-item index="/admin/material-download">
+          <el-icon><Download /></el-icon>
+          <span>📥 资料下载管理</span>
+        </el-menu-item>
+
         <el-sub-menu index="central-platform">
           <template #title>
             <el-icon><Platform /></el-icon>
@@ -191,7 +196,7 @@ import { ElMessage } from 'element-plus'
 import { 
   Odometer, Setting, Tools, Collection, Box, Document, User, 
   Expand, House, Position, Operation, DataAnalysis, Reading, FolderOpened, Star,
-  Platform, Connection, Notebook, TrendCharts, Monitor
+  Platform, Connection, Notebook, TrendCharts, Monitor, Download, Grid, List
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -210,6 +215,7 @@ const currentPageTitle = computed(() => {
     '/admin/mingsheng-aicrm': '明升AICRM后台管理',
     '/admin/product-matrix': '企业产品矩阵管理',
     '/admin/customer360': '客户360画像与沙盘分析管理',
+    '/admin/material-download': '资料下载管理',
     '/admin/tightening-data': '拧紧数据采集分析',
     '/admin/classroom': '产品技术销售小课堂 - 分类与课程管理',
     '/admin/classroom-resources': '产品技术销售小课堂 - 多媒体资源管理',

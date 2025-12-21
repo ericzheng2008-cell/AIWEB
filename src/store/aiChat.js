@@ -187,6 +187,133 @@ export const useAiChatStore = defineStore('aiChat', {
           'en-US': 'Thank you for your inquiry! 💼\n\n**Quick Quote Process**:\n\n1️⃣ **Online Inquiry Form**\nClick "Get Quote" button below to submit detailed requirements\n\n2️⃣ **Direct Contact**\n📧 sales@mingsheng.com\n📞 +86-400-123-4567\n💬 WhatsApp: +86-138-0000-0000\n\n3️⃣ **Information Needed**\nFor fast & accurate quotation, please provide:\n• Product model or specifications\n• Purchase quantity\n• Delivery requirements\n• Target price (if any)\n\n⏰ **Response Time**\n• Standard inquiry: Within 24 hours\n• Urgent inquiry: Within 4 hours\n• Complex project: Within 48 hours\n\nWe offer highly competitive prices! ✨'
         }
       }
+    },
+    // 🆕 企业工作场景智能推荐系统
+    workScenarios: {
+      // 设备管理场景
+      equipmentManagement: {
+        keywords: ['设备管理', '设备维护', '设备运营', '资产管理', '设备监控', '保养', 'equipment management', 'asset management', 'maintenance', 'equipment monitoring'],
+        recommendations: {
+          internalTools: [
+            { name: '设备全生命周期管理', route: '/equipment-lifecycle', icon: '📊', description: '设备档案、ROI分析、AI保养预测' },
+            { name: '数字监控驾驶舱', route: '/equipment-dashboard', icon: '🚀', description: '实时监控设备状态、维护流程可视化' },
+            { name: '故障工单管理', route: '/fault-tracking', icon: '🔧', description: '工单追踪、维修进度查询' }
+          ],
+          externalTools: [
+            { name: 'UniEAP Workflow', url: 'https://iuap.yonyoucloud.com/iuap/', icon: '🏢', description: '用友BIP企业级流程编排' },
+            { name: 'Dify工作流', url: 'https://dify.ai/', icon: '🔧', description: '开源LLM应用，支持设备管理工作流' }
+          ]
+        }
+      },
+      // 招聘场景
+      recruitment: {
+        keywords: ['招聘', '人才', 'HR', '人力资源', '求职', '招人', 'recruitment', 'hiring', 'talent', 'HR', 'human resource'],
+        recommendations: {
+          internalTools: [],
+          externalTools: [
+            { name: 'Moka Eva', url: 'https://www.mokahr.com/', icon: '👔', description: 'AI驱动智能招聘系统' },
+            { name: '世纪云猎', url: 'https://www.liepin.com/', icon: '🎓', description: '智能人才工作流管理' },
+            { name: '讯飞智聘', url: 'https://zhaopin.iflytek.com/', icon: '🎤', description: '科大讯飞智能招聘平台' },
+            { name: '猎聘Doris', url: 'https://www.liepin.com/doris/', icon: '🦌', description: 'AI推荐+招聘流程管理' },
+            { name: '仟寻', url: 'https://www.qianxunhr.com/', icon: '🔍', description: '企业级招聘管理系统' }
+          ]
+        }
+      },
+      // 销售数据分析场景
+      salesAnalysis: {
+        keywords: ['销售', '销售分析', '数据分析', '销售目标', '业绩', '客户', 'sales', 'sales analysis', 'data analysis', 'CRM', 'customer'],
+        recommendations: {
+          internalTools: [
+            { name: 'AI CRM系统', route: '/mingsheng-aicrm', icon: '📊', description: '客户360画像、销售漏斗、数据分析' },
+            { name: '投标预测AI', route: '/bid-prediction', icon: '🎯', description: '5竞对对比、智能分析' },
+            { name: '客户沙盘分析', route: '/customer-sandbox', icon: '🗺️', description: '全球客户分布、策略推荐' }
+          ],
+          externalTools: [
+            { name: 'Airtable', url: 'https://www.airtable.com/', icon: '📊', description: '数据库+工作流融合，销售数据管理' },
+            { name: '金蝶云·星空', url: 'https://www.kingdee.com/products/cosmic', icon: '⭐', description: 'ERP与经营一体化分析' }
+          ]
+        }
+      },
+      // 项目管理场景
+      projectManagement: {
+        keywords: ['项目管理', '项目', '任务', '进度', '甘特图', '协作', 'project management', 'project', 'task', 'gantt', 'collaboration'],
+        recommendations: {
+          internalTools: [
+            { name: 'AI项目管理', route: '/ai-project-management', icon: '🎯', description: '甘特图、任务分配、进度追踪' }
+          ],
+          externalTools: [
+            { name: 'KISSflow', url: 'https://kissflow.com/', icon: '💼', description: '无代码流程设计，项目工作流管理' },
+            { name: 'BetterYeah', url: 'https://www.betteryeah.com/', icon: '🎯', description: '敏捷开发协作，项目管理工作流' },
+            { name: 'Airtable', url: 'https://www.airtable.com/', icon: '📊', description: '智能协作平台，项目数据管理' }
+          ]
+        }
+      },
+      // 智能办公协作场景
+      officeCollaboration: {
+        keywords: ['办公', '协同', '协作', '工作流', '审批', '自动化', 'office', 'collaboration', 'workflow', 'approval', 'automation'],
+        recommendations: {
+          internalTools: [],
+          externalTools: [
+            { name: '钉钉智能伙伴', url: 'https://open.dingtalk.com/', icon: '📱', description: '企业协同办公自动化' },
+            { name: '飞书Lark', url: 'https://open.feishu.cn/', icon: '🚀', description: '团队协作效率工具' },
+            { name: '腾讯元器', url: 'https://yuanqi.tencent.com/', icon: '🧩', description: '低代码快速构建企业应用' },
+            { name: '实在智能RPA', url: 'https://www.i-search.com.cn/', icon: '🤖', description: '企业级流程自动化' }
+          ]
+        }
+      },
+      // AI智能体开发场景
+      aiAgentDev: {
+        keywords: ['AI智能体', '智能助手', 'AI开发', '机器人', 'chatbot', 'AI agent', 'bot development', 'AI assistant'],
+        recommendations: {
+          internalTools: [
+            { name: '明升企业智能体', route: '/ai-agents', icon: '🤖', description: '25个智能体，覆盖7大领域' }
+          ],
+          externalTools: [
+            { name: 'Coze', url: 'https://www.coze.com/', icon: '🚀', description: '字节跳动AI Bot开发平台' },
+            { name: 'Dify', url: 'https://dify.ai/', icon: '🔧', description: '开源LLM应用开发平台' },
+            { name: '阿里云百练', url: 'https://bailian.console.aliyun.com/', icon: '🎯', description: '企业级AI应用构建' },
+            { name: '腾讯云智能体', url: 'https://cloud.tencent.com/product/tai', icon: '🧠', description: 'AI Agent开发平台' },
+            { name: '百度文心智能体', url: 'https://yiyan.baidu.com/', icon: '🌐', description: '无代码构建AI助手' }
+          ]
+        }
+      },
+      // 学习培训场景
+      training: {
+        keywords: ['学习', '培训', '教育', '课程', '知识', 'learning', 'training', 'education', 'course', 'knowledge'],
+        recommendations: {
+          internalTools: [
+            { name: '产品技术销售小课堂', route: '/tech-classroom', icon: '🎓', description: '9大技术领域专业课程' }
+          ],
+          externalTools: [
+            { name: '慕课网', url: 'https://www.imooc.com/', icon: '📚', description: 'IT技能学习平台' },
+            { name: '讯飞AI大学堂', url: 'https://ai.iflytek.com/', icon: '🎓', description: 'AI技术学习与应用' }
+          ]
+        }
+      },
+      // 数据治理场景
+      dataGovernance: {
+        keywords: ['数据治理', '数据管理', '数据清洗', '数据分析', '大数据', 'data governance', 'data management', 'data cleaning', 'big data'],
+        recommendations: {
+          internalTools: [
+            { name: 'AI数据治理', route: '/data-governance', icon: '🗄️', description: '智能数据清洗、质量检查' }
+          ],
+          externalTools: [
+            { name: '华为云FlexusAI', url: 'https://www.huaweicloud.com/', icon: '☁️', description: '企业级AI数据编排' },
+            { name: '阿里云百练', url: 'https://bailian.console.aliyun.com/', icon: '🎯', description: '大模型数据应用' }
+          ]
+        }
+      },
+      // 业务模拟场景
+      businessSimulation: {
+        keywords: ['业务模拟', '沙盘', '模拟器', '预测', '决策', 'business simulation', 'sandbox', 'simulator', 'prediction', 'decision'],
+        recommendations: {
+          internalTools: [
+            { name: 'AI业务模拟器', route: '/business-simulator', icon: '🎮', description: '智能场景模拟、决策支持' },
+            { name: '客户沙盘分析', route: '/customer-sandbox', icon: '🗺️', description: '全球客户分布模拟' }
+          ],
+          externalTools: []
+        }
+      }
     }
   }),
 
@@ -265,6 +392,36 @@ export const useAiChatStore = defineStore('aiChat', {
     // 获取相关建议
     getRelatedSuggestions(answer, locale) {
       const suggestions = []
+      
+      // 🆕 优先处理场景推荐的建议卡片
+      if (this.lastMatchedScenario) {
+        const { recommendations } = this.lastMatchedScenario
+        
+        // 添加内部工具卡片
+        recommendations.internalTools.forEach(tool => {
+          suggestions.push({
+            text: `${tool.icon} ${tool.name}`,
+            action: 'navigate',
+            route: tool.route,
+            icon: 'Promotion'
+          })
+        })
+        
+        // 添加外部工具卡片（最多3个）
+        recommendations.externalTools.slice(0, 3).forEach(tool => {
+          suggestions.push({
+            text: `${tool.icon} ${tool.name}`,
+            action: 'external_link',
+            url: tool.url,
+            icon: 'Link'
+          })
+        })
+        
+        // 清除场景缓存
+        this.lastMatchedScenario = null
+        
+        return suggestions.slice(0, 5) // 最多显示5个建议
+      }
       
       // 如果回答中包含功能推荐，提供快捷操作
       if (this.lastMatchedRoute) {
@@ -401,6 +558,12 @@ export const useAiChatStore = defineStore('aiChat', {
         return this.getThanksResponse(locale)
       }
       
+      // 🆕 优先检测工作场景（新功能）
+      const scenarioMatch = this.matchWorkScenario(lowerQuestion, locale)
+      if (scenarioMatch) {
+        return scenarioMatch
+      }
+      
       // 优先匹配智能体功能
       for (const [key, func] of Object.entries(this.agentFunctions)) {
         const matched = func.keywords.some(keyword => 
@@ -491,6 +654,86 @@ export const useAiChatStore = defineStore('aiChat', {
       }
 
       return null
+    },
+
+    // 🆕 匹配工作场景并推荐工具
+    matchWorkScenario(question, locale) {
+      for (const [scenarioKey, scenario] of Object.entries(this.workScenarios)) {
+        const matched = scenario.keywords.some(keyword => 
+          question.includes(keyword.toLowerCase())
+        )
+        
+        if (matched) {
+          this.conversationContext.lastTopic = scenarioKey
+          this.conversationContext.lastIntent = 'scenario_recommendation'
+          
+          return this.generateScenarioRecommendation(scenario, scenarioKey, locale)
+        }
+      }
+      return null
+    },
+
+    // 🆕 生成场景推荐回复
+    generateScenarioRecommendation(scenario, scenarioKey, locale) {
+      const { internalTools, externalTools } = scenario.recommendations
+      
+      let answer = ''
+      
+      // 构建推荐内容
+      if (locale === 'zh-CN') {
+        answer = '太好了！根据您的需求，我为您推荐以下工具：\n\n'
+        
+        // 内部工具推荐
+        if (internalTools.length > 0) {
+          answer += '📌 **明升智能体系统**\n'
+          internalTools.forEach((tool, index) => {
+            answer += `${index + 1}. ${tool.icon} **${tool.name}**\n   ${tool.description}\n`
+          })
+          answer += '\n'
+        }
+        
+        // 外部工具推荐
+        if (externalTools.length > 0) {
+          answer += '🌐 **推荐外部AI工具**\n'
+          externalTools.slice(0, 3).forEach((tool, index) => {
+            answer += `${index + 1}. ${tool.icon} **${tool.name}**\n   ${tool.description}\n`
+          })
+          
+          if (externalTools.length > 3) {
+            answer += `\n...还有${externalTools.length - 3}个更多工具推荐\n`
+          }
+        }
+        
+        answer += '\n💡 点击下方卡片即可快速打开对应工具！'
+      } else {
+        answer = 'Great! Based on your needs, I recommend the following tools:\n\n'
+        
+        if (internalTools.length > 0) {
+          answer += '📌 **Mingsheng AI Agents**\n'
+          internalTools.forEach((tool, index) => {
+            answer += `${index + 1}. ${tool.icon} **${tool.name}**\n   ${tool.description}\n`
+          })
+          answer += '\n'
+        }
+        
+        if (externalTools.length > 0) {
+          answer += '🌐 **Recommended External AI Tools**\n'
+          externalTools.slice(0, 3).forEach((tool, index) => {
+            answer += `${index + 1}. ${tool.icon} **${tool.name}**\n   ${tool.description}\n`
+          })
+          
+          if (externalTools.length > 3) {
+            answer += `\n...and ${externalTools.length - 3} more tools\n`
+          }
+        }
+        
+        answer += '\n💡 Click the cards below to open the tools!'
+      }
+      
+      // 存储场景信息，用于生成建议卡片
+      this.lastMatchedScenario = { scenarioKey, recommendations: scenario.recommendations }
+      
+      return answer
     },
 
     // 跳转到智能体功能

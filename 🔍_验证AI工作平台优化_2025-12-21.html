@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 AI工作平台优化验证清单</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 40px;
+    }
+    
+    .section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checklist {
+      list-style: none;
+    }
+    
+    .checklist li {
+      padding: 12px;
+      margin-bottom: 8px;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.3s;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    
+    .checklist li:hover {
+      border-color: #667eea;
+      transform: translateX(4px);
+    }
+    
+    .checklist input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .checklist label {
+      cursor: pointer;
+      flex: 1;
+      line-height: 1.6;
+    }
+    
+    .checklist li.checked {
+      background: #e8f5e9;
+      border-color: #4caf50;
+    }
+    
+    .checklist li.checked label {
+      text-decoration: line-through;
+      color: #999;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    .progress-text {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .completion-message {
+      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      display: none;
+      animation: slideDown 0.5s;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    
+    .info-box strong {
+      color: #1976d2;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .comparison-table th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .comparison-table .before {
+      color: #f44336;
+      text-decoration: line-through;
+    }
+    
+    .comparison-table .after {
+      color: #4caf50;
+      font-weight: 600;
+    }
+    
+    .link-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-top: 16px;
+    }
+    
+    .link-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 AI工作平台优化验证清单</h1>
+    <p class="subtitle">AI Work Platforms Optimization Verification</p>
+    
+    <div class="completion-message" id="completionMessage">
+      🎉 恭喜！所有验证项目已完成！AI工作平台优化完美运行！
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">完成进度: 0%</div>
+    
+    <div class="info-box">
+      <strong>🎯 本次优化内容：</strong><br>
+      1. 名称优化：AI工作流平台 → AI工作平台<br>
+      2. 新增平台：AI工具集（https://ai-bot.cn/）<br>
+      3. 数量更新：29个平台 → 30个平台
+    </div>
+    
+    <div class="section">
+      <div class="section-title">📋 修改对比</div>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>项目</th>
+            <th>修改前</th>
+            <th>修改后</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>板块名称</td>
+            <td class="before">AI工作流平台</td>
+            <td class="after">AI工作平台 ✅</td>
+          </tr>
+          <tr>
+            <td>英文名称</td>
+            <td class="before">AI Workflow Platforms</td>
+            <td class="after">AI Work Platforms ✅</td>
+          </tr>
+          <tr>
+            <td>平台总数</td>
+            <td class="before">29个</td>
+            <td class="after">30个 ✅</td>
+          </tr>
+          <tr>
+            <td>首个平台</td>
+            <td class="before">UniEAP Workflow</td>
+            <td class="after">AI工具集 🛠️ ✅</td>
+          </tr>
+          <tr>
+            <td>AI工具集链接</td>
+            <td class="before">-</td>
+            <td class="after">https://ai-bot.cn/ ✅</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">1️⃣ 板块标题验证</div>
+      <ul class="checklist">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>板块标题显示为 "🤖 AI工作平台 / AI Work Platforms"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>副标题为 "连接顶尖AI工作平台，一站式管理企业智能化流程"</label>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">2️⃣ 卡片内容验证</div>
+      <ul class="checklist">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>卡片标题显示 "AI工作平台集"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>卡片副标题显示 "30个顶尖平台 · 企业级流程 · 智能编排 · 一站式管理"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>统计数据显示 "30个平台"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>功能标签中第一个显示 "🛠️ AI工具集"</label>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">3️⃣ 弹窗内容验证</div>
+      <ul class="checklist">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>点击卡片能正常打开弹窗</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>弹窗标题显示 "🤖 AI工作平台集（30个）"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>弹窗中显示30个平台卡片</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>第一个平台卡片显示 "AI工具集"</label>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">4️⃣ AI工具集平台验证</div>
+      <ul class="checklist">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>AI工具集平台图标显示 🛠️</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>平台描述为 "AI工具集 - 收录全球顶尖AI工具，涵盖办公、设计、开发等各领域"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>平台标签包含 "AI工具"、"全球精选"、"多领域"</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>点击AI工具集卡片能正确跳转到 https://ai-bot.cn/</label>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">5️⃣ 整体功能验证</div>
+      <ul class="checklist">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>所有29个原有平台正常显示</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>点击各平台卡片能正确跳转</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>弹窗关闭功能正常</label>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" onchange="updateProgress()">
+          <label>页面无JavaScript错误</label>
+        </li>
+      </ul>
+    </div>
+    
+    <div style="text-align: center; margin-top: 32px;">
+      <a href="http://localhost:3002" class="link-button" target="_blank">
+        🚀 打开AIWEB测试
+      </a>
+      <a href="https://ai-bot.cn/" class="link-button" target="_blank">
+        🛠️ 访问AI工具集
+      </a>
+    </div>
+  </div>
+  
+  <script>
+    function toggleCheck(li) {
+      const checkbox = li.querySelector('input[type="checkbox"]');
+      checkbox.checked = !checkbox.checked;
+      updateProgress();
+    }
+    
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+      const total = checkboxes.length;
+      let checked = 0;
+      
+      checkboxes.forEach(checkbox => {
+        const li = checkbox.closest('li');
+        if (checkbox.checked) {
+          checked++;
+          li.classList.add('checked');
+        } else {
+          li.classList.remove('checked');
+        }
+      });
+      
+      const percentage = Math.round((checked / total) * 100);
+      document.getElementById('progressFill').style.width = percentage + '%';
+      document.getElementById('progressText').textContent = `完成进度: ${percentage}% (${checked}/${total})`;
+      
+      const completionMessage = document.getElementById('completionMessage');
+      if (percentage === 100) {
+        completionMessage.style.display = 'block';
+      } else {
+        completionMessage.style.display = 'none';
+      }
+    }
+    
+    // 初始化进度
+    updateProgress();
+  </script>
+</body>
+</html>

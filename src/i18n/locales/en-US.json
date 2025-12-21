@@ -11,7 +11,8 @@
     "readMore": "Read More",
     "viewDetails": "View Details",
     "contactUs": "Contact Us",
-    "consultSolution": "Request Consultation"
+    "consultSolution": "Request Consultation",
+    "backHome": "Back to Home"
   },
   "header": {
     "hotline": "Hotline",
@@ -261,5 +262,51 @@
       "fillName": "Please fill in complete name",
       "selectCategory": "Please select a category"
     }
+  },
+  "materials": {
+    "title": "Material Download Center",
+    "subtitle": "Access product manuals, technical documents, whitepapers and more",
+    "description": "Download product manuals, technical specifications, case studies, whitepapers and other professional materials",
+    "viewAll": "View All Materials",
+    "dialogTitle": "Material Download Center",
+    "allCategories": "All Categories",
+    "filterByType": "Filter by Type",
+    "allTypes": "All Types",
+    "types": {
+      "manual": "Product Manual",
+      "technical": "Technical Document",
+      "whitepaper": "Whitepaper",
+      "other": "Other"
+    },
+    "search": "Search materials by name or description",
+    "download": "Download",
+    "downloads": "downloads",
+    "registerFirst": "Please register to download",
+    "registerTitle": "User Registration",
+    "name": "Name",
+    "company": "Company Name",
+    "phone": "Phone Number",
+    "email": "Email",
+    "verificationCode": "Verification Code",
+    "clickRefresh": "Click to Refresh",
+    "register": "Register",
+    "registering": "Registering...",
+    "namePlaceholder": "Enter your name",
+    "companyPlaceholder": "Enter company name",
+    "phonePlaceholder": "Enter phone number",
+    "emailPlaceholder": "Enter email address",
+    "codePlaceholder": "Enter verification code",
+    "nameRequired": "Name is required",
+    "companyRequired": "Company name is required",
+    "phoneRequired": "Phone number is required",
+    "phoneInvalid": "Please enter a valid phone number",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "codeRequired": "Verification code is required",
+    "codeInvalid": "Incorrect verification code",
+    "registerSuccess": "Registration successful! You can now download materials",
+    "downloadSuccess": "Download successful! Thank you for your interest",
+    "noMaterials": "No materials available"
   }
 }
+

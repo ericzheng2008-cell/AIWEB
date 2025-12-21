@@ -606,6 +606,76 @@
             </div>
           </div>
         </el-form-item>
+        <el-form-item label="产品视频">
+          <div class="product-video-upload">
+            <el-alert 
+              title="💡 支持本地上传和链接地址两种方式"
+              type="info" 
+              :closable="false"
+              style="margin-bottom: 12px">
+              <p>• 本地上传: 支持MP4、AVI、MOV格式，建议<50MB</p>
+              <p>• 链接地址: YouTube、Vimeo、腾讯视频嵌入链接</p>
+            </el-alert>
+            
+            <el-tabs v-model="videoUploadMode" class="video-tabs">
+              <el-tab-pane label="📤 本地上传" name="upload">
+                <el-upload
+                  drag
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :on-change="handleProductVideoChange"
+                  accept="video/mp4,video/avi,video/quicktime">
+                  <el-icon class="el-icon--upload"><VideoCamera /></el-icon>
+                  <div class="el-upload__text">将视频拖到此处，或<em>点击上传</em></div>
+                  <div class="el-upload__tip">支持 MP4、AVI、MOV 格式，大小建议<50MB（最大100MB）</div>
+                </el-upload>
+              </el-tab-pane>
+              
+              <el-tab-pane label="🔗 链接地址" name="link">
+                <el-input 
+                  v-model="productForm.videoUrl" 
+                  placeholder="https://www.youtube.com/embed/VIDEO_ID"
+                  clearable>
+                  <template #prepend>
+                    <el-icon><Link /></el-icon> URL
+                  </template>
+                </el-input>
+                <div class="video-link-tips">
+                  <el-text type="info" size="small">
+                    <el-icon><InfoFilled /></el-icon>
+                    示例: https://www.youtube.com/embed/dQw4w9WgXcQ
+                  </el-text>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+            
+            <!-- 视频预览 -->
+            <div v-if="productForm.videoUrl" class="video-preview-box">
+              <div class="preview-header">
+                <el-text type="success"><el-icon><Check /></el-icon> 视频已设置</el-text>
+                <el-button size="small" type="danger" @click="productForm.videoUrl = ''">
+                  <el-icon><Delete /></el-icon> 删除视频
+                </el-button>
+              </div>
+              <div class="video-preview-content">
+                <video 
+                  v-if="productForm.videoUrl.startsWith('data:') || productForm.videoUrl.endsWith('.mp4')"
+                  :src="productForm.videoUrl"
+                  controls
+                  style="width: 100%; max-height: 300px;">
+                </video>
+                <iframe 
+                  v-else
+                  :src="productForm.videoUrl"
+                  width="100%"
+                  height="300"
+                  frameborder="0"
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>
+          </div>
+        </el-form-item>
         <el-form-item label="规格参数">
           <el-input v-model="productForm.specifications" type="textarea" :rows="3" placeholder="请输入产品规格参数" />
         </el-form-item>
@@ -621,7 +691,10 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Edit, Delete, Check, Box, UploadFilled, Rank } from '@element-plus/icons-vue'
+import { 
+  Plus, Edit, Delete, Check, Box, UploadFilled, Rank,
+  VideoCamera, Link, InfoFilled
+} from '@element-plus/icons-vue'
 import { useProductsServicesStore } from '../../store/productsServices'
 import { usePageContentStore } from '../../store/pageContent'
 import Sortable from 'sortablejs'
@@ -815,6 +888,7 @@ const filteredLevel2ForLevel3 = computed(() => {
 
 // 产品表单
 const productDialogVisible = ref(false)
+const videoUploadMode = ref('upload') // 视频上传模式: upload 或 link
 const productForm = ref({
   id: null,
   level1CategoryId: null,
@@ -823,6 +897,7 @@ const productForm = ref({
   name: { 'zh-CN': '', 'en-US': '' },
   description: { 'zh-CN': '', 'en-US': '' },
   images: [''],
+  videoUrl: '', // 新增视频URL字段
   specifications: ''
 })
 
@@ -906,6 +981,37 @@ const handleProductImageChange = async (file) => {
 
 const removeProductImage = (index) => {
   productForm.value.images.splice(index, 1)
+}
+
+// 产品视频上传处理
+const handleProductVideoChange = async (file) => {
+  // 验证视频文件
+  const isVideo = /^video\/(mp4|avi|quicktime)$/i.test(file.raw.type)
+  const isLt100M = file.raw.size / 1024 / 1024 < 100
+  
+  if (!isVideo) {
+    ElMessage.error('只支持MP4、AVI、MOV格式的视频!')
+    return false
+  }
+  if (!isLt100M) {
+    ElMessage.error('视频大小不能超过 100MB!')
+    return false
+  }
+  
+  try {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      productForm.value.videoUrl = e.target.result
+      ElMessage.success('视频上传成功!')
+    }
+    reader.onerror = () => {
+      ElMessage.error('视频读取失败，请重试!')
+    }
+    reader.readAsDataURL(file.raw)
+  } catch (error) {
+    console.error('视频上传失败:', error)
+    ElMessage.error('视频上传失败，请重试!')
+  }
 }
 
 // 一级分类操作
@@ -1050,13 +1156,23 @@ const showAddProductDialog = () => {
     name: { 'zh-CN': '', 'en-US': '' },
     description: { 'zh-CN': '', 'en-US': '' },
     images: [''],
+    videoUrl: '', // 新增视频URL字段
     specifications: ''
   }
+  videoUploadMode.value = 'upload' // 重置视频上传模式
   productDialogVisible.value = true
 }
 
 const editProduct = (row) => {
   productForm.value = JSON.parse(JSON.stringify(row))
+  // 如果没有videoUrl字段，添加默认值
+  if (!productForm.value.videoUrl) {
+    productForm.value.videoUrl = ''
+  }
+  // 根据videoUrl判断上传模式
+  if (productForm.value.videoUrl) {
+    videoUploadMode.value = productForm.value.videoUrl.startsWith('data:') ? 'upload' : 'link'
+  }
   productDialogVisible.value = true
 }
 
@@ -1319,6 +1435,49 @@ onMounted(() => {
   font-size: 12px;
 }
 
+/* 产品视频上传样式 */
+.product-video-upload {
+  width: 100%;
+}
+
+.video-tabs {
+  margin-top: 12px;
+}
+
+.video-link-tips {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f5f7fa;
+  border-radius: 4px;
+}
+
+.video-preview-box {
+  margin-top: 16px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video-preview-box .preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f5f7fa;
+  border-bottom: 1px solid #dcdfe6;
+}
+
+.video-preview-content {
+  padding: 16px;
+  background: #000;
+}
+
+.video-preview-content video,
+.video-preview-content iframe {
+  display: block;
+  border-radius: 4px;
+}
+
 /* 导航栏配置样式 */
 .navbar-config-section {
   padding: 20px 0;
@@ -1333,6 +1492,10 @@ onMounted(() => {
   color: #764ba2;
   transform: scale(1.1);
 }
+
+
+
+
 
 
 

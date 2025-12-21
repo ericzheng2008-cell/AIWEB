@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Home.vue 500错误修复验证</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checklist {
+            list-style: none;
+        }
+        .checklist li {
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+        .checklist li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .status.success { background: #52c41a; color: white; }
+        .status.pending { background: #faad14; color: white; }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #569cd6; }
+        .code-block .string { color: #ce9178; }
+        .fix-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 12px;
+            margin-top: 12px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn.secondary {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            color: #333;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .metric {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e8e8e8;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>🔍</span>
+            Home.vue 500错误修复验证
+        </h1>
+        <p class="subtitle">详细检查清单 - 确保所有修复项目已完成</p>
+
+        <!-- 问题诊断 -->
+        <div class="section">
+            <h2>❌ 原始问题</h2>
+            <div class="code-block">
+<span class="comment">// ❌ 错误: 重复定义 workflowPlatforms</span>
+
+<span class="comment">// 第一次定义(865-1150行) - 285行旧数据</span>
+<span class="keyword">const</span> workflowPlatforms = ref([
+  { id: 0, name: <span class="string">'AI工具集'</span>, ... },
+  { id: 1, name: <span class="string">'UniEAP Workflow'</span>, ... },
+  <span class="comment">// ... 共30个平台</span>
+])
+
+<span class="comment">// 第二次定义(1153行) - 与外部导入冲突!!!</span>
+<span class="keyword">const</span> workflowPlatforms = ref(manufacturingTools) <span class="comment">// ⚠️ 重复定义!</span>
+            </div>
+            <div class="fix-badge">✅ 问题根源: 变量重复定义导致模块加载失败 (500错误)</div>
+        </div>
+
+        <!-- 修复方案 -->
+        <div class="section">
+            <h2>✅ 修复方案</h2>
+            <div class="code-block">
+<span class="comment">// ✅ 修复: 删除旧的内联数据,只保留外部导入</span>
+
+<span class="keyword">const</span> solutions = ref([...])
+
+<span class="comment">// 🆕 制造企业AI工具数据(从外部导入)</span>
+<span class="keyword">const</span> workflowPlatforms = ref(manufacturingTools)
+<span class="keyword">const</span> platformCategories = ref(toolCategories)
+<span class="keyword">const</span> toolPriorityRecommendation = ref(priorityRecommendation)
+            </div>
+        </div>
+
+        <!-- 验证清单 -->
+        <div class="section">
+            <h2>📋 验证清单</h2>
+            <ul class="checklist">
+                <li>
+                    <div class="status success">✓</div>
+                    <div>删除865-1150行旧的内联数据(285行)</div>
+                </li>
+                <li>
+                    <div class="status success">✓</div>
+                    <div>保留外部导入语句(manufacturingTools)</div>
+                </li>
+                <li>
+                    <div class="status success">✓</div>
+                    <div>ESLint检查通过(0错误,0警告)</div>
+                </li>
+                <li>
+                    <div class="status pending">○</div>
+                    <div>开发服务器启动成功(需测试)</div>
+                </li>
+                <li>
+                    <div class="status pending">○</div>
+                    <div>首页正常访问无500错误(需测试)</div>
+                </li>
+                <li>
+                    <div class="status pending">○</div>
+                    <div>AI工作平台弹窗正常打开(需测试)</div>
+                </li>
+                <li>
+                    <div class="status pending">○</div>
+                    <div>100+工具数据正常加载(需测试)</div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 优化效果 -->
+        <div class="section">
+            <h2>📊 优化效果</h2>
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-value">-285</div>
+                    <div class="metric-label">代码行数减少</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">-8.3%</div>
+                    <div class="metric-label">文件大小减少</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">100%</div>
+                    <div class="metric-label">变量冲突消除</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">ESLint错误</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试步骤 -->
+        <div class="section">
+            <h2>🧪 立即测试</h2>
+            <p style="margin-bottom: 16px; color: #666;">按照以下步骤验证修复是否成功:</p>
+            <ol style="padding-left: 24px; color: #333; line-height: 2;">
+                <li>启动开发服务器: <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px;">npm run dev</code></li>
+                <li>访问首页: <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px;">http://localhost:5173/</code></li>
+                <li>检查浏览器控制台: 确认无500错误</li>
+                <li>点击"AI工作平台"卡片: 验证弹窗正常打开</li>
+                <li>浏览100+工具数据: 确认数据正常加载</li>
+            </ol>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div style="text-align: center; margin-top: 32px; padding-top: 32px; border-top: 2px dashed #e8e8e8;">
+            <a href="#" class="btn" onclick="window.close(); return false;">关闭验证</a>
+            <a href="../✅_Home.vue_500错误修复完成_2025-12-21.md" class="btn secondary">查看修复报告</a>
+        </div>
+    </div>
+
+    <script>
+        console.log('✅ Home.vue 500错误修复验证');
+        console.log('📋 修复详情:');
+        console.log('  - 删除旧的内联数据(865-1150行, 共285行)');
+        console.log('  - 保留外部导入: manufacturingTools');
+        console.log('  - 消除变量重复定义冲突');
+        console.log('  - ESLint检查通过: 0错误');
+        
+        // 自动滚动到页面顶部
+        window.scrollTo(0, 0);
+    </script>
+</body>
+</html>
