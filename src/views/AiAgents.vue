@@ -13,7 +13,7 @@
           <el-icon><MagicStick /></el-icon>
           <span>AI驱动的智能决策</span>
         </div>
-          <h1 data-aos="fade-up" data-aos-delay="100">安彤智能体系统</h1>
+          <h1 data-aos="fade-up" data-aos-delay="100">明升企业智能体系统</h1>
         <p class="subtitle" data-aos="fade-up" data-aos-delay="200">基于人工智能的专业工业解决方案 | 自主学习·主动思考·持续进化</p>
         <p class="description" data-aos="fade-up" data-aos-delay="300">
           通过AI技术提升工业效率，提供智能化的工具选型、设备监控、故障追踪和数据分析服务

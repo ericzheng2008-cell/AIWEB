@@ -5,7 +5,7 @@
       <router-view @open-sidebar="showSidebar = true" />
     </div>
     <AiChat />
-    <!-- 安彤AI监控中心 -->
+    <!-- 明升企业智能体监控中心 -->
     <AntomAIMonitor />
     <!-- 询盘表单 -->
     <InquiryForm />
@@ -41,7 +41,7 @@ onMounted(() => {
       result: 'success'
     })
   } catch (error) {
-    logger.error('安彤AI初始化失败:', error)
+    logger.error('明升企业智能体初始化失败:', error)
     ElMessage.warning('智能助手启动遇到问题，但不影响正常使用')
   }
 })
@@ -68,11 +68,11 @@ watch(() => route.path, (newPath, oldPath) => {
   }
 })
 
-// 错误边界 - 捕获安彤AI组件的错误
+// 错误边界 - 捕获明升企业智能体组件的错误
 onErrorCaptured((err, instance, info) => {
   logger.error('应用错误捕获:', err, info)
   
-  // 如果是安彤AI相关错误，不让它影响整个应用
+  // 如果是明升企业智能体相关错误，不让它影响整个应用
   if (info.includes('AntomAI') || instance?.$options?.name?.includes('AntomAI')) {
     ElMessage.error('智能助手遇到问题，已自动关闭')
     return false // 阻止错误继续传播

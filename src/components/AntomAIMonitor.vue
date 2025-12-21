@@ -15,7 +15,7 @@
     <!-- 监控面板 -->
     <el-drawer
       v-model="showMonitor"
-      title="安彤智能体监控中心"
+      title="明升企业智能体监控中心"
       direction="rtl"
       size="450px"
       :close-on-click-modal="false">
@@ -170,7 +170,7 @@
     <!-- AI对话窗口 -->
     <el-dialog
       v-model="showAIChat"
-      title="💬 与安彤AI对话"
+      title="💬 与明升企业AI对话"
       width="600px"
       :close-on-click-modal="false">
       <div class="chat-container">

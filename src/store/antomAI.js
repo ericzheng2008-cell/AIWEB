@@ -1,6 +1,6 @@
 /**
- * 安彤智能体 - 自主学习与主动思考系统
- * ANTOM AI - Autonomous Learning & Proactive Thinking System
+ * 明升企业智能体 - 自主学习与主动思考系统
+ * MingSheng Enterprise AI - Autonomous Learning & Proactive Thinking System
  * 
  * 核心能力：
  * 1. 网络自主学习 - 从用户行为和反馈中学习
@@ -724,10 +724,10 @@ export const useAntomAIStore = defineStore('antomAI', () => {
   }
 
   /**
-   * 初始化安彤AI系统
+   * 初始化明升企业智能体系统
    */
   const initializeAntomAI = () => {
-    console.log('🚀 安彤智能体系统初始化中...')
+    console.log('🚀 明升企业智能体系统初始化中...')
     
     // 启动各个自动化循环
     startLearningLoop()
@@ -735,14 +735,14 @@ export const useAntomAIStore = defineStore('antomAI', () => {
     startImprovementLoop()
     
     // 检查是否已显示过欢迎消息（每次会话只显示一次）
-    const sessionKey = 'antom_welcome_shown_' + new Date().toDateString()
+    const sessionKey = 'mingsheng_welcome_shown_' + new Date().toDateString()
     const hasShownWelcome = sessionStorage.getItem(sessionKey)
     
     if (!hasShownWelcome) {
       // 欢迎消息 - 2秒后显示，2秒后自动关闭
       setTimeout(() => {
         ElNotification({
-          title: '🤖 安彤智能体已就绪',
+          title: '🤖 明升企业智能体已就绪',
           message: '我会主动学习您的使用习惯，思考潜在问题，并持续优化为您服务。有任何需要随时告诉我！',
           type: 'success',
           duration: 2000, // 2秒后自动关闭
@@ -754,7 +754,7 @@ export const useAntomAIStore = defineStore('antomAI', () => {
       }, 2000) // 页面加载2秒后显示
     }
     
-    logger.info('✅ 安彤智能体系统初始化完成')
+    logger.info('✅ 明升企业智能体系统初始化完成')
   }
 
   // ==================== 计算属性 ====================

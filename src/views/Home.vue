@@ -136,7 +136,7 @@
     <section class="section ai-agents-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">安彤智能体 / ANTOM AI Agents</h2>
+          <h2 class="section-title">明升企业智能体 / MingSheng AI Agents</h2>
           <p class="section-desc">基于人工智能的专业工业解决方案 | 自主学习·主动思考·持续进化</p>
         </div>
         <div class="agents-grid">
