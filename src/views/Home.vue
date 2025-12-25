@@ -125,7 +125,8 @@
             </div>
             <div class="series-content" 
                  @click="goToProducts(series)"
-                 @touchend="goToProducts(series)">
+                 @touchstart="handleTouchStart"
+                 @touchend="handleTouchEnd($event, series)">
               <div class="series-image">
                 <img :src="series.image" :alt="series.name" />
               </div>
@@ -1127,6 +1128,29 @@ const goToProducts = (series) => {
   } else {
     // 产品分类，跳转到产品与服务页面
     router.push('/products-services')
+  }
+}
+
+// 🔥 触摸跟踪 - 区分点击和滚动（产品与服务卡片）
+let touchStartY = 0
+let touchStartTime = 0
+
+const handleTouchStart = (e) => {
+  touchStartY = e.touches[0].clientY
+  touchStartTime = Date.now()
+}
+
+const handleTouchEnd = (e, series) => {
+  const touchEndY = e.changedTouches[0].clientY
+  const touchDuration = Date.now() - touchStartTime
+  const moveDistance = Math.abs(touchEndY - touchStartY)
+  
+  // 🎯 只有移动距离 < 10px 且时长 < 300ms 才算点击
+  if (moveDistance < 10 && touchDuration < 300) {
+    console.log('👆 产品卡片真实点击触发')
+    goToProducts(series)
+  } else {
+    console.log(`⚠️ 产品卡片滚动忽略 (移动${moveDistance}px, 时长${touchDuration}ms)`)
   }
 }
 
