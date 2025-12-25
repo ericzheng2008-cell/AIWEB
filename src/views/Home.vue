@@ -760,7 +760,7 @@ import {
   Search, Message, DataAnalysis, MagicStick,
   TrendCharts, Cpu, Tools, Management, DataLine, Connection,
   Collection, Promotion, Trophy, Document, Location, Operation, ArrowDown, HomeFilled,
-  InfoFilled, Warning
+  InfoFilled, Warning, View
 } from '@element-plus/icons-vue'
 import { manufacturingTools, toolCategories, priorityRecommendation } from '../data/manufacturingTools'
 
