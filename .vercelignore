@@ -1,0 +1,12 @@
+server
+node_modules
+.git
+*.log
+.env
+.env.local
+coverage
+dist-ssr
+*.local
+.vscode
+.idea
+package-lock.json

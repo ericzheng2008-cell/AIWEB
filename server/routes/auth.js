@@ -1,37 +1,25 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
+import User from '../models/User.js'
 
 const router = express.Router()
-const JWT_SECRET = 'your-secret-key-change-in-production'
-
-// 模拟数据库
-const users = [
-  {
-    id: 1,
-    username: 'admin',
-    password: bcrypt.hashSync('admin123', 10),
-    email: 'admin@example.com',
-    role: 'admin'
-  },
-  {
-    id: 2,
-    username: 'user',
-    password: bcrypt.hashSync('user123', 10),
-    email: 'user@example.com',
-    role: 'user'
-  }
-]
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 // 登录
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body
 
-    // 查找用户
-    const user = users.find(u => 
-      u.username === username || u.email === username
-    )
+    // 输入验证
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: '用户名和密码不能为空'
+      })
+    }
+
+    // 查找用户（支持用户名或邮箱登录）
+    const user = User.findByUsername(username)
 
     if (!user) {
       return res.status(401).json({
@@ -41,7 +29,7 @@ router.post('/login', async (req, res) => {
     }
 
     // 验证密码
-    const isValidPassword = bcrypt.compareSync(password, user.password)
+    const isValidPassword = User.verifyPassword(password, user.password)
     if (!isValidPassword) {
       return res.status(401).json({
         success: false,
@@ -56,23 +44,22 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     )
 
+    // 不返回密码
+    delete user.password
+
     res.json({
       success: true,
       message: '登录成功',
       data: {
         token,
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role
-        }
+        user
       }
     })
   } catch (error) {
+    console.error('登录错误:', error)
     res.status(500).json({
       success: false,
-      message: error.message
+      message: '登录失败，请稍后重试'
     })
   }
 })
@@ -80,45 +67,49 @@ router.post('/login', async (req, res) => {
 // 注册
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, phone, password } = req.body
+    const { username, email, password } = req.body
+
+    // 输入验证
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: '用户名和密码不能为空'
+      })
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: '密码长度至少6位'
+      })
+    }
 
     // 检查用户是否存在
-    const existingUser = users.find(u => 
-      u.username === username || u.email === email
-    )
-
+    const existingUser = User.findByUsername(username)
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: '用户名或邮箱已存在'
+        message: '用户名已存在'
       })
     }
 
     // 创建新用户
-    const newUser = {
-      id: users.length + 1,
-      username,
-      email,
-      phone,
-      password: bcrypt.hashSync(password, 10),
-      role: 'user'
-    }
-
-    users.push(newUser)
+    const userId = User.create({ username, email, password })
 
     res.json({
       success: true,
       message: '注册成功',
       data: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email
+        id: userId,
+        username,
+        email
       }
     })
   } catch (error) {
+    console.error('注册错误:', error)
     res.status(500).json({
       success: false,
-      message: error.message
+      message: '注册失败，请稍后重试'
     })
   }
 })

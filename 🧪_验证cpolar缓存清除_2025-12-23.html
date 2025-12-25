@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cpolar缓存验证工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+    .section h2 {
+      color: #333;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .check-item {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 2px solid #e9ecef;
+    }
+    .check-item.success {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+    .check-item.error {
+      border-color: #dc3545;
+      background: #f8d7da;
+    }
+    .check-item.warning {
+      border-color: #ffc107;
+      background: #fff3cd;
+    }
+    .check-label {
+      flex: 1;
+      color: #333;
+      font-weight: 500;
+    }
+    .check-value {
+      font-family: monospace;
+      padding: 5px 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      margin-left: 10px;
+      font-size: 12px;
+    }
+    .check-status {
+      margin-left: 10px;
+      font-size: 20px;
+    }
+    .button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+    .button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .button.danger {
+      background: #dc3545;
+    }
+    .button.danger:hover {
+      background: #c82333;
+    }
+    .info-box {
+      background: #d1ecf1;
+      border-left: 4px solid #0c5460;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    .info-box h3 {
+      color: #0c5460;
+      margin-bottom: 10px;
+    }
+    .info-box p {
+      color: #0c5460;
+      line-height: 1.6;
+    }
+    #console {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .console-line {
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+    .console-line.success { color: #4ec9b0; }
+    .console-line.error { color: #f48771; }
+    .console-line.warning { color: #dcdcaa; }
+    .console-line.info { color: #569cd6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 cpolar缓存验证工具</h1>
+    <div class="subtitle">实时检测缓存状态和版本信息</div>
+
+    <div class="section">
+      <h2>📊 环境检测</h2>
+      <div id="env-checks"></div>
+    </div>
+
+    <div class="section">
+      <h2>🔍 缓存状态</h2>
+      <div id="cache-checks"></div>
+    </div>
+
+    <div class="section">
+      <h2>📝 版本信息</h2>
+      <div id="version-checks"></div>
+    </div>
+
+    <div class="section">
+      <h2>🛠️ 操作工具</h2>
+      <button class="button" onclick="checkAll()">🔄 重新检测</button>
+      <button class="button" onclick="clearAllCache()">🧹 清除所有缓存</button>
+      <button class="button" onclick="forceRefresh()">⚡ 强制刷新页面</button>
+      <button class="button danger" onclick="resetAll()">🔥 完全重置（删除所有数据）</button>
+    </div>
+
+    <div class="info-box">
+      <h3>💡 使用说明</h3>
+      <p>1. 点击"重新检测"查看当前状态</p>
+      <p>2. 如果检测到缓存问题，点击"清除所有缓存"</p>
+      <p>3. 清除后点击"强制刷新页面"</p>
+      <p>4. 如果问题依然存在，使用"完全重置"</p>
+    </div>
+
+    <div id="console"></div>
+  </div>
+
+  <script>
+    const log = {
+      success: (msg) => addLog(msg, 'success'),
+      error: (msg) => addLog(msg, 'error'),
+      warning: (msg) => addLog(msg, 'warning'),
+      info: (msg) => addLog(msg, 'info')
+    }
+
+    function addLog(message, type = 'info') {
+      const console = document.getElementById('console')
+      const line = document.createElement('div')
+      line.className = `console-line ${type}`
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`
+      console.appendChild(line)
+      console.scrollTop = console.scrollHeight
+    }
+
+    function createCheckItem(label, value, status) {
+      return `
+        <div class="check-item ${status}">
+          <span class="check-label">${label}</span>
+          <span class="check-value">${value}</span>
+          <span class="check-status">
+            ${status === 'success' ? '✅' : status === 'error' ? '❌' : '⚠️'}
+          </span>
+        </div>
+      `
+    }
+
+    function checkEnvironment() {
+      const envChecks = document.getElementById('env-checks')
+      let html = ''
+
+      // 检测设备类型
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      html += createCheckItem(
+        '设备类型',
+        isMobile ? '移动设备' : '桌面设备',
+        'success'
+      )
+
+      // 检测浏览器
+      const browser = (() => {
+        const ua = navigator.userAgent
+        if (ua.includes('Chrome')) return 'Chrome'
+        if (ua.includes('Safari')) return 'Safari'
+        if (ua.includes('Firefox')) return 'Firefox'
+        if (ua.includes('Edge')) return 'Edge'
+        return '未知'
+      })()
+      html += createCheckItem('浏览器', browser, 'success')
+
+      // 检测cpolar环境
+      const isCpolar = window.location.hostname.includes('cpolar')
+      html += createCheckItem(
+        'cpolar环境',
+        isCpolar ? '是' : '否',
+        isCpolar ? 'warning' : 'success'
+      )
+
+      // 检测访问协议
+      html += createCheckItem(
+        '访问协议',
+        window.location.protocol,
+        window.location.protocol === 'https:' ? 'success' : 'warning'
+      )
+
+      // 检测当前URL
+      html += createCheckItem(
+        '当前域名',
+        window.location.hostname,
+        'success'
+      )
+
+      envChecks.innerHTML = html
+      log.info('环境检测完成')
+    }
+
+    function checkCache() {
+      const cacheChecks = document.getElementById('cache-checks')
+      let html = ''
+
+      // 检查localStorage
+      const localStorageSize = JSON.stringify(localStorage).length
+      html += createCheckItem(
+        'localStorage大小',
+        `${(localStorageSize / 1024).toFixed(2)} KB`,
+        localStorageSize < 1024 * 100 ? 'success' : 'warning'
+      )
+
+      // 检查缓存的app_version
+      const appVersion = localStorage.getItem('app_version')
+      html += createCheckItem(
+        '缓存版本号',
+        appVersion || '未设置',
+        appVersion ? 'success' : 'warning'
+      )
+
+      // 检查最后刷新时间
+      const lastRefresh = localStorage.getItem('last_refresh_time')
+      if (lastRefresh) {
+        const diff = Date.now() - parseInt(lastRefresh)
+        const minutes = Math.floor(diff / 60000)
+        html += createCheckItem(
+          '最后刷新',
+          `${minutes}分钟前`,
+          minutes < 5 ? 'success' : 'warning'
+        )
+      } else {
+        html += createCheckItem('最后刷新', '未记录', 'warning')
+      }
+
+      // 检查sessionStorage
+      const sessionStorageSize = JSON.stringify(sessionStorage).length
+      html += createCheckItem(
+        'sessionStorage大小',
+        `${(sessionStorageSize / 1024).toFixed(2)} KB`,
+        'success'
+      )
+
+      cacheChecks.innerHTML = html
+      log.info('缓存检测完成')
+    }
+
+    async function checkVersion() {
+      const versionChecks = document.getElementById('version-checks')
+      let html = ''
+
+      try {
+        // 获取服务器版本
+        const response = await fetch('/version.json?_t=' + Date.now())
+        const data = await response.json()
+        
+        html += createCheckItem(
+          '服务器版本',
+          data.version || '未知',
+          'success'
+        )
+
+        html += createCheckItem(
+          '更新时间',
+          data.updateTime || '未知',
+          'success'
+        )
+
+        // 比较版本
+        const localVersion = localStorage.getItem('app_version')
+        const isSync = localVersion === data.version
+        html += createCheckItem(
+          '版本同步',
+          isSync ? '已同步' : '不同步',
+          isSync ? 'success' : 'error'
+        )
+
+        if (!isSync) {
+          log.warning('检测到版本不同步！建议清除缓存并刷新')
+        } else {
+          log.success('版本同步正常')
+        }
+
+      } catch (error) {
+        html += createCheckItem(
+          '服务器版本',
+          '无法连接',
+          'error'
+        )
+        log.error('无法获取服务器版本信息')
+      }
+
+      versionChecks.innerHTML = html
+    }
+
+    function checkAll() {
+      log.info('开始全面检测...')
+      checkEnvironment()
+      checkCache()
+      checkVersion()
+      log.success('全面检测完成')
+    }
+
+    function clearAllCache() {
+      if (confirm('确定要清除所有缓存吗？\n这将删除所有localStorage和sessionStorage数据。')) {
+        localStorage.clear()
+        sessionStorage.clear()
+        log.success('✅ 所有缓存已清除')
+        log.info('建议现在刷新页面')
+        checkAll()
+      }
+    }
+
+    function forceRefresh() {
+      log.info('正在强制刷新页面...')
+      const url = new URL(window.location.href)
+      url.searchParams.set('_refresh', Date.now())
+      window.location.href = url.toString()
+    }
+
+    function resetAll() {
+      if (confirm('⚠️ 警告！\n\n这将：\n1. 删除所有缓存数据\n2. 清除所有localStorage\n3. 清除所有sessionStorage\n4. 强制刷新页面\n\n确定要继续吗？')) {
+        if (confirm('最后确认：真的要完全重置吗？')) {
+          localStorage.clear()
+          sessionStorage.clear()
+          log.success('所有数据已清除')
+          setTimeout(() => {
+            window.location.href = window.location.origin + '?_reset=' + Date.now()
+          }, 1000)
+        }
+      }
+    }
+
+    // 页面加载时自动检测
+    window.addEventListener('load', () => {
+      log.info('页面加载完成，开始自动检测...')
+      checkAll()
+    })
+
+    // 监听localStorage变化
+    window.addEventListener('storage', (e) => {
+      log.info(`检测到存储变化: ${e.key}`)
+      checkCache()
+    })
+  </script>
+</body>
+</html>

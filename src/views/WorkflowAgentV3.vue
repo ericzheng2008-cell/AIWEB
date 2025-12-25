@@ -27,7 +27,7 @@
           <el-button :icon="More" circle />
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="debug" :icon="BugLine">调试模式</el-dropdown-item>
+              <el-dropdown-item command="debug" :icon="Tools">调试模式</el-dropdown-item>
               <el-dropdown-item command="version" :icon="Clock">版本历史</el-dropdown-item>
               <el-dropdown-item command="export" :icon="Download">导出</el-dropdown-item>
             </el-dropdown-menu>
@@ -612,9 +612,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
+import {
   ArrowLeft, Edit, DocumentChecked, Upload, MagicStick, More,
-  BugLine as Bug, Clock, Download, Box, Fold, Search,
+  Bug, Clock, Download, Box, Fold, Search,
   VideoPlay, Operation, Share, Connection, Document,
   ZoomOut, ZoomIn, Refresh, Grid, Setting, Plus, Delete,
   DocumentCopy, Link, Select, CaretRight, VideoPause, RefreshRight

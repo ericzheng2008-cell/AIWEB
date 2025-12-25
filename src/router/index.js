@@ -125,7 +125,7 @@ const routes = [
     name: 'TighteningDashboard',
     component: () => import('../views/TighteningDataDashboard.vue'),
     meta: { 
-      title: '拧紧数据采集分析 - ToolsNet 8仪表板',
+      title: '拧紧数据采集分析 - ToolsNet 8代表作',
       description: '可拖拽小工具窗口，实时数据分析'
     }
   },
@@ -200,11 +200,6 @@ const routes = [
     component: () => import('../views/FaultStatistics.vue')
   },
   {
-    path: '/cost-optimization',
-    name: 'CostOptimization',
-    component: () => import('../views/CostOptimization.vue')
-  },
-  {
     path: '/ai-product-selector',
     name: 'AiProductSelector',
     component: () => import('../views/AiProductSelector.vue'),
@@ -237,7 +232,7 @@ const routes = [
     component: () => import('../views/LeadNurturingSystem.vue'),
     meta: {
       title: '线索孵化系统',
-      description: '自动化nurturing、分级跟进策略'
+      description: '自动化Nurturing、分级跟进策略'
     }
   },
   {
@@ -255,7 +250,7 @@ const routes = [
     component: () => import('../views/MingShengAICRM_V3.vue'),
     meta: {
       title: '明升AICRM v3.0 - AI赢率驱动智能营销平台',
-      description: 'Salesforce Einstein级 · AI赢率预测 · 商机管理 · 报价系统 · 竞品分析 · 组织影响力图谱',
+      description: 'Salesforce Einstein级AI赢率预测·商机管理·报价系统·竞品分析·组织影响力图谱',
       category: 'AI营销中台'
     }
   },
@@ -494,7 +489,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/'),
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

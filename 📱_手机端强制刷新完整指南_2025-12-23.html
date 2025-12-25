@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手机端强制刷新完整指南</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 30px;
+      padding-left: 38px;
+    }
+    .problem-box {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .problem-box h3 {
+      color: #856404;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .problem-box p {
+      color: #856404;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      color: #333;
+      font-size: 20px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+    .method {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #e9ecef;
+    }
+    .method h3 {
+      color: #667eea;
+      font-size: 18px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 3px solid #667eea;
+    }
+    .step-number {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-size: 14px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .step-content {
+      display: inline-block;
+      vertical-align: top;
+      width: calc(100% - 40px);
+      color: #333;
+      line-height: 1.6;
+    }
+    .tip-box {
+      background: #d1ecf1;
+      border-left: 4px solid #0c5460;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .tip-box h3 {
+      color: #0c5460;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .tip-box ul {
+      color: #0c5460;
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+    .success-box {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .success-box h3 {
+      color: #155724;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .success-box p {
+      color: #155724;
+      line-height: 1.6;
+    }
+    .qr-code {
+      text-align: center;
+      margin: 20px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+    .qr-code img {
+      max-width: 200px;
+      border: 3px solid #667eea;
+      border-radius: 12px;
+    }
+    .highlight {
+      background: #fff59d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 20px; }
+      h1 { font-size: 24px; }
+      .method { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📱 手机端强制刷新完整指南</h1>
+    <div class="subtitle">解决cpolar VIP链接显示旧版本问题</div>
+
+    <div class="problem-box">
+      <h3>❓ 遇到的问题</h3>
+      <p><strong>症状：</strong>电脑端5173端口显示正常，但手机端打开cpolar VIP链接，看到的是更新前的老版本（LOGO、Banner、产品等都没有改变）</p>
+      <p><strong>原因：</strong>多层缓存机制 = 浏览器缓存 + cpolar隧道缓存 + 移动网络缓存</p>
+    </div>
+
+    <div class="section">
+      <h2>🍎 iOS设备（iPhone/iPad）</h2>
+      
+      <div class="method">
+        <h3>📌 方法一：清除Safari缓存（推荐）</h3>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-content">打开 <span class="highlight">设置</span> App</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-content">向下滚动找到 <span class="highlight">Safari</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-content">点击 <span class="highlight">清除历史记录与网站数据</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-content">确认清除</span>
+        </div>
+        <div class="step">
+          <span class="step-number">5</span>
+          <span class="step-content">完全关闭Safari（双击Home键或上滑，向上滑动Safari卡片）</span>
+        </div>
+        <div class="step">
+          <span class="step-number">6</span>
+          <span class="step-content">重新打开Safari，访问cpolar VIP链接</span>
+        </div>
+      </div>
+
+      <div class="method">
+        <h3>📌 方法二：使用隐私浏览模式</h3>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-content">打开Safari浏览器</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-content">点击右下角 <span class="highlight">标签页</span> 按钮（两个重叠的方块）</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-content">点击左下角 <span class="highlight">[数字] 个标签页</span>，选择 <span class="highlight">隐私</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-content">在隐私模式下访问cpolar VIP链接</span>
+        </div>
+      </div>
+
+      <div class="method">
+        <h3>📌 方法三：强制刷新页面</h3>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-content">打开cpolar VIP链接</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-content">在地址栏 <span class="highlight">长按刷新按钮</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-content">选择 <span class="highlight">请求桌面网站</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-content">再次刷新页面</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🤖 Android设备</h2>
+      
+      <div class="method">
+        <h3>📌 方法一：清除Chrome缓存（推荐）</h3>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-content">打开Chrome浏览器</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-content">点击右上角 <span class="highlight">三点菜单</span> ⋮</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-content">选择 <span class="highlight">历史记录</span> → <span class="highlight">清除浏览数据</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-content">时间范围选择 <span class="highlight">过去1小时</span> 或 <span class="highlight">全部时间</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">5</span>
+          <span class="step-content">勾选 <span class="highlight">Cookie和网站数据</span> 和 <span class="highlight">缓存的图片和文件</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">6</span>
+          <span class="step-content">点击 <span class="highlight">清除数据</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">7</span>
+          <span class="step-content">重启Chrome，重新访问链接</span>
+        </div>
+      </div>
+
+      <div class="method">
+        <h3>📌 方法二：使用无痕模式</h3>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-content">打开Chrome浏览器</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-content">点击右上角 <span class="highlight">三点菜单</span> ⋮</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-content">选择 <span class="highlight">新建无痕式标签页</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-content">在无痕模式下访问cpolar VIP链接</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>💬 微信内置浏览器</h2>
+      
+      <div class="method">
+        <h3>📌 在系统浏览器中打开</h3>
+        <div class="step">
+          <span class="step-number">1</span>
+          <span class="step-content">在微信中点击cpolar链接</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-content">点击右上角 <span class="highlight">三点菜单</span> ⋯</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-content">选择 <span class="highlight">在Safari/浏览器中打开</span></span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-content">在系统浏览器中按上述方法清除缓存</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <h3>💡 高级技巧</h3>
+      <ul>
+        <li>在链接末尾添加随机参数：<code>?t=123456</code></li>
+        <li>使用 Ctrl+F5（PC）或 Cmd+Shift+R（Mac）强制刷新</li>
+        <li>关闭WiFi切换到4G/5G网络访问</li>
+        <li>完全重启手机后再访问</li>
+        <li>使用不同的浏览器尝试访问</li>
+      </ul>
+    </div>
+
+    <div class="success-box">
+      <h3>✅ 验证是否成功</h3>
+      <p>如果看到以下内容，说明缓存已清除成功：</p>
+      <ul style="margin-left: 20px; margin-top: 10px; color: #155724;">
+        <li>新的LOGO和Banner</li>
+        <li>更新后的产品列表</li>
+        <li>最新的页面样式和布局</li>
+        <li>右下角应答机器人正常显示</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🔧 服务器端强制刷新</h2>
+      <p style="color: #666; margin-bottom: 15px;">如果以上方法都不奏效，可以从服务器端强制清除缓存：</p>
+      <div class="step" style="margin-bottom: 10px;">
+        <span class="step-number">1</span>
+        <span class="step-content">在电脑上运行 <code style="background: #f8f9fa; padding: 2px 8px; border-radius: 4px;">🔧_强制清除cpolar缓存_2025-12-23.bat</code></span>
+      </div>
+      <div class="step" style="margin-bottom: 10px;">
+        <span class="step-number">2</span>
+        <span class="step-content">等待服务重启完成（约10秒）</span>
+      </div>
+      <div class="step">
+        <span class="step-number">3</span>
+        <span class="step-content">获取新的cpolar链接重新分享</span>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef; text-align: center; color: #999;">
+      <p>🎯 明升企业智能体 · 技术支持</p>
+      <p style="font-size: 12px; margin-top: 5px;">更新时间：2025-12-23</p>
+    </div>
+  </div>
+
+  <script>
+    // 自动检测设备类型并高亮对应方法
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    const isWeChat = /MicroMessenger/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      document.querySelectorAll('.section')[0].style.border = '3px solid #007aff';
+      document.querySelectorAll('.section')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (isAndroid) {
+      document.querySelectorAll('.section')[1].style.border = '3px solid #3ddc84';
+      document.querySelectorAll('.section')[1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    if (isWeChat) {
+      document.querySelectorAll('.section')[2].style.border = '3px solid #09bb07';
+      document.querySelectorAll('.section')[2].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+</body>
+</html>

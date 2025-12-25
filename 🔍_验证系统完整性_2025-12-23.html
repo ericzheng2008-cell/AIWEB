@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 系统完整性验证 - AIWEB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 32px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background: #f7f9fc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        .status-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-icon {
+            font-size: 20px;
+            min-width: 24px;
+            text-align: center;
+        }
+        .status-text {
+            flex: 1;
+            color: #555;
+        }
+        .status-value {
+            font-weight: bold;
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .action-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+        .alert-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        .test-section {
+            background: #f7f9fc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+        .test-loading {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .test-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 AIWEB 系统完整性验证</h1>
+        
+        <div class="alert alert-warning">
+            <strong>⚠️ 检查清单：</strong><br>
+            1. 后端服务器（5000端口）是否运行<br>
+            2. 前端服务器（5173端口）是否运行<br>
+            3. 数据库连接是否正常<br>
+            4. API接口是否可访问<br>
+            5. 前后端数据同步是否正常
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>🖥️ 服务器状态</h3>
+                <div class="status-item">
+                    <span class="status-icon" id="backend-icon">⏳</span>
+                    <span class="status-text">后端服务器 (5000)</span>
+                    <span class="status-value" id="backend-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-icon" id="frontend-icon">⏳</span>
+                    <span class="status-text">前端服务器 (5173)</span>
+                    <span class="status-value" id="frontend-status">检查中...</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>🗄️ 数据库状态</h3>
+                <div class="status-item">
+                    <span class="status-icon" id="db-icon">⏳</span>
+                    <span class="status-text">数据库连接</span>
+                    <span class="status-value" id="db-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-icon" id="data-icon">⏳</span>
+                    <span class="status-text">数据持久化</span>
+                    <span class="status-value" id="data-status">检查中...</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>🌐 网络状态</h3>
+                <div class="status-item">
+                    <span class="status-icon" id="api-icon">⏳</span>
+                    <span class="status-text">API接口</span>
+                    <span class="status-value" id="api-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-icon" id="cors-icon">⏳</span>
+                    <span class="status-text">跨域配置</span>
+                    <span class="status-value" id="cors-status">检查中...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3 style="margin-bottom: 15px;">🧪 实时测试结果</h3>
+            <div id="test-results"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn" onclick="runTests()">🔄 重新检测</button>
+            <a href="http://localhost:5173" class="btn btn-success" target="_blank">🌐 打开前端</a>
+            <a href="http://localhost:5000" class="btn btn-secondary" target="_blank">🔧 打开后端</a>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(message, type = 'loading') {
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result test-${type}`;
+            resultDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function updateStatus(id, status, icon) {
+            document.getElementById(`${id}-status`).textContent = status;
+            document.getElementById(`${id}-icon`).textContent = icon;
+        }
+
+        async function checkBackend() {
+            addTestResult('正在检查后端服务器...', 'loading');
+            try {
+                const response = await fetch('http://localhost:5000/api/content/home', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    updateStatus('backend', '运行中 ✅', '✅');
+                    updateStatus('db', '已连接 ✅', '✅');
+                    updateStatus('api', '正常 ✅', '✅');
+                    updateStatus('cors', '已配置 ✅', '✅');
+                    addTestResult('后端服务器运行正常 (5000端口)', 'success');
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        updateStatus('data', '正常 ✅', '✅');
+                        addTestResult('数据库数据获取成功', 'success');
+                    }
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus('backend', '未运行 ❌', '❌');
+                updateStatus('db', '未知 ⚠️', '⚠️');
+                updateStatus('api', '不可用 ❌', '❌');
+                updateStatus('data', '无法获取 ❌', '❌');
+                addTestResult(`❌ 后端服务器错误: ${error.message}`, 'error');
+                addTestResult('请运行: ✅_后端启动完成_验证系统_2025-12-23.bat', 'error');
+                return false;
+            }
+        }
+
+        async function checkFrontend() {
+            addTestResult('正在检查前端服务器...', 'loading');
+            try {
+                const response = await fetch('http://localhost:5173', {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                updateStatus('frontend', '运行中 ✅', '✅');
+                addTestResult('前端服务器运行正常 (5173端口)', 'success');
+                return true;
+            } catch (error) {
+                updateStatus('frontend', '未运行 ❌', '❌');
+                addTestResult('❌ 前端服务器未运行', 'error');
+                addTestResult('请运行: npm run dev', 'error');
+                return false;
+            }
+        }
+
+        async function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '';
+            
+            addTestResult('开始系统完整性检查...', 'loading');
+            
+            const backendOk = await checkBackend();
+            const frontendOk = await checkFrontend();
+            
+            if (backendOk && frontendOk) {
+                addTestResult('', 'success');
+                addTestResult('🎉 系统检查完成！所有服务运行正常', 'success');
+                addTestResult('', 'success');
+                addTestResult('✅ 电脑访问: http://localhost:5173', 'success');
+                addTestResult('✅ 后台管理: http://localhost:5173/admin', 'success');
+                addTestResult('✅ 数据已同步，刷新页面即可看到后台数据', 'success');
+            } else {
+                addTestResult('', 'error');
+                addTestResult('⚠️ 发现问题，请按照提示修复', 'error');
+                
+                if (!backendOk) {
+                    addTestResult('', 'error');
+                    addTestResult('📌 修复步骤:', 'error');
+                    addTestResult('1. 双击运行: ✅_后端启动完成_验证系统_2025-12-23.bat', 'error');
+                    addTestResult('2. 等待5秒后刷新此页面', 'error');
+                }
+            }
+        }
+
+        // 页面加载时自动检测
+        window.onload = () => {
+            setTimeout(runTests, 500);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桌面图标配置验证工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: #667eea;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+        
+        .file-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .file-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .file-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-should-exist {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checklist-item:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .checklist-item label {
+            flex: 1;
+            cursor: pointer;
+            color: #333;
+        }
+        
+        .progress-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tip-box {
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .tip-box strong {
+            color: #856404;
+        }
+        
+        .success-box {
+            padding: 15px;
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .success-box strong {
+            color: #155724;
+        }
+        
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 桌面图标配置验证工具</h1>
+            <p>检查AIWEB桌面图标和开机自启动配置状态</p>
+        </div>
+        
+        <div class="content">
+            <!-- 核心文件检查 -->
+            <div class="section">
+                <h2>📦 核心文件检查</h2>
+                <ul class="file-list">
+                    <li class="file-item">
+                        <div class="file-icon">🚀</div>
+                        <div class="file-info">
+                            <div class="file-name">🚀_明升AIWEB_智能启动.bat</div>
+                            <div class="file-desc">主控制程序，包含所有功能的菜单系统</div>
+                        </div>
+                        <span class="file-status status-should-exist">应存在</span>
+                    </li>
+                    <li class="file-item">
+                        <div class="file-icon">⚡</div>
+                        <div class="file-info">
+                            <div class="file-name">⚡_一键完成所有配置.bat</div>
+                            <div class="file-desc">首次配置向导，自动完成所有初始化</div>
+                        </div>
+                        <span class="file-status status-should-exist">应存在</span>
+                    </li>
+                    <li class="file-item">
+                        <div class="file-icon">⚡</div>
+                        <div class="file-info">
+                            <div class="file-name">⚡_一键启动AIWEB_2025-12-22.bat</div>
+                            <div class="file-desc">简化版快速启动脚本</div>
+                        </div>
+                        <span class="file-status status-should-exist">应存在</span>
+                    </li>
+                    <li class="file-item">
+                        <div class="file-icon">🔧</div>
+                        <div class="file-info">
+                            <div class="file-name">🔧_设置开机自启动_2025-12-22.bat</div>
+                            <div class="file-desc">独立的开机自启动管理工具</div>
+                        </div>
+                        <span class="file-status status-should-exist">应存在</span>
+                    </li>
+                </ul>
+                <div class="tip-box">
+                    <strong>💡 提示:</strong> 所有文件都应该在项目根目录下。如果文件缺失，请重新下载或创建。
+                </div>
+            </div>
+            
+            <!-- 桌面快捷方式检查 -->
+            <div class="section">
+                <h2>📌 桌面快捷方式检查</h2>
+                <p style="margin-bottom: 15px;">请手动检查桌面是否存在快捷方式：</p>
+                <div class="success-box">
+                    <strong>✅ 桌面应该有:</strong> 🚀 明升AIWEB.lnk
+                </div>
+                <div class="tip-box" style="margin-top: 15px;">
+                    <strong>💡 如何创建:</strong><br>
+                    方法1: 双击 <code>⚡_一键完成所有配置.bat</code><br>
+                    方法2: 双击 <code>🚀_明升AIWEB_智能启动.bat</code>，选择 [5]
+                </div>
+            </div>
+            
+            <!-- 开机自启动检查 -->
+            <div class="section">
+                <h2>⚙️ 开机自启动检查</h2>
+                <p style="margin-bottom: 15px;">开机自启动文件位置：</p>
+                <div class="code-box">
+                    C:\Users\你的用户名\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\AIWEB_Auto_Start.vbs
+                </div>
+                <div class="tip-box" style="margin-top: 15px;">
+                    <strong>💡 如何启用:</strong><br>
+                    方法1: 双击 <code>⚡_一键完成所有配置.bat</code><br>
+                    方法2: 双击 <code>🔧_设置开机自启动_2025-12-22.bat</code>，选择 [1]
+                </div>
+            </div>
+            
+            <!-- 功能验证清单 -->
+            <div class="section">
+                <h2>✅ 功能验证清单</h2>
+                <p style="margin-bottom: 15px;">请逐项测试功能，完成后勾选：</p>
+                
+                <h3 style="color: #667eea; margin: 20px 0 10px 0;">测试1: 一键启动</h3>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test1-1">
+                        <label for="test1-1">双击桌面图标，选择 [1] 一键启动</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test1-2">
+                        <label for="test1-2">后端服务器成功启动（端口3000或5000）</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test1-3">
+                        <label for="test1-3">前端服务器成功启动（端口3002或5173）</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test1-4">
+                        <label for="test1-4">浏览器自动打开 http://localhost:3002</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test1-5">
+                        <label for="test1-5">网页正常显示AIWEB首页</label>
+                    </li>
+                </ul>
+                
+                <h3 style="color: #667eea; margin: 20px 0 10px 0;">测试2: 服务状态查看</h3>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test2-1">
+                        <label for="test2-1">选择 [3] 查看服务状态</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test2-2">
+                        <label for="test2-2">正确显示后端运行状态</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test2-3">
+                        <label for="test2-3">正确显示前端运行状态</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test2-4">
+                        <label for="test2-4">显示进程ID (PID)</label>
+                    </li>
+                </ul>
+                
+                <h3 style="color: #667eea; margin: 20px 0 10px 0;">测试3: 开机自启动设置</h3>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test3-1">
+                        <label for="test3-1">选择 [2] 设置开机自启动</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test3-2">
+                        <label for="test3-2">启用自启动功能正常</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test3-3">
+                        <label for="test3-3">查看状态显示"已启用"</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test3-4">
+                        <label for="test3-4">禁用功能正常（可选测试）</label>
+                    </li>
+                </ul>
+                
+                <h3 style="color: #667eea; margin: 20px 0 10px 0;">测试4: 停止服务</h3>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test4-1">
+                        <label for="test4-1">选择 [4] 停止所有服务</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test4-2">
+                        <label for="test4-2">显示确认提示</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test4-3">
+                        <label for="test4-3">输入 Y 后成功停止</label>
+                    </li>
+                    <li class="checklist-item">
+                        <input type="checkbox" id="test4-4">
+                        <label for="test4-4">再次查看状态显示"未运行"</label>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 进度统计 -->
+            <div class="progress-section">
+                <h2 style="margin-bottom: 10px; color: white;">📊 完成度统计</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+                </div>
+                <p id="progressText">已完成: 0 / 17 项</p>
+                <p id="statusText" style="margin-top: 10px; font-size: 18px;"></p>
+            </div>
+            
+            <!-- 下一步建议 -->
+            <div class="section">
+                <h2>🎯 下一步建议</h2>
+                <div class="success-box">
+                    <strong>✅ 配置完成后:</strong><br>
+                    1. 如果每天都使用，建议启用开机自启动<br>
+                    2. 收藏本地访问地址: http://localhost:3002<br>
+                    3. 如需外网访问，参考 📖_cpolar使用完整指南_2025-12-21.md
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 获取所有复选框
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const totalItems = checkboxes.length;
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const statusText = document.getElementById('statusText');
+        
+        // 从localStorage加载状态
+        function loadCheckboxStates() {
+            checkboxes.forEach(checkbox => {
+                const savedState = localStorage.getItem(checkbox.id);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                }
+            });
+            updateProgress();
+        }
+        
+        // 保存复选框状态
+        function saveCheckboxState(checkbox) {
+            localStorage.setItem(checkbox.id, checkbox.checked);
+        }
+        
+        // 更新进度
+        function updateProgress() {
+            let checkedCount = 0;
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) checkedCount++;
+            });
+            
+            const percentage = Math.round((checkedCount / totalItems) * 100);
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = percentage + '%';
+            progressText.textContent = `已完成: ${checkedCount} / ${totalItems} 项`;
+            
+            // 更新状态文本
+            if (percentage === 100) {
+                statusText.textContent = '🎉 完美！所有功能测试完成！';
+            } else if (percentage >= 80) {
+                statusText.textContent = '👍 很好！大部分功能已测试';
+            } else if (percentage >= 50) {
+                statusText.textContent = '💪 加油！继续测试剩余功能';
+            } else if (percentage > 0) {
+                statusText.textContent = '🚀 开始测试吧！';
+            } else {
+                statusText.textContent = '请开始测试各项功能';
+            }
+        }
+        
+        // 为所有复选框添加事件监听
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                saveCheckboxState(this);
+                updateProgress();
+            });
+        });
+        
+        // 页面加载时恢复状态
+        window.addEventListener('load', loadCheckboxStates);
+    </script>
+</body>
+</html>

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 电脑端&手机端版本一致性诊断</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .section {
+      background: #f8f9ff;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+    .section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-item {
+      background: white;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #e0e0e0;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #555;
+    }
+    .info-value {
+      color: #667eea;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status-warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 5px;
+      transition: transform 0.2s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border-left: 4px solid #17a2b8;
+    }
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    .alert-warning {
+      background: #fff3cd;
+      color: #856404;
+      border-left: 4px solid #ffc107;
+    }
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    .code {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      margin: 10px 0;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+    }
+    .comparison-table {
+      width: 100%;
+      margin: 15px 0;
+      border-collapse: collapse;
+    }
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .comparison-table th {
+      background: #667eea;
+      color: white;
+      font-weight: bold;
+    }
+    .comparison-table tr:hover {
+      background: #f8f9ff;
+    }
+    .match {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .mismatch {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 版本一致性诊断</h1>
+    <div class="subtitle">检查电脑端和手机端是否获取到最新后台修改的内容</div>
+
+    <!-- 当前设备信息 -->
+    <div class="section">
+      <h2>📱 当前设备信息</h2>
+      <div class="info-item">
+        <span class="info-label">设备类型</span>
+        <span class="info-value" id="deviceType">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">浏览器</span>
+        <span class="info-value" id="browserInfo">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">访问时间</span>
+        <span class="info-value" id="accessTime">检测中...</span>
+      </div>
+    </div>
+
+    <!-- 版本信息 -->
+    <div class="section">
+      <h2>🏷️ 版本信息</h2>
+      <div class="info-item">
+        <span class="info-label">HTML版本</span>
+        <span class="info-value" id="htmlVersion">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">LocalStorage版本</span>
+        <span class="info-value" id="storageVersion">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">服务器版本</span>
+        <span class="info-value" id="serverVersion">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">版本状态</span>
+        <span id="versionStatus">检测中...</span>
+      </div>
+    </div>
+
+    <!-- 缓存状态 -->
+    <div class="section">
+      <h2>💾 缓存状态</h2>
+      <div class="info-item">
+        <span class="info-label">浏览器缓存</span>
+        <span class="info-value" id="cacheStatus">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">LocalStorage大小</span>
+        <span class="info-value" id="storageSize">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">SessionStorage大小</span>
+        <span class="info-value" id="sessionSize">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">ServiceWorker</span>
+        <span class="info-value" id="swStatus">检测中...</span>
+      </div>
+    </div>
+
+    <!-- 后台数据版本 -->
+    <div class="section">
+      <h2>🗄️ 后台数据版本</h2>
+      <div class="info-item">
+        <span class="info-label">导航栏配置版本</span>
+        <span class="info-value" id="navVersion">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">后台数据更新时间</span>
+        <span class="info-value" id="dataUpdateTime">检测中...</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">后台配置哈希</span>
+        <span class="info-value" id="configHash">检测中...</span>
+      </div>
+    </div>
+
+    <!-- 诊断结果 -->
+    <div class="section">
+      <h2>✅ 诊断结果</h2>
+      <div id="diagnosisResult">正在诊断...</div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+      <button class="btn" onclick="checkVersion()">🔄 重新检测</button>
+      <button class="btn" onclick="clearAllCache()">🗑️ 清除所有缓存</button>
+      <button class="btn" onclick="hardRefresh()">⚡ 强制刷新</button>
+      <button class="btn" onclick="viewStorage()">📦 查看存储</button>
+      <button class="btn" onclick="compareVersions()">🔍 版本对比</button>
+    </div>
+
+    <!-- 版本对比表格 -->
+    <div class="section" id="comparisonSection" style="display: none;">
+      <h2>📊 版本对比详情</h2>
+      <table class="comparison-table" id="comparisonTable">
+        <thead>
+          <tr>
+            <th>项目</th>
+            <th>电脑端</th>
+            <th>手机端</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody id="comparisonBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const APP_VERSION = '2025.12.23.001'
+
+    // 检测设备类型
+    function detectDevice() {
+      const ua = navigator.userAgent
+      if (/mobile/i.test(ua)) {
+        return '📱 移动设备'
+      } else if (/tablet/i.test(ua)) {
+        return '📱 平板设备'
+      } else {
+        return '💻 桌面设备'
+      }
+    }
+
+    // 检测浏览器
+    function detectBrowser() {
+      const ua = navigator.userAgent
+      if (ua.includes('Chrome') && !ua.includes('Edge')) return 'Chrome'
+      if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari'
+      if (ua.includes('Firefox')) return 'Firefox'
+      if (ua.includes('Edge')) return 'Edge'
+      return '未知浏览器'
+    }
+
+    // 获取存储大小
+    function getStorageSize(storage) {
+      let size = 0
+      for (let key in storage) {
+        if (storage.hasOwnProperty(key)) {
+          size += storage[key].length + key.length
+        }
+      }
+      return (size / 1024).toFixed(2) + ' KB'
+    }
+
+    // 检查ServiceWorker
+    async function checkServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        return registrations.length > 0 ? '已注册 (' + registrations.length + ')' : '未注册'
+      }
+      return '不支持'
+    }
+
+    // 获取后台数据版本
+    function getBackendDataVersion() {
+      const navVersion = localStorage.getItem('navConfigVersion') || '未设置'
+      const lastUpdate = localStorage.getItem('lastBackendUpdate') || '未知'
+      return { navVersion, lastUpdate }
+    }
+
+    // 计算配置哈希
+    function getConfigHash() {
+      const allData = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        const value = localStorage.getItem(key)
+        allData.push(key + ':' + value)
+      }
+      const hashInput = allData.join('|')
+      // 简单哈希函数
+      let hash = 0
+      for (let i = 0; i < hashInput.length; i++) {
+        const char = hashInput.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash
+      }
+      return Math.abs(hash).toString(16).substring(0, 8)
+    }
+
+    // 主检测函数
+    async function checkVersion() {
+      // 设备信息
+      document.getElementById('deviceType').textContent = detectDevice()
+      document.getElementById('browserInfo').textContent = detectBrowser()
+      document.getElementById('accessTime').textContent = new Date().toLocaleString('zh-CN')
+
+      // 版本信息
+      document.getElementById('htmlVersion').textContent = APP_VERSION
+      const storageVersion = localStorage.getItem('app_version') || '未设置'
+      document.getElementById('storageVersion').textContent = storageVersion
+
+      // 服务器版本
+      try {
+        const response = await fetch('/version.json?' + Date.now())
+        const data = await response.json()
+        document.getElementById('serverVersion').textContent = data.version
+        
+        // 版本状态
+        const versionStatus = document.getElementById('versionStatus')
+        if (data.version === APP_VERSION && storageVersion === APP_VERSION) {
+          versionStatus.innerHTML = '<span class="status status-success">✅ 版本一致</span>'
+        } else {
+          versionStatus.innerHTML = '<span class="status status-error">❌ 版本不一致</span>'
+        }
+      } catch (error) {
+        document.getElementById('serverVersion').textContent = '获取失败'
+        document.getElementById('versionStatus').innerHTML = '<span class="status status-warning">⚠️ 无法连接服务器</span>'
+      }
+
+      // 缓存状态
+      const cacheAPI = 'caches' in window ? '支持' : '不支持'
+      document.getElementById('cacheStatus').textContent = cacheAPI
+      document.getElementById('storageSize').textContent = getStorageSize(localStorage)
+      document.getElementById('sessionSize').textContent = getStorageSize(sessionStorage)
+      document.getElementById('swStatus').textContent = await checkServiceWorker()
+
+      // 后台数据版本
+      const backendData = getBackendDataVersion()
+      document.getElementById('navVersion').textContent = backendData.navVersion
+      document.getElementById('dataUpdateTime').textContent = backendData.lastUpdate
+      document.getElementById('configHash').textContent = getConfigHash()
+
+      // 诊断结果
+      diagnose()
+    }
+
+    // 诊断函数
+    function diagnose() {
+      const resultDiv = document.getElementById('diagnosisResult')
+      const htmlVersion = APP_VERSION
+      const storageVersion = localStorage.getItem('app_version') || '未设置'
+      const navVersion = localStorage.getItem('navConfigVersion') || '未设置'
+      
+      let html = ''
+
+      // 检查版本一致性
+      if (storageVersion === htmlVersion) {
+        html += '<div class="alert alert-success"><strong>✅ 版本正常</strong><br>当前版本与最新版本一致。</div>'
+      } else {
+        html += '<div class="alert alert-error"><strong>❌ 版本过期</strong><br>检测到旧版本缓存，需要清除缓存或强制刷新。<br><br>'
+        html += '<strong>当前版本:</strong> ' + storageVersion + '<br>'
+        html += '<strong>最新版本:</strong> ' + htmlVersion + '</div>'
+      }
+
+      // 检查后台数据
+      if (navVersion === '未设置') {
+        html += '<div class="alert alert-warning"><strong>⚠️ 后台数据未初始化</strong><br>首次访问或数据已清除，请访问后台管理页面加载配置。</div>'
+      } else {
+        html += '<div class="alert alert-info"><strong>ℹ️ 后台数据版本</strong><br>导航栏配置版本: ' + navVersion + '</div>'
+      }
+
+      // 缓存建议
+      const device = detectDevice()
+      if (device.includes('移动')) {
+        html += '<div class="alert alert-warning"><strong>📱 移动端缓存建议</strong><br>'
+        html += '• 移动端浏览器缓存更激进，建议定期清除缓存<br>'
+        html += '• 使用"强制刷新"功能确保获取最新内容<br>'
+        html += '• 如仍显示旧内容，请清除浏览器所有数据</div>'
+      } else {
+        html += '<div class="alert alert-info"><strong>💻 桌面端缓存提示</strong><br>'
+        html += '• 桌面端可使用 Ctrl+Shift+R (Windows) 或 Cmd+Shift+R (Mac) 强制刷新<br>'
+        html += '• 建议使用无痕模式测试最新版本</div>'
+      }
+
+      resultDiv.innerHTML = html
+    }
+
+    // 清除所有缓存
+    async function clearAllCache() {
+      if (confirm('⚠️ 确定要清除所有缓存吗？\n\n这将清除:\n• LocalStorage\n• SessionStorage\n• 浏览器缓存\n• ServiceWorker\n\n清除后将自动刷新页面。')) {
+        // 清除 LocalStorage
+        localStorage.clear()
+        
+        // 清除 SessionStorage
+        sessionStorage.clear()
+        
+        // 清除 ServiceWorker
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations()
+          for (let registration of registrations) {
+            await registration.unregister()
+          }
+        }
+        
+        // 清除 Cache API
+        if ('caches' in window) {
+          const cacheNames = await caches.keys()
+          await Promise.all(cacheNames.map(name => caches.delete(name)))
+        }
+        
+        alert('✅ 缓存已清除！\n页面将在3秒后自动刷新...')
+        setTimeout(() => {
+          window.location.reload(true)
+        }, 3000)
+      }
+    }
+
+    // 强制刷新
+    function hardRefresh() {
+      if (confirm('🔄 执行强制刷新？\n\n这将:\n• 跳过浏览器缓存\n• 重新下载所有资源\n• 页面将立即刷新')) {
+        window.location.reload(true)
+      }
+    }
+
+    // 查看存储
+    function viewStorage() {
+      let html = '<div style="max-height: 400px; overflow-y: auto;">'
+      html += '<h3>LocalStorage 内容:</h3>'
+      html += '<div class="code">'
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        const value = localStorage.getItem(key)
+        html += '<strong>' + key + ':</strong> ' + (value.length > 100 ? value.substring(0, 100) + '...' : value) + '<br>'
+      }
+      html += '</div>'
+      
+      html += '<h3>SessionStorage 内容:</h3>'
+      html += '<div class="code">'
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i)
+        const value = sessionStorage.getItem(key)
+        html += '<strong>' + key + ':</strong> ' + (value.length > 100 ? value.substring(0, 100) + '...' : value) + '<br>'
+      }
+      html += '</div></div>'
+      
+      const win = window.open('', '_blank', 'width=800,height=600')
+      win.document.write('<html><head><title>存储查看器</title></head><body>' + html + '</body></html>')
+    }
+
+    // 版本对比
+    function compareVersions() {
+      const section = document.getElementById('comparisonSection')
+      const tbody = document.getElementById('comparisonBody')
+      
+      const htmlVersion = APP_VERSION
+      const storageVersion = localStorage.getItem('app_version') || '未设置'
+      const navVersion = localStorage.getItem('navConfigVersion') || '未设置'
+      const configHash = getConfigHash()
+      
+      // 模拟数据对比（实际应该从服务器获取手机端数据）
+      const comparisons = [
+        { 
+          item: 'HTML版本', 
+          pc: htmlVersion, 
+          mobile: storageVersion,
+          match: htmlVersion === storageVersion
+        },
+        { 
+          item: '导航栏配置', 
+          pc: navVersion, 
+          mobile: navVersion,
+          match: true
+        },
+        { 
+          item: '配置哈希', 
+          pc: configHash, 
+          mobile: configHash,
+          match: true
+        },
+        { 
+          item: '浏览器', 
+          pc: detectBrowser(), 
+          mobile: '待检测',
+          match: false
+        }
+      ]
+      
+      tbody.innerHTML = ''
+      comparisons.forEach(item => {
+        const row = document.createElement('tr')
+        row.innerHTML = `
+          <td><strong>${item.item}</strong></td>
+          <td>${item.pc}</td>
+          <td>${item.mobile}</td>
+          <td><span class="${item.match ? 'match' : 'mismatch'}">${item.match ? '✅ 一致' : '❌ 不一致'}</span></td>
+        `
+        tbody.appendChild(row)
+      })
+      
+      section.style.display = 'block'
+    }
+
+    // 页面加载时自动检测
+    window.addEventListener('load', checkVersion)
+  </script>
+</body>
+</html>

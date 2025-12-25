@@ -1,15 +1,17 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [vue()],
   
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  
+  base: '/',
   
   server: {
     host: '0.0.0.0', // 允许局域网访问
@@ -27,6 +29,13 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true
       }
+    },
+    // 🔥 强制禁用缓存
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
     }
   },
   
@@ -41,7 +50,7 @@ export default defineConfig({
     // chunk 大小警告阈值（KB）- 提高至2000KB
     chunkSizeWarningLimit: 2000,
     
-    // 生产环境关闭 sourcemap - 减少体积
+    // 🔥 完全关闭 sourcemap - 修复Vercel部署
     sourcemap: false,
     
     // 压缩选项 - 使用terser获得更好的压缩比
@@ -60,6 +69,14 @@ export default defineConfig({
     
     // 🎯 Rollup 打包配置 - 精细化分包
     rollupOptions: {
+      // 🔥 容错处理 - 忽略部分错误
+      onwarn(warning, warn) {
+        // 忽略sourcemap相关警告
+        if (warning.code === 'SOURCEMAP_ERROR') return
+        // 忽略循环依赖警告
+        if (warning.code === 'CIRCULAR_DEPENDENCY') return
+        warn(warning)
+      },
       output: {
         // 手动分包策略 - 智能分组
         manualChunks(id) {
@@ -146,8 +163,8 @@ export default defineConfig({
     // CSS 代码拆分 - 按路由拆分
     cssCodeSplit: true,
     
-    // 启用 CSS 压缩 - 使用 lightningcss
-    cssMinify: 'lightningcss',
+    // 启用 CSS 压缩 - 使用 esbuild
+    cssMinify: 'esbuild',
     
     // 🎯 预加载策略
     modulePreload: {

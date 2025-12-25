@@ -171,3 +171,6 @@ export const useLearningEngineStore = defineStore('learningEngine', {
     }
   }
 })
+
+// 默认导出
+export default useLearningEngineStore

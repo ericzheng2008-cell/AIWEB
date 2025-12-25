@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手机端同步更新完整指南</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      padding: 30px;
+      background: #f8f9ff;
+      border-radius: 16px;
+      border-left: 5px solid #667eea;
+    }
+
+    .section h2 {
+      font-size: 24px;
+      color: #667eea;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section p {
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .method {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+
+    .method:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .method h3 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stars {
+      color: #ffc107;
+      font-size: 16px;
+    }
+
+    .steps {
+      background: #f5f5f5;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .steps ol {
+      padding-left: 20px;
+    }
+
+    .steps li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .code-box {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+
+    .tip {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .tip strong {
+      color: #ff9800;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .section h2 {
+        font-size: 20px;
+      }
+
+      .method h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📱 手机端同步更新完整指南</h1>
+
+    <div class="section">
+      <h2>🎯 问题说明</h2>
+      <p><strong>现象：</strong>电脑后台修改了内容，但手机端刷新后仍显示旧版本</p>
+      <p><strong>原因：</strong>移动端浏览器为了节省流量，缓存策略更激进，导致显示旧内容</p>
+      <p><strong>解决：</strong>清除手机浏览器缓存即可</p>
+    </div>
+
+    <div class="section">
+      <h2>🚀 解决方案（三选一）</h2>
+
+      <div class="method">
+        <h3>
+          方法1：使用清除缓存工具
+          <span class="stars">⭐⭐⭐⭐⭐</span>
+          <span style="color: #4caf50; font-size: 14px;">（推荐）</span>
+        </h3>
+        <p><strong>优点：</strong>最简单、最快速、一键解决</p>
+        
+        <div class="tip">
+          <strong>💡 操作步骤：</strong>
+          手机浏览器访问清除缓存工具页面，点击按钮即可
+        </div>
+
+        <div class="steps">
+          <ol>
+            <li>确保手机连接到与电脑<strong>相同的WiFi</strong></li>
+            <li>手机浏览器访问：<code>http://你的IP:3000/clear-cache.html</code></li>
+            <li>点击"🚀 清除缓存并刷新"按钮</li>
+            <li>等待3秒自动刷新</li>
+            <li>完成！查看更新后的内容</li>
+          </ol>
+        </div>
+
+        <div class="code-box">
+          获取您的IP地址：
+          运行桌面上的"🚀_手机清除缓存快速通道_2025-12-23.bat"
+        </div>
+      </div>
+
+      <div class="method">
+        <h3>
+          方法2：浏览器设置清除
+          <span class="stars">⭐⭐⭐⭐</span>
+        </h3>
+        <p><strong>优点：</strong>彻底清除、适用于所有场景</p>
+
+        <div class="steps">
+          <strong>📱 iPhone Safari：</strong>
+          <ol>
+            <li>打开手机"设置"</li>
+            <li>找到并点击"Safari"</li>
+            <li>点击"清除历史记录与网站数据"</li>
+            <li>确认清除</li>
+            <li>重新访问网站</li>
+          </ol>
+        </div>
+
+        <div class="steps">
+          <strong>📱 Android Chrome：</strong>
+          <ol>
+            <li>打开Chrome浏览器</li>
+            <li>点击右上角"⋮"菜单</li>
+            <li>选择"设置"→"隐私和安全"</li>
+            <li>点击"清除浏览数据"</li>
+            <li>勾选"Cookie和网站数据"、"缓存的图片和文件"</li>
+            <li>点击"清除数据"</li>
+          </ol>
+        </div>
+
+        <div class="steps">
+          <strong>📱 华为/小米浏览器：</strong>
+          <ol>
+            <li>打开浏览器</li>
+            <li>点击"设置"</li>
+            <li>找到"清除浏览数据"</li>
+            <li>选择全部清除</li>
+            <li>确认清除</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="method">
+        <h3>
+          方法3：无痕模式验证
+          <span class="stars">⭐⭐⭐</span>
+        </h3>
+        <p><strong>用途：</strong>快速验证是否为缓存问题</p>
+
+        <div class="steps">
+          <ol>
+            <li>打开手机浏览器</li>
+            <li>进入"无痕/隐私模式"</li>
+            <li>访问网站</li>
+            <li>如果显示正常 → 确认是缓存问题</li>
+            <li>退出无痕模式，使用方法1或2清除缓存</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>❓ 常见问题</h2>
+
+      <div class="method">
+        <h3>Q1: 为什么手机端更容易出现缓存问题？</h3>
+        <p><strong>A:</strong> 移动端浏览器为了节省流量和提升加载速度：</p>
+        <ul style="padding-left: 20px; margin-top: 10px;">
+          <li>Safari：缓存时间更长，缓存策略更激进</li>
+          <li>Chrome：预加载机制，提前缓存资源</li>
+          <li>微信浏览器：强缓存策略，难以自动刷新</li>
+        </ul>
+      </div>
+
+      <div class="method">
+        <h3>Q2: 清除缓存会丢失数据吗？</h3>
+        <p><strong>A:</strong> <span style="color: #4caf50; font-weight: bold;">不会！</span></p>
+        <ul style="padding-left: 20px; margin-top: 10px;">
+          <li>✅ 后台数据存储在服务器，不受影响</li>
+          <li>✅ 只清除浏览器本地缓存</li>
+          <li>✅ 重新登录后数据完整</li>
+          <li>✅ 完全安全，可放心操作</li>
+        </ul>
+      </div>
+
+      <div class="method">
+        <h3>Q3: 每次更新都要清除缓存吗？</h3>
+        <p><strong>A:</strong> <span style="color: #4caf50; font-weight: bold;">不需要！</span></p>
+        <p style="margin-top: 10px;">系统已添加自动检测功能：</p>
+        <ul style="padding-left: 20px; margin-top: 10px;">
+          <li>✅ 自动检测版本更新</li>
+          <li>✅ 自动提示用户刷新</li>
+          <li>✅ 只有初次看不到更新时需要手动清除</li>
+          <li>✅ 以后会自动提示</li>
+        </ul>
+      </div>
+
+      <div class="method">
+        <h3>Q4: 微信/企业微信内置浏览器怎么办？</h3>
+        <p><strong>A:</strong> 两种方法：</p>
+        <div class="steps">
+          <ol>
+            <li>长按网址栏 → 选择"在浏览器中打开"</li>
+            <li>复制链接 → 粘贴到系统浏览器（Safari/Chrome）</li>
+            <li>也可以访问清除缓存工具页面一键清除</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>💡 最佳实践</h2>
+      
+      <div class="tip">
+        <strong>📢 建议后台更新后通知用户：</strong>
+        <p style="margin-top: 10px;">
+          "系统已更新内容！如果手机端看不到最新内容，请访问 
+          <code>http://你的IP:3000/clear-cache.html</code> 
+          清除缓存。"
+        </p>
+      </div>
+
+      <div class="method">
+        <h3>📊 测试验证流程</h3>
+        <div class="steps">
+          <strong>PC端操作：</strong>
+          <ol>
+            <li>访问后台：<code>http://localhost:3000/admin</code></li>
+            <li>登录：admin / admin123</li>
+            <li>修改首页LOGO或公司名称</li>
+            <li>保存更改</li>
+          </ol>
+        </div>
+
+        <div class="steps">
+          <strong>手机端验证：</strong>
+          <ol>
+            <li>访问清除缓存工具或浏览器设置清除</li>
+            <li>重新访问网站</li>
+            <li>验证是否显示最新内容</li>
+            <li>如果显示正常 → 问题解决！</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="/clear-cache.html" class="btn">🧹 立即清除缓存</a>
+      <a href="/" class="btn">🏠 返回主页</a>
+      <a href="/admin" class="btn">⚙️ 后台管理</a>
+    </div>
+  </div>
+
+  <script>
+    // 自动获取并显示当前访问地址
+    window.addEventListener('load', () => {
+      const currentUrl = window.location.origin;
+      const codeBoxes = document.querySelectorAll('.code-box');
+      
+      codeBoxes.forEach(box => {
+        if (box.textContent.includes('你的IP')) {
+          box.innerHTML = `
+            清除缓存工具：<br>
+            ${currentUrl}/clear-cache.html
+          `;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

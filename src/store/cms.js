@@ -4,14 +4,14 @@ export const useCmsStore = defineStore('cms', {
   state: () => ({
     // 网站配置
     siteConfig: {
-      logo: localStorage.getItem('siteLogo') || '',
+      logo: localStorage.getItem('siteLogo') || '/logo-new.png',  // 使用新Logo
       companyName: {
-        'zh-CN': '明升伟业',
-        'en-US': 'Mingsheng'
+        'zh-CN': '明升企业智能体',
+        'en-US': 'MingSheng AI Agent'
       },
       slogan: {
-        'zh-CN': '专业工业工具供应商',
-        'en-US': 'Professional Industrial Tools Supplier'
+        'zh-CN': 'AI驱动的企业智能解决方案',
+        'en-US': 'AI-Powered Enterprise Intelligence Solutions'
       }
     },
     
@@ -26,8 +26,8 @@ export const useCmsStore = defineStore('cms', {
     homeBanners: JSON.parse(localStorage.getItem('homeBanners') || JSON.stringify([
       {
         id: 1,
-        title: { 'zh-CN': '广州市明升伟业机电有限公司', 'en-US': 'Guangzhou Mingsheng Industrial Co., Ltd.' },
-        subtitle: { 'zh-CN': '成立于1996年，总部位于珠江三角洲美丽的花城——广州', 'en-US': 'Established in 1996, headquartered in Guangzhou' },
+        title: { 'zh-CN': '明升企业智能体平台', 'en-US': 'MingSheng AI Agent Platform' },
+        subtitle: { 'zh-CN': 'AI驱动的企业智能解决方案 · 自主学习 · 持续进化', 'en-US': 'AI-Powered Enterprise Intelligence · Self-Learning · Continuous Evolution' },
         image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920',
         buttonText: { 'zh-CN': '了解更多', 'en-US': 'Learn More' },
         buttonAction: 'about',
@@ -36,8 +36,8 @@ export const useCmsStore = defineStore('cms', {
       },
       {
         id: 2,
-        title: { 'zh-CN': '专业工业工具 · 智能装配方案', 'en-US': 'Professional Industrial Tools · Smart Assembly Solutions' },
-        subtitle: { 'zh-CN': '28年专注于高端工业工具供应与应用解决方案', 'en-US': '28 years of focus on high-end industrial tools and solutions' },
+        title: { 'zh-CN': '智能工具 · 智能装配 · 智能管理', 'en-US': 'Smart Tools · Smart Assembly · Smart Management' },
+        subtitle: { 'zh-CN': 'EQTCF & ETBP 系列智能工具，为您提供全方位智能解决方案', 'en-US': 'EQTCF & ETBP smart tools for comprehensive intelligent solutions' },
         image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920',
         buttonText: { 'zh-CN': '探索产品', 'en-US': 'Explore Products' },
         buttonAction: 'products',
@@ -46,18 +46,18 @@ export const useCmsStore = defineStore('cms', {
       },
       {
         id: 3,
-        title: { 'zh-CN': '欧美高端工具 · 品质保证', 'en-US': 'European High-End Tools · Quality Assurance' },
-        subtitle: { 'zh-CN': '电动工具 · 气动工具 · 手动工具', 'en-US': 'Electric Tools · Pneumatic Tools · Manual Tools' },
+        title: { 'zh-CN': 'AI工作流编排 · 智能体协作', 'en-US': 'AI Workflow · Agent Collaboration' },
+        subtitle: { 'zh-CN': '可视化工作流设计 · 多智能体协同 · 自动化执行', 'en-US': 'Visual Workflow Design · Multi-Agent Collaboration · Automated Execution' },
         image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1920',
-        buttonText: { 'zh-CN': '查看系列', 'en-US': 'View Series' },
+        buttonText: { 'zh-CN': '查看方案', 'en-US': 'View Solutions' },
         buttonAction: 'products',
         status: 'active',
         order: 3
       },
       {
         id: 4,
-        title: { 'zh-CN': 'IATF16949认证 · 汽车制造体系', 'en-US': 'IATF16949 Certified · Automotive Manufacturing' },
-        subtitle: { 'zh-CN': '为汽车行业提供高强度标准件与传感器', 'en-US': 'Providing high-strength fasteners and sensors for automotive' },
+        title: { 'zh-CN': 'AICRM · 智能客户管理', 'en-US': 'AICRM · Intelligent Customer Management' },
+        subtitle: { 'zh-CN': 'AI赋能的CRM系统 · 销售预测 · 商机分析 · 客户洞察', 'en-US': 'AI-Powered CRM · Sales Forecast · Opportunity Analysis · Customer Insights' },
         image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920',
         buttonText: { 'zh-CN': '了解方案', 'en-US': 'Learn Solutions' },
         buttonAction: 'solutions',
@@ -70,9 +70,9 @@ export const useCmsStore = defineStore('cms', {
     featuredProducts: JSON.parse(localStorage.getItem('featuredProducts') || JSON.stringify([
       {
         id: 1,
-        title: { 'zh-CN': 'Atlas Copco 油压脉冲工具', 'en-US': 'Atlas Copco Hydraulic Pulse Tool' },
-        description: { 'zh-CN': '高精度拧紧，无反力设计，适用于汽车装配线', 'en-US': 'High-precision tightening, no reaction force design' },
-        mediaType: 'video', // video / image / gif
+        title: { 'zh-CN': 'EQTCF 智能拧紧工具', 'en-US': 'EQTCF Smart Tightening Tool' },
+        description: { 'zh-CN': '高精度智能拧紧，数据实时采集与分析', 'en-US': 'High-precision smart tightening with real-time data collection' },
+        mediaType: 'video',
         mediaUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
         thumbnailUrl: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800',
         link: '/products',
@@ -81,8 +81,8 @@ export const useCmsStore = defineStore('cms', {
       },
       {
         id: 2,
-        title: { 'zh-CN': 'Bosch 智能电动工具', 'en-US': 'Bosch Smart Electric Tools' },
-        description: { 'zh-CN': '智能扭矩控制，蓝牙连接，数据实时采集', 'en-US': 'Smart torque control, Bluetooth connectivity' },
+        title: { 'zh-CN': 'ETBP 智能电动工具', 'en-US': 'ETBP Smart Electric Tool' },
+        description: { 'zh-CN': '智能扭矩控制，蓝牙连接，云端数据管理', 'en-US': 'Smart torque control, Bluetooth connectivity, cloud data management' },
         mediaType: 'image',
         mediaUrl: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1200',
         thumbnailUrl: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800',
@@ -373,6 +373,58 @@ export const useCmsStore = defineStore('cms', {
     deleteFeaturedProduct(id) {
       this.featuredProducts = this.featuredProducts.filter(p => p.id !== id)
       this.updateFeaturedProducts(this.featuredProducts)
+    },
+
+    // ========== 从API加载数据 ==========
+    async loadFromAPI() {
+      try {
+        // 加载Banner数据
+        const bannersRes = await fetch('/api/content/banners')
+        if (bannersRes.ok) {
+          const bannersData = await bannersRes.json()
+          if (bannersData.success && bannersData.data.length > 0) {
+            // 转换API格式到store格式
+            this.homeBanners = bannersData.data.map(b => ({
+              id: b.id,
+              // 🔧 修复: 确保将字符串转换为多语言对象
+              title: typeof b.title === 'string' 
+                ? { 'zh-CN': b.title, 'en-US': b.title }
+                : (b.title || { 'zh-CN': '', 'en-US': '' }),
+              subtitle: typeof b.subtitle === 'string'
+                ? { 'zh-CN': b.subtitle, 'en-US': b.subtitle }
+                : (b.subtitle || { 'zh-CN': '', 'en-US': '' }),
+              image: b.image,
+              buttonText: typeof b.buttonText === 'string'
+                ? { 'zh-CN': b.buttonText, 'en-US': b.buttonText }
+                : (b.buttonText || { 'zh-CN': '了解更多', 'en-US': 'Learn More' }),
+              buttonAction: b.link || 'about',
+              status: b.active ? 'active' : 'inactive',
+              order: b.id
+            }))
+            // 同步到localStorage
+            localStorage.setItem('homeBanners', JSON.stringify(this.homeBanners))
+            console.log('✅ Banner数据已从API同步到localStorage')
+          }
+        }
+
+        // 加载网站配置
+        const configRes = await fetch('/api/content/config')
+        if (configRes.ok) {
+          const configData = await configRes.json()
+          if (configData.success) {
+            // 更新配置
+            if (configData.data.logo) {
+              this.siteConfig.logo = configData.data.logo
+              localStorage.setItem('siteLogo', configData.data.logo)
+              console.log('✅ Logo已从API同步:', configData.data.logo)
+            }
+          }
+        }
+
+        console.log('✅ 数据已从API加载并同步')
+      } catch (error) {
+        console.warn('⚠️ 从API加载数据失败，使用本地缓存:', error.message)
+      }
     }
   }
 })

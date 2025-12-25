@@ -1,0 +1,527 @@
+import { createRouter, createWebHashHistory } from 'vue-router'
+
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: () => import('../views/Home.vue')
+  },
+  {
+    path: '/products-services',
+    name: 'ProductsServices',
+    component: () => import('../views/ProductsServices.vue')
+  },
+  {
+    path: '/divisions',
+    name: 'Divisions',
+    component: () => import('../views/Divisions.vue')
+  },
+  {
+    path: '/products',
+    name: 'Products',
+    component: () => import('../views/Products.vue')
+  },
+  {
+    path: '/product-category/:categoryId',
+    name: 'ProductCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product-category/:categoryId/:subCategoryId',
+    name: 'ProductSubCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product-category/:categoryId/:subCategoryId/:thirdCategoryId',
+    name: 'ProductThirdCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product-category/:categoryId/:subCategoryId/:thirdCategoryId/:fourthCategoryId',
+    name: 'ProductFourthCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: () => import('../views/ProductDetail.vue')
+  },
+  {
+    path: '/tech-classroom',
+    name: 'TechClassroom',
+    component: () => import('../views/TechClassroom.vue')
+  },
+  {
+    path: '/solutions',
+    name: 'Solutions',
+    component: () => import('../views/Solutions.vue')
+  },
+  {
+    path: '/solution-category/:categoryId',
+    name: 'SolutionCategory',
+    component: () => import('../views/SolutionCategory.vue')
+  },
+  {
+    path: '/solution-category/:categoryId/:subCategoryId',
+    name: 'SolutionSubCategory',
+    component: () => import('../views/SolutionCategory.vue')
+  },
+  {
+    path: '/solution-category/:categoryId/:subCategoryId/:thirdCategoryId',
+    name: 'SolutionThirdCategory',
+    component: () => import('../views/SolutionCategory.vue')
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('../views/About.vue')
+  },
+  {
+    path: '/service',
+    name: 'Service',
+    component: () => import('../views/Service.vue')
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: () => import('../views/Contact.vue')
+  },
+  {
+    path: '/ai-knowledge',
+    name: 'AiKnowledge',
+    component: () => import('../views/AiKnowledgeManager.vue')
+  },
+  {
+    path: '/ai-agents',
+    name: 'AiAgents',
+    component: () => import('../views/AiAgents.vue')
+  },
+  {
+    path: '/ai-agent/:id',
+    name: 'AiAgent',
+    component: () => import('../views/AiAgent.vue')
+  },
+  {
+    path: '/tool-selector',
+    name: 'ToolSelector',
+    component: () => import('../views/ToolSelector.vue')
+  },
+  {
+    path: '/tool-selector-enhanced',
+    name: 'ToolSelectorEnhanced',
+    component: () => import('../views/ToolSelectorEnhanced.vue'),
+    meta: { 
+      title: '鎷х揣宸ュ叿閫夊瀷锛堝寮虹増锛?,
+      description: '鍏峰瀹屽叏鑷富杩愯鑳藉姏鐨勬櫤鑳戒綋绯荤粺'
+    }
+  },
+  {
+    path: '/tightening-data',
+    name: 'TighteningData',
+    component: () => import('../views/admin/TighteningDataAnalysis.vue')
+  },
+  {
+    path: '/tightening-dashboard',
+    name: 'TighteningDashboard',
+    component: () => import('../views/TighteningDataDashboard.vue'),
+    meta: { 
+      title: '鎷х揣鏁版嵁閲囬泦鍒嗘瀽 - ToolsNet 8浠ｈ〃浣?,
+      description: '鍙嫋鎷藉皬宸ュ叿绐楀彛锛屽疄鏃舵暟鎹垎鏋?
+    }
+  },
+  {
+    path: '/socket-selector',
+    name: 'SocketSelector',
+    component: () => import('../views/SocketSelector.vue')
+  },
+  {
+    path: '/tool-brand-match',
+    name: 'ToolBrandMatch',
+    component: () => import('../views/ToolBrandMatch.vue')
+  },
+  {
+    path: '/tightening-strategy',
+    name: 'TighteningStrategy',
+    component: () => import('../views/TighteningStrategy.vue')
+  },
+  {
+    path: '/cost-optimization',
+    name: 'CostOptimization',
+    component: () => import('../views/CostOptimization.vue')
+  },
+
+  {
+    path: '/curve-analysis',
+    name: 'CurveAnalysis',
+    component: () => import('../views/CurveAnalysis.vue')
+  },
+  {
+    path: '/process-verification',
+    name: 'ProcessVerification',
+    component: () => import('../views/ProcessVerification.vue')
+  },
+  {
+    path: '/fault-tracking',
+    name: 'FaultTracking',
+    component: () => import('../views/FaultTracking.vue')
+  },
+  {
+    path: '/work-order-query',
+    name: 'WorkOrderQuery',
+    component: () => import('../views/WorkOrderQuery.vue'),
+    meta: {
+      title: '宸ュ崟鏌ヨ绯荤粺',
+      description: '鎸夊伐鍗曞彿鎴栨墜鏈哄彿鏌ヨ缁翠慨杩涘害鍜岄厤浠剁墿娴佺姸鎬?
+    }
+  },
+  {
+    path: '/equipment-lifecycle',
+    name: 'EquipmentLifecycle',
+    component: () => import('../views/EquipmentLifecycle.vue')
+  },
+  {
+    path: '/intelligent-calculator',
+    name: 'IntelligentCalculator',
+    component: () => import('../views/IntelligentCalculator.vue')
+  },
+  {
+    path: '/equipment-dashboard',
+    name: 'EquipmentDashboard',
+    component: () => import('../views/EquipmentDashboard.vue')
+  },
+  {
+    path: '/maintenance-history',
+    name: 'MaintenanceHistory',
+    component: () => import('../views/MaintenanceHistory.vue')
+  },
+  {
+    path: '/fault-statistics',
+    name: 'FaultStatistics',
+    component: () => import('../views/FaultStatistics.vue')
+  },
+  {
+    path: '/cost-optimization',
+    name: 'CostOptimization',
+    component: () => import('../views/CostOptimization.vue')
+  },
+  {
+    path: '/ai-product-selector',
+    name: 'AiProductSelector',
+    component: () => import('../views/AiProductSelector.vue'),
+    meta: {
+      title: 'AI智能选型系统',
+      description: '智能推荐最适合您的产品'
+    }
+  },
+  {
+    path: '/resource-center',
+    name: 'ResourceCenter',
+    component: () => import('../views/ResourceCenter.vue'),
+    meta: {
+      title: '璧勬簮涓績',
+      description: '涓嬭浇鐧界毊涔︺€佹妧鏈枃妗ｃ€佹渚嬬爺绌?
+    }
+  },
+  {
+    path: '/email-marketing',
+    name: 'EmailMarketingSystem',
+    component: () => import('../views/EmailMarketingSystem.vue'),
+    meta: {
+      title: 'AI閭欢钀ラ攢绯荤粺',
+      description: '澶氳瑷€EDM妯℃澘銆丄/B娴嬭瘯銆佹晥鏋滆拷韪?
+    }
+  },
+  {
+    path: '/lead-nurturing',
+    name: 'LeadNurturingSystem',
+    component: () => import('../views/LeadNurturingSystem.vue'),
+    meta: {
+      title: '绾跨储瀛靛寲绯荤粺',
+      description: '鑷姩鍖朜urturing銆佸垎绾ц窡杩涚瓥鐣?
+    }
+  },
+  {
+    path: '/marketing-data-hub',
+    name: 'MarketingDataHub',
+    component: () => import('../views/MarketingDataHub.vue'),
+    meta: {
+      title: '钀ラ攢鏁版嵁涓彴',
+      description: '澶氭簮鏁版嵁鏁村悎銆佸疄鏃舵暟浠撱€佸彲瑙嗗寲鐪嬫澘'
+    }
+  },
+  {
+    path: '/mingsheng-aicrm',
+    name: 'MingShengAICRM',
+    component: () => import('../views/MingShengAICRM_V3.vue'),
+    meta: {
+      title: '鏄庡崌AICRM v3.0 - AI璧㈢巼椹卞姩鏅鸿兘钀ラ攢骞冲彴',
+      description: 'Salesforce Einstein绾I璧㈢巼棰勬祴路鍟嗘満绠＄悊路鎶ヤ环绯荤粺路绔炲搧鍒嗘瀽路缁勭粐褰卞搷鍔涘浘璋?,
+      category: 'AI钀ラ攢涓彴'
+    }
+  },
+  {
+    path: '/workflow-agent',
+    name: 'WorkflowAgent',
+    component: () => import('../views/WorkflowAgent.vue'),
+    meta: {
+      title: '宸ヤ綔娴佹櫤鑳戒綋 v2.7',
+      description: '澶氶儴闂ㄥ伐浣滄祦鍙鍖栫鐞?- 鎷栨嫿寮忔祦绋嬭璁°€佽嚜瀹氫箟鑺傜偣銆佹櫤鑳借繛鎺?,
+      category: '娴佺▼绠＄悊'
+    }
+  },
+  {
+    path: '/workflow-agent-v3',
+    name: 'WorkflowAgentV3',
+    component: () => import('../views/WorkflowAgentV3.vue'),
+    meta: {
+      title: '宸ヤ綔娴佹櫤鑳戒綋 v3.0 Enterprise',
+      description: '浼佷笟绾I宸ヤ綔娴佸钩鍙?- 鍏ぇ鑺傜偣绫诲瀷路鏅鸿兘鎺ㄨ崘路瀹屾暣璋冭瘯路鏁版嵁閾捐矾杩借釜',
+      category: '浼佷笟绾у钩鍙?
+    }
+  },
+  {
+    path: '/workflow-editor-v4',
+    name: 'WorkflowEditorV4',
+    component: () => import('../views/WorkflowEditorV4.vue'),
+    meta: {
+      title: '宸ヤ綔娴佽妭鐐圭紪杈戝櫒 v4.0 Professional',
+      description: '涓撲笟绾ц妭鐐圭紪杈戝櫒 - 鍏ぇ鑺傜偣鍒嗙被路瀹屾暣灞炴€х紪杈懧稟I鏅鸿兘鍔╂墜路浼佷笟绾ц璁?,
+      category: '娴佺▼绠＄悊'
+    }
+  },
+  {
+    path: '/workflow-editor-v5-n8n',
+    name: 'WorkflowEditorV5_N8N',
+    component: () => import('../views/WorkflowEditorV5_N8N.vue'),
+    meta: {
+      title: '宸ヤ綔娴佺紪杈戝櫒 v7.0 Ultra Edition',
+      description: '浼佷笟绾у伐浣滄祦骞冲彴路30鑺傜偣路9灞炴€ф爣绛韭稟I鏅鸿兘路SLA绠＄悊路鏉冮檺瀹¤路鏁版嵁杩借釜路25鍊嶈秴澶ц妭鐐孤锋嫋鎷戒慨澶?,
+      category: '娴佺▼绠＄悊'
+    }
+  },
+  // 绠＄悊鍚庡彴璺敱
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('../views/admin/Login.vue'),
+    meta: { requiresGuest: true }
+  },
+  {
+    path: '/admin',
+    component: () => import('../views/admin/AdminLayout.vue'),
+    meta: { requiresAuth: true },
+    redirect: '/admin/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        name: 'AdminDashboard',
+        component: () => import('../views/admin/Dashboard.vue')
+      },
+      {
+        path: 'cms',
+        name: 'AdminCms',
+        component: () => import('../views/admin/ContentManage.vue')
+      },
+      {
+        path: 'products-services',
+        name: 'AdminProductsServices',
+        component: () => import('../views/admin/ProductsServicesManage.vue')
+      },
+      {
+        path: 'home-layout',
+        name: 'AdminHomeLayout',
+        component: () => import('../views/admin/HomeLayoutManage.vue')
+      },
+      {
+        path: 'work-orders',
+        name: 'AdminWorkOrders',
+        component: () => import('../views/admin/WorkOrderManage.vue'),
+        meta: {
+          title: '宸ュ崟绠＄悊',
+          description: '绠＄悊璁惧缁翠慨宸ュ崟銆侀厤浠剁姸鎬佸拰鐗╂祦淇℃伅'
+        }
+      },
+      {
+        path: 'tightening-data',
+        name: 'TighteningDataAnalysis',
+        component: () => import('../views/admin/TighteningDataAnalysis.vue')
+      },
+      {
+        path: 'classroom',
+        name: 'AdminClassroom',
+        component: () => import('../views/admin/ClassroomManage.vue')
+      },
+      {
+        path: 'classroom-resources',
+        name: 'AdminClassroomResources',
+        component: () => import('../views/admin/ClassroomResourcesManage.vue')
+      },
+      {
+        path: 'ai-agents',
+        name: 'AdminAiAgents',
+        component: () => import('../views/admin/AiAgentManage.vue')
+      },
+      {
+        path: 'agent-registry',
+        name: 'AdminAgentRegistry',
+        component: () => import('../views/admin/AgentRegistry.vue')
+      },
+      {
+        path: 'knowledge-base',
+        name: 'AdminKnowledgeBase',
+        component: () => import('../views/admin/KnowledgeBase.vue')
+      },
+      {
+        path: 'learning-engine',
+        name: 'AdminLearningEngine',
+        component: () => import('../views/admin/LearningEngine.vue')
+      },
+      {
+        path: 'ai-learning-dashboard',
+        name: 'AiLearningDashboard',
+        component: () => import('../views/AiLearningDashboard.vue'),
+        meta: {
+          title: 'AI瀛︿範璁粌涓績',
+          description: '鏌ョ湅鐢ㄦ埛鍙嶉锛屼紭鍖朅I鍥炵瓟璐ㄩ噺'
+        }
+      },
+      {
+        path: 'monitoring',
+        name: 'AdminMonitoring',
+        component: () => import('../views/admin/MonitoringDashboard.vue')
+      },
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('../views/admin/UserManagement.vue')
+      },
+      {
+        path: 'tool-database',
+        name: 'AdminToolDatabase',
+        component: () => import('../views/admin/ToolDatabase.vue')
+      },
+      {
+        path: 'tool-brand-database',
+        name: 'AdminToolBrandDatabase',
+        component: () => import('../views/admin/ToolBrandDatabase.vue')
+      },
+      {
+        path: 'socket-database',
+        name: 'AdminSocketDatabase',
+        component: () => import('../views/admin/SocketDatabase.vue')
+      },
+      {
+        path: 'equipment',
+        name: 'AdminEquipment',
+        component: () => import('../views/admin/EquipmentManage.vue')
+      },
+      {
+        path: 'workorder',
+        name: 'AdminWorkOrder',
+        component: () => import('../views/admin/WorkOrderManage.vue')
+      },
+      {
+        path: 'ai-knowledge',
+        name: 'AdminAiKnowledge',
+        component: () => import('../views/AiKnowledgeManager.vue')
+      },
+      {
+        path: 'workstation',
+        name: 'AdminWorkstation',
+        component: () => import('../views/admin/WorkstationManage.vue')
+      },
+      {
+        path: 'production-line',
+        name: 'AdminProductionLine',
+        component: () => import('../views/admin/ProductionLineManage.vue')
+      },
+      {
+        path: 'marketing-hub',
+        name: 'AdminMarketingHub',
+        component: () => import('../views/admin/MarketingHubManage.vue'),
+        meta: {
+          title: 'AI钀ラ攢涓彴绠＄悊',
+          description: '閰嶇疆Phase 2-4鍔熻兘銆丄I妯″瀷璁粌銆佹暟鎹垎鏋?
+        }
+      },
+      {
+        path: 'training-data',
+        name: 'AdminTrainingData',
+        component: () => import('../views/admin/TrainingDataManage.vue'),
+        meta: {
+          title: '瀛︿範璁粌绯荤粺璧勬枡绠＄悊',
+          description: '绠＄悊浜у搧鐭ヨ瘑銆佹妧鏈妧鑳姐€侀攢鍞惀閿€绛夎缁冩暟鎹?
+        }
+      },
+      {
+        path: 'mingsheng-aicrm',
+        name: 'AdminMingShengAICRM',
+        component: () => import('../views/admin/MingShengAICRMManage.vue'),
+        meta: {
+          title: '鏄庡崌AICRM鍚庡彴绠＄悊',
+          description: '閰嶇疆鏅鸿兘鐪嬫澘銆佸鎴?60掳銆佸晢鏈虹鐞嗐€佽嚜鍔ㄥ寲娴佺▼'
+        }
+      },
+      {
+        path: 'product-matrix',
+        name: 'AdminProductMatrix',
+        component: () => import('../views/admin/ProductMatrixManage.vue'),
+        meta: {
+          title: '浼佷笟浜у搧鐭╅樀绠＄悊',
+          description: '浜у搧鏀剁泭-鐜伴噾娴佸垎鏋愩€丅CG鐭╅樀銆丄I鏅鸿兘鎺ㄨ崘銆佺粍鍚堜紭鍖?
+        }
+      },
+      {
+        path: 'customer360',
+        name: 'AdminCustomer360',
+        component: () => import('../views/admin/Customer360Manage.vue'),
+        meta: {
+          title: '瀹㈡埛360鐢诲儚涓庢矙鐩樺垎鏋愮鐞?,
+          description: '瀹㈡埛鐢诲儚閰嶇疆銆佹暟鎹簮鏁村悎銆佹矙鐩樺垎鏋愯缃€丄I棰勬祴閰嶇疆'
+        }
+      },
+      {
+        path: 'material-download',
+        name: 'AdminMaterialDownload',
+        component: () => import('../views/admin/MaterialDownloadManage.vue'),
+        meta: {
+          title: '璧勬枡涓嬭浇绠＄悊',
+          description: '绠＄悊浜у搧鎵嬪唽銆佹妧鏈祫鏂欍€佺櫧鐨功绛変笅杞借祫婧愶紝澶勭悊绱㈠彇鎶ヤ环璇锋眰'
+        }
+      }
+    ]
+  }
+]
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
+})
+
+// 璺敱瀹堝崼
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('adminToken')
+  
+  if (to.meta.requiresAuth && !token) {
+    // 闇€瑕佺櫥褰曚絾鏈櫥褰曪紝璺宠浆鍒扮櫥褰曢〉
+    next('/admin/login')
+  } else if (to.meta.requiresGuest && token) {
+    // 宸茬櫥褰曡闂櫥褰曢〉锛岃烦杞埌鍚庡彴棣栭〉
+    next('/admin/dashboard')
+  } else {
+    next()
+  }
+})
+
+export default router
+
+
+
+

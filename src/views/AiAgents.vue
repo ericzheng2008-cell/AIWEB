@@ -56,6 +56,7 @@
         <div class="category-tabs" data-aos="fade-up">
           <el-radio-group v-model="selectedCategory" size="large">
             <el-radio-button label="all">全部智能体</el-radio-button>
+            <el-radio-button label="knowledge">知识管理</el-radio-button>
             <el-radio-button label="tool">工具选型</el-radio-button>
             <el-radio-button label="equipment">设备管理</el-radio-button>
             <el-radio-button label="analysis">数据分析</el-radio-button>
@@ -74,6 +75,64 @@
         </div>
         
         <div class="agents-grid">
+          <!-- 🆕 企业知识库 -->
+          <div 
+            class="agent-card highlight" 
+            @click="goToAgent('/ai-knowledge')"
+            @mouseenter="onCardHover($event)"
+            @mouseleave="onCardLeave($event)"
+            data-aos="fade-up"
+            data-aos-delay="100"
+            data-category="knowledge">
+            <div class="badge badge-new">
+              <el-icon><Star /></el-icon>
+              新上线
+            </div>
+            <div class="card-glow"></div>
+            <div class="agent-icon">
+              <el-icon :size="64"><FolderOpened /></el-icon>
+            </div>
+            <el-tooltip content="查看使用教程" placement="top">
+              <el-button 
+                class="help-btn" 
+                circle 
+                size="small" 
+                @click.stop="showHelp('knowledge-manager')">
+                <el-icon><QuestionFilled /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <h2>企业知识库</h2>
+            <p class="agent-desc">AI企业知识管理系统 - 训练AI助手，智能问答，业务知识库分类管理与检索</p>
+            <div class="agent-features">
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>知识管理</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>智能问答</span>
+              </div>
+              <div class="feature-item">
+                <el-icon><Checked /></el-icon>
+                <span>AI训练</span>
+              </div>
+            </div>
+            <div class="agent-stats">
+              <div class="stat-item">
+                <div class="stat-value">7+</div>
+                <div class="stat-label">知识分类</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">智能问答</div>
+              </div>
+            </div>
+            <el-button type="primary" size="large" class="action-btn">
+              进入知识库
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </div>
+
           <!-- 数字监控驾驶舱 -->
           <div 
             class="agent-card highlight" 
@@ -613,7 +672,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   DataAnalysis, MagicStick, Pointer, VideoPlay, Search, 
   QuestionFilled, Star, Reading, Tools, Box, List, TrendCharts,
-  Checked, ArrowRight, Document, Money
+  Checked, ArrowRight, Document, Money, FolderOpened
 } from '@element-plus/icons-vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
@@ -698,6 +757,7 @@ const onCardLeave = (event) => {
 // 显示帮助
 const showHelp = (agentId) => {
   const helpContent = {
+    'knowledge-manager': '📚 企业知识库管理\n\n功能说明：\n1. 分类知识管理（产品、事业部、应用案例等）\n2. 关键词智能匹配\n3. 多语言知识库（中英文）\n4. AI助手训练与优化\n5. 知识库导入导出\n\n适用场景：客户问答、员工培训、知识沉淀、AI训练',
     'tool-selector': '🔧 拧紧工具选型智能体\n\n功能说明：\n1. 填写工艺需求信息\n2. AI智能匹配推荐工具\n3. 查看详细工具参数\n4. 生成需求报告\n\n适用场景：新工位建设、工具升级、工艺优化',
     'equipment-dashboard': '📊 数字监控驾驶舱\n\n功能说明：\n1. 实时监控设备状态\n2. 维护流程可视化\n3. 零配件订货追踪\n4. 多角色视图切换\n\n适用角色：设备管理人员、设备使用人员、供应商服务人员',
     'equipment-lifecycle': '🔄 设备全生命周期管理\n\n功能说明：\n1. 设备档案管理\n2. ROI投资回报分析\n3. AI保养预测\n4. 成本优化建议\n\n适用场景：设备采购决策、维护计划制定、成本控制',

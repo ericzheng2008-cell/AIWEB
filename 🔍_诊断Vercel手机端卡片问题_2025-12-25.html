@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Vercel手机端卡片问题诊断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .issue-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #f56c6c;
+        }
+        .issue-title {
+            font-weight: 600;
+            color: #f56c6c;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .issue-desc {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .solution {
+            background: #f0f9ff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #409eff;
+            margin-top: 10px;
+        }
+        .solution-title {
+            color: #409eff;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .solution-steps {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .solution-steps li {
+            margin-bottom: 6px;
+        }
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #e6a23c 0%, #ebb563 100%);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status-error {
+            background: #fef0f0;
+            color: #f56c6c;
+        }
+        .status-warning {
+            background: #fdf6ec;
+            color: #e6a23c;
+        }
+        .checklist {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+        }
+        .diagnosis-result {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #f56c6c;
+            margin: 20px 0;
+        }
+        .result-title {
+            color: #f56c6c;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .priority-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .p-high {
+            background: #f56c6c;
+            color: white;
+        }
+        .p-medium {
+            background: #e6a23c;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Vercel手机端卡片问题完整诊断</h1>
+        <p class="subtitle">网址: https://aiweb-1.vercel.app | 问题: 卡片和板块打不开</p>
+
+        <!-- 问题诊断结果 -->
+        <div class="diagnosis-result">
+            <div class="result-title">
+                🚨 主要问题分析
+            </div>
+            <div class="issue-item">
+                <div class="issue-title">
+                    <span class="priority-tag p-high">P0</span>
+                    路由事件处理失效
+                </div>
+                <div class="issue-desc">
+                    手机端触摸事件可能与点击事件冲突，导致卡片无法响应用户操作。
+                </div>
+            </div>
+
+            <div class="issue-item">
+                <div class="issue-title">
+                    <span class="priority-tag p-high">P0</span>
+                    JavaScript编译错误
+                </div>
+                <div class="issue-desc">
+                    Vercel打包时可能出现路由或组件懒加载错误，导致页面无法正常初始化。
+                </div>
+            </div>
+
+            <div class="issue-item">
+                <div class="issue-title">
+                    <span class="priority-tag p-medium">P1</span>
+                    CSS触摸样式缺失
+                </div>
+                <div class="issue-desc">
+                    手机端缺少:active和触摸反馈样式，用户无法感知卡片可点击。
+                </div>
+            </div>
+        </div>
+
+        <!-- 解决方案1: 修复路由事件 -->
+        <div class="section">
+            <div class="section-title">
+                🛠️ 方案1: 修复手机端触摸事件
+                <span class="status status-error">紧急修复</span>
+            </div>
+
+            <div class="solution">
+                <div class="solution-title">📝 修改 Home.vue 卡片点击事件</div>
+                <div class="code-block"><!-- 旧代码 (可能失效) -->
+&lt;div class="core-agent-card mingsheng-agent" 
+     @click="scrollToAgents"
+     @touchstart.prevent="scrollToAgents"&gt;
+
+<!-- 新代码 (兼容手机) -->
+&lt;div class="core-agent-card mingsheng-agent" 
+     @click="handleCardClick('agents')"
+     @touchend.prevent="handleCardClick('agents')"
+     style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1);"&gt;</div>
+
+                <div class="solution-title" style="margin-top: 15px;">📝 添加统一点击处理函数</div>
+                <div class="code-block">// 在 &lt;script setup&gt; 中添加
+const handleCardClick = (target) => {
+  console.log('卡片点击:', target)
+  
+  switch(target) {
+    case 'agents':
+      router.push('/ai-agents')
+      break
+    case 'marketing':
+      router.push('/ai-product-selector')
+      break
+    case 'workflow':
+      showWorkflowPlatforms.value = true
+      break
+  }
+}</div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-danger" onclick="window.open('c:/Users/EricZ/CodeBuddy/AIWEB1/src/views/Home.vue', '_blank')">
+                    打开 Home.vue
+                </button>
+            </div>
+        </div>
+
+        <!-- 解决方案2: 添加手机端CSS -->
+        <div class="section">
+            <div class="section-title">
+                🎨 方案2: 添加手机端触摸样式
+                <span class="status status-warning">体验优化</span>
+            </div>
+
+            <div class="solution">
+                <div class="solution-title">📝 在 Home.vue &lt;style scoped&gt; 中添加</div>
+                <div class="code-block">/* 手机端触摸优化 */
+.core-agent-card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 手机端按压反馈 */
+.core-agent-card:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* 工具平台卡片 */
+.workflow-hub-card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+  touch-action: manipulation;
+}
+
+.workflow-hub-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+/* 产品系列卡片 */
+.series-card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+
+.series-card:active {
+  transform: translateY(2px);
+}</div>
+            </div>
+        </div>
+
+        <!-- 解决方案3: 检查Vercel构建 -->
+        <div class="section">
+            <div class="section-title">
+                🔍 方案3: 检查Vercel构建日志
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>检查构建日志</strong><br>
+                        <span style="color: #666; font-size: 13px;">
+                            访问 vercel.com → 项目 → Deployments → 最新部署 → Build Logs
+                        </span>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>查看Runtime Logs</strong><br>
+                        <span style="color: #666; font-size: 13px;">
+                            检查是否有JavaScript运行时错误
+                        </span>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>测试本地构建</strong><br>
+                        <span style="color: #666; font-size: 13px;">
+                            运行 <code>npm run build</code> 和 <code>npm run preview</code>
+                        </span>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>清除Vercel缓存</strong><br>
+                        <span style="color: #666; font-size: 13px;">
+                            Settings → General → Clear Build Cache
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn" onclick="window.open('https://vercel.com', '_blank')">
+                    打开Vercel控制台
+                </button>
+                <button class="btn btn-warning" onclick="window.open('https://aiweb-1.vercel.app', '_blank')">
+                    访问Vercel网站
+                </button>
+            </div>
+        </div>
+
+        <!-- 解决方案4: 浏览器控制台诊断 -->
+        <div class="section">
+            <div class="section-title">
+                📱 方案4: 手机端浏览器控制台诊断
+            </div>
+
+            <div class="solution">
+                <div class="solution-title">🔍 使用vConsole调试手机端</div>
+                <div class="solution-steps">
+                    <ol>
+                        <li>在 <code>index.html</code> 中添加vConsole脚本</li>
+                        <li>重新部署到Vercel</li>
+                        <li>手机访问网站，查看控制台错误</li>
+                    </ol>
+                </div>
+                
+                <div class="code-block"><!-- 在 index.html &lt;head&gt; 中添加 -->
+&lt;script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  // 仅在移动端显示vConsole
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    var vConsole = new window.VConsole();
+  }
+&lt;/script&gt;</div>
+            </div>
+        </div>
+
+        <!-- 快速修复步骤 -->
+        <div class="section">
+            <div class="section-title">
+                ⚡ 快速修复步骤 (5分钟)
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>步骤1:</strong> 修改 Home.vue 触摸事件处理
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>步骤2:</strong> 添加手机端触摸CSS样式
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>步骤3:</strong> 本地测试 <code>npm run dev</code>
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>步骤4:</strong> 提交代码并推送到GitHub
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>步骤5:</strong> Vercel自动重新部署
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>步骤6:</strong> 清除手机浏览器缓存并测试
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 完整修复脚本 -->
+        <div class="section">
+            <div class="section-title">
+                🚀 一键修复并部署
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="alert('请运行: 🔧_一键修复Vercel手机端.bat')">
+                    ⚡ 执行一键修复
+                </button>
+                <button class="btn btn-warning" onclick="window.open('https://aiweb-1.vercel.app', '_blank')">
+                    📱 手机端测试
+                </button>
+            </div>
+
+            <div class="solution">
+                <div class="solution-title">📋 修复脚本内容预览</div>
+                <div class="code-block">@echo off
+echo ⚡ 开始修复Vercel手机端卡片问题...
+
+echo 1. 检查Git状态...
+git status
+
+echo 2. 提交修改...
+git add .
+git commit -m "fix: 修复Vercel手机端卡片触摸事件"
+
+echo 3. 推送到GitHub...
+git push origin main
+
+echo 4. 等待Vercel自动部署 (约2分钟)...
+timeout /t 120
+
+echo ✅ 修复完成! 请清除手机缓存并测试:
+echo    https://aiweb-1.vercel.app
+pause</div>
+            </div>
+        </div>
+
+        <!-- 验证清单 -->
+        <div class="section">
+            <div class="section-title">
+                ✅ 修复后验证清单
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>智能体卡片可点击</strong> - 能跳转到 /ai-agents
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>营销中台卡片可点击</strong> - 能跳转到营销页面
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>工作平台卡片可点击</strong> - 能打开工具弹窗
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>产品系列卡片可点击</strong> - 能跳转到产品页
+                    </div>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="checkbox">
+                    <div>
+                        <strong>触摸反馈正常</strong> - 按压时有视觉反馈
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #409eff;">
+            <strong style="color: #409eff;">💡 提示:</strong>
+            <p style="margin-top: 10px; color: #666; line-height: 1.8;">
+                如果修复后仍有问题，请检查：<br>
+                1️⃣ 手机浏览器是否为最新版本<br>
+                2️⃣ 是否启用了JavaScript<br>
+                3️⃣ 网络连接是否稳定<br>
+                4️⃣ 是否有浏览器安全插件拦截
+            </p>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔍 Vercel手机端卡片问题诊断页面已加载');
+        console.log('问题网址: https://aiweb-1.vercel.app');
+        console.log('主要问题: 卡片和板块打不开');
+    </script>
+</body>
+</html>

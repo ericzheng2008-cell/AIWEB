@@ -1,32 +1,37 @@
 @echo off
 chcp 65001 >nul
 echo ========================================
-echo   明升伟业网站 - Vercel 快速部署
+echo    Vercel 部署脚本
 echo ========================================
 echo.
 
-cd /d "%~dp0"
-
 echo [1/3] 检查 Vercel CLI...
-vercel --version >nul 2>&1
-if errorlevel 1 (
-    echo Vercel CLI 未安装，正在安装...
-    npm install -g vercel
+where vercel >nul 2>nul
+if %errorlevel% neq 0 (
+    echo ❌ Vercel CLI 未安装！
+    echo 💡 提示: 运行 npm i -g vercel 安装
+    pause
+    exit /b 1
 )
+echo ✓ Vercel CLI 已安装
 
 echo.
-echo [2/3] 登录 Vercel（浏览器将自动打开）...
-echo 请在浏览器中完成登录授权
-vercel login
+echo [2/3] 构建项目...
+call npm run build
+if %errorlevel% neq 0 (
+    echo ❌ 构建失败！
+    pause
+    exit /b 1
+)
+echo ✓ 构建成功
 
 echo.
-echo [3/3] 开始部署项目...
+echo [3/3] 部署到 Vercel...
 echo.
 vercel --prod
 
 echo.
 echo ========================================
-echo   部署完成！
-echo   请查看上方显示的访问地址
+echo    部署完成！
 echo ========================================
 pause

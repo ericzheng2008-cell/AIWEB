@@ -1,0 +1,67 @@
+/* 移动端卡片修复 - 激进版本 */
+
+/* 1. 基础触摸优化 - 确保所有卡片可点击 */
+.series-card,
+.core-agent-card,
+.featured-product-card,
+.agent-card,
+.series-content {
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: rgba(64, 158, 255, 0.5) !important;
+  touch-action: manipulation !important;
+  pointer-events: auto !important;
+}
+
+/* 2. 移动端专属 - 强制启用点击 */
+@media (max-width: 768px) {
+  /* 移除所有可能阻止点击的样式 */
+  * {
+    -webkit-tap-highlight-color: rgba(64, 158, 255, 0.3);
+    touch-action: manipulation;
+  }
+  
+  /* 确保卡片和内容都能点击 */
+  .series-card,
+  .series-content,
+  .core-agent-card,
+  .featured-product-card {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+  
+  /* 图片、视频不阻止父元素点击 */
+  img, video, iframe {
+    pointer-events: none !important;
+  }
+  
+  /* 按钮必须可点击 */
+  button, a, .el-button, [role="button"] {
+    pointer-events: auto !important;
+  }
+}
+
+/* 3. 明显的触摸反馈 */
+.series-card:active,
+.core-agent-card:active,
+.featured-product-card:active,
+.series-content:active {
+  background-color: rgba(64, 158, 255, 0.1) !important;
+  transform: scale(0.95) !important;
+  transition: all 0.1s ease !important;
+}
+
+/* 4. iOS Safari 特殊处理 */
+@supports (-webkit-touch-callout: none) {
+  .series-card,
+  .core-agent-card,
+  .featured-product-card,
+  .series-content {
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: rgba(64, 158, 255, 0.5) !important;
+  }
+}
+
+
+

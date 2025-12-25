@@ -2743,26 +2743,26 @@ const generateProfessionalReport = () => {
   // 一、基本格式（报告/图表标题）
   report += '一、基本信息 (Basic Information)\n'
   report += '─────────────────────────────────────────────────────\n'
-  report += `· 报告生成时间: ${now.toLocaleString('zh-CN')}\n`
-  report += `· 分析师/操作员: [待填写]\n`
-  report += `· 零件/总成名称: [待填写]\n`
-  report += `· 螺栓/连接点标识: [待填写]\n`
-  report += `· 工具信息: ${curves.value[0]?.toolModel || '[待填写]'}\n`
-  report += `· 控制器序列号: ${curves.value[0]?.snNumber || '[待填写]'}\n`
-  report += `· 工艺标准: 扭矩-角度法\n\n`
+  report += `• 报告生成时间: ${now.toLocaleString('zh-CN')}\n`
+  report += `• 分析师/操作员: [待填写]\n`
+  report += `• 零件/总成名称: [待填写]\n`
+  report += `• 螺栓/连接点标识: [待填写]\n`
+  report += `• 工具信息: ${curves.value[0]?.toolModel || '[待填写]'}\n`
+  report += `• 控制器序列号: ${curves.value[0]?.snNumber || '[待填写]'}\n`
+  report += `• 工艺标准: 扭矩-角度法\n\n`
   
   // 二、曲线概况
   report += '二、曲线概况 (Curve Overview)\n'
   report += '─────────────────────────────────────────────────────\n'
-  report += `· 总曲线数量: ${curves.value.length} 条\n`
-  report += `· 合格曲线数量: ${analysisResult.value.qualifiedCount} 条\n`
-  report += `· 不合格曲线数量: ${analysisResult.value.abnormalCount} 条\n`
-  report += `· 合格率: ${analysisResult.value.qualificationRate}%\n\n`
+  report += `• 总曲线数量: ${curves.value.length} 条\n`
+  report += `• 合格曲线数量: ${analysisResult.value.qualifiedCount} 条\n`
+  report += `• 不合格曲线数量: ${analysisResult.value.abnormalCount} 条\n`
+  report += `• 合格率: ${analysisResult.value.qualificationRate}%\n\n`
   
   if (standardCurve.value) {
-    report += '· 标准曲线信息:\n'
+    report += '• 标准曲线信息:\n'
     report += `  - 名称: ${standardCurve.value.name}\n`
-    report += `  - 峰值扭矩: ${standardCurve.value.maxTorque} N·m\n`
+    report += `  - 峰值扭矩: ${standardCurve.value.maxTorque} Nm\n`
     report += `  - 峰值角度: ${standardCurve.value.maxAngle}°\n`
     report += `  - 数据点数: ${standardCurve.value.points}\n\n`
   }
@@ -2770,22 +2770,22 @@ const generateProfessionalReport = () => {
   // 三、曲线关键阶段标注
   report += '三、曲线关键阶段标注 (Key Phases)\n'
   report += '─────────────────────────────────────────────────────\n'
-  report += '· 阶段一 (贴合点识别): 曲线从平缓开始明显上升的拐点\n'
+  report += '• 阶段一 (贴合点识别): 曲线从平缓开始明显上升的拐点\n'
   report += '  - 低速认牙阶段: 0-90° - 螺栓头部与工件接触\n'
-  report += '· 阶段二 (弹性区): 从贴合点到目标扭矩/角度\n'
-  report += `  - 快速旋入阶段: 90-360° - 扭矩与转角基本线性关系\n'
-  report += '· 阶段三 (塑性区): 螺栓屈服点后\n'
+  report += '• 阶段二 (弹性区): 从贴合点到目标扭矩/角度\n'
+  report += '  - 快速旋入阶段: 90-360° - 扭矩与转角基本线性关系\n'
+  report += '• 阶段三 (塑性区): 螺栓屈服点后\n'
   report += '  - 拧紧阶段: 360-540° - 曲线偏离直线,斜率减小\n\n'
   
   if (standardCurve.value && standardCurve.value.data) {
     const sampleData = standardCurve.value.data
     const seatPoint = sampleData.find(d => d[0] >= 280 && d[1] > 0)
     if (seatPoint) {
-      report += `· 贴合点 (Seat Point) 识别:\n`
+      report += '• 贴合点 (Seat Point) 识别:\n'
       report += `  - 贴合点角度: ${seatPoint[0]}°\n`
-      report += `  - 贴合点扭矩: ${seatPoint[1]} N·m\n`
+      report += `  - 贴合点扭矩: ${seatPoint[1]} Nm\n`
       report += `  - 目标点角度: ${standardCurve.value.maxAngle}°\n`
-      report += `  - 最终扭矩值: ${standardCurve.value.maxTorque} N·m\n\n`
+      report += `  - 最终扭矩值: ${standardCurve.value.maxTorque} Nm\n\n`
     }
   }
   
@@ -2797,12 +2797,12 @@ const generateProfessionalReport = () => {
   
   analysisResult.value.parameterComparison.slice(0, 5).forEach(param => {
     report += `${param.curveName.padEnd(20)} \n`
-    report += `  最终扭矩              ${String(param.maxTorque).padEnd(12)} N·m       目标: [待填写] ± 10 N·m\n`
+    report += `  最终扭矩              ${String(param.maxTorque).padEnd(12)} Nm       目标: [待填写] ± 10 Nm\n`
     report += `  总转角                ${String(param.maxAngle).padEnd(12)} °         目标: [待填写] ± 20°\n`
-    report += `  贴合点扭矩            ${'15.2'.padEnd(12)} N·m       -\n`
+    report += `  贴合点扭矩            ${'15.2'.padEnd(12)} Nm       -\n`
     report += `  贴合点转角            ${'280'.padEnd(12)} °         (从开始计算)\n`
     report += `  有效转角              ${String(param.maxAngle - 280).padEnd(12)} °         (从贴合点起算)\n`
-    report += `  斜率(弹性区)          ${param.avgSlope.padEnd(12)} N·m/°     评估连接刚度\n`
+    report += `  斜率(弹性区)          ${param.avgSlope.padEnd(12)} Nm/°     评估连接刚度\n`
     report += `  控制策略              ${param.strategy.padEnd(12)} -         -\n`
     report += `  质量评级              ${param.controlQuality.padEnd(12)} -         偏差${param.deviation}%\n`
     report += '────────────────────────────────────────────────────────────\n'
@@ -2814,11 +2814,11 @@ const generateProfessionalReport = () => {
     const ma = analysisResult.value.materialAnalysis
     report += '五、材质分析 (Material Analysis)\n'
     report += '─────────────────────────────────────────────────────\n'
-    report += `· 智能识别材质: ${ma.material}\n`
-    report += `· 材质特性: ${ma.characteristics}\n`
-    report += `· 建议扭矩范围: ${ma.recommendedTorque}\n`
-    report += `· 建议拧紧转速: ${ma.recommendedSpeed}\n`
-    report += `· ⚠️ 特殊注意事项:\n  ${ma.notes}\n\n`
+    report += `• 智能识别材质: ${ma.material}\n`
+    report += `• 材质特性: ${ma.characteristics}\n`
+    report += `• 建议扭矩范围: ${ma.recommendedTorque}\n`
+    report += `• 建议拧紧转速: ${ma.recommendedSpeed}\n`
+    report += `• ⚠️ 特殊注意事项:\n  ${ma.notes}\n\n`
   }
   
   // 六、结果判定与注释

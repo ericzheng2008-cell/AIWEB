@@ -53,6 +53,11 @@
           <el-icon><MagicStick /></el-icon>
           <span>AI智能体</span>
         </el-menu-item>
+        <el-menu-item index="knowledgeBase">
+          <el-icon><FolderOpened /></el-icon>
+          <span>企业知识库</span>
+          <el-tag type="success" size="small" style="margin-left: 8px;">新功能</el-tag>
+        </el-menu-item>
         <el-menu-item index="aimes">
           <el-icon><Setting /></el-icon>
           <span>AIMES助手</span>
@@ -2772,6 +2777,415 @@
           </el-table>
         </el-card>
       </div>
+
+      <!-- 📚 企业知识库视图 -->
+      <div v-show="activeTab === 'knowledgeBase'" class="knowledge-base-view">
+        <div class="view-header">
+          <h2>📚 企业知识库管理</h2>
+          <div class="header-actions">
+            <el-button type="info" @click="$router.push('/')" class="back-home-btn">
+              <el-icon><HomeFilled /></el-icon>
+              返回主页
+            </el-button>
+            <el-button type="primary" @click="openKnowledgeManager">
+              <el-icon><FolderOpened /></el-icon>
+              打开知识库管理器
+            </el-button>
+            <el-button type="success" @click="$router.push('/ai-knowledge-manager')">
+              <el-icon><Setting /></el-icon>
+              进入完整版
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 🆕 NotebookLM风格：上传学习区 -->
+        <el-card class="learning-panel" shadow="hover">
+          <template #header>
+            <div class="panel-header">
+              <div class="header-title">
+                <el-icon :size="20" color="#409EFF"><MagicStick /></el-icon>
+                <span>智能学习中心</span>
+                <el-tag type="success" size="small">AI驱动</el-tag>
+              </div>
+              <el-tag type="info" size="small">参考 NotebookLM 智能学习模式</el-tag>
+            </div>
+          </template>
+
+          <el-row :gutter="20">
+            <!-- PDF文件上传学习 -->
+            <el-col :span="12">
+              <div class="learning-section pdf-upload-section">
+                <div class="section-header">
+                  <el-icon :size="24" color="#E6A23C"><Document /></el-icon>
+                  <h3>📄 PDF文件学习</h3>
+                </div>
+                <p class="section-desc">上传PDF文档，AI自动提取知识，其他智能体可自动调用</p>
+                
+                <el-upload
+                  ref="pdfUploadRef"
+                  class="pdf-uploader"
+                  drag
+                  :action="uploadPdfUrl"
+                  :before-upload="beforePdfUpload"
+                  :on-success="handlePdfSuccess"
+                  :on-error="handlePdfError"
+                  :on-progress="handlePdfProgress"
+                  :file-list="pdfFileList"
+                  accept=".pdf"
+                  multiple
+                  :limit="5"
+                  :on-exceed="handleExceed"
+                >
+                  <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+                  <div class="el-upload__text">
+                    拖拽PDF文件到此处，或 <em>点击上传</em>
+                  </div>
+                  <template #tip>
+                    <div class="el-upload__tip">
+                      支持多文件上传，单个文件不超过 50MB，最多5个文件
+                    </div>
+                  </template>
+                </el-upload>
+
+                <!-- PDF处理进度 -->
+                <div v-if="pdfProcessing" class="processing-status">
+                  <el-progress 
+                    :percentage="pdfProcessProgress" 
+                    :status="pdfProcessProgress === 100 ? 'success' : undefined"
+                  >
+                    <template #default="{ percentage }">
+                      <span class="progress-text">{{ pdfProcessingText }} {{ percentage }}%</span>
+                    </template>
+                  </el-progress>
+                  <div class="processing-steps">
+                    <el-steps :active="pdfProcessStep" align-center>
+                      <el-step title="上传文件" icon="Upload" />
+                      <el-step title="提取内容" icon="Reading" />
+                      <el-step title="AI分析" icon="MagicStick" />
+                      <el-step title="知识入库" icon="CircleCheck" />
+                    </el-steps>
+                  </div>
+                </div>
+
+                <!-- 已上传的PDF列表 -->
+                <div v-if="uploadedPdfs.length > 0" class="uploaded-files">
+                  <h4>已学习的PDF文档 ({{ uploadedPdfs.length }})</h4>
+                  <div class="pdf-list">
+                    <div 
+                      v-for="pdf in uploadedPdfs" 
+                      :key="pdf.id" 
+                      class="pdf-item"
+                    >
+                      <el-icon color="#E6A23C"><Document /></el-icon>
+                      <div class="pdf-info">
+                        <div class="pdf-name">{{ pdf.name }}</div>
+                        <div class="pdf-meta">
+                          <el-tag size="small">{{ pdf.pages }} 页</el-tag>
+                          <el-tag size="small" type="success">{{ pdf.knowledgeCount }} 条知识</el-tag>
+                          <el-tag size="small" type="info">{{ pdf.uploadTime }}</el-tag>
+                        </div>
+                      </div>
+                      <div class="pdf-actions">
+                        <el-button size="small" @click="viewPdfKnowledge(pdf)">查看知识</el-button>
+                        <el-button size="small" type="danger" @click="deletePdf(pdf)">删除</el-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+
+            <!-- 网页内容学习 -->
+            <el-col :span="12">
+              <div class="learning-section web-learning-section">
+                <div class="section-header">
+                  <el-icon :size="24" color="#67C23A"><Link /></el-icon>
+                  <h3>🌐 网页内容学习</h3>
+                </div>
+                <p class="section-desc">输入网页地址，AI自动访问并总结学习网页内容</p>
+                
+                <div class="web-input-area">
+                  <el-input
+                    v-model="webUrl"
+                    placeholder="输入网页地址，如：https://example.com/article"
+                    size="large"
+                    clearable
+                    @keyup.enter="learnFromWeb"
+                  >
+                    <template #prefix>
+                      <el-icon><Link /></el-icon>
+                    </template>
+                  </el-input>
+                  <el-button 
+                    type="primary" 
+                    size="large" 
+                    @click="learnFromWeb"
+                    :loading="webLearning"
+                    style="margin-top: 12px; width: 100%;"
+                  >
+                    <el-icon v-if="!webLearning"><MagicStick /></el-icon>
+                    {{ webLearning ? '正在学习中...' : '开始学习网页' }}
+                  </el-button>
+                </div>
+
+                <!-- 网页学习进度 -->
+                <div v-if="webLearning" class="processing-status">
+                  <el-alert 
+                    type="info" 
+                    :closable="false"
+                    show-icon
+                  >
+                    <template #title>
+                      <div class="learning-status">
+                        <el-icon class="is-loading"><Loading /></el-icon>
+                        <span>{{ webLearningStatus }}</span>
+                      </div>
+                    </template>
+                  </el-alert>
+                  <el-progress 
+                    :percentage="webLearningProgress" 
+                    :indeterminate="webLearningProgress < 100"
+                    :status="webLearningProgress === 100 ? 'success' : undefined"
+                  />
+                </div>
+
+                <!-- 网页学习结果预览 -->
+                <div v-if="webLearnResult" class="web-result">
+                  <h4>
+                    <el-icon><CircleCheck /></el-icon>
+                    学习完成
+                  </h4>
+                  <el-descriptions :column="1" border size="small">
+                    <el-descriptions-item label="网页标题">{{ webLearnResult.title }}</el-descriptions-item>
+                    <el-descriptions-item label="网页地址">
+                      <el-link :href="webLearnResult.url" target="_blank" type="primary">
+                        {{ webLearnResult.url }}
+                      </el-link>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="提取知识">{{ webLearnResult.knowledgeCount }} 条</el-descriptions-item>
+                    <el-descriptions-item label="学习时间">{{ webLearnResult.learnTime }}</el-descriptions-item>
+                  </el-descriptions>
+                  
+                  <div class="summary-content">
+                    <h5>AI总结摘要:</h5>
+                    <p>{{ webLearnResult.summary }}</p>
+                  </div>
+
+                  <div class="result-actions">
+                    <el-button type="primary" @click="viewWebKnowledge">查看提取的知识</el-button>
+                    <el-button @click="webLearnResult = null">关闭</el-button>
+                  </div>
+                </div>
+
+                <!-- 已学习的网页列表 -->
+                <div v-if="learnedWebs.length > 0" class="learned-webs">
+                  <h4>已学习的网页 ({{ learnedWebs.length }})</h4>
+                  <div class="web-list">
+                    <div 
+                      v-for="web in learnedWebs" 
+                      :key="web.id" 
+                      class="web-item"
+                    >
+                      <el-icon color="#67C23A"><Link /></el-icon>
+                      <div class="web-info">
+                        <div class="web-title">{{ web.title }}</div>
+                        <el-link :href="web.url" target="_blank" type="primary" class="web-url">
+                          {{ web.url }}
+                        </el-link>
+                        <div class="web-meta">
+                          <el-tag size="small" type="success">{{ web.knowledgeCount }} 条知识</el-tag>
+                          <el-tag size="small" type="info">{{ web.learnTime }}</el-tag>
+                        </div>
+                      </div>
+                      <div class="web-actions">
+                        <el-button size="small" @click="viewWebKnowledgeDetail(web)">查看</el-button>
+                        <el-button size="small" type="danger" @click="deleteWeb(web)">删除</el-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </el-card>
+
+        <!-- 知识库概览卡片 -->
+        <el-row :gutter="20" class="kpi-cards">
+          <el-col :span="6">
+            <el-card class="kpi-card" :body-style="{ padding: '20px' }">
+              <div class="kpi-header">
+                <el-icon :size="24" color="#409EFF"><Document /></el-icon>
+                <span class="kpi-title">知识条目总数</span>
+              </div>
+              <div class="kpi-value">156</div>
+              <div class="kpi-trend positive">
+                <el-icon><CaretTop /></el-icon>
+                12% 本月新增
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card class="kpi-card" :body-style="{ padding: '20px' }">
+              <div class="kpi-header">
+                <el-icon :size="24" color="#67C23A"><Folder /></el-icon>
+                <span class="kpi-title">知识分类</span>
+              </div>
+              <div class="kpi-value">7</div>
+              <div class="kpi-trend positive">
+                <el-icon><CaretTop /></el-icon>
+                覆盖全业务
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card class="kpi-card" :body-style="{ padding: '20px' }">
+              <div class="kpi-header">
+                <el-icon :size="24" color="#E6A23C"><ChatDotRound /></el-icon>
+                <span class="kpi-title">AI问答次数</span>
+              </div>
+              <div class="kpi-value">2,345</div>
+              <div class="kpi-trend positive">
+                <el-icon><CaretTop /></el-icon>
+                18% 问答准确率98%
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <el-card class="kpi-card" :body-style="{ padding: '20px' }">
+              <div class="kpi-header">
+                <el-icon :size="24" color="#9C27B0"><MagicStick /></el-icon>
+                <span class="kpi-title">AI训练状态</span>
+              </div>
+              <div class="kpi-value">优秀</div>
+              <div class="kpi-trend positive">
+                <el-icon><Checked /></el-icon>
+                模型已优化
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <!-- 知识分类快速访问 -->
+        <el-card class="mt-4">
+          <template #header>
+            <div class="card-header">
+              <span>🗂️ 知识分类</span>
+              <el-input 
+                v-model="knowledgeSearch" 
+                placeholder="搜索知识..." 
+                style="width: 300px;"
+                clearable
+              >
+                <template #prefix>
+                  <el-icon><Search /></el-icon>
+                </template>
+              </el-input>
+            </div>
+          </template>
+
+          <el-row :gutter="16">
+            <el-col :span="6" v-for="category in knowledgeCategories" :key="category.id">
+              <el-card shadow="hover" class="knowledge-category-card" @click="openCategory(category)">
+                <div class="category-icon">
+                  <el-icon :size="40" :color="category.color">
+                    <component :is="category.icon" />
+                  </el-icon>
+                </div>
+                <h3>{{ category.name }}</h3>
+                <p class="category-desc">{{ category.description }}</p>
+                <div class="category-stats">
+                  <el-tag size="small">{{ category.count }} 条</el-tag>
+                  <el-tag size="small" type="success">{{ category.usage }} 次使用</el-tag>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-card>
+
+        <!-- 最近更新的知识 -->
+        <el-card class="mt-4">
+          <template #header>
+            <div class="card-header">
+              <span>🔄 最近更新</span>
+              <el-button size="small" type="primary" @click="viewAllKnowledge">
+                查看全部
+                <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+              </el-button>
+            </div>
+          </template>
+
+          <el-table :data="recentKnowledge" stripe>
+            <el-table-column prop="title" label="标题" width="300" />
+            <el-table-column prop="category" label="分类" width="120">
+              <template #default="{ row }">
+                <el-tag size="small">{{ row.category }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="keywords" label="关键词" width="200">
+              <template #default="{ row }">
+                <el-tag v-for="kw in row.keywords.split(',')" :key="kw" size="small" style="margin-right: 4px;">
+                  {{ kw }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="language" label="语言" width="80">
+              <template #default="{ row }">
+                <el-tag size="small" :type="row.language === '中文' ? 'primary' : 'success'">
+                  {{ row.language }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="updateTime" label="更新时间" width="160" />
+            <el-table-column prop="usageCount" label="使用次数" width="100" />
+            <el-table-column label="操作" width="180" fixed="right">
+              <template #default="{ row }">
+                <el-button size="small" @click="viewKnowledge(row)">查看</el-button>
+                <el-button size="small" type="primary" @click="editKnowledge(row)">编辑</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+
+        <!-- AI智能问答演示 -->
+        <el-card class="mt-4">
+          <template #header>
+            <div class="card-header">
+              <span>🤖 AI智能问答</span>
+              <el-tag type="success">实时在线</el-tag>
+            </div>
+          </template>
+
+          <div class="ai-qa-demo">
+            <el-input
+              v-model="aiQuestion"
+              placeholder="试试问: PF6000工具的最大扭矩是多少？"
+              class="qa-input"
+              @keyup.enter="askAI"
+            >
+              <template #append>
+                <el-button type="primary" @click="askAI">
+                  <el-icon><MagicStick /></el-icon>
+                  提问
+                </el-button>
+              </template>
+            </el-input>
+
+            <div v-if="aiAnswer" class="ai-answer-box">
+              <div class="answer-header">
+                <el-avatar :size="32">AI</el-avatar>
+                <span>AI助手回答:</span>
+              </div>
+              <div class="answer-content">
+                {{ aiAnswer }}
+              </div>
+              <div class="answer-source">
+                <el-tag size="small" type="info">来源: {{ aiAnswerSource }}</el-tag>
+                <el-tag size="small" type="success">可信度: {{ aiAnswerConfidence }}%</el-tag>
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </div>
     </div>
 
     <!-- AI推荐侧边栏 -->
@@ -3759,7 +4173,9 @@ import {
   Search, Lightning, Bell, Refresh, CaretTop, CaretBottom, View, Download,
   Plus, Phone, Message, QuestionFilled, ArrowDown, SwitchButton, Setting, Right,
   DocumentCopy, Notification, CircleCheck, Select, SuccessFilled, Grid, Trophy,
-  VideoPlay, HomeFilled, Connection, Edit, Tools, Calendar
+  VideoPlay, HomeFilled, Connection, Edit, Tools, Calendar, FolderOpened,
+  Document, Folder, ChatDotRound, Checked, ArrowRight, OfficeBuilding, Tickets, Medal,
+  UploadFilled, Link, Loading, Reading
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
@@ -3843,6 +4259,454 @@ const conversationContext = ref({
   currentTopic: '',
   filters: {}
 })
+
+// ==================== 企业知识库数据 ====================
+const knowledgeSearch = ref('')
+const aiQuestion = ref('')
+const aiAnswer = ref('')
+const aiAnswerSource = ref('')
+const aiAnswerConfidence = ref(0)
+
+// 📄 PDF上传学习
+const pdfUploadRef = ref(null)
+const uploadPdfUrl = '/api/knowledge/upload-pdf' // 后端PDF上传接口
+const pdfFileList = ref([])
+const pdfProcessing = ref(false)
+const pdfProcessProgress = ref(0)
+const pdfProcessStep = ref(0)
+const pdfProcessingText = ref('上传中...')
+
+const uploadedPdfs = ref([
+  {
+    id: 1,
+    name: 'PF6000技术手册.pdf',
+    pages: 45,
+    knowledgeCount: 28,
+    uploadTime: '2024-12-20 14:30',
+    size: '5.2 MB',
+    category: '产品知识'
+  },
+  {
+    id: 2,
+    name: '汽车行业拧紧方案白皮书.pdf',
+    pages: 32,
+    knowledgeCount: 19,
+    uploadTime: '2024-12-19 10:15',
+    size: '3.8 MB',
+    category: '应用案例'
+  }
+])
+
+// 🌐 网页学习
+const webUrl = ref('')
+const webLearning = ref(false)
+const webLearningStatus = ref('正在访问网页...')
+const webLearningProgress = ref(0)
+const webLearnResult = ref(null)
+
+const learnedWebs = ref([
+  {
+    id: 1,
+    title: 'Atlas Copco 拧紧技术最佳实践',
+    url: 'https://www.atlascopco.com/tightening-best-practices',
+    knowledgeCount: 15,
+    learnTime: '2024-12-18 16:45',
+    category: '技术规格'
+  },
+  {
+    id: 2,
+    title: 'Industry 4.0 Smart Manufacturing Solutions',
+    url: 'https://example.com/industry-4.0',
+    knowledgeCount: 12,
+    learnTime: '2024-12-17 09:20',
+    category: '行业应用'
+  }
+])
+
+// 知识分类
+const knowledgeCategories = ref([
+  {
+    id: 1,
+    name: '产品知识',
+    description: 'PF系列工具产品技术文档',
+    icon: 'Box',
+    color: '#409EFF',
+    count: 73, // 更新数量(45+28新增)
+    usage: 1203
+  },
+  {
+    id: 2,
+    name: '事业部信息',
+    description: '各事业部业务范围与联系方式',
+    icon: 'OfficeBuilding',
+    color: '#67C23A',
+    count: 12,
+    usage: 567
+  },
+  {
+    id: 3,
+    name: '应用案例',
+    description: '成功案例与行业解决方案',
+    icon: 'Tickets',
+    color: '#E6A23C',
+    count: 57, // 更新数量(38+19新增)
+    usage: 892
+  },
+  {
+    id: 4,
+    name: '技术规格',
+    description: '工具技术参数与规格表',
+    icon: 'Document',
+    color: '#F56C6C',
+    count: 43, // 更新数量(28+15新增)
+    usage: 756
+  },
+  {
+    id: 5,
+    name: '行业应用',
+    description: '行业应用知识与最佳实践',
+    icon: 'TrendCharts',
+    color: '#9C27B0',
+    count: 31, // 更新数量(19+12新增)
+    usage: 445
+  },
+  {
+    id: 6,
+    name: '售后服务',
+    description: '常见问题与故障排查',
+    icon: 'Tools',
+    color: '#00BCD4',
+    count: 10,
+    usage: 334
+  },
+  {
+    id: 7,
+    name: '公司信息',
+    description: '公司介绍与文化理念',
+    icon: 'Medal',
+    color: '#FF9800',
+    count: 4,
+    usage: 148
+  }
+])
+
+// 最近更新的知识
+const recentKnowledge = ref([
+  {
+    id: 1,
+    title: 'PF6000工具技术参数详解',
+    category: '产品知识',
+    keywords: 'PF6000,扭矩,技术参数',
+    language: '中文',
+    updateTime: '2024-12-20 14:30',
+    usageCount: 156,
+    source: 'PDF: PF6000技术手册.pdf'
+  },
+  {
+    id: 2,
+    title: 'Production Line Tools Technical Specs',
+    category: '技术规格',
+    keywords: 'production,tools,specs',
+    language: '英文',
+    updateTime: '2024-12-19 10:15',
+    usageCount: 98,
+    source: 'Web: atlascopco.com'
+  },
+  {
+    id: 3,
+    title: '汽车制造行业拧紧方案',
+    category: '应用案例',
+    keywords: '汽车,拧紧,案例',
+    language: '中文',
+    updateTime: '2024-12-18 16:45',
+    usageCount: 234,
+    source: 'PDF: 汽车行业白皮书.pdf'
+  },
+  {
+    id: 4,
+    title: '明升智能制造事业部介绍',
+    category: '事业部信息',
+    keywords: '智能制造,事业部',
+    language: '中文',
+    updateTime: '2024-12-17 09:20',
+    usageCount: 67,
+    source: '手动录入'
+  },
+  {
+    id: 5,
+    title: 'Atlas Copco Tools Comparison',
+    category: '产品知识',
+    keywords: 'atlas,copco,tools',
+    language: '英文',
+    updateTime: '2024-12-16 11:30',
+    usageCount: 124,
+    source: 'Web: example.com'
+  }
+])
+
+// ========== PDF上传处理方法 ==========
+const beforePdfUpload = (file) => {
+  const isPDF = file.type === 'application/pdf'
+  const isLt50M = file.size / 1024 / 1024 < 50
+
+  if (!isPDF) {
+    ElMessage.error('只能上传 PDF 文件!')
+    return false
+  }
+  if (!isLt50M) {
+    ElMessage.error('文件大小不能超过 50MB!')
+    return false
+  }
+  
+  // 开始处理
+  pdfProcessing.value = true
+  pdfProcessProgress.value = 0
+  pdfProcessStep.value = 0
+  pdfProcessingText.value = '上传文件中...'
+  
+  return true
+}
+
+const handlePdfProgress = (event, file, fileList) => {
+  pdfProcessProgress.value = Math.floor(event.percent / 4) // 上传占25%
+  pdfProcessStep.value = 0
+}
+
+const handlePdfSuccess = (response, file, fileList) => {
+  // 模拟AI处理流程
+  pdfProcessingText.value = '提取PDF内容...'
+  pdfProcessStep.value = 1
+  pdfProcessProgress.value = 25
+
+  setTimeout(() => {
+    pdfProcessingText.value = 'AI智能分析中...'
+    pdfProcessStep.value = 2
+    pdfProcessProgress.value = 50
+  }, 1500)
+
+  setTimeout(() => {
+    pdfProcessingText.value = '生成知识条目...'
+    pdfProcessProgress.value = 75
+  }, 3000)
+
+  setTimeout(() => {
+    pdfProcessingText.value = '知识入库完成!'
+    pdfProcessStep.value = 3
+    pdfProcessProgress.value = 100
+
+    // 添加到已上传列表
+    const newPdf = {
+      id: uploadedPdfs.value.length + 1,
+      name: file.name,
+      pages: Math.floor(Math.random() * 50) + 10, // 模拟页数
+      knowledgeCount: Math.floor(Math.random() * 30) + 10, // 模拟提取知识数
+      uploadTime: new Date().toLocaleString('zh-CN'),
+      size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+      category: '产品知识'
+    }
+    uploadedPdfs.value.unshift(newPdf)
+
+    ElMessage.success({
+      message: `成功学习 "${file.name}"，提取了 ${newPdf.knowledgeCount} 条知识!`,
+      duration: 3000
+    })
+
+    // 3秒后重置状态
+    setTimeout(() => {
+      pdfProcessing.value = false
+      pdfProcessProgress.value = 0
+      pdfProcessStep.value = 0
+    }, 3000)
+  }, 4500)
+}
+
+const handlePdfError = (error, file, fileList) => {
+  ElMessage.error('PDF上传失败: ' + error.message)
+  pdfProcessing.value = false
+}
+
+const handleExceed = (files, fileList) => {
+  ElMessage.warning(`最多只能上传 ${files.length} 个文件，请删除后再上传`)
+}
+
+const viewPdfKnowledge = (pdf) => {
+  ElMessage.info(`查看 "${pdf.name}" 提取的 ${pdf.knowledgeCount} 条知识`)
+  // TODO: 打开知识详情对话框
+}
+
+const deletePdf = (pdf) => {
+  ElMessageBox.confirm(
+    `确定要删除 "${pdf.name}" 及其关联的 ${pdf.knowledgeCount} 条知识吗?`,
+    '删除确认',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(() => {
+    const index = uploadedPdfs.value.findIndex(p => p.id === pdf.id)
+    if (index > -1) {
+      uploadedPdfs.value.splice(index, 1)
+      ElMessage.success('删除成功')
+    }
+  }).catch(() => {
+    ElMessage.info('已取消删除')
+  })
+}
+
+// ========== 网页学习方法 ==========
+const learnFromWeb = async () => {
+  if (!webUrl.value.trim()) {
+    ElMessage.warning('请输入网页地址')
+    return
+  }
+
+  // 验证URL格式
+  try {
+    new URL(webUrl.value)
+  } catch (e) {
+    ElMessage.error('请输入有效的网页地址')
+    return
+  }
+
+  webLearning.value = true
+  webLearningProgress.value = 0
+  webLearnResult.value = null
+
+  // 模拟学习流程
+  webLearningStatus.value = '正在访问网页...'
+  webLearningProgress.value = 10
+
+  setTimeout(() => {
+    webLearningStatus.value = '正在提取网页内容...'
+    webLearningProgress.value = 30
+  }, 1000)
+
+  setTimeout(() => {
+    webLearningStatus.value = 'AI正在分析内容...'
+    webLearningProgress.value = 60
+  }, 2500)
+
+  setTimeout(() => {
+    webLearningStatus.value = '生成知识摘要...'
+    webLearningProgress.value = 85
+  }, 4000)
+
+  setTimeout(() => {
+    webLearningProgress.value = 100
+    webLearningStatus.value = '学习完成!'
+
+    // 生成学习结果
+    const knowledgeCount = Math.floor(Math.random() * 20) + 5
+    webLearnResult.value = {
+      title: '智能制造与拧紧技术应用 - 示例文章',
+      url: webUrl.value,
+      knowledgeCount: knowledgeCount,
+      learnTime: new Date().toLocaleString('zh-CN'),
+      summary: `本文介绍了现代智能制造环境下的拧紧技术应用。文章深入探讨了PF系列智能拧紧工具在汽车制造、航空航天等行业的实际应用案例，重点分析了扭矩控制精度、工艺参数优化以及数据采集分析等关键技术。通过实际案例证明，采用先进的拧紧技术可以显著提升生产效率和产品质量，降低不良率达35%以上。AI已自动提取${knowledgeCount}条关键知识点并分类存储。`
+    }
+
+    // 添加到已学习列表
+    const newWeb = {
+      id: learnedWebs.value.length + 1,
+      title: webLearnResult.value.title,
+      url: webUrl.value,
+      knowledgeCount: knowledgeCount,
+      learnTime: webLearnResult.value.learnTime,
+      category: '技术规格'
+    }
+    learnedWebs.value.unshift(newWeb)
+
+    ElMessage.success('网页学习完成!')
+    
+    setTimeout(() => {
+      webLearning.value = false
+    }, 1000)
+  }, 5500)
+}
+
+const viewWebKnowledge = () => {
+  ElMessage.info('查看网页提取的知识详情')
+  webLearnResult.value = null
+}
+
+const viewWebKnowledgeDetail = (web) => {
+  ElMessage.info(`查看 "${web.title}" 的知识详情`)
+}
+
+const deleteWeb = (web) => {
+  ElMessageBox.confirm(
+    `确定要删除 "${web.title}" 及其关联的 ${web.knowledgeCount} 条知识吗?`,
+    '删除确认',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(() => {
+    const index = learnedWebs.value.findIndex(w => w.id === web.id)
+    if (index > -1) {
+      learnedWebs.value.splice(index, 1)
+      ElMessage.success('删除成功')
+    }
+  }).catch(() => {
+    ElMessage.info('已取消删除')
+  })
+}
+
+// 企业知识库方法
+const openKnowledgeManager = () => {
+  ElMessage.success('正在打开知识库管理器...')
+  // 可以在这里打开新窗口或跳转
+}
+
+const openCategory = (category) => {
+  ElMessage.info(`打开分类: ${category.name}`)
+  // 跳转到知识库管理页面对应分类
+}
+
+const viewAllKnowledge = () => {
+  ElMessage.info('查看全部知识')
+  // 跳转到知识库列表页
+}
+
+const viewKnowledge = (item) => {
+  ElMessage.info(`查看知识: ${item.title}`)
+  // 打开知识详情
+}
+
+const editKnowledge = (item) => {
+  ElMessage.info(`编辑知识: ${item.title}`)
+  // 打开知识编辑页面
+}
+
+const askAI = () => {
+  if (!aiQuestion.value.trim()) {
+    ElMessage.warning('请输入问题')
+    return
+  }
+
+  // 模拟AI问答
+  ElMessage.success('AI正在思考...')
+  
+  setTimeout(() => {
+    // 根据问题关键词匹配答案(实际应调用后端AI接口)
+    if (aiQuestion.value.includes('PF6000')) {
+      aiAnswer.value = 'PF6000是一款高性能电动拧紧工具,最大扭矩可达600Nm,支持多种控制策略,适用于汽车制造、航空航天等行业。该工具配备先进的扭矩和角度传感器,可实现±2%的扭矩精度。'
+      aiAnswerSource.value = '产品知识库 - PF6000技术文档'
+      aiAnswerConfidence.value = 98
+    } else if (aiQuestion.value.includes('汽车') || aiQuestion.value.includes('应用')) {
+      aiAnswer.value = '在汽车制造行业,我们提供全套拧紧解决方案,涵盖车身焊装、总装线等多个工艺环节。典型应用包括:底盘螺栓拧紧、发动机装配、车门安装等,已成功服务于丰田、本田、大众等知名车企。'
+      aiAnswerSource.value = '应用案例库 - 汽车行业解决方案'
+      aiAnswerConfidence.value = 95
+    } else {
+      aiAnswer.value = '您好!我是明升企业知识库AI助手。我可以回答关于产品技术、应用案例、公司信息等各类问题。请尝试更具体的问题,如"PF6000的扭矩范围是多少?"'
+      aiAnswerSource.value = '知识库智能助手'
+      aiAnswerConfidence.value = 88
+    }
+  }, 1000)
+}
+
 
 // AI任务数量
 const aiTaskCount = ref(12)
@@ -9404,4 +10268,356 @@ onMounted(() => {
       }
     }
   }
+
+/* ==================== 企业知识库视图样式 ==================== */
+.knowledge-base-view {
+  /* NotebookLM风格学习面板 */
+  .learning-panel {
+    margin-bottom: 24px;
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #303133;
+      }
+    }
+  }
+
+  .learning-section {
+    padding: 20px;
+    background: #FAFAFA;
+    border-radius: 8px;
+    min-height: 400px;
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #303133;
+      }
+    }
+
+    .section-desc {
+      color: #909399;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+  }
+
+  /* PDF上传区域 */
+  .pdf-upload-section {
+    .pdf-uploader {
+      margin-bottom: 20px;
+
+      :deep(.el-upload-dragger) {
+        padding: 40px;
+        background: white;
+        border: 2px dashed #DCDFE6;
+        border-radius: 8px;
+        transition: all 0.3s;
+
+        &:hover {
+          border-color: #409EFF;
+          background: #F0F9FF;
+        }
+      }
+
+      :deep(.el-icon--upload) {
+        font-size: 48px;
+        color: #409EFF;
+        margin-bottom: 16px;
+      }
+
+      :deep(.el-upload__text) {
+        font-size: 14px;
+        color: #606266;
+
+        em {
+          color: #409EFF;
+          font-style: normal;
+        }
+      }
+
+      :deep(.el-upload__tip) {
+        font-size: 12px;
+        color: #909399;
+        margin-top: 8px;
+      }
+    }
+
+    .processing-status {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+
+      .progress-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #409EFF;
+      }
+
+      .processing-steps {
+        margin-top: 20px;
+      }
+    }
+
+    .uploaded-files {
+      h4 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #303133;
+        margin-bottom: 12px;
+      }
+
+      .pdf-list {
+        .pdf-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          background: white;
+          border-radius: 8px;
+          margin-bottom: 8px;
+          transition: all 0.3s;
+
+          &:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+          }
+
+          .pdf-info {
+            flex: 1;
+
+            .pdf-name {
+              font-size: 14px;
+              font-weight: 600;
+              color: #303133;
+              margin-bottom: 6px;
+            }
+
+            .pdf-meta {
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+            }
+          }
+
+          .pdf-actions {
+            display: flex;
+            gap: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  /* 网页学习区域 */
+  .web-learning-section {
+    .web-input-area {
+      margin-bottom: 20px;
+    }
+
+    .learning-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .web-result {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+
+      h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #67C23A;
+        margin-bottom: 16px;
+      }
+
+      .summary-content {
+        margin: 16px 0;
+        padding: 16px;
+        background: #F5F7FA;
+        border-radius: 8px;
+
+        h5 {
+          font-size: 14px;
+          font-weight: 600;
+          color: #303133;
+          margin: 0 0 8px 0;
+        }
+
+        p {
+          font-size: 14px;
+          color: #606266;
+          line-height: 1.6;
+          margin: 0;
+        }
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 16px;
+      }
+    }
+
+    .learned-webs {
+      margin-top: 20px;
+
+      h4 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #303133;
+        margin-bottom: 12px;
+      }
+
+      .web-list {
+        .web-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 12px;
+          background: white;
+          border-radius: 8px;
+          margin-bottom: 8px;
+          transition: all 0.3s;
+
+          &:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+          }
+
+          .web-info {
+            flex: 1;
+
+            .web-title {
+              font-size: 14px;
+              font-weight: 600;
+              color: #303133;
+              margin-bottom: 4px;
+            }
+
+            .web-url {
+              font-size: 12px;
+              display: block;
+              margin-bottom: 6px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .web-meta {
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+            }
+          }
+
+          .web-actions {
+            display: flex;
+            gap: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  /* 知识分类卡片 */
+  .knowledge-category-card {
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .category-icon {
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #303133;
+      margin: 0 0 8px 0;
+    }
+
+    .category-desc {
+      font-size: 13px;
+      color: #909399;
+      margin-bottom: 12px;
+      min-height: 40px;
+    }
+
+    .category-stats {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+  }
+
+  /* AI问答演示 */
+  .ai-qa-demo {
+    .qa-input {
+      margin-bottom: 16px;
+    }
+
+    .ai-answer-box {
+      background: #F0F9FF;
+      border-left: 4px solid #409EFF;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+
+      .answer-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-weight: 600;
+        color: #409EFF;
+      }
+
+      .answer-content {
+        font-size: 14px;
+        color: #303133;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      .answer-source {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+    }
+  }
+}
 </style>

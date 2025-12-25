@@ -10,8 +10,13 @@ import './assets/style.css'
 import './assets/responsive.css' // ✨ 引入响应式样式
 import './assets/animations.css' // 🎨 引入动画样式库
 import './styles/pantone-2736c.css' // ✨ 引入PANTONE 2736C配色方案
+import './styles/mobile-fix.css' // 📱 移动端修复样式
 import { initDemoData } from './utils/initDemoData' // ✨ 引入演示数据初始化
 import performanceMonitor from './utils/performanceMonitor' // 🚀 性能监控
+import { setupMobileOptimizations } from './composables/useMobileClick' // 📱 移动端优化
+
+// 🚀 初始化移动端优化
+setupMobileOptimizations()
 
 // ✨ 初始化演示数据（确保所有访客看到相同的初始内容）
 initDemoData()

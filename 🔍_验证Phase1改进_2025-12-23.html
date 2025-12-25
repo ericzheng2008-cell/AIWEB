@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 1 改进验证清单</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #667eea;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 1.2em;
+      margin-bottom: 30px;
+      padding-left: 60px;
+    }
+    
+    .phase {
+      margin: 30px 0;
+      padding: 25px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      border-left: 5px solid #667eea;
+    }
+    
+    .phase h2 {
+      color: #333;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .checklist {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+    
+    .check-item {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f8f9fa;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .check-item:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+    
+    .check-item.completed {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+    
+    .check-item input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+    
+    .check-item label {
+      flex: 1;
+      cursor: pointer;
+      font-size: 1.1em;
+      color: #333;
+    }
+    
+    .check-item.completed label {
+      color: #155724;
+      font-weight: 500;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+    
+    .status.done {
+      background: #28a745;
+      color: white;
+    }
+    
+    .status.pending {
+      background: #ffc107;
+      color: #333;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e9ecef;
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 0;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .stat-value {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: #667eea;
+      margin: 10px 0;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 1em;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-info {
+      background: #17a2b8;
+      color: white;
+    }
+    
+    .note {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    .note strong {
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <span>🔍</span>
+      Phase 1-2-3 改进验证清单
+    </h1>
+    <div class="subtitle">基于 Claude Code 评估报告 | 2025-12-23</div>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">总体评分</div>
+        <div class="stat-value" id="overallScore">2.6</div>
+        <div class="stat-label">目标：4.2/5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">完成进度</div>
+        <div class="stat-value" id="progressPercent">17%</div>
+        <div class="stat-label" id="completedTasks">1/6 任务</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">预期收益</div>
+        <div class="stat-value">70%</div>
+        <div class="stat-label">性能提升</div>
+      </div>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressBar" style="width: 17%">17%</div>
+    </div>
+    
+    <!-- Phase 1 -->
+    <div class="phase">
+      <h2>
+        <span>⚡</span>
+        Phase 1：紧急修复（P0优先级）
+        <span class="status pending">进行中</span>
+      </h2>
+      
+      <div class="checklist">
+        <div class="check-item completed">
+          <input type="checkbox" id="p1-1" checked onchange="updateProgress()">
+          <label for="p1-1">
+            <strong>1.1 数据持久化</strong> - 集成 SQLite 数据库
+            <br><small>✅ 已完成：17张核心表、CRUD模型、自动备份</small>
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="p1-2" onchange="updateProgress()">
+          <label for="p1-2">
+            <strong>1.2 文件上传安全</strong> - 修复6个安全漏洞
+            <br><small>⏳ 进行中：MIME验证、文件大小限制、权限控制</small>
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="p1-3" onchange="updateProgress()">
+          <label for="p1-3">
+            <strong>1.3 拆分超大组件</strong> - Home.vue 3000行 → 15个子组件
+            <br><small>📋 待开始：单一职责、组件复用、Props/Events规范</small>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Phase 2 -->
+    <div class="phase">
+      <h2>
+        <span>🔧</span>
+        Phase 2：重要优化（P1优先级）
+        <span class="status pending">待开始</span>
+      </h2>
+      
+      <div class="checklist">
+        <div class="check-item">
+          <input type="checkbox" id="p2-1" onchange="updateProgress()">
+          <label for="p2-1">
+            <strong>2.1 建立测试体系</strong> - 测试覆盖率 1% → 60%
+            <br><small>📋 待开始：Vitest + Vue Test Utils + Playwright</small>
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="p2-2" onchange="updateProgress()">
+          <label for="p2-2">
+            <strong>2.2 统一错误处理</strong> - 前后端错误拦截器
+            <br><small>📋 待开始：全局错误处理、友好提示、日志记录</small>
+          </label>
+        </div>
+        
+        <div class="check-item">
+          <input type="checkbox" id="p2-3" onchange="updateProgress()">
+          <label for="p2-3">
+            <strong>2.3 性能优化</strong> - 首屏加载时间 8秒 → 3秒
+            <br><small>📋 待开始：路由懒加载、虚拟滚动、图片懒加载</small>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Phase 3 -->
+    <div class="phase">
+      <h2>
+        <span>🚀</span>
+        Phase 3：长期改进（P2优先级）
+        <span class="status pending">待规划</span>
+      </h2>
+      
+      <div class="checklist">
+        <div class="check-item">
+          <input type="checkbox" id="p3-1" onchange="updateProgress()">
+          <label for="p3-1">
+            <strong>3.1 Docker化部署</strong> - 容器化改造
+            <br><small>📋 待开始：多阶段构建、docker-compose、镜像优化</small>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="note">
+      <strong>⚠️ 注意事项：</strong><br>
+      1. 修改默认管理员密码（admin/admin123）<br>
+      2. 配置 .env 文件（JWT_SECRET等）<br>
+      3. 生产环境使用 PostgreSQL 替换 SQLite<br>
+      4. 启用自动备份（npm run db:backup）
+    </div>
+    
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="window.open('📋_Phase1-2-3改进计划_2025-12-23.md')">
+        <span>📋</span>查看完整计划
+      </button>
+      <button class="btn btn-success" onclick="window.open('🚀_Phase1-1完成_数据库集成_2025-12-23.md')">
+        <span>✅</span>Phase 1-1 完成报告
+      </button>
+      <button class="btn btn-info" onclick="testDatabase()">
+        <span>🧪</span>测试数据库
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // 更新进度
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const total = checkboxes.length;
+      const percent = Math.round((completed / total) * 100);
+      
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressBar').textContent = percent + '%';
+      document.getElementById('progressPercent').textContent = percent + '%';
+      document.getElementById('completedTasks').textContent = `${completed}/${total} 任务`;
+      
+      // 更新整体评分（2.6 → 4.2）
+      const scoreIncrease = (4.2 - 2.6) * (percent / 100);
+      const currentScore = (2.6 + scoreIncrease).toFixed(1);
+      document.getElementById('overallScore').textContent = currentScore;
+      
+      // 更新复选框样式
+      checkboxes.forEach(cb => {
+        const item = cb.closest('.check-item');
+        if (cb.checked) {
+          item.classList.add('completed');
+        } else {
+          item.classList.remove('completed');
+        }
+      });
+    }
+    
+    // 测试数据库
+    async function testDatabase() {
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'admin', password: 'admin123' })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          alert('✅ 数据库连接成功！\n\n用户名：' + data.data.user.username + '\n角色：' + data.data.user.role);
+        } else {
+          alert('❌ 数据库连接失败\n\n请确保后端服务器已启动（端口5000）');
+        }
+      } catch (error) {
+        alert('❌ 无法连接到服务器\n\n错误：' + error.message + '\n\n请运行：npm run server');
+      }
+    }
+    
+    // 初始化
+    updateProgress();
+  </script>
+</body>
+</html>

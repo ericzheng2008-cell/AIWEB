@@ -5,21 +5,48 @@ const router = express.Router()
 
 // 网站配置
 let siteConfig = {
-  siteName: '企业营销平台',
-  logo: '/logo.png',
-  description: '专业的企业级营销获客解决方案',
-  keywords: '营销,获客,电商,推广'
+  siteName: '明升企业智能体',
+  logo: '/logo-new.png',
+  description: 'AI驱动的企业智能解决方案',
+  keywords: 'AI,智能体,企业智能,工作流,AICRM'
 }
 
 // Banner数据
 let banners = [
   {
     id: 1,
-    title: '专业的企业营销解决方案',
-    subtitle: '助力企业实现营销获客闭环',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920',
+    title: '明升企业智能体平台',
+    subtitle: 'AI驱动的企业智能解决方案 · 自主学习 · 持续进化',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920',
     buttonText: '了解更多',
-    link: '/about',
+    link: 'about',
+    active: true
+  },
+  {
+    id: 2,
+    title: '智能工具 · 智能装配 · 智能管理',
+    subtitle: 'EQTCF & ETBP 系列智能工具，为您提供全方位智能解决方案',
+    image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920',
+    buttonText: '探索产品',
+    link: 'products',
+    active: true
+  },
+  {
+    id: 3,
+    title: 'AI工作流编排 · 智能体协作',
+    subtitle: '可视化工作流设计 · 多智能体协同 · 自动化执行',
+    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1920',
+    buttonText: '查看方案',
+    link: 'products',
+    active: true
+  },
+  {
+    id: 4,
+    title: 'AICRM · 智能客户管理',
+    subtitle: 'AI赋能的CRM系统 · 销售预测 · 商机分析 · 客户洞察',
+    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920',
+    buttonText: '了解方案',
+    link: 'solutions',
     active: true
   }
 ]

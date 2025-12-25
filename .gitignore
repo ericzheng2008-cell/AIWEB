@@ -1,19 +1,61 @@
+# 依赖
 node_modules/
+.pnp
+.pnp.js
+
+# 数据库文件 ⚠️ 重要：生产环境数据库不要提交
+data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# 测试
+coverage/
+.nyc_output
+
+# 生产构建
 dist/
-.DS_Store
-*.log
-.env
-.env.local
-uploads/
-package-lock.json
+dist-ssr/
+*.local
 
-# Python virtual environment
-.locust_env/
-.venv/
-venv/
-__pycache__/
-
-# IDE
+# 编辑器
 .vscode/
 .idea/
-.tours/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 上传文件（根据需要调整）
+public/uploads/*
+!public/uploads/.gitkeep
+
+# 缓存
+.cache/
+.vite/
+.eslintcache
+.vercel
+.env*.local

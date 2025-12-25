@@ -1,0 +1,525 @@
+import { createRouter, createWebHashHistory } from 'vue-router'
+
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: () => import('../views/Home.vue')
+  },
+  {
+    path: '/products-services',
+    name: 'ProductsServices',
+    component: () => import('../views/ProductsServices.vue')
+  },
+  {
+    path: '/divisions',
+    name: 'Divisions',
+    component: () => import('../views/Divisions.vue')
+  },
+  {
+    path: '/products',
+    name: 'Products',
+    component: () => import('../views/Products.vue')
+  },
+  {
+    path: '/product-category/:categoryId',
+    name: 'ProductCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product-category/:categoryId/:subCategoryId',
+    name: 'ProductSubCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product-category/:categoryId/:subCategoryId/:thirdCategoryId',
+    name: 'ProductThirdCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product-category/:categoryId/:subCategoryId/:thirdCategoryId/:fourthCategoryId',
+    name: 'ProductFourthCategory',
+    component: () => import('../views/ProductCategory.vue')
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: () => import('../views/ProductDetail.vue')
+  },
+  {
+    path: '/tech-classroom',
+    name: 'TechClassroom',
+    component: () => import('../views/TechClassroom.vue')
+  },
+  {
+    path: '/solutions',
+    name: 'Solutions',
+    component: () => import('../views/Solutions.vue')
+  },
+  {
+    path: '/solution-category/:categoryId',
+    name: 'SolutionCategory',
+    component: () => import('../views/SolutionCategory.vue')
+  },
+  {
+    path: '/solution-category/:categoryId/:subCategoryId',
+    name: 'SolutionSubCategory',
+    component: () => import('../views/SolutionCategory.vue')
+  },
+  {
+    path: '/solution-category/:categoryId/:subCategoryId/:thirdCategoryId',
+    name: 'SolutionThirdCategory',
+    component: () => import('../views/SolutionCategory.vue')
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('../views/About.vue')
+  },
+  {
+    path: '/service',
+    name: 'Service',
+    component: () => import('../views/Service.vue')
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: () => import('../views/Contact.vue')
+  },
+  {
+    path: '/ai-knowledge',
+    name: 'AiKnowledge',
+    component: () => import('../views/AiKnowledgeManager.vue')
+  },
+  {
+    path: '/ai-agents',
+    name: 'AiAgents',
+    component: () => import('../views/AiAgents.vue')
+  },
+  {
+    path: '/ai-agent/:id',
+    name: 'AiAgent',
+    component: () => import('../views/AiAgent.vue')
+  },
+  {
+    path: '/tool-selector',
+    name: 'ToolSelector',
+    component: () => import('../views/ToolSelector.vue')
+  },
+  {
+    path: '/tool-selector-enhanced',
+    name: 'ToolSelectorEnhanced',
+    component: () => import('../views/ToolSelectorEnhanced.vue'),
+    meta: { 
+      title: '拧紧工具选型（增强版�?,
+      description: '具备完全自主运行能力的智能体系统'
+    }
+  },
+  {
+    path: '/tightening-data',
+    name: 'TighteningData',
+    component: () => import('../views/admin/TighteningDataAnalysis.vue')
+  },
+  {
+    path: '/tightening-dashboard',
+    name: 'TighteningDashboard',
+    component: () => import('../views/TighteningDataDashboard.vue'),
+    meta: { 
+      title: '拧紧数据采集分析 - ToolsNet 8代表�?,
+      description: '可拖拽小工具窗口，实时数据分�?
+    }
+  },
+  {
+    path: '/socket-selector',
+    name: 'SocketSelector',
+    component: () => import('../views/SocketSelector.vue')
+  },
+  {
+    path: '/tool-brand-match',
+    name: 'ToolBrandMatch',
+    component: () => import('../views/ToolBrandMatch.vue')
+  },
+  {
+    path: '/tightening-strategy',
+    name: 'TighteningStrategy',
+    component: () => import('../views/TighteningStrategy.vue')
+  },
+  {
+    path: '/cost-optimization',
+    name: 'CostOptimization',
+    component: () => import('../views/CostOptimization.vue')
+  },
+
+  {
+    path: '/curve-analysis',
+    name: 'CurveAnalysis',
+    component: () => import('../views/CurveAnalysis.vue')
+  },
+  {
+    path: '/process-verification',
+    name: 'ProcessVerification',
+    component: () => import('../views/ProcessVerification.vue')
+  },
+  {
+    path: '/fault-tracking',
+    name: 'FaultTracking',
+    component: () => import('../views/FaultTracking.vue')
+  },
+  {
+    path: '/work-order-query',
+    name: 'WorkOrderQuery',
+    component: () => import('../views/WorkOrderQuery.vue'),
+    meta: {
+      title: '工单查询系统',
+      description: '按工单号或手机号查询维修进度和配件物流状�?
+    }
+  },
+  {
+    path: '/equipment-lifecycle',
+    name: 'EquipmentLifecycle',
+    component: () => import('../views/EquipmentLifecycle.vue')
+  },
+  {
+    path: '/intelligent-calculator',
+    name: 'IntelligentCalculator',
+    component: () => import('../views/IntelligentCalculator.vue')
+  },
+  {
+    path: '/equipment-dashboard',
+    name: 'EquipmentDashboard',
+    component: () => import('../views/EquipmentDashboard.vue')
+  },
+  {
+    path: '/maintenance-history',
+    name: 'MaintenanceHistory',
+    component: () => import('../views/MaintenanceHistory.vue')
+  },
+  {
+    path: '/fault-statistics',
+    name: 'FaultStatistics',
+    component: () => import('../views/FaultStatistics.vue')
+  },
+  {
+    path: '/cost-optimization',
+    name: 'CostOptimization',
+    component: () => import('../views/CostOptimization.vue')
+  },
+  {
+    path: '/ai-product-selector',
+    name: 'AiProductSelector',
+    component: () => import('../views/AiProductSelector.vue'),
+    meta: {
+      title: 'AI智能选型系统',
+      description: '智能推荐最适合您的产品'
+    }
+  },
+  {
+    path: '/resource-center',
+    name: 'ResourceCenter',
+    component: () => import('../views/ResourceCenter.vue'),
+    meta: {
+      title: '资源中心',
+      description: '下载白皮书、技术文档、案例研�?
+    }
+  },
+  {
+    path: '/email-marketing',
+    name: 'EmailMarketingSystem',
+    component: () => import('../views/EmailMarketingSystem.vue'),
+    meta: {
+      title: 'AI邮件营销系统',
+      description: '多语言EDM模板、A/B测试、效果追�?
+    }
+  },
+  {
+    path: '/lead-nurturing',
+    name: 'LeadNurturingSystem',
+    component: () => import('../views/LeadNurturingSystem.vue'),
+    meta: {
+      title: '线索孵化系统',
+      description: '自动化Nurturing、分级跟进策�?
+    }
+  },
+  {
+    path: '/marketing-data-hub',
+    name: 'MarketingDataHub',
+    component: () => import('../views/MarketingDataHub.vue'),
+    meta: {
+      title: '营销数据中台',
+      description: '多源数据整合、实时数仓、可视化看板'
+    }
+  },
+  {
+    path: '/mingsheng-aicrm',
+    name: 'MingShengAICRM',
+    component: () => import('../views/MingShengAICRM_V3.vue'),
+    meta: {
+      title: '明升AICRM v3.0 - AI赢率驱动智能营销平台',
+      description: 'Salesforce Einstein�?· AI赢率预测 · 商机管理 · 报价系统 · 竞品分析 · 组织影响力图�?,
+      category: 'AI营销中台'
+    }
+  },
+  {
+    path: '/workflow-agent',
+    name: 'WorkflowAgent',
+    component: () => import('../views/WorkflowAgent.vue'),
+    meta: {
+      title: '工作流智能体 v2.7',
+      description: '多部门工作流可视化管�?- 拖拽式流程设计、自定义节点、智能连�?,
+      category: '流程管理'
+    }
+  },
+  {
+    path: '/workflow-agent-v3',
+    name: 'WorkflowAgentV3',
+    component: () => import('../views/WorkflowAgentV3.vue'),
+    meta: {
+      title: '工作流智能体 v3.0 Enterprise',
+      description: '企业级AI工作流平�?- 六大节点类型·智能推荐·完整调试·数据链路追踪',
+      category: '企业级平�?
+    }
+  },
+  {
+    path: '/workflow-editor-v4',
+    name: 'WorkflowEditorV4',
+    component: () => import('../views/WorkflowEditorV4.vue'),
+    meta: {
+      title: '工作流节点编辑器 v4.0 Professional',
+      description: '专业级节点编辑器 - 六大节点分类·完整属性编辑·AI智能助手·企业级设�?,
+      category: '流程管理'
+    }
+  },
+  {
+    path: '/workflow-editor-v5-n8n',
+    name: 'WorkflowEditorV5_N8N',
+    component: () => import('../views/WorkflowEditorV5_N8N.vue'),
+    meta: {
+      title: '工作流编辑器 v7.0 Ultra Edition',
+      description: '企业级工作流平台·30节点·9属性标签·AI智能·SLA管理·权限审计·数据追踪·25倍超大节点·拖拽修�?,
+      category: '流程管理'
+    }
+  },
+  // 管理后台路由
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('../views/admin/Login.vue'),
+    meta: { requiresGuest: true }
+  },
+  {
+    path: '/admin',
+    component: () => import('../views/admin/AdminLayout.vue'),
+    meta: { requiresAuth: true },
+    redirect: '/admin/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        name: 'AdminDashboard',
+        component: () => import('../views/admin/Dashboard.vue')
+      },
+      {
+        path: 'cms',
+        name: 'AdminCms',
+        component: () => import('../views/admin/ContentManage.vue')
+      },
+      {
+        path: 'products-services',
+        name: 'AdminProductsServices',
+        component: () => import('../views/admin/ProductsServicesManage.vue')
+      },
+      {
+        path: 'home-layout',
+        name: 'AdminHomeLayout',
+        component: () => import('../views/admin/HomeLayoutManage.vue')
+      },
+      {
+        path: 'work-orders',
+        name: 'AdminWorkOrders',
+        component: () => import('../views/admin/WorkOrderManage.vue'),
+        meta: {
+          title: '工单管理',
+          description: '管理设备维修工单、配件状态和物流信息'
+        }
+      },
+      {
+        path: 'tightening-data',
+        name: 'TighteningDataAnalysis',
+        component: () => import('../views/admin/TighteningDataAnalysis.vue')
+      },
+      {
+        path: 'classroom',
+        name: 'AdminClassroom',
+        component: () => import('../views/admin/ClassroomManage.vue')
+      },
+      {
+        path: 'classroom-resources',
+        name: 'AdminClassroomResources',
+        component: () => import('../views/admin/ClassroomResourcesManage.vue')
+      },
+      {
+        path: 'ai-agents',
+        name: 'AdminAiAgents',
+        component: () => import('../views/admin/AiAgentManage.vue')
+      },
+      {
+        path: 'agent-registry',
+        name: 'AdminAgentRegistry',
+        component: () => import('../views/admin/AgentRegistry.vue')
+      },
+      {
+        path: 'knowledge-base',
+        name: 'AdminKnowledgeBase',
+        component: () => import('../views/admin/KnowledgeBase.vue')
+      },
+      {
+        path: 'learning-engine',
+        name: 'AdminLearningEngine',
+        component: () => import('../views/admin/LearningEngine.vue')
+      },
+      {
+        path: 'ai-learning-dashboard',
+        name: 'AiLearningDashboard',
+        component: () => import('../views/AiLearningDashboard.vue'),
+        meta: {
+          title: 'AI学习训练中心',
+          description: '查看用户反馈，优化AI回答质量'
+        }
+      },
+      {
+        path: 'monitoring',
+        name: 'AdminMonitoring',
+        component: () => import('../views/admin/MonitoringDashboard.vue')
+      },
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('../views/admin/UserManagement.vue')
+      },
+      {
+        path: 'tool-database',
+        name: 'AdminToolDatabase',
+        component: () => import('../views/admin/ToolDatabase.vue')
+      },
+      {
+        path: 'tool-brand-database',
+        name: 'AdminToolBrandDatabase',
+        component: () => import('../views/admin/ToolBrandDatabase.vue')
+      },
+      {
+        path: 'socket-database',
+        name: 'AdminSocketDatabase',
+        component: () => import('../views/admin/SocketDatabase.vue')
+      },
+      {
+        path: 'equipment',
+        name: 'AdminEquipment',
+        component: () => import('../views/admin/EquipmentManage.vue')
+      },
+      {
+        path: 'workorder',
+        name: 'AdminWorkOrder',
+        component: () => import('../views/admin/WorkOrderManage.vue')
+      },
+      {
+        path: 'ai-knowledge',
+        name: 'AdminAiKnowledge',
+        component: () => import('../views/AiKnowledgeManager.vue')
+      },
+      {
+        path: 'workstation',
+        name: 'AdminWorkstation',
+        component: () => import('../views/admin/WorkstationManage.vue')
+      },
+      {
+        path: 'production-line',
+        name: 'AdminProductionLine',
+        component: () => import('../views/admin/ProductionLineManage.vue')
+      },
+      {
+        path: 'marketing-hub',
+        name: 'AdminMarketingHub',
+        component: () => import('../views/admin/MarketingHubManage.vue'),
+        meta: {
+          title: 'AI营销中台管理',
+          description: '配置Phase 2-4功能、AI模型训练、数据分�?
+        }
+      },
+      {
+        path: 'training-data',
+        name: 'AdminTrainingData',
+        component: () => import('../views/admin/TrainingDataManage.vue'),
+        meta: {
+          title: '学习训练系统资料管理',
+          description: '管理产品知识、技术技能、销售营销等训练数�?
+        }
+      },
+      {
+        path: 'mingsheng-aicrm',
+        name: 'AdminMingShengAICRM',
+        component: () => import('../views/admin/MingShengAICRMManage.vue'),
+        meta: {
+          title: '明升AICRM后台管理',
+          description: '配置智能看板、客�?60°、商机管理、自动化流程'
+        }
+      },
+      {
+        path: 'product-matrix',
+        name: 'AdminProductMatrix',
+        component: () => import('../views/admin/ProductMatrixManage.vue'),
+        meta: {
+          title: '企业产品矩阵管理',
+          description: '产品收益-现金流分析、BCG矩阵、AI智能推荐、组合优�?
+        }
+      },
+      {
+        path: 'customer360',
+        name: 'AdminCustomer360',
+        component: () => import('../views/admin/Customer360Manage.vue'),
+        meta: {
+          title: '客户360画像与沙盘分析管�?,
+          description: '客户画像配置、数据源整合、沙盘分析设置、AI预测配置'
+        }
+      },
+      {
+        path: 'material-download',
+        name: 'AdminMaterialDownload',
+        component: () => import('../views/admin/MaterialDownloadManage.vue'),
+        meta: {
+          title: '资料下载管理',
+          description: '管理产品手册、技术资料、白皮书等下载资源，处理索取报价请求'
+        }
+      }
+    ]
+  }
+]
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
+})
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('adminToken')
+  
+  if (to.meta.requiresAuth && !token) {
+    // 需要登录但未登录，跳转到登录页
+    next('/admin/login')
+  } else if (to.meta.requiresGuest && token) {
+    // 已登录访问登录页，跳转到后台首页
+    next('/admin/dashboard')
+  } else {
+    next()
+  }
+})
+
+export default router
+
+

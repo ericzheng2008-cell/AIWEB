@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel部署快速通道 - 闪退问题已修复</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 30px;
+            background: #667eea;
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+        
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .tool-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tool-card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tool-card.success {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+        
+        .tool-card.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .tool-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .tool-card p {
+            font-size: 0.95em;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .tool-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .step-list {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .step-list ol {
+            margin-left: 20px;
+        }
+        
+        .step-list li {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        
+        .step-list li strong {
+            color: #667eea;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-item {
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .feature-item::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .alert h4 {
+            margin-bottom: 10px;
+            color: #b45309;
+        }
+        
+        .command-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .command-box code {
+            color: #38bdf8;
+        }
+        
+        .footer {
+            background: #f8fafc;
+            padding: 30px;
+            text-align: center;
+            color: #64748b;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Vercel部署快速通道</h1>
+            <p>闪退问题已完全修复 - 一键部署到云端</p>
+            <div class="badge">✓ 防闪退保护已启用</div>
+        </div>
+        
+        <div class="content">
+            <!-- 快速工具 -->
+            <div class="section">
+                <h2>快速工具</h2>
+                <div class="tool-grid">
+                    <div class="tool-card primary" onclick="alert('请双击运行：deploy-vercel-simple.bat')">
+                        <div class="icon">🚀</div>
+                        <h3>一键部署</h3>
+                        <p>运行增强版部署脚本，自动完成所有步骤</p>
+                    </div>
+                    
+                    <div class="tool-card success" onclick="alert('请双击运行：⚡_诊断Vercel部署问题_2025-12-25.bat')">
+                        <div class="icon">🔍</div>
+                        <h3>环境诊断</h3>
+                        <p>检查所有环境配置，快速定位问题</p>
+                    </div>
+                    
+                    <div class="tool-card warning" onclick="alert('请双击运行：⚡_一键修复Vercel闪退_2025-12-25.bat')">
+                        <div class="icon">🔧</div>
+                        <h3>自动修复</h3>
+                        <p>自动修复常见问题，清理缓存重新安装</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 推荐流程 -->
+            <div class="section">
+                <h2>推荐部署流程</h2>
+                <div class="step-list">
+                    <ol>
+                        <li><strong>第一步</strong>：双击运行 <code>⚡_诊断Vercel部署问题_2025-12-25.bat</code>
+                            <br>→ 检查环境是否正常</li>
+                        <li><strong>第二步</strong>：如果诊断发现问题，运行 <code>⚡_一键修复Vercel闪退_2025-12-25.bat</code>
+                            <br>→ 自动修复所有问题</li>
+                        <li><strong>第三步</strong>：运行 <code>deploy-vercel-simple.bat</code>
+                            <br>→ 开始部署到 Vercel</li>
+                        <li><strong>完成</strong>：部署成功后访问显示的 URL
+                            <br>→ 在 Vercel Dashboard 管理项目</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- 新增功能 -->
+            <div class="section">
+                <h2>✨ 闪退问题已修复</h2>
+                <div class="features">
+                    <div class="feature-item">详细错误提示</div>
+                    <div class="feature-item">自动日志记录</div>
+                    <div class="feature-item">失败暂停查看</div>
+                    <div class="feature-item">环境完整检查</div>
+                    <div class="feature-item">构建输出验证</div>
+                    <div class="feature-item">自动打开日志</div>
+                </div>
+            </div>
+            
+            <!-- 重要提示 -->
+            <div class="alert">
+                <h4>💡 重要提示</h4>
+                <p><strong>如果部署失败</strong>，脚本会自动打开 <code>deploy-vercel-log.txt</code> 日志文件。</p>
+                <p>请查看日志中的错误信息，并参考解决指南。</p>
+            </div>
+            
+            <!-- 常见问题 -->
+            <div class="section">
+                <h2>常见问题解决</h2>
+                
+                <h3 style="color: #ef4444; margin: 20px 0 10px 0;">❌ 问题1: 脚本仍然闪退</h3>
+                <div class="command-box">
+<code># 查看详细日志
+notepad deploy-vercel-log.txt
+
+# 运行诊断工具
+⚡_诊断Vercel部署问题_2025-12-25.bat</code>
+                </div>
+                
+                <h3 style="color: #ef4444; margin: 20px 0 10px 0;">❌ 问题2: 构建失败</h3>
+                <div class="command-box">
+<code># 清理并重新构建
+npm cache clean --force
+rmdir /s /q dist
+npm run build</code>
+                </div>
+                
+                <h3 style="color: #ef4444; margin: 20px 0 10px 0;">❌ 问题3: Vercel 登录失败</h3>
+                <div class="command-box">
+<code># 手动登录
+vercel login
+
+# 检查登录状态
+vercel whoami</code>
+                </div>
+            </div>
+            
+            <!-- 手动部署 -->
+            <div class="section">
+                <h2>🔧 手动部署命令</h2>
+                <p style="margin-bottom: 15px;">如果批处理脚本无法使用，可以手动执行以下命令：</p>
+                <div class="command-box">
+<code># 1. 清理旧文件
+rmdir /s /q dist
+
+# 2. 安装依赖
+npm install
+
+# 3. 构建项目
+set NODE_OPTIONS=--max_old_space_size=4096
+npm run build
+
+# 4. 登录 Vercel
+vercel login
+
+# 5. 部署到生产环境
+vercel --prod</code>
+                </div>
+            </div>
+            
+            <!-- 文档链接 -->
+            <div class="section">
+                <h2>📚 完整文档</h2>
+                <div class="tool-grid">
+                    <div class="tool-card" onclick="alert('请打开：📖_Vercel闪退问题解决指南_2025-12-25.md')">
+                        <div class="icon">📖</div>
+                        <h3>解决指南</h3>
+                        <p>查看完整的问题解决方案和使用说明</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="alert('请打开：✅_Vercel闪退修复完成_2025-12-25.md')">
+                        <div class="icon">✅</div>
+                        <h3>修复清单</h3>
+                        <p>查看所有已修复的内容和改进项</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 成功标志 -->
+            <div class="section">
+                <h2>🎉 部署成功标志</h2>
+                <div class="step-list">
+                    <p>当看到以下信息时，说明部署成功：</p>
+                    <div class="command-box" style="margin-top: 15px;">
+<code>========================================
+  ✓ SUCCESS - Deployment Complete!
+========================================
+
+Your site is now live on Vercel!
+
+Deployment URL: https://your-project.vercel.app
+Dashboard: https://vercel.com/dashboard</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Vercel部署工具</strong> v2.0 - 防闪退增强版</p>
+            <p>最后更新：2025-12-25</p>
+            <p style="margin-top: 15px;">
+                <a href="https://vercel.com/docs" target="_blank">Vercel 官方文档</a> | 
+                <a href="https://vercel.com/dashboard" target="_blank">Vercel Dashboard</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // 添加一些交互效果
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-5px)';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

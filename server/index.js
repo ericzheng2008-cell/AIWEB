@@ -3,6 +3,7 @@ import cors from 'cors'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { initDatabase, closeDatabase } from './database/init-memory.js'
 import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
 import contentRoutes from './routes/content.js'
@@ -12,8 +13,17 @@ import tighteningRoutes from './routes/tightening.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// 🚀 初始化数据库
+try {
+  await initDatabase()
+  console.log('✅ 数据库连接成功')
+} catch (error) {
+  console.error('❌ 数据库初始化失败:', error)
+  process.exit(1)
+}
+
 const app = express()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3001
 
 // 中间件
 app.use(cors())
@@ -90,6 +100,24 @@ app.use((req, res) => {
   })
 })
 
-app.listen(PORT, () => {
-  console.log(`服务器运行在 http://localhost:${PORT}`)
+const server = app.listen(PORT, () => {
+  console.log(`✅ 服务器运行在 http://localhost:${PORT}`)
+  console.log(`✅ 数据库路径: ${path.join(__dirname, '../data/aiweb.db')}`)
+})
+
+// 优雅关闭
+process.on('SIGINT', () => {
+  console.log('\n⏳ 正在关闭服务器...')
+  server.close(() => {
+    closeDatabase()
+    console.log('✅ 服务器已安全关闭')
+    process.exit(0)
+  })
+})
+
+process.on('SIGTERM', () => {
+  server.close(() => {
+    closeDatabase()
+    process.exit(0)
+  })
 })
