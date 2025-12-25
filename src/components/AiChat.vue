@@ -774,8 +774,13 @@ watch(() => chatStore.messages.length, () => {
 
 <style scoped>
 .ai-chat-container {
+  /* 🔥 只占右下角，不覆盖整个页面 */
   position: fixed;
-  z-index: 999; /* 🔧 降低层级，避免遮挡页面内容 */
+  bottom: 0;
+  right: 0;
+  width: 120px;  /* 🔥 限制宽度 */
+  height: 120px; /* 🔥 限制高度 */
+  z-index: 999;
   pointer-events: none; /* 🔧 容器本身不拦截点击 */
 }
 
@@ -783,15 +788,17 @@ watch(() => chatStore.messages.length, () => {
   pointer-events: auto; /* ✅ 但内部元素可以点击 */
 }
 
-/* 遮罩层 */
+/* 遮罩层 - 只在聊天打开时覆盖全屏 */
 .chat-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100vw !important;   /* 🔥 遮罩才全屏 */
+  height: 100vh !important;  /* 🔥 遮罩才全屏 */
   background: rgba(0, 0, 0, 0.1);
-  z-index: 998; /* 🔧 降低遮罩层级 */
+  z-index: 998;
   pointer-events: auto; /* ✅ 遮罩需要拦截点击 */
 }
 
