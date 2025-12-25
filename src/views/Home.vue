@@ -1353,11 +1353,14 @@ const bindNativeEvents = () => {
     
     productCards.forEach((card, index) => {
       // 获取对应的 series 数据
-      const seriesId = card.closest('.series-card')?.getAttribute('data-id')
-      const series = productsStore.productSeries.find(s => s.id === seriesId)
+      const seriesCard = card.closest('.series-card')
+      const seriesId = seriesCard?.getAttribute('data-id')
+      
+      // 🔥 从 productSeries computed 中查找
+      const series = productSeries.value.find(s => String(s.id) === String(seriesId))
       
       if (!series) {
-        console.warn(`❌ 产品卡片 ${index} 数据未找到`)
+        console.warn(`❌ 产品卡片 ${index} 数据未找到 (ID: ${seriesId})`)
         return
       }
       
