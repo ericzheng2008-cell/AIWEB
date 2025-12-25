@@ -31,21 +31,29 @@
 </head>
 <body>
   <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/main.js?v=20251225-竖屏修复"></script>
   
   <!-- 🔧 Eruda 移动端调试工具 - 手机上也能看控制台! -->
   <script src="https://cdn.jsdelivr.net/npm/eruda@3.0.1/eruda.min.js"></script>
   <script>
+    // 🔥 强制清除所有缓存
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(reg => reg.unregister())
+      })
+    }
+    
+    // 清除所有存储
+    localStorage.clear()
+    sessionStorage.clear()
+    
     // 在移动设备上自动启动 Eruda
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       eruda.init()
-      console.log('📱 Eruda 移动端调试工具已启动')
+      console.log('📱 Eruda 移动端调试工具已启动 v2.0')
       console.log('💡 点击右下角图标打开控制台')
+      console.log('🔄 版本: 20251225-竖屏修复')
     }
-    
-    // 清除旧的缓存标记
-    localStorage.removeItem('app_version')
-    localStorage.removeItem('last_refresh_time')
   </script>
 </body>
 </html>
