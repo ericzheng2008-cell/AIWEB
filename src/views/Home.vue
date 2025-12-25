@@ -154,7 +154,7 @@
           <!-- 左侧: 明升企业智能体 -->
           <div class="core-agent-card mingsheng-agent" 
                @click="handleCardClick('agents', $event)"
-               @touchend.prevent="handleCardClick('agents', $event)"
+               @touchstart="handleCardClick('agents', $event)"
                style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
             <div class="card-corner-badge">企业智能体</div>
             <!-- 返回主页按钮 -->
@@ -226,7 +226,7 @@
           <!-- 右侧: AI国际营销中台 -->
           <div class="core-agent-card marketing-hub" 
                @click="handleCardClick('marketing', $event)"
-               @touchend.prevent="handleCardClick('marketing', $event)"
+               @touchstart="handleCardClick('marketing', $event)"
                style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
             <div class="card-corner-badge marketing">国际营销</div>
             <!-- 返回主页按钮 -->
@@ -310,7 +310,7 @@
         <!-- 单个大卡片容器 -->
         <div class="workflow-hub-card" 
              @click="handleCardClick('workflow', $event)"
-             @touchend.prevent="handleCardClick('workflow', $event)"
+             @touchstart="handleCardClick('workflow', $event)"
              style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
           <div class="hub-card-header">
             <div class="hub-icon">
@@ -1218,27 +1218,32 @@ const openExternalLink = (url) => {
 
 // 🔧 统一卡片点击处理 - 兼容手机端触摸事件
 const handleCardClick = (target, event) => {
-  // 阻止默认行为和事件冒泡
+  // 只阻止事件冒泡,不阻止默认行为,让click事件正常触发
   if (event) {
-    event.preventDefault()
     event.stopPropagation()
   }
   
-  console.log('卡片点击:', target)
+  console.log('🎯 卡片点击:', target, '事件类型:', event?.type)
   
-  switch(target) {
-    case 'agents':
-      router.push('/ai-agents')
-      break
-    case 'marketing':
-      router.push('/ai-product-selector')
-      break
-    case 'workflow':
-      showWorkflowPlatforms.value = true
-      break
-    default:
-      console.warn('未知的卡片目标:', target)
-  }
+  // 使用 nextTick 确保在事件处理完成后再跳转
+  nextTick(() => {
+    switch(target) {
+      case 'agents':
+        console.log('→ 跳转到智能体页面')
+        router.push('/ai-agents')
+        break
+      case 'marketing':
+        console.log('→ 跳转到营销页面')
+        router.push('/ai-product-selector')
+        break
+      case 'workflow':
+        console.log('→ 打开工作平台弹窗')
+        showWorkflowPlatforms.value = true
+        break
+      default:
+        console.warn('❌ 未知的卡片目标:', target)
+    }
+  })
 }
 
 // 滚动到智能体板块
