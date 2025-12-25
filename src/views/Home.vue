@@ -123,10 +123,7 @@
             <div v-if="isAdmin" class="drag-handle" title="拖拽调整顺序">
               <el-icon><Rank /></el-icon>
             </div>
-            <div class="series-content" 
-                 @click="goToProducts(series)"
-                 @touchstart="handleTouchStart"
-                 @touchend="handleTouchEnd($event, series)">
+            <div class="series-content">
               <div class="series-image">
                 <img :src="series.image" :alt="series.name" />
               </div>
@@ -1122,35 +1119,13 @@ const offices = computed(() => {
 })
 
 const goToProducts = (series) => {
+  console.log('🚀 goToProducts 被调用:', series.name)
   // 如果是服务类型，直接跳转到对应路由
   if (series.type === 'service' && series.path) {
     router.push(series.path)
   } else {
     // 产品分类，跳转到产品与服务页面
     router.push('/products-services')
-  }
-}
-
-// 🔥 触摸跟踪 - 区分点击和滚动（产品与服务卡片）
-let touchStartY = 0
-let touchStartTime = 0
-
-const handleTouchStart = (e) => {
-  touchStartY = e.touches[0].clientY
-  touchStartTime = Date.now()
-}
-
-const handleTouchEnd = (e, series) => {
-  const touchEndY = e.changedTouches[0].clientY
-  const touchDuration = Date.now() - touchStartTime
-  const moveDistance = Math.abs(touchEndY - touchStartY)
-  
-  // 🎯 只有移动距离 < 10px 且时长 < 300ms 才算点击
-  if (moveDistance < 10 && touchDuration < 300) {
-    console.log('👆 产品卡片真实点击触发')
-    goToProducts(series)
-  } else {
-    console.log(`⚠️ 产品卡片滚动忽略 (移动${moveDistance}px, 时长${touchDuration}ms)`)
   }
 }
 
@@ -1325,6 +1300,7 @@ const initDraggable = () => {
 const bindNativeEvents = () => {
   console.log('🚀 绑定原生触摸事件...')
   
+  // 🔥 1. 绑定智能体卡片
   const cards = [
     { ref: agentsCard, target: 'agents', name: '智能体卡片' },
     { ref: marketingCard, target: 'marketing', name: '营销卡片' },
@@ -1368,6 +1344,77 @@ const bindNativeEvents = () => {
     } else {
       console.warn(`❌ ${name} DOM未找到`)
     }
+  })
+  
+  // 🔥 2. 绑定产品与服务卡片
+  nextTick(() => {
+    const productCards = document.querySelectorAll('.series-content')
+    console.log(`🔍 找到 ${productCards.length} 个产品卡片`)
+    
+    productCards.forEach((card, index) => {
+      // 获取对应的 series 数据
+      const seriesId = card.closest('.series-card')?.getAttribute('data-id')
+      const series = productsStore.productSeries.find(s => s.id === seriesId)
+      
+      if (!series) {
+        console.warn(`❌ 产品卡片 ${index} 数据未找到`)
+        return
+      }
+      
+      console.log(`✅ 正在绑定产品卡片: ${series.name}`)
+      
+      let touchStartY = 0
+      let touchStartTime = 0
+      let isTouching = false
+      
+      // 触摸开始
+      card.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY
+        touchStartTime = Date.now()
+        isTouching = true
+        console.log(`👆 产品卡片 [${series.name}] 触摸开始`)
+      }, { passive: true })
+      
+      // 触摸结束
+      card.addEventListener('touchend', (e) => {
+        if (!isTouching) return
+        
+        const touchEndY = e.changedTouches[0].clientY
+        const touchDuration = Date.now() - touchStartTime
+        const moveDistance = Math.abs(touchEndY - touchStartY)
+        
+        console.log(`📊 产品卡片 [${series.name}] 触摸数据:`, {
+          moveDistance,
+          touchDuration
+        })
+        
+        // 🎯 只有移动距离 < 10px 且时长 < 300ms 才算点击
+        if (moveDistance < 10 && touchDuration < 300) {
+          console.log(`✅ 产品卡片 [${series.name}] 真实点击触发`)
+          e.preventDefault()
+          e.stopPropagation()
+          goToProducts(series)
+        } else {
+          console.log(`⚠️ 产品卡片 [${series.name}] 滚动忽略`)
+        }
+        
+        isTouching = false
+      }, { passive: false })
+      
+      // 桌面端点击
+      card.addEventListener('click', (e) => {
+        // 如果是移动端，阻止点击（使用 touchend）
+        if ('ontouchstart' in window && isTouching) {
+          e.preventDefault()
+          return
+        }
+        
+        console.log(`🖱️ 产品卡片 [${series.name}] 点击触发`)
+        goToProducts(series)
+      }, { passive: false })
+      
+      console.log(`✅ 产品卡片 [${series.name}] 事件绑定完成`)
+    })
   })
 }
 
