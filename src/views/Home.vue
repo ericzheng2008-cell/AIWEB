@@ -1311,15 +1311,32 @@ const bindNativeEvents = () => {
     if (ref.value) {
       console.log(`✅ 正在绑定: ${name}`)
       
-      // 原生点击事件
-      ref.value.addEventListener('click', (e) => {
-        console.log(`🎯 ${name} 点击触发`)
-        handleCardClick(target, e)
+      // 🔥 触摸跟踪 - 区分点击和滚动
+      let touchStartY = 0
+      let touchStartTime = 0
+      
+      ref.value.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY
+        touchStartTime = Date.now()
+      }, { passive: true })
+      
+      ref.value.addEventListener('touchend', (e) => {
+        const touchEndY = e.changedTouches[0].clientY
+        const touchDuration = Date.now() - touchStartTime
+        const moveDistance = Math.abs(touchEndY - touchStartY)
+        
+        // 🎯 只有移动距离 < 10px 且时长 < 300ms 才算点击
+        if (moveDistance < 10 && touchDuration < 300) {
+          console.log(`👆 ${name} 真实点击触发`)
+          handleCardClick(target, e)
+        } else {
+          console.log(`⚠️ ${name} 滚动忽略 (移动${moveDistance}px, 时长${touchDuration}ms)`)
+        }
       }, { passive: false })
       
-      // 原生触摸事件
-      ref.value.addEventListener('touchend', (e) => {
-        console.log(`👆 ${name} 触摸触发`)
+      // 原生点击事件 (桌面端)
+      ref.value.addEventListener('click', (e) => {
+        console.log(`🎯 ${name} 点击触发`)
         handleCardClick(target, e)
       }, { passive: false })
       
