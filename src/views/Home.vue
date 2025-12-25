@@ -123,7 +123,9 @@
             <div v-if="isAdmin" class="drag-handle" title="拖拽调整顺序">
               <el-icon><Rank /></el-icon>
             </div>
-            <div class="series-content" @click="goToProducts(series)">
+            <div class="series-content" 
+                 @click="goToProducts(series)"
+                 @touchend="goToProducts(series)">
               <div class="series-image">
                 <img :src="series.image" :alt="series.name" />
               </div>
@@ -150,7 +152,10 @@
         
         <div class="core-agents-grid">
           <!-- 左侧: 明升企业智能体 -->
-          <div class="core-agent-card mingsheng-agent" @click="scrollToAgents">
+          <div class="core-agent-card mingsheng-agent" 
+               @click="handleCardClick('agents', $event)"
+               @touchend.prevent="handleCardClick('agents', $event)"
+               style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
             <div class="card-corner-badge">企业智能体</div>
             <!-- 返回主页按钮 -->
             <div class="card-back-home">
@@ -212,14 +217,17 @@
               </div>
             </div>
             
-            <el-button type="primary" size="large" class="agent-card-action" @click.stop="scrollToAgents">
+            <el-button type="primary" size="large" class="agent-card-action" @click.stop="handleCardClick('agents', $event)">
               <el-icon><Collection /></el-icon>
               查看全部智能体
             </el-button>
           </div>
           
           <!-- 右侧: AI国际营销中台 -->
-          <div class="core-agent-card marketing-hub" @click="$router.push('/ai-product-selector')">
+          <div class="core-agent-card marketing-hub" 
+               @click="handleCardClick('marketing', $event)"
+               @touchend.prevent="handleCardClick('marketing', $event)"
+               style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
             <div class="card-corner-badge marketing">国际营销</div>
             <!-- 返回主页按钮 -->
             <div class="card-back-home">
@@ -282,7 +290,7 @@
               <span class="case-text">某汽车企业：线索转化 <strong>+68%</strong>，订单增长 <strong>2.3倍</strong></span>
             </div>
             
-            <el-button type="success" size="large" class="agent-card-action" @click.stop="$router.push('/ai-product-selector')">
+            <el-button type="success" size="large" class="agent-card-action" @click.stop="handleCardClick('marketing', $event)">
               <el-icon><Promotion /></el-icon>
               立即体验营销中台
             </el-button>
@@ -300,7 +308,10 @@
         </div>
         
         <!-- 单个大卡片容器 -->
-        <div class="workflow-hub-card" @click="showWorkflowPlatforms = true">
+        <div class="workflow-hub-card" 
+             @click="handleCardClick('workflow', $event)"
+             @touchend.prevent="handleCardClick('workflow', $event)"
+             style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
           <div class="hub-card-header">
             <div class="hub-icon">
               <el-icon :size="40"><Operation /></el-icon>
@@ -343,7 +354,7 @@
           </div>
           
           <div class="hub-card-footer">
-            <el-button type="primary" size="large" @click.stop="showWorkflowPlatforms = true">
+            <el-button type="primary" size="large" @click.stop="handleCardClick('workflow', $event)">
               <el-icon><Connection /></el-icon>
               查看所有平台
             </el-button>
@@ -953,6 +964,16 @@ const openToolLink = (url) => {
 // AI智能体数据（移除工具选型和工单管理）
 const aiAgents = ref([
   { 
+    id: 1, 
+    name: '企业知识库', 
+    description: 'AI企业知识管理系统 - 训练AI助手，智能问答，业务知识库分类管理与检索', 
+    icon: 'FolderOpened',
+    tags: ['知识管理', '智能问答', 'AI训练'],
+    path: '/ai-knowledge',
+    badge: '新上线',
+    category: 'knowledge'
+  },
+  { 
     id: 2, 
     name: '数字监控驾驶舱', 
     description: '可视化数字监控中心，实时监控设备状态、维护流程、零配件订货状态', 
@@ -1195,6 +1216,31 @@ const openExternalLink = (url) => {
   window.open(url, '_blank')
 }
 
+// 🔧 统一卡片点击处理 - 兼容手机端触摸事件
+const handleCardClick = (target, event) => {
+  // 阻止默认行为和事件冒泡
+  if (event) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+  
+  console.log('卡片点击:', target)
+  
+  switch(target) {
+    case 'agents':
+      router.push('/ai-agents')
+      break
+    case 'marketing':
+      router.push('/ai-product-selector')
+      break
+    case 'workflow':
+      showWorkflowPlatforms.value = true
+      break
+    default:
+      console.warn('未知的卡片目标:', target)
+  }
+}
+
 // 滚动到智能体板块
 const scrollToAgents = () => {
   router.push('/ai-agents')
@@ -1248,6 +1294,9 @@ const initDraggable = () => {
 
 // 组件挂载后初始化拖拽
 onMounted(() => {
+  // 从API加载最新数据
+  cmsStore.loadFromAPI()
+  
   nextTick(() => {
     initDraggable()
   })
@@ -1427,15 +1476,26 @@ onMounted(() => {
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   border: 1px solid #e8e8e8;
   position: relative;
+  /* 🔧 手机端触摸优化 */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
 }
 
 .series-content {
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .series-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+/* 🔧 手机端按压反馈 */
+.series-card:active {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* 管理员拖拽手柄 */
@@ -1648,6 +1708,12 @@ onMounted(() => {
   min-height: 650px;
   display: flex;
   flex-direction: column;
+  /* 🔧 手机端触摸优化 */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .core-agent-card::before {
@@ -1669,6 +1735,12 @@ onMounted(() => {
   transform: translateY(-12px);
   box-shadow: 0 20px 48px rgba(102, 126, 234, 0.25);
   border-color: rgba(102, 126, 234, 0.3);
+}
+
+/* 🔧 手机端按压反馈 */
+.core-agent-card:active {
+  transform: scale(0.98) translateY(-8px);
+  opacity: 0.95;
 }
 
 .core-agent-card:hover::before {
@@ -1958,6 +2030,11 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
   border: 3px solid transparent;
+  /* 🔧 手机端触摸优化 */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .workflow-hub-card::before {
@@ -1975,6 +2052,12 @@ onMounted(() => {
   transform: translateY(-12px);
   box-shadow: 0 24px 64px rgba(33, 150, 243, 0.25);
   border-color: rgba(33, 150, 243, 0.3);
+}
+
+/* 🔧 手机端按压反馈 */
+.workflow-hub-card:active {
+  transform: scale(0.98) translateY(-8px);
+  box-shadow: 0 16px 48px rgba(33, 150, 243, 0.2);
 }
 
 .workflow-hub-card:hover::before {
@@ -2830,13 +2913,13 @@ onMounted(() => {
 }
 
 .category-content {
-  padding: 24px;
+  padding: 18px; /* 从24px缩小到18px */
   background: #FAFAFA;
 }
 
-/* 子分类 */
+/* 子分类 - 缩小间距 */
 .sub-category-section {
-  margin-bottom: 32px;
+  margin-bottom: 24px; /* 从32px缩小到24px */
 }
 
 .sub-category-section:last-child {
@@ -2844,87 +2927,88 @@ onMounted(() => {
 }
 
 .sub-category-title {
-  font-size: 18px;
+  font-size: 16px; /* 从18px缩小到16px */
   font-weight: 600;
   color: #424242;
-  margin: 0 0 20px 0;
+  margin: 0 0 14px 0; /* 从20px缩小到14px */
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-bottom: 12px;
+  gap: 6px; /* 从8px缩小到6px */
+  padding-bottom: 10px; /* 从12px缩小到10px */
   border-bottom: 2px solid #E0E0E0;
 }
 
-/* 工具卡片网格 */
+/* 工具卡片网格 - 缩小并集中布局 */
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 从380px缩小到280px，增加每行卡片数 */
+  gap: 16px; /* 从20px缩小到16px */
+  max-width: 100%;
 }
 
 .tool-card {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 10px; /* 从12px缩小到10px */
+  padding: 14px; /* 从20px缩小到14px */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 稍微减小阴影 */
   transition: all 0.3s;
   cursor: pointer;
   border: 2px solid transparent;
 }
 
 .tool-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(25, 118, 210, 0.15);
+  transform: translateY(-3px); /* 从-4px缩小到-3px */
+  box-shadow: 0 6px 18px rgba(25, 118, 210, 0.15); /* 减小悬停阴影 */
   border-color: #42A5F5;
 }
 
 .tool-header {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 12px; /* 从16px缩小到12px */
+  margin-bottom: 12px; /* 从16px缩小到12px */
 }
 
 .tool-icon {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 40px; /* 从48px缩小到40px */
+  height: 40px; /* 从48px缩小到40px */
   background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 22px; /* 从28px缩小到22px */
 }
 
 .tool-meta h4 {
-  font-size: 18px;
+  font-size: 15px; /* 从18px缩小到15px */
   font-weight: 600;
   color: #1565C0;
-  margin: 0 0 6px 0;
+  margin: 0 0 4px 0; /* 从6px缩小到4px */
 }
 
 .tool-meta p {
-  font-size: 14px;
+  font-size: 12px; /* 从14px缩小到12px */
   color: #666;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4; /* 从1.5缩小到1.4 */
 }
 
 .tool-details {
   background: #F5F5F5;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
+  border-radius: 6px; /* 从8px缩小到6px */
+  padding: 10px; /* 从12px缩小到10px */
+  margin-bottom: 10px; /* 从12px缩小到10px */
 }
 
 .detail-row {
-  font-size: 13px;
+  font-size: 11px; /* 从13px缩小到11px */
   color: #424242;
-  margin-bottom: 8px;
+  margin-bottom: 6px; /* 从8px缩小到6px */
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px; /* 从6px缩小到4px */
 }
 
 .detail-row:last-child {
@@ -2934,7 +3018,7 @@ onMounted(() => {
 .detail-row .label {
   font-weight: 600;
   color: #1976D2;
-  min-width: 50px;
+  min-width: 45px; /* 从50px缩小到45px */
 }
 
 .detail-row .value {
@@ -2945,17 +3029,68 @@ onMounted(() => {
 .tool-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 16px;
+  gap: 4px; /* 从6px缩小到4px */
+  margin-bottom: 12px; /* 从16px缩小到12px */
 }
 
 .tool-footer {
   display: flex;
-  gap: 8px;
+  gap: 6px; /* 从8px缩小到6px */
 }
 
 .tool-footer .el-button {
   flex: 1;
+  font-size: 12px; /* 添加字体大小 */
+  padding: 6px 10px; /* 缩小按钮内边距 */
+}
+
+/* 工具卡片响应式优化 */
+@media (max-width: 1400px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* 中等屏幕 */
+  }
+}
+
+@media (max-width: 992px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* 平板屏幕 */
+    gap: 14px;
+  }
+  
+  .tool-card {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 手机屏幕 */
+    gap: 12px;
+  }
+  
+  .tool-card {
+    padding: 10px;
+  }
+  
+  .tool-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+  
+  .tool-meta h4 {
+    font-size: 14px;
+  }
+  
+  .tool-meta p {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tools-grid {
+    grid-template-columns: 1fr; /* 小屏幕单列显示 */
+  }
 }
 
 /* 工具详情弹窗 */
