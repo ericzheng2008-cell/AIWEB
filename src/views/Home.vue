@@ -1301,6 +1301,12 @@ const initDraggable = () => {
 const bindNativeEvents = () => {
   console.log('🚀 绑定原生触摸事件...')
   
+  // 🔍 检测屏幕方向
+  const orientation = window.screen.orientation?.type || 
+                     (window.innerHeight > window.innerWidth ? 'portrait-primary' : 'landscape-primary')
+  console.log(`📱 当前屏幕方向: ${orientation}`)
+  console.log(`📐 屏幕尺寸: ${window.innerWidth} x ${window.innerHeight}`)
+  
   const cards = [
     { ref: agentsCard, target: 'agents', name: '智能体卡片' },
     { ref: marketingCard, target: 'marketing', name: '营销卡片' },
@@ -1311,15 +1317,28 @@ const bindNativeEvents = () => {
     if (ref.value) {
       console.log(`✅ 正在绑定: ${name}`)
       
+      // 🔍 输出卡片位置信息
+      const rect = ref.value.getBoundingClientRect()
+      console.log(`📍 ${name} 位置:`, {
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        zIndex: window.getComputedStyle(ref.value).zIndex
+      })
+      
       // 原生点击事件
       ref.value.addEventListener('click', (e) => {
-        console.log(`🎯 ${name} 原生点击触发`)
+        console.log(`🎯 ${name} 原生点击触发 (${orientation})`)
+        console.log(`👆 点击坐标: (${e.clientX}, ${e.clientY})`)
         handleCardClick(target, e)
       }, { passive: false })
       
       // 原生触摸事件
       ref.value.addEventListener('touchend', (e) => {
-        console.log(`👆 ${name} 触摸结束触发`)
+        const touch = e.changedTouches[0]
+        console.log(`👆 ${name} 触摸结束触发 (${orientation})`)
+        console.log(`👆 触摸坐标: (${touch.clientX}, ${touch.clientY})`)
         handleCardClick(target, e)
       }, { passive: false })
       
@@ -1339,6 +1358,27 @@ const workflowCard = ref(null)
 onMounted(() => {
   // 从API加载最新数据
   cmsStore.loadFromAPI()
+  
+  // 🔍 全局点击事件监听 - 调试用
+  document.addEventListener('click', (e) => {
+    console.log('🌍 全局点击事件:', {
+      target: e.target.className,
+      tagName: e.target.tagName,
+      x: e.clientX,
+      y: e.clientY
+    })
+  }, true) // 使用捕获阶段
+  
+  // 🔍 全局触摸事件监听
+  document.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0]
+    console.log('🌍 全局触摸开始:', {
+      target: e.target.className,
+      tagName: e.target.tagName,
+      x: touch.clientX,
+      y: touch.clientY
+    })
+  }, true)
   
   nextTick(() => {
     initDraggable()

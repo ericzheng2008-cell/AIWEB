@@ -1,4 +1,4 @@
-/* 移动端卡片修复 - 激进版本 */
+/* 移动端卡片修复 - 超激进调试版本 */
 
 /* 1. 基础触摸优化 - 确保所有卡片可点击 */
 .series-card,
@@ -10,6 +10,18 @@
   -webkit-tap-highlight-color: rgba(64, 158, 255, 0.5) !important;
   touch-action: manipulation !important;
   pointer-events: auto !important;
+  /* 🔥 强制最高层级 */
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+/* 🔥 竖屏专属修复 - 强制卡片在最上层 */
+@media screen and (orientation: portrait) {
+  .core-agent-card,
+  .series-card {
+    z-index: 999 !important;
+    isolation: isolate !important;
+  }
 }
 
 /* 2. 移动端专属 - 强制启用点击 */
