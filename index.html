@@ -31,7 +31,7 @@
 </head>
 <body>
   <div id="app"></div>
-  <script type="module" src="/src/main.js?v=20251225-竖屏修复v2"></script>
+  <script type="module" src="/src/main.js?v=20251225-修复完成"></script>
   
   <!-- 🔧 Eruda 移动端调试工具 - 手机上也能看控制台! -->
   <script src="https://cdn.jsdelivr.net/npm/eruda@3.0.1/eruda.min.js"></script>
@@ -50,47 +50,9 @@
     // 在移动设备上自动启动 Eruda
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       eruda.init()
-      console.log('📱 Eruda 移动端调试工具已启动 v3.0')
+      console.log('📱 Eruda 移动端调试工具已启动 v4.0')
       console.log('💡 点击右下角图标打开控制台')
-      console.log('🔄 版本: 20251225-竖屏修复v2')
-      
-      // 🔥 全局强制监听 - 绕过Vue
-      setTimeout(() => {
-        console.log('🔥 开始全局强制监听...')
-        
-        // 监听所有点击
-        document.addEventListener('click', (e) => {
-          console.log('🌍 全局点击:', e.target.className || e.target.tagName)
-        }, true)
-        
-        // 监听所有触摸
-        document.addEventListener('touchstart', (e) => {
-          console.log('🌍 全局触摸开始:', e.target.className || e.target.tagName)
-        }, true)
-        
-        document.addEventListener('touchend', (e) => {
-          console.log('🌍 全局触摸结束:', e.target.className || e.target.tagName)
-          
-          // 🔥 检测是否点击了智能体卡片
-          const target = e.target
-          const card = target.closest('.core-agent-card')
-          if (card) {
-            console.log('✅ 检测到智能体卡片点击！')
-            console.log('📍 卡片类名:', card.className)
-            
-            // 🔥 强制跳转
-            if (card.className.includes('marketing')) {
-              console.log('🚀 强制跳转到: /marketing-hub')
-              window.location.href = '#/marketing-hub'
-            } else {
-              console.log('🚀 强制跳转到: /ai-agents')
-              window.location.href = '#/ai-agents'
-            }
-          }
-        }, true)
-        
-        console.log('✅ 全局监听已启动！')
-      }, 2000)
+      console.log('✅ 竖屏卡片点击问题已修复')
     }
   </script>
 </body>
