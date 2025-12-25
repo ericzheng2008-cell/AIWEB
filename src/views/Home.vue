@@ -153,8 +153,8 @@
         <div class="core-agents-grid">
           <!-- 左侧: 明升企业智能体 -->
           <div class="core-agent-card mingsheng-agent" 
-               @click="handleCardClick('agents', $event)"
-               @touchstart="handleCardClick('agents', $event)"
+               ref="agentsCard"
+               data-target="agents"
                style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
             <div class="card-corner-badge">企业智能体</div>
             <!-- 返回主页按钮 -->
@@ -225,8 +225,8 @@
           
           <!-- 右侧: AI国际营销中台 -->
           <div class="core-agent-card marketing-hub" 
-               @click="handleCardClick('marketing', $event)"
-               @touchstart="handleCardClick('marketing', $event)"
+               ref="marketingCard"
+               data-target="marketing"
                style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
             <div class="card-corner-badge marketing">国际营销</div>
             <!-- 返回主页按钮 -->
@@ -309,8 +309,8 @@
         
         <!-- 单个大卡片容器 -->
         <div class="workflow-hub-card" 
-             @click="handleCardClick('workflow', $event)"
-             @touchstart="handleCardClick('workflow', $event)"
+             ref="workflowCard"
+             data-target="workflow"
              style="cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,0.1); touch-action: manipulation;">
           <div class="hub-card-header">
             <div class="hub-icon">
@@ -1297,6 +1297,44 @@ const initDraggable = () => {
   })
 }
 
+// 🔧 原生事件绑定 - 完全绕过Vue事件系统 (终极方案)
+const bindNativeEvents = () => {
+  console.log('🚀 绑定原生触摸事件...')
+  
+  const cards = [
+    { ref: agentsCard, target: 'agents', name: '智能体卡片' },
+    { ref: marketingCard, target: 'marketing', name: '营销卡片' },
+    { ref: workflowCard, target: 'workflow', name: '工作平台卡片' }
+  ]
+  
+  cards.forEach(({ ref, target, name }) => {
+    if (ref.value) {
+      console.log(`✅ 正在绑定: ${name}`)
+      
+      // 原生点击事件
+      ref.value.addEventListener('click', (e) => {
+        console.log(`🎯 ${name} 原生点击触发`)
+        handleCardClick(target, e)
+      }, { passive: false })
+      
+      // 原生触摸事件
+      ref.value.addEventListener('touchend', (e) => {
+        console.log(`👆 ${name} 触摸结束触发`)
+        handleCardClick(target, e)
+      }, { passive: false })
+      
+      console.log(`✅ ${name} 事件绑定完成`)
+    } else {
+      console.warn(`❌ ${name} DOM未找到`)
+    }
+  })
+}
+
+// 声明 ref
+const agentsCard = ref(null)
+const marketingCard = ref(null)
+const workflowCard = ref(null)
+
 // 组件挂载后初始化拖拽
 onMounted(() => {
   // 从API加载最新数据
@@ -1304,6 +1342,8 @@ onMounted(() => {
   
   nextTick(() => {
     initDraggable()
+    // 🔥 绑定原生事件
+    bindNativeEvents()
   })
 })
 
