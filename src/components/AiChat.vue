@@ -775,7 +775,12 @@ watch(() => chatStore.messages.length, () => {
 <style scoped>
 .ai-chat-container {
   position: fixed;
-  z-index: 9999;
+  z-index: 999; /* 🔧 降低层级，避免遮挡页面内容 */
+  pointer-events: none; /* 🔧 容器本身不拦截点击 */
+}
+
+.ai-chat-container > * {
+  pointer-events: auto; /* ✅ 但内部元素可以点击 */
 }
 
 /* 遮罩层 */
@@ -786,7 +791,8 @@ watch(() => chatStore.messages.length, () => {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.1);
-  z-index: 9998;
+  z-index: 998; /* 🔧 降低遮罩层级 */
+  pointer-events: auto; /* ✅ 遮罩需要拦截点击 */
 }
 
 /* 遮罩层淡入淡出动画 */
