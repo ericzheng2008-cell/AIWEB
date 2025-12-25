@@ -31,14 +31,32 @@
     -webkit-user-select: none !important;
   }
   
-  /* 图片、视频不阻止父元素点击 */
-  img, video, iframe {
+  /* 🔧 只禁用卡片内的图片、视频点击，保留卡片本身的交互 */
+  .series-card img,
+  .series-card video,
+  .series-card iframe,
+  .core-agent-card img,
+  .core-agent-card video,
+  .core-agent-card iframe,
+  .featured-product-card img,
+  .featured-product-card video,
+  .featured-product-card iframe {
     pointer-events: none !important;
+  }
+  
+  /* ✅ 确保卡片容器在竖屏和横屏都能响应点击 */
+  .series-card,
+  .core-agent-card,
+  .featured-product-card,
+  .agent-card {
+    position: relative !important;
+    z-index: 1 !important;
   }
   
   /* 按钮必须可点击 */
   button, a, .el-button, [role="button"] {
     pointer-events: auto !important;
+    z-index: 2 !important;
   }
 }
 
