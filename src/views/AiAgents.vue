@@ -2,7 +2,7 @@
   <div class="ai-agents-page">
     <Header />
     
-    <!-- 椤堕儴Banner - 浼樺寲鐗?-->
+    <!-- 顶部Banner - 优化版 -->
     <section class="hero-section">
       <div class="hero-background">
         <div class="hero-particles"></div>
@@ -11,61 +11,60 @@
       <div class="hero-content">
         <div class="hero-badge" data-aos="fade-down">
           <el-icon><MagicStick /></el-icon>
-          <span>AI椹卞姩鐨勬櫤鑳藉喅绛?/span>
+          <span>AI驱动的智能决策</span>
         </div>
-          <h1 data-aos="fade-up" data-aos-delay="100">鏄庡崌浼佷笟鏅鸿兘浣撶郴缁?/h1>
-        <p class="subtitle" data-aos="fade-up" data-aos-delay="200">鍩轰簬浜哄伐鏅鸿兘鐨勪笓涓氬伐涓氳В鍐虫柟妗?| 鑷富瀛︿範路涓诲姩鎬濊€兟锋寔缁繘鍖?/p>
+          <h1 data-aos="fade-up" data-aos-delay="100">明升企业智能体系统</h1>
+        <p class="subtitle" data-aos="fade-up" data-aos-delay="200">基于人工智能的专业工业解决方案 | 自主学习·主动思考·持续进化</p>
         <p class="description" data-aos="fade-up" data-aos-delay="300">
-          閫氳繃AI鎶€鏈彁鍗囧伐涓氭晥鐜囷紝鎻愪緵鏅鸿兘鍖栫殑宸ュ叿閫夊瀷銆佽澶囩洃鎺с€佹晠闅滆拷韪拰鏁版嵁鍒嗘瀽鏈嶅姟
+          通过AI技术提升工业效率，提供智能化的工具选型、设备监控、故障追踪和数据分析服务
         </p>
         <div class="hero-stats" data-aos="fade-up" data-aos-delay="400">
           <div class="stat-box">
             <div class="stat-number">10+</div>
-            <div class="stat-text">鏅鸿兘浣?/div>
+            <div class="stat-text">智能体</div>
           </div>
           <div class="stat-box">
             <div class="stat-number">98%</div>
-            <div class="stat-text">鍑嗙‘鐜?/div>
+            <div class="stat-text">准确率</div>
           </div>
           <div class="stat-box">
             <div class="stat-number">24/7</div>
-            <div class="stat-text">鍦ㄧ嚎鏈嶅姟</div>
+            <div class="stat-text">在线服务</div>
           </div>
           <div class="stat-box">
             <div class="stat-number">1000+</div>
-            <div class="stat-text">浼佷笟浣跨敤</div>
+            <div class="stat-text">企业使用</div>
           </div>
         </div>
         <div class="hero-actions" data-aos="fade-up" data-aos-delay="500">
           <el-button type="primary" size="large" round @click="scrollToAgents">
             <el-icon><Pointer /></el-icon>
-            鎺㈢储鏅鸿兘浣?
+            探索智能体
           </el-button>
           <el-button size="large" round @click="showTour = true">
             <el-icon><VideoPlay /></el-icon>
-            瑙傜湅婕旂ず
+            观看演示
           </el-button>
         </div>
       </div>
     </section>
 
-    <!-- 鏅鸿兘浣撳垪琛?-->
+    <!-- 智能体列表 -->
     <section class="agents-section" ref="agentsSection">
       <div class="container">
-        <!-- 鍒嗙被鏍囩 -->
+        <!-- 分类标签 -->
         <div class="category-tabs" data-aos="fade-up">
           <el-radio-group v-model="selectedCategory" size="large">
-            <el-radio-button label="all">鍏ㄩ儴鏅鸿兘浣?/el-radio-button>
-            <el-radio-button label="knowledge">鐭ヨ瘑绠＄悊</el-radio-button>
-            <el-radio-button label="tool">宸ュ叿閫夊瀷</el-radio-button>
-            <el-radio-button label="equipment">璁惧绠＄悊</el-radio-button>
-            <el-radio-button label="analysis">鏁版嵁鍒嗘瀽</el-radio-button>
-            <el-radio-button label="marketing">钀ラ攢绠＄悊</el-radio-button>
-            <el-radio-button label="manufacturing">鏅鸿兘鍒堕€?/el-radio-button>
+            <el-radio-button label="all">全部智能体</el-radio-button>
+            <el-radio-button label="tool">工具选型</el-radio-button>
+            <el-radio-button label="equipment">设备管理</el-radio-button>
+            <el-radio-button label="analysis">数据分析</el-radio-button>
+            <el-radio-button label="marketing">营销管理</el-radio-button>
+            <el-radio-button label="manufacturing">智能制造</el-radio-button>
           </el-radio-group>
           <el-input 
             v-model="searchKeyword" 
-            placeholder="鎼滅储鏅鸿兘浣?.." 
+            placeholder="搜索智能体..." 
             clearable
             style="width: 300px;">
             <template #prefix>
@@ -75,68 +74,10 @@
         </div>
         
         <div class="agents-grid">
-          <!-- 馃啎 浼佷笟鐭ヨ瘑搴?-->
+          <!-- 数字监控驾驶舱 -->
           <div 
             class="agent-card highlight" 
-            data-path="/ai-knowledge"
-            @mouseenter="onCardHover($event)"
-            @mouseleave="onCardLeave($event)"
-            data-aos="fade-up"
-            data-aos-delay="100"
-            data-category="knowledge">
-            <div class="badge badge-new">
-              <el-icon><Star /></el-icon>
-              鏂颁笂绾?
-            </div>
-            <div class="card-glow"></div>
-            <div class="agent-icon">
-              <el-icon :size="64"><FolderOpened /></el-icon>
-            </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
-              <el-button 
-                class="help-btn" 
-                circle 
-                size="small" 
-                @click.stop="showHelp('knowledge-manager')">
-                <el-icon><QuestionFilled /></el-icon>
-              </el-button>
-            </el-tooltip>
-            <h2>浼佷笟鐭ヨ瘑搴?/h2>
-            <p class="agent-desc">AI浼佷笟鐭ヨ瘑绠＄悊绯荤粺 - 璁粌AI鍔╂墜锛屾櫤鑳介棶绛旓紝涓氬姟鐭ヨ瘑搴撳垎绫荤鐞嗕笌妫€绱?/p>
-            <div class="agent-features">
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>鐭ヨ瘑绠＄悊</span>
-              </div>
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>鏅鸿兘闂瓟</span>
-              </div>
-              <div class="feature-item">
-                <el-icon><Checked /></el-icon>
-                <span>AI璁粌</span>
-              </div>
-            </div>
-            <div class="agent-stats">
-              <div class="stat-item">
-                <div class="stat-value">7+</div>
-                <div class="stat-label">鐭ヨ瘑鍒嗙被</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">24/7</div>
-                <div class="stat-label">鏅鸿兘闂瓟</div>
-              </div>
-            </div>
-            <el-button type="primary" size="large" class="action-btn">
-              杩涘叆鐭ヨ瘑搴?
-              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
-            </el-button>
-          </div>
-
-          <!-- 鏁板瓧鐩戞帶椹鹃┒鑸?-->
-          <div 
-            class="agent-card highlight" 
-            data-path="/equipment-dashboard"
+            @click="goToAgent('/equipment-dashboard')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -144,13 +85,13 @@
             data-category="equipment">
             <div class="badge badge-new">
               <el-icon><Star /></el-icon>
-              鏂板姛鑳?
+              新功能
             </div>
             <div class="card-glow"></div>
             <div class="agent-icon">
               <el-icon :size="64"><DataAnalysis /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -159,42 +100,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鏁板瓧鐩戞帶椹鹃┒鑸?/h2>
-            <p class="agent-desc">鍙鍖栨暟瀛楃洃鎺т腑蹇冿紝瀹炴椂鐩戞帶璁惧鐘舵€併€佺淮鎶ゆ祦绋嬨€侀浂閰嶄欢璁㈣揣鐘舵€佺殑涓€绔欏紡绠＄悊骞冲彴</p>
+            <h2>数字监控驾驶舱</h2>
+            <p class="agent-desc">可视化数字监控中心，实时监控设备状态、维护流程、零配件订货状态的一站式管理平台</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>瀹炴椂鐩戞帶</span>
+                <span>实时监控</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鍙鍖栨暟鎹?/span>
+                <span>可视化数据</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鏅鸿兘棰勮</span>
+                <span>智能预警</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">3涓?/div>
-                <div class="stat-label">鐢ㄦ埛瑙嗚</div>
+                <div class="stat-value">3个</div>
+                <div class="stat-label">用户视角</div>
               </div>
               <div class="stat-item">
                 <div class="stat-value">24/7</div>
-                <div class="stat-label">瀹炴椂鐩戞帶</div>
+                <div class="stat-label">实时监控</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              杩涘叆椹鹃┒鑸?
+              进入驾驶舱
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 璁惧鐢熷懡鍛ㄦ湡绠＄悊 -->
+          <!-- 设备生命周期管理 -->
           <div 
             class="agent-card" 
-            data-path="/equipment-lifecycle"
+            @click="goToAgent('/equipment-lifecycle')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -204,7 +145,7 @@
             <div class="agent-icon">
               <el-icon :size="64"><Box /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -213,42 +154,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>璁惧鍏ㄧ敓鍛藉懆鏈熺鐞?/h2>
-            <p class="agent-desc">鍏抽敭璁惧璧勪骇绠＄悊銆丷OI鍒嗘瀽銆佷繚鍏婚娴嬨€佹垚鏈紭鍖栫殑鍏ㄦ柟浣嶈В鍐虫柟妗?/p>
+            <h2>设备全生命周期管理</h2>
+            <p class="agent-desc">关键设备资产管理、ROI分析、保养预测、成本优化的全方位解决方案</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>璁惧妗ｆ</span>
+                <span>设备档案</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>ROI鍒嗘瀽</span>
+                <span>ROI分析</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>AI淇濆吇棰勬祴</span>
+                <span>AI保养预测</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">6澶х被</div>
-                <div class="stat-label">鍏抽敭璁惧</div>
+                <div class="stat-value">6大类</div>
+                <div class="stat-label">关键设备</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">30%鈫?/div>
-                <div class="stat-label">闄嶆湰绌洪棿</div>
+                <div class="stat-value">30%↓</div>
+                <div class="stat-label">降本空间</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              绔嬪嵆浣跨敤
+              立即使用
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 鎷х揣鏇茬嚎鍒嗘瀽 -->
+          <!-- 拧紧曲线分析 -->
           <div 
             class="agent-card" 
-            data-path="/curve-analysis"
+            @click="goToAgent('/curve-analysis')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -258,7 +199,7 @@
             <div class="agent-icon">
               <el-icon :size="64"><TrendCharts /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -267,42 +208,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鎷х揣鏇茬嚎瀵规瘮鍒嗘瀽</h2>
-            <p class="agent-desc">涓撲笟鐨勬嫥绱ф洸绾垮垎鏋愬伐鍏凤紝鏀寔澶氭洸绾垮姣斻€佹櫤鑳借瘖鏂拰宸ヨ壓浼樺寲寤鸿</p>
+            <h2>拧紧曲线对比分析</h2>
+            <p class="agent-desc">专业的拧紧曲线分析工具，支持多曲线对比、智能诊断和工艺优化建议</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鏇茬嚎瀵规瘮</span>
+                <span>曲线对比</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>AI璇婃柇</span>
+                <span>AI诊断</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>宸ヨ壓寤鸿</span>
+                <span>工艺建议</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
                 <div class="stat-value">92%</div>
-                <div class="stat-label">璇婃柇鍑嗙‘鐜?/div>
+                <div class="stat-label">诊断准确率</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">5绉?/div>
-                <div class="stat-label">鍒嗘瀽閫熷害</div>
+                <div class="stat-value">5秒</div>
+                <div class="stat-label">分析速度</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              绔嬪嵆浣跨敤
+              立即使用
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 鎷х揣鏁版嵁閲囬泦鍒嗘瀽 -->
+          <!-- 拧紧数据采集分析 -->
           <div 
             class="agent-card" 
-            data-path="/tightening-data"
+            @click="goToAgent('/tightening-data')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -311,9 +252,9 @@
             <div class="card-glow"></div>
             <div class="agent-icon agent-icon-featured">
               <el-icon :size="64"><DataAnalysis /></el-icon>
-              <el-tag type="danger" size="small" class="new-badge">鏂板姛鑳?/el-tag>
+              <el-tag type="danger" size="small" class="new-badge">新功能</el-tag>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -322,8 +263,8 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鎷х揣鏁版嵁閲囬泦鍒嗘瀽</h2>
-            <p class="agent-desc">鍩轰簬Open Protocol鍗忚锛屽疄鏃堕噰闆哖F4000/PF8000鎺у埗鍣ㄦ暟鎹紝鎻愪緵Cpk鍒嗘瀽銆佸紓甯告娴嬪拰鏅鸿兘鎶ヨ</p>
+            <h2>拧紧数据采集分析</h2>
+            <p class="agent-desc">基于Open Protocol协议，实时采集PF4000/PF8000控制器数据，提供Cpk分析、异常检测和智能报警</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
@@ -331,33 +272,33 @@
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>Cpk鍒嗘瀽</span>
+                <span>Cpk分析</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鏅鸿兘鎶ヨ</span>
+                <span>智能报警</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
                 <div class="stat-value">10000</div>
-                <div class="stat-label">鏁版嵁瀹归噺</div>
+                <div class="stat-label">数据容量</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">瀹炴椂</div>
-                <div class="stat-label">鏁版嵁閲囬泦</div>
+                <div class="stat-value">实时</div>
+                <div class="stat-label">数据采集</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              绔嬪嵆浣跨敤
+              立即使用
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 浜у搧鎶€鏈攢鍞皬璇惧爞 -->
+          <!-- 产品技术销售小课堂 -->
           <div 
             class="agent-card" 
-            data-path="/tech-classroom"
+            @click="goToAgent('/tech-classroom')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -367,7 +308,7 @@
             <div class="agent-icon">
               <el-icon :size="64"><Reading /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -376,42 +317,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>浜у搧鎶€鏈攢鍞皬璇惧爞</h2>
-            <p class="agent-desc">鎷х揣宸ュ叿浜у搧鎶€鏈煡璇嗗簱锛屾兜鐩栦骇鍝佷粙缁嶃€佹妧鏈鏍笺€佸簲鐢ㄦ渚嬪拰甯歌闂瑙ｇ瓟</p>
+            <h2>产品技术销售小课堂</h2>
+            <p class="agent-desc">拧紧工具产品技术知识库，涵盖产品介绍、技术规格、应用案例和常见问题解答</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>浜у搧鐭ヨ瘑</span>
+                <span>产品知识</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鎶€鏈鏍?/span>
+                <span>技术规格</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>搴旂敤妗堜緥</span>
+                <span>应用案例</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
                 <div class="stat-value">100+</div>
-                <div class="stat-label">鐭ヨ瘑鏉＄洰</div>
+                <div class="stat-label">知识条目</div>
               </div>
               <div class="stat-item">
                 <div class="stat-value">24/7</div>
-                <div class="stat-label">鍦ㄧ嚎瀛︿範</div>
+                <div class="stat-label">在线学习</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              杩涘叆璇惧爞
+              进入课堂
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 鎷х揣宸ヨ壓鏀硅繘涓庨獙璇佹櫤鑳戒綋 -->
+          <!-- 拧紧工艺改进与验证智能体 -->
           <div 
             class="agent-card highlight" 
-            data-path="/process-verification"
+            @click="goToAgent('/process-verification')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -419,13 +360,13 @@
             data-category="analysis">
             <div class="badge badge-new">
               <el-icon><Star /></el-icon>
-              鏂板姛鑳?
+              新功能
             </div>
             <div class="card-glow"></div>
             <div class="agent-icon agent-icon-featured">
               <el-icon :size="64"><Setting /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -434,42 +375,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鎷х揣宸ヨ壓鏀硅繘涓庨獙璇?/h2>
-            <p class="agent-desc">鍩轰簬PSE鎷х揣绋嬪簭鐨勬櫤鑳藉伐鑹哄垎鏋愪笌鍙傛暟鎺ㄨ崘绯荤粺锛屾敮鎸佹壄鐭┿€佽搴︺€丏S绛夊绉嶆帶鍒剁瓥鐣?/p>
+            <h2>拧紧工艺改进与验证</h2>
+            <p class="agent-desc">基于PSE拧紧程序的智能工艺分析与参数推荐系统，支持扭矩、角度、DS等多种控制策略</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>PSE鍙傛暟鎺ㄨ崘</span>
+                <span>PSE参数推荐</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>澶氱瓥鐣ュ垎鏋?/span>
+                <span>多策略分析</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鏁版嵁搴撶鐞?/span>
+                <span>数据库管理</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">3绉?/div>
-                <div class="stat-label">鎺у埗绛栫暐</div>
+                <div class="stat-value">3种</div>
+                <div class="stat-label">控制策略</div>
               </div>
               <div class="stat-item">
                 <div class="stat-value">95%</div>
-                <div class="stat-label">鎺ㄨ崘鍑嗙‘鐜?/div>
+                <div class="stat-label">推荐准确率</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              绔嬪嵆浣跨敤
+              立即使用
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 鏁呴殰宸ュ崟绠＄悊鏅鸿兘浣?-->
+          <!-- 故障工单管理智能体 -->
           <div 
             class="agent-card" 
-            data-path="/fault-tracking"
+            @click="goToAgent('/fault-tracking')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -479,7 +420,7 @@
             <div class="agent-icon">
               <el-icon :size="64"><List /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -488,42 +429,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鏁呴殰宸ュ崟绠＄悊</h2>
-            <p class="agent-desc">鍏ㄦ祦绋嬪伐鍗曠鐞嗙郴缁燂紝浠庡垱寤哄伐鍗曞埌缁翠慨杩借釜锛屽疄鐜板畬鏁寸殑鏁呴殰澶勭悊闂幆绠＄悊</p>
+            <h2>故障工单管理</h2>
+            <p class="agent-desc">全流程工单管理系统，从创建工单到维修追踪，实现完整的故障处理闭环管理</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>宸ュ崟鍒涘缓</span>
+                <span>工单创建</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>杩涘害杩借釜</span>
+                <span>进度追踪</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鍘嗗彶璁板綍</span>
+                <span>历史记录</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">2灏忔椂</div>
-                <div class="stat-label">骞冲潎鍝嶅簲</div>
+                <div class="stat-value">2小时</div>
+                <div class="stat-label">平均响应</div>
               </div>
               <div class="stat-item">
                 <div class="stat-value">95%</div>
-                <div class="stat-label">鎸夋椂瀹屾垚鐜?/div>
+                <div class="stat-label">按时完成率</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              杩涘叆绯荤粺
+              进入系统
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 鏄庡崌AICRM鏅鸿兘鍔╂墜 -->
+          <!-- 明升AICRM智能助手 -->
           <div 
             class="agent-card highlight" 
-            data-path="/mingsheng-aicrm"
+            @click="goToAgent('/mingsheng-aicrm')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -531,13 +472,13 @@
             data-category="marketing">
             <div class="badge badge-hot">
               <el-icon><Star /></el-icon>
-              AI钀ラ攢
+              AI营销
             </div>
             <div class="card-glow"></div>
             <div class="agent-icon">
               <el-icon :size="64"><User /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -546,42 +487,42 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鏄庡崌AICRM鏅鸿兘鍔╂墜</h2>
-            <p class="agent-desc">杞婚噺鍖栨櫤鑳藉鎴峰叧绯荤鐞嗙郴缁燂紝AI椹卞姩鍟嗘満绠＄悊銆佸鎴?60掳鐢诲儚銆佸崐鑷姩鎵ц</p>
+            <h2>明升AICRM智能助手</h2>
+            <p class="agent-desc">轻量化智能客户关系管理系统，AI驱动商机管理、客户360°画像、半自动执行</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>瀹㈡埛绠＄悊</span>
+                <span>客户管理</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>AI棰勬祴</span>
+                <span>AI预测</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鍟嗘満璺熻繘</span>
+                <span>商机跟进</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">360掳</div>
-                <div class="stat-label">瀹㈡埛鐢诲儚</div>
+                <div class="stat-value">360°</div>
+                <div class="stat-label">客户画像</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">AI椹卞姩</div>
-                <div class="stat-label">鏅鸿兘棰勬祴</div>
+                <div class="stat-value">AI驱动</div>
+                <div class="stat-label">智能预测</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              杩涘叆绯荤粺
+              进入系统
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
 
-          <!-- 鏄庡崌AIMES鍔╂墜 -->
+          <!-- 明升AIMES助手 -->
           <div 
             class="agent-card highlight" 
-            data-path="/mingsheng-aicrm?tab=aimes"
+            @click="goToAgent('/mingsheng-aicrm?tab=aimes')"
             @mouseenter="onCardHover($event)"
             @mouseleave="onCardLeave($event)"
             data-aos="fade-up"
@@ -589,13 +530,13 @@
             data-category="manufacturing">
             <div class="badge badge-new">
               <el-icon><Star /></el-icon>
-              鏂板姛鑳?
+              新功能
             </div>
             <div class="card-glow"></div>
             <div class="agent-icon">
               <el-icon :size="64"><Setting /></el-icon>
             </div>
-            <el-tooltip content="鏌ョ湅浣跨敤鏁欑▼" placement="top">
+            <el-tooltip content="查看使用教程" placement="top">
               <el-button 
                 class="help-btn" 
                 circle 
@@ -604,57 +545,57 @@
                 <el-icon><QuestionFilled /></el-icon>
               </el-button>
             </el-tooltip>
-            <h2>鏄庡崌AIMES鍔╂墜</h2>
-            <p class="agent-desc">AI MES绯荤粺 - 鐢熶骇鐜板満鎰熺煡銆佹櫤鑳芥帓浜с€佽川閲忔帶鍒躲€佽澶囨櫤鑳借繍缁?/p>
+            <h2>明升AIMES助手</h2>
+            <p class="agent-desc">AI MES系统 - 生产现场感知、智能排产、质量控制、设备智能运维</p>
             <div class="agent-features">
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>鏅鸿兘鍒堕€?/span>
+                <span>智能制造</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>MES绯荤粺</span>
+                <span>MES系统</span>
               </div>
               <div class="feature-item">
                 <el-icon><Checked /></el-icon>
-                <span>AI鎺掍骇</span>
+                <span>AI排产</span>
               </div>
             </div>
             <div class="agent-stats">
               <div class="stat-item">
-                <div class="stat-value">瀹炴椂</div>
-                <div class="stat-label">鐢熶骇鎰熺煡</div>
+                <div class="stat-value">实时</div>
+                <div class="stat-label">生产感知</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">鏅鸿兘</div>
-                <div class="stat-label">璐ㄩ噺鎺у埗</div>
+                <div class="stat-value">智能</div>
+                <div class="stat-label">质量控制</div>
               </div>
             </div>
             <el-button type="primary" size="large" class="action-btn">
-              杩涘叆绯荤粺
+              进入系统
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </div>
         </div>
 
-        <!-- 闄勫姞鍔熻兘鍗＄墖 -->
+        <!-- 附加功能卡片 -->
         <div class="additional-features">
-          <h2 class="section-title">鏇村鍔熻兘</h2>
+          <h2 class="section-title">更多功能</h2>
           <div class="features-grid">
             <router-link to="/maintenance-history" class="feature-card">
               <el-icon :size="32"><Document /></el-icon>
-              <h3>缁翠慨鍘嗗彶璁板綍</h3>
-              <p>鏌ヨ鍘嗗彶缁翠慨璁板綍锛屽垎鏋愮淮淇秼鍔?/p>
+              <h3>维修历史记录</h3>
+              <p>查询历史维修记录，分析维修趋势</p>
             </router-link>
             <router-link to="/fault-statistics" class="feature-card">
               <el-icon :size="32"><DataAnalysis /></el-icon>
-              <h3>鏁呴殰鐜囩粺璁?/h3>
-              <p>鍏ㄩ潰鐨勬晠闅滄暟鎹粺璁″拰鍒嗘瀽</p>
+              <h3>故障率统计</h3>
+              <p>全面的故障数据统计和分析</p>
             </router-link>
             <router-link to="/cost-optimization" class="feature-card">
               <el-icon :size="32"><Money /></el-icon>
-              <h3>鎴愭湰浼樺寲鍒嗘瀽</h3>
-              <p>鍩轰簬鏁版嵁鐨勯檷鏈鏁堟柟妗?/p>
+              <h3>成本优化分析</h3>
+              <p>基于数据的降本增效方案</p>
             </router-link>
           </div>
         </div>
@@ -672,7 +613,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   DataAnalysis, MagicStick, Pointer, VideoPlay, Search, 
   QuestionFilled, Star, Reading, Tools, Box, List, TrendCharts,
-  Checked, ArrowRight, Document, Money, FolderOpened
+  Checked, ArrowRight, Document, Money
 } from '@element-plus/icons-vue'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
@@ -681,13 +622,13 @@ import 'aos/dist/aos.css'
 
 const router = useRouter()
 
-// 鐘舵€佺鐞?
+// 状态管理
 const selectedCategory = ref('all')
 const searchKeyword = ref('')
 const showTour = ref(false)
 const agentsSection = ref(null)
 
-// 鍒濆鍖栧姩鐢?
+// 初始化动画
 onMounted(() => {
   AOS.init({
     duration: 800,
@@ -696,13 +637,13 @@ onMounted(() => {
     offset: 100
   })
   
-  // 寤惰繜搴旂敤鍒嗙被杩囨护锛岀‘淇滵OM瀹屽叏鍔犺浇
+  // 延迟应用分类过滤，确保DOM完全加载
   nextTick(() => {
     applyFilter()
   })
 })
 
-// 搴旂敤鍒嗙被鍜屾悳绱㈣繃婊?
+// 应用分类和搜索过滤
 const applyFilter = () => {
   const cards = document.querySelectorAll('.agent-card')
   cards.forEach(card => {
@@ -710,15 +651,15 @@ const applyFilter = () => {
     const title = card.querySelector('h2')?.textContent || ''
     const desc = card.querySelector('.agent-desc')?.textContent || ''
     
-    // 鍒嗙被杩囨护
+    // 分类过滤
     const matchCategory = selectedCategory.value === 'all' || category === selectedCategory.value
     
-    // 鍏抽敭璇嶆悳绱㈣繃婊?
+    // 关键词搜索过滤
     const matchSearch = !searchKeyword.value || 
                        title.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
                        desc.toLowerCase().includes(searchKeyword.value.toLowerCase())
     
-    // 鏄剧ず鎴栭殣钘忓崱鐗?
+    // 显示或隐藏卡片
     if (matchCategory && matchSearch) {
       card.style.display = 'block'
     } else {
@@ -727,17 +668,17 @@ const applyFilter = () => {
   })
 }
 
-// 鐩戝惉鍒嗙被鍙樺寲
+// 监听分类变化
 watch([selectedCategory, searchKeyword], () => {
   applyFilter()
 })
 
-// 婊氬姩鍒版櫤鑳戒綋鍖哄煙
+// 滚动到智能体区域
 const scrollToAgents = () => {
   agentsSection.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-// 鍗＄墖鎮仠鏁堟灉
+// 卡片悬停效果
 const onCardHover = (event) => {
   const card = event.currentTarget
   const glow = card.querySelector('.card-glow')
@@ -754,91 +695,31 @@ const onCardLeave = (event) => {
   }
 }
 
-// 鏄剧ず甯姪
+// 显示帮助
 const showHelp = (agentId) => {
   const helpContent = {
-    'knowledge-manager': '馃摎 浼佷笟鐭ヨ瘑搴撶鐞哱n\n鍔熻兘璇存槑锛歕n1. 鍒嗙被鐭ヨ瘑绠＄悊锛堜骇鍝併€佷簨涓氶儴銆佸簲鐢ㄦ渚嬬瓑锛塡n2. 鍏抽敭璇嶆櫤鑳藉尮閰峔n3. 澶氳瑷€鐭ヨ瘑搴擄紙涓嫳鏂囷級\n4. AI鍔╂墜璁粌涓庝紭鍖朶n5. 鐭ヨ瘑搴撳鍏ュ鍑篭n\n閫傜敤鍦烘櫙锛氬鎴烽棶绛斻€佸憳宸ュ煿璁€佺煡璇嗘矇娣€銆丄I璁粌',
-    'tool-selector': '馃敡 鎷х揣宸ュ叿閫夊瀷鏅鸿兘浣揬n\n鍔熻兘璇存槑锛歕n1. 濉啓宸ヨ壓闇€姹備俊鎭痋n2. AI鏅鸿兘鍖归厤鎺ㄨ崘宸ュ叿\n3. 鏌ョ湅璇︾粏宸ュ叿鍙傛暟\n4. 鐢熸垚闇€姹傛姤鍛奬n\n閫傜敤鍦烘櫙锛氭柊宸ヤ綅寤鸿銆佸伐鍏峰崌绾с€佸伐鑹轰紭鍖?,
-    'equipment-dashboard': '馃搳 鏁板瓧鐩戞帶椹鹃┒鑸盶n\n鍔熻兘璇存槑锛歕n1. 瀹炴椂鐩戞帶璁惧鐘舵€乗n2. 缁存姢娴佺▼鍙鍖朶n3. 闆堕厤浠惰璐ц拷韪猏n4. 澶氳鑹茶鍥惧垏鎹n\n閫傜敤瑙掕壊锛氳澶囩鐞嗕汉鍛樸€佽澶囦娇鐢ㄤ汉鍛樸€佷緵搴斿晢鏈嶅姟浜哄憳',
-    'equipment-lifecycle': '馃攧 璁惧鍏ㄧ敓鍛藉懆鏈熺鐞哱n\n鍔熻兘璇存槑锛歕n1. 璁惧妗ｆ绠＄悊\n2. ROI鎶曡祫鍥炴姤鍒嗘瀽\n3. AI淇濆吇棰勬祴\n4. 鎴愭湰浼樺寲寤鸿\n\n閫傜敤鍦烘櫙锛氳澶囬噰璐喅绛栥€佺淮鎶よ鍒掑埗瀹氥€佹垚鏈帶鍒?,
-    'fault-tracking': '馃搵 鏁呴殰宸ュ崟绠＄悊\n\n鍔熻兘璇存槑锛歕n1. 鍒涘缓缁翠慨宸ュ崟\n2. 宸ュ崟鐘舵€佽拷韪猏n3. 缁翠慨杩涘害鏌ヨ\n4. 鍘嗗彶璁板綍鍒嗘瀽\n\n閫傜敤鍦烘櫙锛氳澶囨晠闅滄姤淇€佺淮淇繘搴︾鐞嗐€佹暟鎹粺璁″垎鏋?,
-    'curve-analysis': '馃搱 鎷х揣鏇茬嚎瀵规瘮鍒嗘瀽\n\n鍔熻兘璇存槑锛歕n1. 涓婁紶鏇茬嚎鏁版嵁鏂囦欢\n2. 澶氭洸绾垮姣斿垎鏋怽n3. AI鏅鸿兘璇婃柇\n4. 宸ヨ壓浼樺寲寤鸿\n\n閫傜敤鍦烘櫙锛氳川閲忛棶棰樺垎鏋愩€佸伐鑹哄弬鏁颁紭鍖栥€侀棶棰樻帓鏌?,
-    'tightening-data': '馃搳 鎷х揣鏁版嵁閲囬泦鍒嗘瀽\n\n鍔熻兘璇存槑锛歕n1. Open Protocol鍗忚鏁版嵁閲囬泦\n2. 瀹炴椂鏁版嵁鐩戞帶锛圥F4000/PF8000锛塡n3. Cpk杩囩▼鑳藉姏鍒嗘瀽\n4. 寮傚父妫€娴嬩笌鏅鸿兘鎶ヨ\n5. 鎷х揣鏇茬嚎鍙鍖朶n6. 鏁版嵁瀵煎嚭涓庣粺璁″垎鏋怽n\n閫傜敤鍦烘櫙锛氱敓浜ц繃绋嬬洃鎺с€佽川閲忔暟鎹垎鏋愩€佸伐鑹哄弬鏁颁紭鍖栥€侀闃叉€х淮鎶?,
-    'tech-classroom': '馃摎 浜у搧鎶€鏈攢鍞皬璇惧爞\n\n鍔熻兘璇存槑锛歕n1. 鎷х揣宸ュ叿浜у搧鐭ヨ瘑搴揬n2. 鎶€鏈鏍艰缁嗕粙缁峔n3. 搴旂敤鍦烘櫙妗堜緥鍒嗕韩\n4. 甯歌闂蹇€熻В绛擻n5. 澶氱骇鍒嗙被鏌ヨ\n\n閫傜敤鍦烘櫙锛氫骇鍝佸涔犮€佹妧鏈煿璁€侀攢鍞敮鎸併€佸鎴峰挩璇?,
-    'process-verification': '鈿欙笍 鎷х揣宸ヨ壓鏀硅繘涓庨獙璇佹櫤鑳戒綋\n\n鍔熻兘璇存槑锛歕n1. 澶氱淮搴﹀伐鑹烘潯浠剁瓫閫夛紙宸ヤ綅銆佸伐鍏枫€佽灪鏍撱€佹潗鏂欙級\n2. PSE鎷х揣绋嬪簭鍙傛暟鏅鸿兘鎺ㄨ崘\n3. 涓夌鎺у埗绛栫暐鍒嗘瀽锛堟壄鐭?瑙掑害/DS鎺у埗锛塡n4. 鎷х揣鏇茬嚎鍙鍖栭瑙圽n5. 宸ヨ壓鏀硅繘寤鸿鐢熸垚\n6. 鎷х揣娴嬮噺鏁版嵁搴撶鐞哱n\n鎺у埗绛栫暐锛歕n鈥?鎵煩鎺у埗锛氶€傜敤浜庡垰鎬ц繛鎺ワ紝鎵煩绮惧害楂榎n鈥?瑙掑害鎺у埗锛氶€傜敤浜庤蒋杩炴帴銆侀暱铻烘爴\n鈥?DS鎺у埗锛氬弻閲嶆帶鍒讹紝缁煎悎鎵煩鍜岃搴︿紭鍔縗n\n閫傜敤鍦烘櫙锛歕n- 鏂板伐鑹哄紑鍙戜笌楠岃瘉\n- 鐜版湁宸ヨ壓鍙傛暟浼樺寲\n- 鎷х揣闂鍒嗘瀽涓庢敼杩沑n- PSE绋嬪簭鍙傛暟璁剧疆鎸囧\n- 鎷х揣鏁版嵁绠＄悊涓庤拷婧?
+    'tool-selector': '🔧 拧紧工具选型智能体\n\n功能说明：\n1. 填写工艺需求信息\n2. AI智能匹配推荐工具\n3. 查看详细工具参数\n4. 生成需求报告\n\n适用场景：新工位建设、工具升级、工艺优化',
+    'equipment-dashboard': '📊 数字监控驾驶舱\n\n功能说明：\n1. 实时监控设备状态\n2. 维护流程可视化\n3. 零配件订货追踪\n4. 多角色视图切换\n\n适用角色：设备管理人员、设备使用人员、供应商服务人员',
+    'equipment-lifecycle': '🔄 设备全生命周期管理\n\n功能说明：\n1. 设备档案管理\n2. ROI投资回报分析\n3. AI保养预测\n4. 成本优化建议\n\n适用场景：设备采购决策、维护计划制定、成本控制',
+    'fault-tracking': '📋 故障工单管理\n\n功能说明：\n1. 创建维修工单\n2. 工单状态追踪\n3. 维修进度查询\n4. 历史记录分析\n\n适用场景：设备故障报修、维修进度管理、数据统计分析',
+    'curve-analysis': '📈 拧紧曲线对比分析\n\n功能说明：\n1. 上传曲线数据文件\n2. 多曲线对比分析\n3. AI智能诊断\n4. 工艺优化建议\n\n适用场景：质量问题分析、工艺参数优化、问题排查',
+    'tightening-data': '📊 拧紧数据采集分析\n\n功能说明：\n1. Open Protocol协议数据采集\n2. 实时数据监控（PF4000/PF8000）\n3. Cpk过程能力分析\n4. 异常检测与智能报警\n5. 拧紧曲线可视化\n6. 数据导出与统计分析\n\n适用场景：生产过程监控、质量数据分析、工艺参数优化、预防性维护',
+    'tech-classroom': '📚 产品技术销售小课堂\n\n功能说明：\n1. 拧紧工具产品知识库\n2. 技术规格详细介绍\n3. 应用场景案例分享\n4. 常见问题快速解答\n5. 多级分类查询\n\n适用场景：产品学习、技术培训、销售支持、客户咨询',
+    'process-verification': '⚙️ 拧紧工艺改进与验证智能体\n\n功能说明：\n1. 多维度工艺条件筛选（工位、工具、螺栓、材料）\n2. PSE拧紧程序参数智能推荐\n3. 三种控制策略分析（扭矩/角度/DS控制）\n4. 拧紧曲线可视化预览\n5. 工艺改进建议生成\n6. 拧紧测量数据库管理\n\n控制策略：\n• 扭矩控制：适用于刚性连接，扭矩精度高\n• 角度控制：适用于软连接、长螺栓\n• DS控制：双重控制，综合扭矩和角度优势\n\n适用场景：\n- 新工艺开发与验证\n- 现有工艺参数优化\n- 拧紧问题分析与改进\n- PSE程序参数设置指导\n- 拧紧数据管理与追溯'
   }
   
-  ElMessageBox.alert(helpContent[agentId] || '鍔熻兘浠嬬粛寮€鍙戜腑...', '浣跨敤甯姪', {
-    confirmButtonText: '鐭ラ亾浜?,
+  ElMessageBox.alert(helpContent[agentId] || '功能介绍开发中...', '使用帮助', {
+    confirmButtonText: '知道了',
     type: 'info',
     center: true
   })
 }
 
-// 璺宠浆鍒版櫤鑳戒綋椤甸潰
+// 跳转到智能体页面
 const goToAgent = (path) => {
   router.push(path)
-  ElMessage.success('姝ｅ湪杩涘叆鏅鸿兘浣?..')
+  ElMessage.success('正在进入智能体...')
 }
-
-// 馃敟 缁戝畾鎵€鏈夊崱鐗囩殑鍘熺敓瑙︽懜浜嬩欢
-const bindAgentCardEvents = () => {
-  const cards = document.querySelectorAll('.agent-card[data-path]')
-  console.log(`馃攳 鎵惧埌 ${cards.length} 涓櫤鑳戒綋鍗＄墖`)
-  
-  cards.forEach((card, index) => {
-    const path = card.getAttribute('data-path')
-    if (!path) return
-    
-    let touchStartY = 0
-    let touchStartTime = 0
-    
-    // 瑙︽懜寮€濮?
-    card.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY
-      touchStartTime = Date.now()
-    }, { passive: true })
-    
-    // 瑙︽懜缁撴潫
-    card.addEventListener('touchend', (e) => {
-      const touchEndY = e.changedTouches[0].clientY
-      const touchDuration = Date.now() - touchStartTime
-      const moveDistance = Math.abs(touchEndY - touchStartY)
-      
-      // 馃幆 鍙湁绉诲姩璺濈 < 10px 涓旀椂闀?< 300ms 鎵嶇畻鐐瑰嚮
-      if (moveDistance < 10 && touchDuration < 300) {
-        console.log(`鉁?鏅鸿兘浣撳崱鐗?[${path}] 鐪熷疄鐐瑰嚮瑙﹀彂`)
-        e.preventDefault()
-        e.stopPropagation()
-        goToAgent(path)
-      } else {
-        console.log(`鈿狅笍 鏅鸿兘浣撳崱鐗?[${path}] 婊氬姩蹇界暐 (绉诲姩${moveDistance}px)`)
-      }
-    }, { passive: false })
-    
-    // 妗岄潰绔偣鍑?
-    card.addEventListener('click', (e) => {
-      // 濡傛灉鏄Щ鍔ㄧ锛屼笉澶勭悊锛堜娇鐢?touchend锛?
-      if ('ontouchstart' in window) {
-        e.preventDefault()
-        return
-      }
-      
-      console.log(`馃柋锔?鏅鸿兘浣撳崱鐗?[${path}] 鐐瑰嚮瑙﹀彂`)
-      goToAgent(path)
-    }, { passive: false })
-    
-    console.log(`鉁?鏅鸿兘浣撳崱鐗?${index + 1} 浜嬩欢缁戝畾瀹屾垚 (path: ${path})`)
-  })
-}
-
-// 缁勪欢鎸傝浇鍚庣粦瀹氫簨浠?
-onMounted(() => {
-  nextTick(() => {
-    bindAgentCardEvents()
-  })
-})
-
 </script>
 
 <style scoped>
@@ -847,7 +728,7 @@ onMounted(() => {
   background: #f5f7fa;
 }
 
-/* 椤堕儴Banner - 澧炲己鐗?*/
+/* 顶部Banner - 增强版 */
 .hero-section {
   position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -986,7 +867,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* 鏅鸿兘浣撳崱鐗囧尯鍩?*/
+/* 智能体卡片区域 */
 .agents-section {
   padding: 80px 0;
 }
@@ -997,7 +878,7 @@ onMounted(() => {
   padding: 0 20px;
 }
 
-/* 鍒嗙被鏍囩 */
+/* 分类标签 */
 .category-tabs {
   display: flex;
   justify-content: space-between;
@@ -1240,7 +1121,7 @@ onMounted(() => {
   transform: translateX(4px);
 }
 
-/* 闄勫姞鍔熻兘 */
+/* 附加功能 */
 .additional-features {
   margin-top: 60px;
 }
@@ -1297,7 +1178,7 @@ onMounted(() => {
   line-height: 1.5;
 }
 
-/* 鍝嶅簲寮忚璁?*/
+/* 响应式设计 */
 @media (max-width: 1200px) {
   .hero-content h1 {
     font-size: 48px;
